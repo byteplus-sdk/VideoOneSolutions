@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/interactive_live_graph.xml"
+    app:startDestination="@id/live_room_list">
+
+    <fragment
+        android:id="@+id/live_room_list"
+        android:name="com.vertcdemo.solution.interactivelive.feature.list.LiveRoomListFragment"
+        tools:layout="@layout/fragment_live_rooms">
+        <action
+            android:id="@+id/create_live_room"
+            app:destination="@id/create_live_room" />
+
+        <action
+            android:id="@+id/audience_view"
+            app:destination="@id/audience_view" />
+
+        <action
+            android:id="@+id/live_core_config"
+            app:destination="@id/live_core_config" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/create_live_room"
+        android:name="com.vertcdemo.solution.interactivelive.feature.list.CreateLiveRoomFragment"
+        tools:layout="@layout/fragment_create_live_room">
+        <action
+            android:id="@+id/host_view"
+            app:destination="@id/host_view" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/audience_view"
+        android:name="com.vertcdemo.solution.interactivelive.feature.main.AudienceFragment"
+        tools:layout="@layout/fragment_live_audience" />
+
+    <fragment
+        android:id="@+id/host_view"
+        android:name="com.vertcdemo.solution.interactivelive.feature.main.HostFragment"
+        tools:layout="@layout/fragment_live_host">
+        <action
+            android:id="@+id/live_summary"
+            app:destination="@id/live_summary" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/live_core_config"
+        android:name="com.vertcdemo.solution.interactivelive.feature.list.LiveCoreConfigFragment"
+        tools:layout="@layout/fragment_live_core_config" />
+
+    <fragment
+        android:id="@+id/live_summary"
+        android:name="com.vertcdemo.solution.interactivelive.feature.main.LiveSummaryFragment"
+        tools:layout="@layout/fragment_live_summary" />
+
+</navigation>

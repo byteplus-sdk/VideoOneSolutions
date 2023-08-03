@@ -1,0 +1,11 @@
+
+"login_title" = "Welcome to VideoOne";
+"login_privacy_service_format" = "I have read and agree to BytePlus VideoOne's %@, and confirm that I have read BytePlus VideoOne's %@.";
+"login_privacy_policy" = "Privacy Policy";
+"login_terms_of_service" = "Terms of Service";
+"login_check_box_tip" = "Agree Privacy";
+"agree_privacy" = "Please check BytePlus' privacy policy and terms of service.";
+"Username"                = "Username";
+"Log in"                  = "Log in";
+"No more than %ld characters with a mix of Chinese, letters & numbers" = "No more than %ld characters with a mix of Chinese, letters & numbers";
+

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="username">Username</string>
+    <string name="log_in">Log in</string>
+    <string name="login_privacy_policy">Privacy Policy</string>
+    <string name="login_terms_of_service">Terms of Service</string>
+    <string name="read_and_agree">I have read and agree to BytePlus VideoOne\'s %1$s, and confirm that I have read BytePlus VideoOne\'s %2$s.</string>
+    <string name="content_limit">No more than %s characters with a mix of Chinese, letters &amp; numbers</string>
+    <string name="username_hint">Username</string>
+    <string name="welcome">Welcome to VideoOne</string>
+</resources>

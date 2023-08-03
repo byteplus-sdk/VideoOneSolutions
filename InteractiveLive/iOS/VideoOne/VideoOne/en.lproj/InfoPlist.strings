@@ -1,0 +1,12 @@
+/* 
+  InfoPlist.strings
+  VideoOne
+
+  Created by ByteDance on 2023/4/27.
+  
+*/
+
+
+CFBundleDisplayName = "VideoOne";
+NSCameraUsageDescription = "APP Would Like to Access the Camera. You'll be able to make video calls.";
+NSMicrophoneUsageDescription = "APP Would like to Access the Microphone. You'll be able to make audio calls.";

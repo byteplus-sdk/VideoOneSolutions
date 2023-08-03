@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:layout_gravity="bottom">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/live_bottom_sheet_height"
+        android:background="@drawable/bg_audience_link">
+
+        <TextView
+            android:id="@+id/tab_co_host"
+            android:layout_width="wrap_content"
+            android:layout_height="51dp"
+            android:layout_marginStart="16dp"
+            android:gravity="center"
+            android:text="@string/co_host"
+            android:textColor="@color/tab_title_text_color"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/question_mark"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_question_mark"
+            app:layout_constraintBottom_toBottomOf="@id/tab_co_host"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tab_co_host" />
+
+        <View
+            android:id="@+id/tab_co_host_indicator"
+            android:layout_width="40dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="50dp"
+            android:background="#FFF"
+            app:layout_constraintBottom_toBottomOf="@id/tab_co_host"
+            app:layout_constraintEnd_toEndOf="@id/tab_co_host"
+            app:layout_constraintStart_toStartOf="@id/tab_co_host"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tab_co_host_application"
+            android:layout_width="wrap_content"
+            android:layout_height="51dp"
+            android:layout_marginStart="24dp"
+            android:gravity="center"
+            android:text="@string/co_host_application"
+            android:textColor="@color/tab_title_text_color"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/tab_co_host"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/audience_dot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_gravity="end|top"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/ic_audience_has_request"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/tab_co_host_application"
+            app:layout_constraintTop_toTopOf="@id/tab_co_host_application"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/tab_co_host_application_indicator"
+            android:layout_width="40dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="50dp"
+            android:background="#FFF"
+            app:layout_constraintBottom_toBottomOf="@id/tab_co_host_application"
+            app:layout_constraintEnd_toEndOf="@id/tab_co_host_application"
+            app:layout_constraintStart_toStartOf="@id/tab_co_host_application"
+            tools:visibility="gone" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="50dp"
+            android:background="#26FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <include
+            android:id="@+id/application"
+            layout="@layout/layout_manage_audience_application"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="51dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <include
+            android:id="@+id/co_host"
+            layout="@layout/layout_manage_audience_co_host"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="51dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_application"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="tab_co_host_application_indicator, application" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_co_host"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="tab_co_host_indicator, co_host" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

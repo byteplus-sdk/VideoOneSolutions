@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_chat_item"
+    android:gravity="center|start"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="2dp"
+    android:textColor="@color/white"
+    android:textSize="14sp"
+    android:textStyle="bold"
+    tools:background="#000"
+    tools:text="[Host] Anna: welcome" />

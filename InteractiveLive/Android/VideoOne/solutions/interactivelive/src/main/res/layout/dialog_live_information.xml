@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:layout_gravity="bottom">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:background="@drawable/bg_common_panel">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/start"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="16dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/end"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="16dp" />
+
+        <TextView
+            android:id="@+id/tab_basic_info"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:text="@string/basic_information"
+            android:textColor="@color/tab_title_text_color"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@id/tab_realtime_info"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/indicator_basic_info"
+            android:layout_width="40dp"
+            android:layout_height="2dp"
+            android:background="#FFF"
+            app:layout_constraintBottom_toBottomOf="@id/tab_basic_info"
+            app:layout_constraintEnd_toEndOf="@id/tab_basic_info"
+            app:layout_constraintStart_toStartOf="@id/tab_basic_info" />
+
+        <TextView
+            android:id="@+id/tab_realtime_info"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginStart="24dp"
+            android:gravity="center"
+            android:text="@string/real_time_information"
+            android:textColor="@color/tab_title_text_color"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/tab_basic_info"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/indicator_realtime_info"
+            android:layout_width="40dp"
+            android:layout_height="2dp"
+            android:background="#FFF"
+            app:layout_constraintBottom_toBottomOf="@id/tab_realtime_info"
+            app:layout_constraintEnd_toEndOf="@id/tab_realtime_info"
+            app:layout_constraintStart_toStartOf="@id/tab_realtime_info" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="#26FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tab_basic_info" />
+
+
+        <!-- region Basic information -->
+        <TextView
+            android:id="@+id/lb_initial_video_bitrate"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/initial_video_bitrate"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/tab_basic_info" />
+
+        <TextView
+            android:id="@+id/initial_video_bitrate"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_initial_video_bitrate"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_initial_video_bitrate"
+            tools:text="1600 kbps" />
+
+        <TextView
+            android:id="@+id/lb_maximum_video_bitrate"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/maximum_video_bitrate"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/lb_initial_video_bitrate" />
+
+        <TextView
+            android:id="@+id/maximum_video_bitrate"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_maximum_video_bitrate"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_maximum_video_bitrate"
+            tools:text="1600 kbps" />
+
+        <TextView
+            android:id="@+id/lb_minimum_video_bitrate"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/minimum_video_bitrate"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/lb_maximum_video_bitrate" />
+
+        <TextView
+            android:id="@+id/minimum_video_bitrate"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_minimum_video_bitrate"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_minimum_video_bitrate"
+            tools:text="1600 kbps" />
+
+        <View
+            android:id="@+id/base_info_separator"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:layout_marginTop="16dp"
+            android:background="#0AFFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lb_minimum_video_bitrate" />
+
+        <TextView
+            android:id="@+id/lb_capture_resolution"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/capture_resolution"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/base_info_separator" />
+
+        <TextView
+            android:id="@+id/capture_resolution"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_capture_resolution"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_capture_resolution"
+            tools:text="720x1280" />
+
+        <TextView
+            android:id="@+id/lb_push_video_resolution"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/push_video_resolution"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/lb_capture_resolution" />
+
+        <TextView
+            android:id="@+id/push_video_resolution"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_push_video_resolution"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_push_video_resolution"
+            tools:text="720x1280" />
+
+        <TextView
+            android:id="@+id/lb_capture_fps"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/capture_fps"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/lb_push_video_resolution" />
+
+        <TextView
+            android:id="@+id/capture_fps"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_capture_fps"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_capture_fps"
+            tools:text="15 fps" />
+
+        <TextView
+            android:id="@+id/lb_encoding_format"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/encoding_format"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/lb_capture_fps" />
+
+        <TextView
+            android:id="@+id/encoding_format"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_encoding_format"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_encoding_format"
+            tools:text="H.264（Hardwired)" />
+
+        <TextView
+            android:id="@+id/lb_adaptive_bitrate_mode"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/adaptive_bitrate_mode"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/lb_encoding_format" />
+
+        <TextView
+            android:id="@+id/adaptive_bitrate_mode"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_adaptive_bitrate_mode"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_adaptive_bitrate_mode"
+            tools:text="Normal" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_basic"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:constraint_referenced_ids="lb_initial_video_bitrate, initial_video_bitrate, lb_maximum_video_bitrate, maximum_video_bitrate, lb_minimum_video_bitrate, minimum_video_bitrate, lb_capture_resolution, capture_resolution, lb_push_video_resolution, push_video_resolution, lb_capture_fps, capture_fps, lb_encoding_format, encoding_format, lb_adaptive_bitrate_mode, adaptive_bitrate_mode, base_info_separator"
+            tools:visibility="gone" />
+        <!-- endregion Basic information -->
+
+        <!-- region Real-time information -->
+        <TextView
+            android:id="@+id/lb_realtime_capture_fps"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/real_time_capture_fps"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/tab_basic_info" />
+
+        <TextView
+            android:id="@+id/realtime_capture_fps"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_realtime_capture_fps"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_realtime_capture_fps"
+            tools:text="16 fps" />
+
+        <TextView
+            android:id="@+id/lb_realtime_transmission_fps"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/real_time_transmission_fps"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/lb_realtime_capture_fps" />
+
+        <TextView
+            android:id="@+id/realtime_transmission_fps"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_realtime_transmission_fps"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_realtime_transmission_fps"
+            tools:text="16 fps" />
+
+        <View
+            android:id="@+id/realtime_separator"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:layout_marginTop="16dp"
+            android:background="#0AFFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lb_realtime_transmission_fps" />
+
+        <TextView
+            android:id="@+id/lb_realtime_encoding_bitrate"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/real_time_encoding_bitrate"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/realtime_separator" />
+
+        <TextView
+            android:id="@+id/realtime_encoding_bitrate"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_realtime_encoding_bitrate"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_realtime_encoding_bitrate"
+            tools:text="3581 kbps" />
+
+        <TextView
+            android:id="@+id/lb_realtime_transmission_bitrate"
+            style="@style/LiveInfoIndicatorStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/real_time_transmission_bitrate"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/lb_realtime_encoding_bitrate" />
+
+        <TextView
+            android:id="@+id/realtime_transmission_bitrate"
+            style="@style/LiveInfoInformationStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/lb_realtime_transmission_bitrate"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintTop_toTopOf="@id/lb_realtime_transmission_bitrate"
+            tools:text="3581 kbps" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_realtime"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:constraint_referenced_ids="lb_realtime_capture_fps, realtime_capture_fps, lb_realtime_transmission_fps, realtime_transmission_fps, lb_realtime_encoding_bitrate, realtime_encoding_bitrate, lb_realtime_transmission_bitrate, realtime_transmission_bitrate, realtime_separator"
+            tools:visibility="visible" />
+        <!-- endregion Real-time information -->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

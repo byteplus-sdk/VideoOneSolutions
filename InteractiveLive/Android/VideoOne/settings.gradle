@@ -1,0 +1,9 @@
+rootProject.name = "VideoOne"
+
+include ':app'
+
+include ':component:ToolKit'
+include ':component:LoginKit'
+include ':component:Avatars'
+
+include ':solutions:interactivelive'

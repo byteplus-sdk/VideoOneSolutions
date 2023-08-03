@@ -1,0 +1,6 @@
+CODE_SIGN_STYLE = Manual
+DEVELOPMENT_TEAM = XXHND5J98K
+CODE_SIGN_IDENTITY = iPhone Distribution
+PROVISIONING_PROFILE_SPECIFIER = 3ceb7d3b-31e0-4c40-a812-e81e6b291950
+
+#include? "VideoOne-InHouse-Private.xcconfig"

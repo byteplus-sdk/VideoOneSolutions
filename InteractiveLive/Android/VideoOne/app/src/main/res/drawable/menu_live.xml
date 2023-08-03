@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    <!-- duplicate the items to fix flashing issue -->
+    <item
+        android:drawable="@drawable/menu_live0"
+        android:duration="625" />
+    <item
+        android:drawable="@drawable/menu_live0"
+        android:duration="625" />
+    <item
+        android:drawable="@drawable/menu_live1"
+        android:duration="625" />
+    <item
+        android:drawable="@drawable/menu_live1"
+        android:duration="625" />
+</animation-list>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="LiveInfoIndicatorStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="LiveInfoInformationStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#CCCED0</item>
+    </style>
+
+    <style name="LiveBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/LiveBottomSheetStyle</item>
+    </style>
+
+    <style name="LiveBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="LiveCommonDialogTheme" parent="Theme.AppCompat.Light.Dialog.MinWidth">
+        <item name="android:windowBackground">@drawable/bg_dialog_live_common</item>
+        <item name="android:windowMinWidthMinor">83%</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
+</resources>

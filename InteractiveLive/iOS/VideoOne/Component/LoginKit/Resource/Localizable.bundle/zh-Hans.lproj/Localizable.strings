@@ -1,0 +1,10 @@
+
+"login_title" = "欢迎来到音视频终端（VOS）Demo体验中心";
+"login_privacy_service_format" = "我已阅读并同意BytePlus的 %@ 和 %@";
+"login_privacy_policy" = "Privacy Policy";
+"login_terms_of_service" = "Terms of Service";
+"login_check_box_tip" = "Agree Privacy";
+"agree_privacy" = "请勾选BytePlus的《隐私协议》和《服务条款》";
+"Username"                = "请输入用户昵称";
+"Log in"                  = "登录";
+"No more than %ld characters with a mix of Chinese, letters & numbers" = "仅支持中文、字母、数字、1~%ld位";

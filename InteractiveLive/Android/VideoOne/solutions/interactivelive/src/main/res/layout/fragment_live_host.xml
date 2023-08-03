@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_live_host"
+    android:keepScreenOn="true"
+    tools:ignore="ContentDescription">
+
+    <include
+        android:id="@+id/main"
+        layout="@layout/layout_live_host_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp"
+        tools:layout_constraintGuide_begin="25dp" />
+
+    <!-- region Video Views -->
+    <!-- region PK co host -->
+    <include
+        android:id="@+id/pk_host"
+        layout="@layout/layout_live_host_video"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="14dp"
+        app:layout_constraintDimensionRatio="H,9:16"
+        app:layout_constraintEnd_toStartOf="@id/pk_co_host"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/live_label" />
+
+    <include
+        android:id="@+id/pk_co_host"
+        layout="@layout/layout_live_co_host_video"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/pk_host"
+        app:layout_constraintDimensionRatio="H,9:16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/pk_host"
+        app:layout_constraintTop_toTopOf="@id/pk_host" />
+
+    <TextView
+        android:id="@+id/pk_timing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_pk_timer"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="2dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:drawableStartCompat="@drawable/ic_live_pk16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/pk_host"
+        tools:drawableStart="@drawable/ic_live_pk16"
+        tools:text="00:12" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_pk"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="pk_host, pk_co_host, pk_timing"
+        tools:visibility="visible" />
+    <!-- endregion PK co host -->
+
+    <!-- region audience link -->
+    <include
+        android:id="@+id/link_host"
+        layout="@layout/layout_live_host_video"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginVertical="14dp"
+        android:layout_marginEnd="2dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_panel"
+        app:layout_constraintEnd_toStartOf="@id/position1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/live_label" />
+
+    <include
+        android:id="@+id/position1"
+        layout="@layout/layout_live_host_audience"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/position2"
+        app:layout_constraintDimensionRatio="W,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/link_host"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+    <include
+        android:id="@+id/position2"
+        layout="@layout/layout_live_host_audience"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toTopOf="@id/position3"
+        app:layout_constraintEnd_toEndOf="@id/position1"
+        app:layout_constraintStart_toStartOf="@id/position1"
+        app:layout_constraintTop_toBottomOf="@id/position1" />
+
+    <include
+        android:id="@+id/position3"
+        layout="@layout/layout_live_host_audience"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toTopOf="@id/position4"
+        app:layout_constraintEnd_toEndOf="@id/position1"
+        app:layout_constraintStart_toStartOf="@id/position1"
+        app:layout_constraintTop_toBottomOf="@id/position2" />
+
+    <include
+        android:id="@+id/position4"
+        layout="@layout/layout_live_host_audience"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toTopOf="@id/position5"
+        app:layout_constraintEnd_toEndOf="@id/position1"
+        app:layout_constraintStart_toStartOf="@id/position1"
+        app:layout_constraintTop_toBottomOf="@id/position3" />
+
+    <include
+        android:id="@+id/position5"
+        layout="@layout/layout_live_host_audience"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toTopOf="@id/position6"
+        app:layout_constraintEnd_toEndOf="@id/position1"
+        app:layout_constraintStart_toStartOf="@id/position1"
+        app:layout_constraintTop_toBottomOf="@id/position4" />
+
+    <include
+        android:id="@+id/position6"
+        layout="@layout/layout_live_host_audience"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toBottomOf="@id/link_host"
+        app:layout_constraintEnd_toEndOf="@id/position1"
+        app:layout_constraintStart_toStartOf="@id/position1"
+        app:layout_constraintTop_toBottomOf="@id/position5" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/link_single_small_card"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="32dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/transparent"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_panel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/message_panel">
+
+        <include
+            android:id="@+id/link_single_small"
+            layout="@layout/layout_live_host_audience2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_link_multiple"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="link_host, position1, position2, position3, position4, position5, position6"
+        tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_link_single"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="link_single_small_card"
+        tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_link"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="link_single_small_card, group_link_multiple"
+        tools:visibility="visible" />
+    <!-- endregion audience link -->
+    <!-- endregion Video Views -->
+
+    <!-- region Header -->
+    <include
+        android:id="@+id/host_avatar"
+        layout="@layout/user_avatar_view"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_top" />
+
+    <FrameLayout
+        android:id="@+id/audience_num_area"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/button_black_rec_bg"
+        android:paddingHorizontal="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/host_avatar"
+        app:layout_constraintEnd_toStartOf="@id/power"
+        app:layout_constraintTop_toTopOf="@id/host_avatar">
+
+        <TextView
+            android:id="@+id/audience_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawablePadding="2dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            app:drawableStartCompat="@drawable/ic_audience_num"
+            tools:drawableStart="@drawable/ic_audience_num"
+            tools:text="9" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/power"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_power"
+        app:layout_constraintBottom_toBottomOf="@id/host_avatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/host_avatar" />
+
+    <LinearLayout
+        android:id="@+id/live_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="@id/host_avatar"
+        app:layout_constraintTop_toBottomOf="@id/host_avatar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:background="@drawable/bg_live_label"
+            android:drawablePadding="3dp"
+            android:gravity="center"
+            android:paddingHorizontal="4dp"
+            android:text="@string/label_live"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:drawableStartCompat="@drawable/ic_live"
+            tools:drawableStart="@drawable/ic_live" />
+
+        <TextView
+            android:id="@+id/live_time"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:background="@drawable/bg_live_time"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:paddingHorizontal="4dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="03:00" />
+
+        <TextView
+            android:id="@+id/network_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="6dp"
+            android:drawablePadding="4dp"
+            android:paddingHorizontal="4dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:drawableStart="@drawable/ic_network_quality_good"
+            tools:text="Good Connection" />
+    </LinearLayout>
+
+    <!-- endregion Header -->
+
+    <FrameLayout
+        android:id="@+id/gift_panel"
+        android:layout_width="0dp"
+        android:layout_height="96dp"
+        android:layout_marginBottom="4dp"
+        android:paddingHorizontal="12dp"
+        app:layout_constraintBottom_toTopOf="@id/message_panel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include
+            android:id="@+id/gift_slot_2"
+            layout="@layout/layout_gift_show_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <include
+            android:id="@+id/gift_slot_1"
+            layout="@layout/layout_gift_show_item"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/message_panel_guideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="56dp"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/message_panel_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:barrierDirection="start"
+        app:constraint_referenced_ids="message_panel_guideline, link_single_small_card, position1" />
+
+    <com.vertcdemo.solution.interactivelive.view.TopFadeRecyclerView
+        android:id="@+id/message_panel"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/message_panel_height"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="14dp"
+        android:fadingEdge="vertical"
+        android:fadingEdgeLength="24dp"
+        android:requiresFadingEdge="vertical"
+        app:layout_constraintBottom_toTopOf="@id/bottom_panel"
+        app:layout_constraintEnd_toStartOf="@id/message_panel_barrier"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:listitem="@layout/item_live_chat_layout" />
+
+    <com.vertcdemo.solution.interactivelive.view.LikeAnimationView
+        android:id="@+id/like_area"
+        android:layout_width="120dp"
+        android:layout_height="180dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_panel"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- region Bottom Panel -->
+    <LinearLayout
+        android:id="@+id/bottom_panel"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="21dp"
+        android:divider="@drawable/ic_divider_transparent"
+        android:showDividers="middle"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <FrameLayout
+            android:layout_width="36dp"
+            android:layout_height="36dp">
+
+            <ImageView
+                android:id="@+id/audience"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_live_users" />
+
+            <ImageView
+                android:id="@+id/audience_dot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_gravity="end|top"
+                android:background="@drawable/ic_audience_has_request"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/live_pk"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_circle_icon_gray"
+            android:scaleType="center"
+            android:src="@drawable/ic_live_pk" />
+
+        <TextView
+            android:id="@+id/comment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/button_black_rec_bg"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:text="@string/add_a_comment"
+            android:textColor="#4DFFFFFF"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/magic"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_circle_icon_gray"
+            android:scaleType="center"
+            android:src="@drawable/ic_live_beauty24" />
+
+        <ImageView
+            android:id="@+id/live_more"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_circle_icon_gray"
+            android:scaleType="center"
+            android:src="@drawable/ic_live_more" />
+    </LinearLayout>
+    <!-- endregion -->
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp"
+        tools:layout_constraintGuide_end="48dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

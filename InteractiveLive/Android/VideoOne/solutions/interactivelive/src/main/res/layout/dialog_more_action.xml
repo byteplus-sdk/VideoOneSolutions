@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:layout_gravity="bottom">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_common_panel">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="51dp"
+            android:gravity="center"
+            android:text="@string/more"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/flip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="51dp"
+            android:background="#26FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/flip"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:drawablePadding="12dp"
+            android:gravity="center"
+            android:paddingVertical="20dp"
+            android:text="@string/flip"
+            android:textColor="#E6FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:drawableTopCompat="@drawable/ic_live_flip32_light"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/microphone"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:drawableTop="@drawable/ic_live_flip32_light" />
+
+        <TextView
+            android:id="@+id/microphone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:drawablePadding="12dp"
+            android:gravity="center"
+            android:paddingVertical="20dp"
+            android:text="@string/microphone"
+            android:textColor="#E6FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:drawableTopCompat="@drawable/ic_live_microphone32"
+            app:layout_constraintBottom_toBottomOf="@id/flip"
+            app:layout_constraintEnd_toStartOf="@id/camera"
+            app:layout_constraintStart_toEndOf="@id/flip"
+            app:layout_constraintTop_toTopOf="@id/flip"
+            tools:drawableTop="@drawable/ic_live_microphone32" />
+
+        <TextView
+            android:id="@+id/camera"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:drawablePadding="12dp"
+            android:gravity="center"
+            android:paddingVertical="20dp"
+            android:text="@string/camera"
+            android:textColor="#E6FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:drawableTopCompat="@drawable/ic_live_camera32"
+            app:layout_constraintBottom_toBottomOf="@id/flip"
+            app:layout_constraintEnd_toStartOf="@id/info"
+            app:layout_constraintStart_toEndOf="@id/microphone"
+            app:layout_constraintTop_toTopOf="@id/flip"
+            tools:drawableTop="@drawable/ic_live_camera32" />
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:drawablePadding="12dp"
+            android:gravity="center"
+            android:paddingVertical="20dp"
+            android:text="@string/information"
+            android:textColor="#E6FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:drawableTopCompat="@drawable/ic_live_info2"
+            app:layout_constraintBottom_toBottomOf="@id/flip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/camera"
+            app:layout_constraintTop_toTopOf="@id/flip"
+            tools:drawableTop="@drawable/ic_live_info2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

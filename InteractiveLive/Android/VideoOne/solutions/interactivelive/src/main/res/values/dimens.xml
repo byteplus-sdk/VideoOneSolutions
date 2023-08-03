@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="live_bottom_sheet_height">375dp</dimen>
+    <dimen name="live_gift_show_item_width">260dp</dimen>
+    <dimen name="message_panel_height">160dp</dimen>
+    <dimen name="like_base_height">5dp</dimen>
+</resources>

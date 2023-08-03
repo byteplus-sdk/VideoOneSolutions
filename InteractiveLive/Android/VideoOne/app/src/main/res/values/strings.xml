@@ -1,0 +1,13 @@
+<resources>
+    <string name="home">Home</string>
+    <string name="account">Account</string>
+    <string name="language">Language</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="app_version">App Version</string>
+    <string name="log_out">Log out</string>
+    <string name="log_out_alert_message">Click Confirm to log out immediately.\n</string>
+    <string name="change_user_name">Change your username</string>
+    <string name="cancel_account_alert_message">The account information will not be\nrecoverable, please operate with caution</string>
+    <string name="cancel_account">Delete account</string>
+</resources>

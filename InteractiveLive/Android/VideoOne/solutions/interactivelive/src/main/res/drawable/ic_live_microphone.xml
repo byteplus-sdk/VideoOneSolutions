@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_live_microphone_on" android:state_selected="true" />
+    <item android:state_enabled="false" android:state_selected="false">
+        <bitmap android:src="@drawable/ic_live_microphone_off" android:tint="#41464F" />
+    </item>
+    <item android:drawable="@drawable/ic_live_microphone_off" />
+</selector>

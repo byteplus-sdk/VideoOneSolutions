@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <selector>
+            <item android:state_enabled="true">
+                <rotate android:fromDegrees="90" android:pivotX="50%" android:pivotY="50%" android:toDegrees="0">
+                    <bitmap android:src="@drawable/ic_live_flip32_light_h" />
+                </rotate>
+            </item>
+            <item android:state_enabled="false">
+                <rotate android:fromDegrees="90" android:pivotX="50%" android:pivotY="50%" android:toDegrees="0">
+                    <bitmap android:src="@drawable/ic_live_flip32_light_h" android:tint="#33FFFFFF" />
+                </rotate>
+            </item>
+        </selector>
+    </item>
+    <item>
+        <selector>
+            <item android:state_enabled="false">
+                <bitmap android:src="@drawable/ic_live_flip32_light_h" android:tint="#33FFFFFF" />
+            </item>
+            <item android:drawable="@drawable/ic_live_flip32_light_h" android:state_enabled="true" />
+        </selector>
+    </item>
+</selector>

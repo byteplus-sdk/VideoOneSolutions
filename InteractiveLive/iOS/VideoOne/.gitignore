@@ -1,0 +1,8 @@
+Pods/
+Podfile.lock
+*.xcworkspace
+ruby
+Gemfile.lock
+xcuserdata/
+VideoOne-InHouse-Private.xcconfig
+VideoOne-Debug-Private.xcconfig
