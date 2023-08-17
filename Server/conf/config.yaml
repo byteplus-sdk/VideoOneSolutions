@@ -1,0 +1,7 @@
+mysql_dsn: "{user_name}:{password}@tcp([{mysql_address}]:{port})/videoone?parseTime=true&loc=Local"
+redis_addr: "[{redis_address}]:{port}"
+redis_password: "{redis_password}"
+port: "{port_number}"
+server_url: "https://{server_ip}:{port}/videoone_opensource/rts"
+live_timer_enable: true
+live_experience_time: 20
