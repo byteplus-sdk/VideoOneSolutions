@@ -3,7 +3,7 @@ module github.com/byteplus/VideoOneServer
 go 1.18
 
 require (
-	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.13
+	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.17
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/jinzhu/configor v1.2.1
@@ -16,6 +16,7 @@ require (
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/avast/retry-go v3.0.0+incompatible // indirect
 	github.com/bytedance/sonic v1.10.0-rc3 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
@@ -40,6 +41,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect

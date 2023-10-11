@@ -19,6 +19,7 @@ package response
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
@@ -63,4 +64,72 @@ func NewCommonResponse(ctx context.Context, requestID string, response interface
 
 	logs.CtxError(ctx, "new response failed,requestID:%s,response:%#v,err:%s", requestID, response, err)
 	return ""
+}
+
+type VodCommonResponse struct {
+	CommonResponse
+	ResponseMetadata *ResponseMetadata `json:"responseMetadata,omitempty"`
+}
+
+func NewVodCommonResponse(ctx context.Context, requestID string, response interface{}, err error) string {
+	if err == nil {
+		return newVodCommonResponse(http.StatusOK, "ok", requestID, response)
+	}
+	defer util.CheckPanic()
+	if cerr, ok := err.(*custom_error.CustomError); ok {
+		return newVodCommonResponse(cerr.Code(), cerr.Error(), requestID, nil)
+	}
+
+	logs.CtxError(ctx, "request failed, requestID:%s,response:%#v,err:%s", requestID, response, err)
+	return ""
+}
+
+func newVodCommonResponse(code int, message, requestID string, response interface{}) string {
+	c := &VodCommonResponse{
+		CommonResponse: CommonResponse{
+			MessageType: "return",
+			RequestID:   requestID,
+			Code:        code,
+			Message:     message,
+			Timestamp:   time.Now().UnixNano(),
+			Response:    response,
+		},
+		ResponseMetadata: &ResponseMetadata{
+			RequestId: requestID,
+			Action:    "",
+			Version:   "",
+			Service:   "mpaas",
+			Region:    "",
+			Error:     nil,
+		},
+	}
+	if code != http.StatusOK {
+		c.ResponseMetadata.Error = &ResponseError{
+			Code:    "InternalError",
+			Message: message,
+		}
+	}
+	resByte, err := json.Marshal(c)
+	if err != nil {
+		logs.Warn("json marshal error, err: %v", err)
+	}
+	return string(resByte)
+}
+
+type ResponseMetadata struct {
+	RequestId string         `json:"requestId"`
+	Action    string         `json:"action"`
+	Version   string         `json:"version"`
+	Service   string         `json:"service"`
+	Region    string         `json:"region"`
+	Error     *ResponseError `json:"error,omitempty"`
+}
+
+type ResponseError struct {
+	Code    string `json:"code,omitempty"`
+	Message string ` json:"message,omitempty"`
+}
+
+func (x *ResponseError) String() string {
+	return x.Message
 }

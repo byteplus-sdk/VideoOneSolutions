@@ -34,7 +34,6 @@ type joinRtsReq struct {
 	AppKey          string `json:"app_key"`
 	AccessKey       string `json:"access_key"`
 	SecretAccessKey string `json:"secret_access_key"`
-	AccountId       string `json:"account_id"`
 	VodSpace        string `json:"vod_space"`
 	LoginToken      string `json:"login_token"`
 	ScenesName      string `json:"scenes_name"`
@@ -72,7 +71,6 @@ func (h *EventHandler) JoinRts(ctx context.Context, param *public.EventParam) (r
 		AppKey:          p.AppKey,
 		AccessKey:       p.AccessKey,
 		SecretAccessKey: p.SecretAccessKey,
-		AccountID:       p.AccountId,
 		VodSpace:        p.VodSpace,
 		LivePushDomain:  p.LivePushDomain,
 		LivePullDomain:  p.LivePullDomain,

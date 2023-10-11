@@ -35,7 +35,6 @@ const (
 	fieldAppKey         = "app_key"
 	fieldAppVolcAk      = "volc_ak"
 	fieldAppVolcSk      = "volc_sk"
-	fieldAppAccountID   = "account_id"
 	fieldAppVodSpace    = "vod_space"
 	fieldLiveAppName    = "live_app_name"
 	fieldLiveStreamKey  = "live_stream_key"
@@ -79,7 +78,6 @@ func (impl *AppInfoRepositoryImpl) GetAppInfoByAppID(ctx context.Context, appID 
 	appKey := redis_cli.Client.HGet(ctx, key, fieldAppKey).Val()
 	volcAk := redis_cli.Client.HGet(ctx, key, fieldAppVolcAk).Val()
 	volcSk := redis_cli.Client.HGet(ctx, key, fieldAppVolcSk).Val()
-	accountID := redis_cli.Client.HGet(ctx, key, fieldAppAccountID).Val()
 	vodSpace := redis_cli.Client.HGet(ctx, key, fieldAppVodSpace).Val()
 	liveAppName := redis_cli.Client.HGet(ctx, key, fieldLiveAppName).Val()
 	liveStreamKey := redis_cli.Client.HGet(ctx, key, fieldLiveStreamKey).Val()
@@ -92,7 +90,6 @@ func (impl *AppInfoRepositoryImpl) GetAppInfoByAppID(ctx context.Context, appID 
 			AppKey:          appKey,
 			AccessKey:       volcAk,
 			SecretAccessKey: volcSk,
-			AccountID:       accountID,
 			VodSpace:        vodSpace,
 			LiveAppName:     liveAppName,
 			LivePullDomain:  livePullDomain,
@@ -121,7 +118,6 @@ func writeRedis(ctx context.Context, appInfo *login_entity.AppInfo) {
 	redis_cli.Client.HSet(ctx, key, fieldAppKey, appInfo.AppKey)
 	redis_cli.Client.HSet(ctx, key, fieldAppVolcAk, appInfo.AccessKey)
 	redis_cli.Client.HSet(ctx, key, fieldAppVolcSk, appInfo.SecretAccessKey)
-	redis_cli.Client.HSet(ctx, key, fieldAppAccountID, appInfo.AccountID)
 	redis_cli.Client.HSet(ctx, key, fieldAppVodSpace, appInfo.VodSpace)
 	redis_cli.Client.HSet(ctx, key, fieldLivePullDomain, appInfo.LivePullDomain)
 	redis_cli.Client.HSet(ctx, key, fieldLivePushDomain, appInfo.LivePushDomain)

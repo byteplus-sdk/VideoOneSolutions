@@ -31,6 +31,7 @@ type Configuration struct {
 	Port               string `yaml:"port"`
 	LiveTimerEnable    bool   `yaml:"live_timer_enable"`
 	LiveExperienceTime int    `yaml:"live_experience_time"`
+	AppID              string `yaml:"app_id"`
 }
 
 var configs *Configuration

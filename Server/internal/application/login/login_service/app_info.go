@@ -49,15 +49,6 @@ func (s *AppInfoService) WriteAppInfo(ctx context.Context, appInfo *login_entity
 }
 
 func (s *AppInfoService) ReadAppInfoByAppId(ctx context.Context, appID string) (*login_entity.AppInfo, error) {
-	isExist, err := s.appInfoRepo.ExistAppInfo(ctx, appID)
-	if err != nil {
-		logs.CtxError(ctx, "get app info error,err:%s", err)
-		return nil, custom_error.ErrGetAppInfo
-	}
-	if isExist == false {
-		logs.CtxInfo(ctx, "not exist app info")
-		return nil, custom_error.ErrNotExistAppInfo
-	}
 	appInfo, err := s.appInfoRepo.GetAppInfoByAppID(ctx, appID)
 	if err != nil {
 		logs.CtxError(ctx, "get app info error,err:%s", err)

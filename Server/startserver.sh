@@ -1,4 +1,3 @@
-go env -w GOPROXY=https://goproxy.cn,direct
 go mod init
 go mod tidy
 
