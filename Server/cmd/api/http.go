@@ -21,8 +21,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 
 	"github.com/byteplus/VideoOneServer/cmd/handler"
+	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_handler"
 	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/models/response"
 	"github.com/byteplus/VideoOneServer/internal/pkg/config"
@@ -42,6 +44,7 @@ func NewHttpApi(dispatcher *handler.EventHandlerDispatch) *HttpApi {
 	api := &HttpApi{}
 	api.r = gin.Default()
 	api.r.Use(Cors())
+	api.r.Use(LogHandler())
 	api.dispatcher = dispatcher
 	api.Port = config.Configs().Port
 	return api
@@ -54,6 +57,13 @@ func (api *HttpApi) Run() error {
 	rr.POST("/rts", api.HandleRtsOpenApiEvent)
 	rr.POST("/rts_callback", api.HandleRtsCallback)
 	rr.POST("/http_response", api.HandleHttpResponseEvent)
+
+	{
+		vod := rr.Group("/vod")
+		vod.POST("/v1/getFeedStreamWithPlayAuthToken", vod_handler.GetFeedStreamWithPlayAuthToken)
+		vod.POST("/v1/getFeedStreamWithVideoModel", vod_handler.GetFeedStreamWithVideoModel)
+		//vod.GET("/v1/upload", vod_handler.GenUploadToken)
+	}
 	return api.r.Run(fmt.Sprintf("0.0.0.0:%s", api.Port))
 }
 
@@ -199,6 +209,17 @@ func Cors() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusNoContent)
 		}
 
+	}
+}
+
+func LogHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		dump, err := httputil.DumpRequest(c.Request, true)
+		if err != nil {
+			logs.CtxError(c, "http dump error: "+err.Error())
+		} else {
+			logs.CtxInfo(c, "Receive HTTP Request: \n"+string(dump))
+		}
 	}
 }
 

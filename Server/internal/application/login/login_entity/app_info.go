@@ -24,7 +24,6 @@ type AppInfo struct {
 	AppKey          string    `gorm:"column:app_key" json:"app_key"`
 	AccessKey       string    `gorm:"column:access_key" json:"access_key"`
 	SecretAccessKey string    `gorm:"column:secret_access_key" json:"secret_access_key"`
-	AccountID       string    `gorm:"column:account_id" json:"account_id"`
 	VodSpace        string    `gorm:"column:vod_space" json:"vod_space"`
 	LiveStreamKey   string    `gorm:"column:live_stream_key" json:"live_stream_key"`
 	LivePushDomain  string    `gorm:"column:live_push_domain" json:"live_push_domain"`
