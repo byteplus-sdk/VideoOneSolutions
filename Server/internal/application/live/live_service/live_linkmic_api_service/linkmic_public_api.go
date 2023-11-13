@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 CloudWeGo Authors
+ * Copyright (c) 2023 BytePlus Pte. Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ func FinishHostLinkmic(ctx context.Context, appID, roomID, userID string) error 
 	return nil
 }
 
-//audience leave room
+// audience leave room
 func FinishAudienceLinkmic(ctx context.Context, appID, roomID, userID string) error {
 	roomLinkmicInfo, err := GetActiveRoomLinkmicInfo(ctx, roomID)
 	if err != nil {

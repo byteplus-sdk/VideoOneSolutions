@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 CloudWeGo Authors
+ * Copyright (c) 2023 BytePlus Pte. Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,20 @@
 
 package live_room_models
 
-//room
+// room
 const (
 	RoomStatusPrepare = iota
 	RoomStatusStart
 	RoomStatusFinish
 )
 
-//room user
+// room user
 const (
 	RoomUserRoleAudience = 1
 	RoomUserRoleHost     = 2
 )
 
-//linker
+// linker
 const (
 	LinkerStatusPrepare = iota
 	LinkerStatusFinish

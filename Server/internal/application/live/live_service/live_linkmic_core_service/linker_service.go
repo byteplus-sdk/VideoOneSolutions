@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 CloudWeGo Authors
+ * Copyright (c) 2023 BytePlus Pte. Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ func GetLinkerService() *LinkerService {
 	return linkerService
 }
 
-//Native interface
+// Native interface
 func (ls *LinkerService) CreateLinker(ctx context.Context, appID string, linkerID, bizID, fromRoomID, fromUserID, toRoomID, toUserID string, scene int) (*live_entity.LiveLinker, error) {
 	//create linker
 	linker := ls.linkerFactory.NewDefaultLinker(ctx, linkerID, bizID, fromRoomID, fromUserID, toRoomID, toUserID, scene)
@@ -515,7 +515,7 @@ func (ls *LinkerService) AnchorFinish(ctx context.Context, r *live_linker_models
 	return resp, nil
 }
 
-//info
+// info
 func (ls *LinkerService) GetRoomLinkmicInfo(ctx context.Context, r *live_linker_models.GetRoomLinkmicInfoReq) (*live_linker_models.GetRoomLinkmicInfoResp, error) {
 	resp := &live_linker_models.GetRoomLinkmicInfoResp{}
 	resp.Linkers = make([]*live_entity.LiveLinker, 0)
