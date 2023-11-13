@@ -62,7 +62,7 @@ func (api *HttpApi) Run() error {
 		vod := rr.Group("/vod")
 		vod.POST("/v1/getFeedStreamWithPlayAuthToken", vod_handler.GetFeedStreamWithPlayAuthToken)
 		vod.POST("/v1/getFeedStreamWithVideoModel", vod_handler.GetFeedStreamWithVideoModel)
-		//vod.GET("/v1/upload", vod_handler.GenUploadToken)
+		vod.GET("/v1/upload", vod_handler.GenUploadToken)
 	}
 	return api.r.Run(fmt.Sprintf("0.0.0.0:%s", api.Port))
 }
