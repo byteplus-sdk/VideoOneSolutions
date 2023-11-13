@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 CloudWeGo Authors
+ * Copyright (c) 2023 BytePlus Pte. Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ type leaveLiveRoomReq struct {
 type leaveLiveRoomResp struct {
 }
 
-//api leave room
+// api leave room
 func (eh *EventHandler) LeaveLiveRoom(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
 	logs.CtxInfo(ctx, "liveLeaveLiveRoom param:%+v", param)
 	var p leaveLiveRoomReq
@@ -56,7 +56,7 @@ func (eh *EventHandler) LeaveLiveRoom(ctx context.Context, param *public.EventPa
 
 }
 
-//logic
+// logic
 func LeaveRoomLogic(ctx context.Context, appID string, p leaveLiveRoomReq) (resp interface{}, err error) {
 	err = live_linkmic_api_service.FinishAudienceLinkmic(ctx, appID, p.RoomID, p.UserID)
 	if err != nil {

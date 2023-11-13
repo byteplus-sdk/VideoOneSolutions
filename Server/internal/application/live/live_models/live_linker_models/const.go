@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 CloudWeGo Authors
+ * Copyright (c) 2023 BytePlus Pte. Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package live_linker_models
 
-//linker
+// linker
 const (
 	LinkerStatusNothing          = 1
 	LinkerStatusAnchorInvite     = 2
@@ -36,7 +36,7 @@ const (
 	LinkerSceneAnchor
 )
 
-//user
+// user
 const (
 	ErGroupVsUserStatusWaiting = iota
 	ErGroupVsUserStatusReady
@@ -55,13 +55,13 @@ const (
 	SourceActionApply
 )
 
-//reply
+// reply
 const (
 	ReplyAccept = 1
 	ReplyReject = 2
 )
 
-//permit
+// permit
 const (
 	PermitAccept = 1
 	PermitReject = 2
