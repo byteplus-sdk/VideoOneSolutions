@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/brightnessContainer"
+        android:layout_width="80dp"
+        android:layout_height="64dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="44dp">
+
+        <ImageView
+            android:id="@+id/brightnessIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="center"
+            android:background="@drawable/vevod_brightness_volume_layer_bg"
+            android:scaleType="centerInside"
+            android:src="@drawable/vevod_brightness_layer_brightness_ic" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/volumeContainer"
+        android:layout_width="80dp"
+        android:layout_height="64dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="44dp">
+
+        <ImageView
+            android:id="@+id/volumeIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="center"
+            android:background="@drawable/vevod_brightness_volume_layer_bg"
+            android:scaleType="centerInside"
+            android:src="@drawable/vevod_volume_layer_volume_ic" />
+    </FrameLayout>
+</RelativeLayout>

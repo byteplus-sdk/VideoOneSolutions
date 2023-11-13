@@ -1,0 +1,37 @@
+/* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
+
+"vod_scenes" = "Video Playback & Edit";
+"vod_scenes_des" = "Smooth and Stable Playback, Video Editor& Upload experience";
+"vod_entry_home" = "Home";
+"vod_entry_feed" = "Feed";
+"vod_entry_channel" = "Channel";
+"vod_entry_setting" = "Settings";
+"setting_title" = "Playback strategy settings";
+"shortVideo_strategy" = "Short video strategy";
+"Preload_strategy" = "Preload strategy";
+"Prerender_strategy" = "Pre-rendering strategy";
+"common_settings" = "General strategy";
+"hardware_decoding" = "Hardware decoding";
+"device_id" = "Device ID";
+"clean_cache" = "Clear cache";
+"clean_cache_success" = "Cache has been cleaned";
+"copy" = "Copy";
+"loop_mode_on" = "Loop Play";
+"loop_mode_off" = "Single Play";
+"cyclic_mode" = "Loop mode";
+"voice" = "Volume";
+"brightness" = "Brightness";
+"views"="views";
+"copy_did_success"="Copied";
+"video_strategy_changed"="Please return to the homepage and re-enter the playback so that you can check the effect.";
+"vod_report" = "Report";
+"play_back_speed" = "Playback speed";
+"play_quality" = "Quality";
+"longvideo_top" = "Top";
+"longvideo_playlist" = "Hot Shows";
+"longvideo_recommended" = "Today Recommend";
+"longvideo_recommended_foru" = "Recommend For You";
+"resolution_default" = "Default";
+"resolution_unknown" = "Unknown";
+"resolution_abr_auto" = "ABR Auto";
+"resolution_auto" = "Auto";

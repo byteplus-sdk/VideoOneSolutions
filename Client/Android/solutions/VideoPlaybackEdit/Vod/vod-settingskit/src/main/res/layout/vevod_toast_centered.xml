@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/vevod_bg_toast_r6"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="14dp"
+    android:textColor="#FFF"
+    android:textSize="14sp"
+    tools:layout_gravity="center"
+    tools:text="This is centered text" />

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_option_category_debug">调试选项</string>
+    <string name="vevod_option_debug_enable_log_layer">开启 LogLayer</string>
+    <string name="vevod_option_debug_enable_debug_tool">开启 Debug 工具</string>
+
+    <string name="vevod_option_category_short_video">短视频</string>
+    <string name="vevod_option_short_video_scene_account_id">短视频账号</string>
+    <string name="vevod_option_short_video_enable_strategy">短视频开启策略</string>
+    <string name="vevod_option_short_video_enable_image_cover">短视频开启图片封面</string>
+    <string name="vevod_option_short_video_playback_complete_action">短视频播放完成行为</string>
+    <string name="vevod_option_short_video_playback_complete_action_loop">循环播放</string>
+    <string name="vevod_option_short_video_playback_complete_action_next">播放下一个</string>
+
+    <string name="vevod_option_category_feed_video">中视频</string>
+    <string name="vevod_option_feed_video_scene_account_id">中视频账号</string>
+    <string name="vevod_option_feed_video_enable_preload">中视频开启预加载</string>
+
+    <string name="vevod_option_category_long_video">长视频</string>
+    <string name="vevod_option_long_video_scene_account_id">长视频账号</string>
+
+    <string name="vevod_option_category_video_details">视频详情页</string>
+    <string name="vevod_option_detail_video_scene_fragment_or_activity">视频详情页使用 Fragment/Activity</string>
+
+    <string name="vevod_option_category_commons">通用配置</string>
+    <string name="vevod_option_common_codec_strategy">Codec 策略</string>
+    <string name="vevod_option_common_codec_strategy_disable">关闭</string>
+    <string name="vevod_option_common_codec_strategy_cost_saving_first">成本优先</string>
+    <string name="vevod_option_common_codec_strategy_hardware_decode_first">硬解优先</string>
+
+    <string name="vevod_option_common_hardware_decode">开启硬解码</string>
+    <string name="vevod_option_common_hardware_decode_auto">自动</string>
+    <string name="vevod_option_common_hardware_decode_hardware">硬解</string>
+    <string name="vevod_option_common_hardware_decode_software">软解</string>
+
+    <string name="vevod_option_common_super_resolution">开启超分</string>
+
+    <string name="vevod_option_common_source_encode_type_bytevc1">开启 H.265</string>
+
+    <string name="vevod_option_common_source_type">源类型</string>
+    <string name="vevod_option_common_source_type_vid">VideoID</string>
+    <string name="vevod_option_common_source_type_url">DirectURL</string>
+    <string name="vevod_option_common_source_type_model">VideoModel</string>
+
+    <string name="vevod_option_common_source_video_format_type">视频格式</string>
+    <string name="vevod_option_common_source_video_format_type_mp4">MP4</string>
+    <string name="vevod_option_common_source_video_format_type_dash">DASH</string>
+    <string name="vevod_option_common_source_video_format_type_hls">HLS</string>
+
+    <string name="vevod_option_common_source_video_enable_private_drm">开启视频自研 DRM</string>
+
+    <string name="vevod_option_common_device_id">Device ID</string>
+    <string name="vevod_option_common_ttsdk_version">TTSDK Version</string>
+    <string name="vevod_option_common_clean_cache">清理缓存</string>
+
+    <string name="vevod_cleaning_cache">清理缓存中…</string>
+    <string name="vevod_cache_cleaned">清理完成!</string>
+</resources>

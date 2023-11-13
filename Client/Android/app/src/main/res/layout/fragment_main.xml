@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f6f8fa"
+    tools:ignore="ContentDescription">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/tab_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/tab_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="86dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tab_scenes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/home"
+        android:textColor="@color/tab_text_color"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/ic_tab_scenes"
+        app:layout_constraintBottom_toBottomOf="@id/tab_layout"
+        app:layout_constraintEnd_toStartOf="@id/tab_profile"
+        app:layout_constraintStart_toStartOf="@id/tab_layout"
+        app:layout_constraintTop_toTopOf="@id/tab_layout"
+        tools:drawableTop="@drawable/ic_tab_scenes" />
+
+    <TextView
+        android:id="@+id/tab_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/account"
+        android:textColor="@color/tab_text_color"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/ic_tab_profile"
+        app:layout_constraintBottom_toBottomOf="@id/tab_layout"
+        app:layout_constraintEnd_toEndOf="@id/tab_layout"
+        app:layout_constraintStart_toEndOf="@id/tab_scenes"
+        app:layout_constraintTop_toTopOf="@id/tab_layout"
+        tools:drawableTopCompat="@drawable/ic_tab_profile" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

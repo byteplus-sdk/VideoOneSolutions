@@ -1,3 +1,0 @@
-Interactive live streaming incorporates interactive features into the standard live streaming experience. This includes activities such as host PK battle and co-hosting with audience members, providing a more engaging experience than standard live streaming that only allows interaction through text chat and virtual gifts. Interactive live streaming brings the host and audience closer together, resulting in a more immersive and enjoyable experience for both parties.
-
-For details about the interactive live solution and how to implement it in your own app, refer to [Interactive live streaming solution overview](https://docs.byteplus.com/byteplus-vos/docs/interactive-live-streaming-solution-overview).

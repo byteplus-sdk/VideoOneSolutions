@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="username">用户名</string>
+    <string name="log_in">登录</string>
+    <string name="login_privacy_policy">隐私协议</string>
+    <string name="login_terms_of_service">用户条款</string>
+    <string name="read_and_agree">我已阅读并同意BytePlus的《%1$s》和《%2$s》</string>
+    <string name="content_limit">仅支持中文、字母、数字、1~%s位</string>
+    <string name="username_hint">用户名</string>
+    <string name="welcome">欢迎来到音视频终端（VOS）Demo体验中心</string>
+</resources>

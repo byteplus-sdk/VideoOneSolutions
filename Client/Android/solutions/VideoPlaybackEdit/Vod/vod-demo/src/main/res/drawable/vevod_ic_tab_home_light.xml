@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/vevod_ic_tab_home_light_selected" android:state_selected="true" />
+    <item>
+        <bitmap android:src="@drawable/vevod_ic_tab_home_dark" android:tint="#B3FFFFFF" />
+    </item>
+</selector>

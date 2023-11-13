@@ -1,0 +1,61 @@
+source 'https://cdn.cocoapods.org/'
+ source 'https://github.com/volcengine/volcengine-specs.git'
+
+platform :ios, '11.0'
+install! 'cocoapods',
+:deterministic_uuids => false,
+:disable_input_output_paths => true
+
+
+# TTSDK version
+$TT_SDK_VERSION = '1.37.200.5-premium'
+
+def common_pods
+  # Depends on SDK
+  pod 'AFNetworking', '~> 4.0'
+  # app entry
+  pod 'App', :path => './Component/App'
+  # Basic Component
+  pod 'AppConfig', :path => './Component/AppConfig'
+  pod 'ToolKit', :path => './Component/ToolKit'
+  # Login Kit
+  pod 'LoginKit', :path => './Component/LoginKit'
+end
+
+def scene_InteractiveLive_pods
+  # Interactive Live
+  # Depends on SDK
+  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTC-Framework']
+  pod 'InteractiveLive', :path => './Component/InteractiveLive'
+end
+
+def scene_VideoPlaybackEdit_pods
+  # One-Stop Video
+  # Depends on SDK
+  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['Player', 'Uploader']
+  pod 'VideoPlaybackEdit', :path => './Component/VideoPlaybackEdit'
+end
+
+target 'VideoOne' do
+  common_pods
+  # Scenes
+  scene_InteractiveLive_pods
+  scene_VideoPlaybackEdit_pods
+end
+
+post_install do |installer|
+  [installer.generated_projects || [], installer.pods_project || []].
+  flatten.map { |p| p.targets }.
+  flatten.each do |target|
+    target.build_configurations.each do |config|
+      
+      # Fix bundle targets Signing
+      if target.respond_to?(:product_type) and target.product_type == 'com.apple.product-type.bundle'
+        config.build_settings['CODE_SIGN_IDENTITY'] = '-'
+        config.build_settings['CODE_SIGN_ENTITLEMENTS'] = '-'
+        config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+        config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+      end
+    end
+  end
+end

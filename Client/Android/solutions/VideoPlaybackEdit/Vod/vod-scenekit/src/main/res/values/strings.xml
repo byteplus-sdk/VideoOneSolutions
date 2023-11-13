@@ -1,0 +1,44 @@
+<!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<resources>
+    <string name="vevod_feed_video_vv_layer_watch_count_info">"172k viewers  "</string>
+    <string name="vevod_feed_video_description">%1$s views · %2$s</string>
+
+    <string name="vevod_time_progress_bar_speed">Speed</string>
+    <string name="vevod_tips_sync_start_time">Watched at %1$s last time, continue playback.</string>
+    <string name="vevod_play_error_text">Playback Error</string>
+    <string name="vevod_play_complete_replay">Replay</string>
+    <string name="vevod_more_dialog_item_share">Share</string>
+    <string name="vevod_more_dialog_item_collect">Star</string>
+    <string name="vevod_more_dialog_item_download">Download</string>
+    <string name="vevod_more_dialog_item_danmaku">Danmaku settings</string>
+    <string name="vevod_more_dialog_item_full_width">Aspect Fill</string>
+    <string name="vevod_more_dialog_item_audio_mode">Audio only</string>
+    <string name="vevod_more_dialog_item_play_background">Background playback</string>
+    <string name="vevod_more_dialog_item_timer">Timer stop</string>
+    <string name="vevod_more_dialog_item_assist_func">Assist functions</string>
+    <string name="vevod_more_dialog_item_not_interested">Not interested</string>
+    <string name="vevod_more_dialog_item_feedback">Feedback</string>
+    <string name="vevod_more_dialog_item_report">Report</string>
+    <string name="vevod_quality_select_title">Quality</string>
+    <string name="vevod_speed_select_dialog_title">Playback speed</string>
+    <string name="vevod_speed_select_default">%1$s(Default)</string>
+    <string name="vevod_quality_select_tips_will_switch">Definition is being switched to %1$s</string>
+    <string name="vevod_quality_select_tips_switched">%1$s has been switched success</string>
+    <string name="vevod_more_dialog_item_noloop">Single Play</string>
+    <string name="vevod_more_dialog_item_loop">Loop Play</string>
+    <string name="vevod_time_progress_subtitle">Subtitle</string>
+    <string name="vevod_time_progress_send_danmaku">Danmaku</string>
+    <string name="vevod_more_dialog_category_loop_mode">Loop mode</string>
+    <string name="vevod_media_seek_bar_text2">00:00</string>
+    <string name="vevod_media_seekbar_text1">00:00</string>
+    <string name="vevod_more_dialog_item_super_res">Super Resolution</string>
+    <string name="vevod_feed_video_item_header_user_name">BytePlus VoD</string>
+    <string name="vevod_feed_video_item_header_follow">Follow</string>
+    <string name="vevod_more_dialog_category_volume">Volume</string>
+    <string name="vevod_more_dialog_category_brightness">Brightness</string>
+    <string name="vevod_more_dialog_report">Report</string>
+</resources>

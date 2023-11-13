@@ -1,0 +1,37 @@
+/* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
+
+"vod_scenes" = "视频播放与剪辑";
+"vod_scenes_des" = "高清低码，画质增强，视频拍摄与剪辑";
+"vod_entry_home" = "主页";
+"vod_entry_feed" = "中视频";
+"vod_entry_channel" = "长视频";
+"vod_entry_setting" = "设置";
+"setting_title" = "播放设置";
+"shortVideo_strategy" = "短视频策略";
+"Preload_strategy" = "预加载策略";
+"Prerender_strategy" = "预渲染策略";
+"common_settings" = "通用";
+"hardware_decoding" = "硬件解码";
+"device_id" = "设备ID";
+"clean_cache" = "清理缓存";
+"clean_cache_success" = "缓存已清理";
+"copy" = "复制";
+"loop_mode_on" = "循环播放";
+"loop_mode_off" = "单次播放";
+"cyclic_mode" = "循环模式";
+"voice" = "音量";
+"brightness" = "亮度";
+"views"="观看";
+"copy_did_success"="已复制";
+"video_strategy_changed"="请返回首页并重新进入播放，以便您查看效果";
+"vod_report" = "举报";
+"play_back_speed" = "播放速度";
+"play_quality" = "质量";
+"longvideo_top" = "置顶";
+"longvideo_playlist" = "热播剧场";
+"longvideo_recommended" = "今日推荐";
+"longvideo_recommended_foru" = "为你推荐";
+"resolution_default" = "默认";
+"resolution_unknown" = "未知";
+"resolution_abr_auto" = "ABR自动";
+"resolution_auto" = "自动";

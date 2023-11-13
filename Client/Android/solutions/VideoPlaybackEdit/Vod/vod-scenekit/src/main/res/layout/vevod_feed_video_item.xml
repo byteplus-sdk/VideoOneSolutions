@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:elevation="1dp"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/vevod_feed_video_item_header" />
+
+    <com.bytedance.playerkit.player.playback.widgets.RatioFrameLayout
+        android:id="@+id/videoViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:ratio="1.7777777"
+        app:ratioMode="width">
+
+        <!-- FrameLayout is holder Layout for toggle full screen -->
+        <com.bytedance.playerkit.player.playback.VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:ratio="1.7777777"
+            app:ratioMode="width" />
+
+    </com.bytedance.playerkit.player.playback.widgets.RatioFrameLayout>
+
+    <include
+        android:id="@+id/footer"
+        layout="@layout/vevod_feed_video_item_footer"
+        android:visibility="@integer/vevod_under_construction_visibility"
+        tools:visibility="visible" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#26FFFFFF" />
+
+</LinearLayout>

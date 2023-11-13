@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/vevod_title_bar_layer_shadow_shape">
+
+    <RelativeLayout
+        android:id="@+id/titleBar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="44dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="44dp">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_alignParentLeft="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/vevod_title_bar_layer_action_back" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/search"
+            android:layout_toRightOf="@+id/back"
+            android:ellipsize="end"
+            android:textStyle="bold"
+            android:gravity="left|center_vertical"
+            android:maxLines="2"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/search"
+            android:visibility="gone"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginRight="4dp"
+            android:layout_toLeftOf="@id/cast"
+            android:scaleType="centerInside"
+            android:src="@drawable/vevod_title_bar_layer_action_search" />
+
+        <ImageView
+            android:id="@+id/cast"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginRight="4dp"
+            android:layout_toLeftOf="@id/more"
+            android:scaleType="centerInside"
+            android:src="@drawable/vevod_title_bar_layer_action_tv_cast"
+            android:visibility="@integer/vevod_under_construction_visibility"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_alignParentRight="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/vevod_title_bar_layer_action_more" />
+    </RelativeLayout>
+</FrameLayout>

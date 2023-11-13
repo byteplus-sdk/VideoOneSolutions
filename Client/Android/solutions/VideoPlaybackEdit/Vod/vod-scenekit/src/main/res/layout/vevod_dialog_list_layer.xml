@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null">
+
+    <LinearLayout
+        android:id="@+id/listPanel"
+        android:layout_width="240dp"
+        android:layout_height="330dp"
+        android:layout_gravity="right|center_vertical"
+        android:layout_marginRight="44dp"
+        android:background="@drawable/vevod_dialog_layer_bg"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="208dp"
+            android:layout_height="40dp">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal|top"
+                android:textColor="#A3FFFFFF"
+                android:textSize="12sp"
+                tools:text="Quality" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="208dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                tools:itemCount="7"
+                tools:listitem="@layout/vevod_dialog_list_layer_item" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

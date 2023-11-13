@@ -1,0 +1,14 @@
+/* 
+  InfoPlist.strings
+  VideoOne
+
+  Created by ByteDance on 2023/4/27.
+  
+*/
+
+CFBundleDisplayName = "BytePlus VideoOne";
+NSCameraUsageDescription = "Used for taking photos, recording videos, video calls, live and other scenarios.";
+NSMicrophoneUsageDescription = "Used for recording or communication scenarios such as shooting, live streaming, video or voice calls.";
+NSPhotoLibraryAddUsageDescription = "If not allowed, you will not be able to use video editing.";
+NSPhotoLibraryUsageDescription = "If not allowed, you will not be able to use video editing.";
+NSAppleMusicUsageDescription = "If not allowed, you will not be able to use video editing.";

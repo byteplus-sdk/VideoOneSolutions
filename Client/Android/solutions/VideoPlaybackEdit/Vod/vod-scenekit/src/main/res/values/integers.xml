@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<resources>
+    <integer name="vevod_under_construction_visibility">2</integer> <!-- View.GONE -->
+    <bool name="vevod_settings_filter_enabled">true</bool>
+</resources>

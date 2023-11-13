@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="9dp"
+        tools:src="@drawable/vevod_more_dialog_layer_share_ic" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="4dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:padding="0dp"
+        android:textColor="@color/vevod_more_dialog_layer_item_title_color"
+        android:textSize="12sp"
+        tools:text="Share" />
+
+</LinearLayout>

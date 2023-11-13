@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_reset">重置</string>
+    <string name="vevod_confirm">确定</string>
+    <string name="vevod_cancel">取消</string>
+    <string name="vevod_reset_all_options">重置所有选项?</string>
+    <string name="vevod_reset_option">重置 \"%1$s\"?</string>
+    <string name="vevod_edit_option">编辑 \"%1$s\"?</string>
+    <string name="vevod_text_copied">文本已复制!</string>
+    <string name="vevod_copy">复制</string>
+</resources>

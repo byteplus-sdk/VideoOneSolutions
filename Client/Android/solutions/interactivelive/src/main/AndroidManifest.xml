@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.vertcdemo.solution.interactivelive">
+
+    <application>
+        <activity
+            android:name=".feature.InteractiveLiveEntryActivity"
+            android:exported="false"
+            android:icon="@drawable/interactive_live_icon0"
+            android:label="@string/interactive_live_title"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.Live.Transparent">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="${applicationId}.category.SCENE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="scene_name_abbr"
+                android:value="live" />
+        </activity>
+        <activity
+            android:name=".feature.InteractiveLiveActivity"
+            android:screenOrientation="portrait" />
+    </application>
+</manifest>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home">主页</string>
+    <string name="account">个人中心</string>
+    <string name="language">语言</string>
+    <string name="language_value">简体中文</string>
+    <string name="privacy_policy">隐私协议</string>
+    <string name="terms_of_service">服务条款</string>
+    <string name="app_version">App 版本</string>
+    <string name="log_out">退出登录</string>
+    <string name="log_out_alert_message">点击确认按钮立即退出登录</string>
+    <string name="cancel_account_alert_message">注销后，当前账号的相关数据将会被删除且无法找回。</string>
+    <string name="cancel_account">注销账号</string>
+    <string name="try_it_now">进入</string>
+    <string name="same_logged_in">相同ID用户已登录，您已被强制下线！</string>
+    <string name="videoone_center_title">VOS 中心</string>
+    <string name="videoone_center_welcome">欢迎来到 VOS 中心，请选择感兴趣的场景进入体验</string>
+</resources>

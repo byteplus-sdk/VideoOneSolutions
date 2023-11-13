@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_option_category_debug">Debug</string>
+    <string name="vevod_option_debug_enable_log_layer">Enable LogLayer</string>
+    <string name="vevod_option_debug_enable_debug_tool">Enable Debug Tools</string>
+
+    <string name="vevod_option_category_short_video">Short-Video</string>
+    <string name="vevod_option_short_video_scene_account_id">Short-Video account</string>
+    <string name="vevod_option_short_video_enable_strategy">Enable Short-Video strategy</string>
+    <string name="vevod_option_short_video_enable_image_cover">Enable Short-Video cover</string>
+    <string name="vevod_option_short_video_playback_complete_action">Short-Video complete action</string>
+    <string name="vevod_option_short_video_playback_complete_action_loop">Loop</string>
+    <string name="vevod_option_short_video_playback_complete_action_next">Next</string>
+
+    <string name="vevod_option_category_feed_video">Feed-Video</string>
+    <string name="vevod_option_feed_video_scene_account_id">Feed-Video account</string>
+    <string name="vevod_option_feed_video_enable_preload">Enable Feed-Video preload</string>
+
+    <string name="vevod_option_category_long_video">Long-Video</string>
+    <string name="vevod_option_long_video_scene_account_id">Long-Video account</string>
+
+    <string name="vevod_option_category_video_details">Video details</string>
+    <string name="vevod_option_detail_video_scene_fragment_or_activity">Details use Fragment/Activity</string>
+
+    <string name="vevod_option_category_commons">Commons</string>
+    <string name="vevod_option_common_codec_strategy">Codec strategy</string>
+    <string name="vevod_option_common_codec_strategy_disable">Disable</string>
+    <string name="vevod_option_common_codec_strategy_cost_saving_first">Cost saving first</string>
+    <string name="vevod_option_common_codec_strategy_hardware_decode_first">Hardware decode first</string>
+
+    <string name="vevod_option_common_hardware_decode">Enable hardware decode</string>
+    <string name="vevod_option_common_hardware_decode_auto">Auto</string>
+    <string name="vevod_option_common_hardware_decode_hardware">Hardware</string>
+    <string name="vevod_option_common_hardware_decode_software">Software</string>
+
+    <string name="vevod_option_common_super_resolution">Enable super resolution</string>
+
+    <string name="vevod_option_common_source_encode_type_bytevc1">Enable H.265</string>
+
+    <string name="vevod_option_common_source_type">Source Type</string>
+    <string name="vevod_option_common_source_type_vid">VideoID</string>
+    <string name="vevod_option_common_source_type_url">DirectURL</string>
+    <string name="vevod_option_common_source_type_model">VideoModel</string>
+
+    <string name="vevod_option_common_source_video_format_type">Video Format</string>
+    <string name="vevod_option_common_source_video_format_type_mp4">MP4</string>
+    <string name="vevod_option_common_source_video_format_type_dash">DASH</string>
+    <string name="vevod_option_common_source_video_format_type_hls">HLS</string>
+
+    <string name="vevod_option_common_source_video_enable_private_drm">Enable private DRM</string>
+
+    <string name="vevod_option_common_device_id">Device ID</string>
+    <string name="vevod_option_common_ttsdk_version">TTSDK Version</string>
+    <string name="vevod_option_common_clean_cache">Clear cache</string>
+
+    <string name="vevod_cleaning_cache">Cleaning cache…</string>
+    <string name="vevod_cache_cleaned">Cache has been cleaned</string>
+</resources>

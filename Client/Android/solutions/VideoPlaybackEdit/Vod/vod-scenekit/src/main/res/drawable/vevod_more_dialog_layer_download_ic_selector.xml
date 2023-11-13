@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/vevod_more_dialog_layer_downloaded_ic" android:state_selected="true" />
+    <item android:drawable="@drawable/vevod_more_dialog_layer_download_disable_ic" android:state_enabled="false" />
+    <item android:drawable="@drawable/vevod_more_dialog_layer_download_ic" />
+</selector>

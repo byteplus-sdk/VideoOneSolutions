@@ -1,0 +1,68 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion project.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion project.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField('String', 'APP_VERSION_NAME', "\"${project.APP_VERSION_NAME}\"")
+        buildConfigField('String', 'LIVE_TTSDK_APP_ID', "\"${project.LIVE_TTSDK_APP_ID}\"")
+
+        buildConfigField('String', 'LIVE_PULL_DOMAIN', "\"${project.LIVE_PULL_DOMAIN}\"")
+        buildConfigField('String', 'LIVE_PUSH_DOMAIN', "\"${project.LIVE_PUSH_DOMAIN}\"")
+        buildConfigField('String', 'LIVE_PUSH_KEY', "\"${project.LIVE_PUSH_KEY}\"")
+        buildConfigField('String', 'LIVE_APP_NAME', "\"${project.LIVE_APP_NAME}\"")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation project.libs['swiperefreshlayout']
+    implementation project.libs['app-compat']
+    implementation project.libs['recyclerview']
+    implementation project.libs['constraint-layout']
+    implementation project.libs['material']
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    def nav_version = "2.5.3"
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    implementation project(':component:SolutionBase')
+    implementation project(':component:ToolKit')
+    implementation project(':component:Avatars')
+
+    implementation project.libs['eventbus']
+    implementation project.libs['gson']
+    implementation project.libs["okhttp"]
+    implementation project.libs["glide"]
+
+    implementation 'commons-net:commons-net:3.9.0'
+
+    implementation project.libs["ttsdk-ttlivepull"]
+}

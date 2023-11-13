@@ -1,0 +1,25 @@
+rootProject.name = "VideoOne"
+
+apply from: file('projects.gradle')
+
+include ':app'
+include ':component:Avatars'
+include ':component:SolutionBase'
+
+include ':component:ToolKit'
+include ':component:LoginKit'
+include ':component:StoreResources'
+
+
+include ':solutions:interactivelive'
+
+// vod demo
+include ext.projects[':Vod:vod-playerkit']
+include ext.projects[':Vod:vod-playerkit:vod-player-utils']
+include ext.projects[':Vod:vod-playerkit:vod-player']
+include ext.projects[':Vod:vod-playerkit:vod-player-ve']
+include ext.projects[':Vod:vod-settingskit']
+include ext.projects[':Vod:vod-scenekit']
+include ext.projects[':Vod:vod-demo']
+
+

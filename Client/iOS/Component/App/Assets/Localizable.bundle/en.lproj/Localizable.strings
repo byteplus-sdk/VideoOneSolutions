@@ -1,0 +1,28 @@
+"home"="Home";
+"me"="Account";
+"user_name"="Account information";
+"language_info" = "Language";
+"language_name" = "English";
+"privacy_policy"="Privacy Policy";
+"terms_service"="Terms of Service";
+"agree_service_privacy"="Agree to our Terms of Service and acknowledge that you have read our Privacy Policy";
+"disclaimer"="Disclaimer";
+"log_out"="Log out";
+"logout_confirm" = "Click Confirm to log out immediately.";
+"change_user_name"="Change your username";
+"log_in"="Log in";
+
+"please_enter_user_nickname"="Please enter your username";
+"user_agreement"="User agreement";
+"related_party_sdk_list"="Third-party SDKs";
+"permission_application_checklist"="Permission application list";
+"cancel_account_alert_message"="The account information will not be\nrecoverable, please operate with caution";
+"app_version"="App version";
+"sdk_version"="SDK version";
+"cancel_account"="Delete account";
+"alert_confirm" = "Confirm";
+
+"home_title" = "VideoOne Center";
+"home_des" = "Welcome to the VideoOne! Please select the scene of interest.";
+"home_icon_new_tip" = "NEW";
+"home_cell_try" = "Try it now";

@@ -1,0 +1,49 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        buildConfigField('String', 'SERVER_URL', "\"${SERVER_URL}\"")
+    }
+    buildFeatures {
+        viewBinding true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation rootProject.ext.libs["kotlin-stdlib"]
+    implementation rootProject.ext.libs["app-compat"]
+    implementation rootProject.ext.libs["material"]
+    implementation rootProject.ext.libs["constraint-layout"]
+    implementation rootProject.ext.libs["retrofit2"]
+    implementation rootProject.ext.libs["converter-gson"]
+    implementation rootProject.ext.libs["okhttp"]
+
+    implementation rootProject.ext.libs["ttsdk-ttuploader"]
+    implementation rootProject.ext.libs["ck-base"]
+
+
+    implementation project(rootProject.ext.projects[':Vod:vod-scenekit'])
+    implementation project(rootProject.ext.projects[':CK:ckone-home'])
+    implementation project(rootProject.ext.projects[":CK:editor-main"])
+}

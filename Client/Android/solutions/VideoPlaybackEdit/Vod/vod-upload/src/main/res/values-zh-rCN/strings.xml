@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vod_upload_create_awesome_video">添加新剪辑</string>
+    <string name="vod_upload_camera">拍摄</string>
+    <string name="vod_upload_album">相册</string>
+    <string name="vod_upload_media_asset">上传到媒资库</string>
+    <string name="vod_upload_back_home">返回首页</string>
+    <string name="vod_upload_progress_txt">上传中 %d%%</string>
+    <string name="vod_uploaded_successfully">上传成功</string>
+    <string name="vod_uploaded_failed">上传失败</string>
+    <string name="vod_upload_preview_title">上传到媒资</string>
+    <string name="vod_upload_preview_desc">您可以把视频上传到媒资，用于更方便的视频处理或播放。</string>
+</resources>

@@ -1,0 +1,16 @@
+ext {
+    projects = [:]
+    // VOD
+    projects.":Vod:vod-demo" = ':solutions:VideoPlaybackEdit:Vod:vod-demo'
+    // VOD playerkit
+    projects.":Vod:vod-playerkit" = ':solutions:VideoPlaybackEdit:Vod:vod-playerkit'
+    projects.":Vod:vod-playerkit:vod-player-utils" = ':solutions:VideoPlaybackEdit:Vod:vod-playerkit:vod-player-utils'
+    projects.":Vod:vod-playerkit:vod-player" = ':solutions:VideoPlaybackEdit:Vod:vod-playerkit:vod-player'
+    projects.":Vod:vod-playerkit:vod-player-ve" = ':solutions:VideoPlaybackEdit:Vod:vod-playerkit:vod-player-ve'
+    // VOD sceneKit
+    projects.":Vod:vod-settingskit" = ':solutions:VideoPlaybackEdit:Vod:vod-settingskit'
+    projects.":Vod:vod-scenekit" = ':solutions:VideoPlaybackEdit:Vod:vod-scenekit'
+
+    projects.":Vod:vod-upload" = ':solutions:VideoPlaybackEdit:Vod:vod-upload'
+
+}

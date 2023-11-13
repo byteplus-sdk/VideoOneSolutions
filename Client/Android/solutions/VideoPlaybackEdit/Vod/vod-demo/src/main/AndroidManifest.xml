@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.bytedance.voddemo.impl">
+
+    <application>
+        <activity
+            android:name="com.bytedance.voddemo.ui.main.MainActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
+            android:screenOrientation="portrait"
+            android:theme="@style/VEVodAppTheme" />
+
+        <activity
+            android:name="com.bytedance.voddemo.ui.main.MainTabActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
+            android:screenOrientation="portrait"
+            android:theme="@style/VEVodAppTheme" />
+
+        <activity
+            android:name="com.bytedance.voddemo.ui.video.scene.VideoActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
+            android:screenOrientation="portrait"
+            android:theme="@style/VEVodAppTheme" />
+
+        <activity
+            android:name="com.bytedance.voddemo.ui.settings.SettingsActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
+            android:screenOrientation="portrait"
+            android:theme="@style/VEVodAppTheme" />
+
+    </application>
+</manifest>

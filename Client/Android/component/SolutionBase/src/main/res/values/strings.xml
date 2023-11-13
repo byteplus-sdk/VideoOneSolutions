@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_code">english</string>
+    <string name="network_link_down">No internet connection. Connect to the internet and ty again.</string>
+    <string name="network_message_1011">Server data exception</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="report_title">Select report type</string>
+    <string-array name="report_options">
+        <item>Pornographic and vulgar</item>
+        <item>Illegal crime</item>
+        <item>Politically sensitive</item>
+        <item>False information</item>
+        <item>Endanger personal safety</item>
+        <item>Minor related</item>
+        <item>Violation of rights</item>
+        <item>Feedback on irregular expression problems</item>
+    </string-array>
+    <string name="report_success">Submission successful. We will process it as soon as possible.</string>
+</resources>

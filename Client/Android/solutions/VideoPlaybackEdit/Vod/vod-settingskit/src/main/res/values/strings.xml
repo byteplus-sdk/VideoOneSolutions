@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_reset">Reset</string>
+    <string name="vevod_confirm">Confirm</string>
+    <string name="vevod_cancel">Cancel</string>
+    <string name="vevod_reset_all_options">Reset all options?</string>
+    <string name="vevod_reset_option">Reset \"%1$s\"?</string>
+    <string name="vevod_edit_option">Edit \"%1$s\"?</string>
+    <string name="vevod_text_copied">Copied</string>
+    <string name="vevod_copy">Copy</string>
+</resources>

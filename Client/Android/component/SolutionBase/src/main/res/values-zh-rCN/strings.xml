@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_code">chinese</string>
+    <string name="network_link_down">无网络连接，请接入网络后重试。</string>
+    <string name="network_message_1011">服务数据异常</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确认</string>
+    <string name="report_title">选择举报类型</string>
+    <string-array name="report_options">
+        <item>色情低俗</item>
+        <item>违法犯罪</item>
+        <item>政治敏感</item>
+        <item>不实信息</item>
+        <item>危害人身安全</item>
+        <item>未成年相关</item>
+        <item>侵犯权益</item>
+        <item>反馈表达不规范问题</item>
+    </string-array>
+    <string name="report_success">提交成功，我们会尽快处理。</string>
+</resources>

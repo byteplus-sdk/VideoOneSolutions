@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <declare-styleable name="RatioFrameLayout" tools:ignore="ResourceName">
+        <attr name="ratioMode" format="enum">
+            <enum name="width" value="0" />
+            <enum name="height" value="1" />
+        </attr>
+        <attr name="ratio" format="float" />
+    </declare-styleable>
+</resources>
