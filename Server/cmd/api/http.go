@@ -63,6 +63,9 @@ func (api *HttpApi) Run() error {
 		vod.POST("/v1/getFeedStreamWithPlayAuthToken", vod_handler.GetFeedStreamWithPlayAuthToken)
 		vod.POST("/v1/getFeedStreamWithVideoModel", vod_handler.GetFeedStreamWithVideoModel)
 		vod.GET("/v1/upload", vod_handler.GenUploadToken)
+		vod.GET("/v1/getVideoComments", vod_handler.GetVideoComments)
+		vod.POST("/v1/getFeedSimilarVideos", vod_handler.GetFeedSimilarVideos)
+
 	}
 	return api.r.Run(fmt.Sprintf("0.0.0.0:%s", api.Port))
 }

@@ -31,3 +31,5 @@ const (
 var BidMap = map[string]string{
 	BizIDLive: BidLive,
 }
+
+const VideoCommentNum = 10

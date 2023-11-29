@@ -16,6 +16,8 @@
 
 package util
 
+import "hash/fnv"
+
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -32,4 +34,11 @@ func IntInSlice(a int, list []int) bool {
 		}
 	}
 	return false
+}
+
+func Hashcode(s string) int64 {
+	h := fnv.New32()
+	h.Write([]byte(s)) //nolint
+	hashValue := h.Sum32()
+	return int64(hashValue)
 }

@@ -21,7 +21,11 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/byteplus/VideoOneServer/internal/models/public"
+	"github.com/byteplus/VideoOneServer/internal/pkg/util"
+
 	"github.com/byteplus-sdk/byteplus-sdk-golang/service/vod/models/request"
+	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_models"
 	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_repo"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
@@ -35,9 +39,13 @@ func GetFeedStreamWithPlayAuthToken(ctx context.Context, req *vod_models.GetFeed
 		logs.CtxError(ctx, "err: %v", err)
 		return nil, err
 	}
-	if videos == nil || len(videos) == 0 {
+	if len(videos) == 0 {
 		return nil, nil
 	}
+	return getVideoPlayAuthToken(ctx, req, videos)
+}
+
+func getVideoPlayAuthToken(ctx context.Context, req *vod_models.GetFeedStreamRequest, videos []*vod_entity.VideoInfo) ([]*vod_models.VideoDetail, error) {
 	var resp []*vod_models.VideoDetail
 	instance := vod_openapi.GetInstance(ctx, req.AppID)
 
@@ -83,7 +91,7 @@ func GetFeedStreamWithPlayAuthToken(ctx context.Context, req *vod_models.GetFeed
 			logs.CtxWarn(ctx, "result is nil")
 			continue
 		}
-
+		name := getRandomName()
 		resp = append(resp, &vod_models.VideoDetail{
 			Vid:               video.Vid,
 			Caption:           mediaInfo.Result.MediaInfoList[0].BasicInfo.Title,
@@ -93,10 +101,23 @@ func GetFeedStreamWithPlayAuthToken(ctx context.Context, req *vod_models.GetFeed
 			SubtitleAuthToken: subtitleToken,
 			CreateTime:        mediaInfo.Result.MediaInfoList[0].BasicInfo.CreateTime,
 			Subtitle:          mediaInfo.Result.MediaInfoList[0].BasicInfo.Description,
-			PlayTimes:         rand.Int63n(800) + 800,
+			PlayTimes:         rand.Int63n(20) + 20,
+			Like:              rand.Int63n(20) + 20,
+			Comment:           public.VideoCommentNum,
+			Height:            mediaInfo.Result.MediaInfoList[0].SourceInfo.Height,
+			Width:             mediaInfo.Result.MediaInfoList[0].SourceInfo.Width,
+			Name:              name,
+			Uid:               util.Hashcode(name),
 		})
 	}
 	return resp, nil
+}
+
+var commonName = []string{"Oliver", "Jack", "Harry", "Jacob", "Charlie", "Thomas", "George", "Oscar", "James", "William", "Abigail", "Madison"}
+
+func getRandomName() string {
+	index := rand.Int63n(int64(len(commonName)))
+	return commonName[index]
 }
 
 func ComposeVodGetPlayInfoRequest(req *vod_models.GetFeedStreamRequest) *request.VodGetPlayInfoRequest {

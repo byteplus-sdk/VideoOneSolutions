@@ -26,3 +26,12 @@ type VideoInfo struct {
 	CreateTime time.Time `gorm:"column:create_time"`
 	UpdateTime time.Time `gorm:"column:update_time"`
 }
+
+type VideoComments struct {
+	ID         int64     `gorm:"column:id"`
+	Vid        string    `gorm:"column:vid"`
+	Content    string    `gorm:"column:content"`
+	Name       string    `gorm:"column:name"`
+	CreateTime time.Time `gorm:"column:create_time"`
+	UpdateTime time.Time `gorm:"column:update_time"`
+}
