@@ -55,6 +55,12 @@ type VideoDetail struct {
 	PlayTimes         int64   `json:"playTimes"`
 	Subtitle          string  `json:"subtitle"`
 	CreateTime        string  `json:"createTime"`
+	Name              string  `json:"name"`
+	Uid               int64   `json:"uid"`
+	Like              int64   `json:"like"`
+	Comment           int64   `json:"comment"`
+	Height            int32   `json:"height"`
+	Width             int32   `json:"width"`
 }
 
 type Codec int32
@@ -132,4 +138,20 @@ type GetFeedStreamRequest struct {
 	HdrDefinition      string     `json:"hdrDefinition" form:"hdrDefinition"`
 	DrmExpireTimestamp string     `json:"drmExpireTimestamp" form:"drmExpireTimestamp"`
 	Quality            string     `json:"quality" form:"quality"`
+}
+
+type Comments struct {
+	Content    string `json:"content"`
+	Name       string `json:"name"`
+	Uid        int64  `json:"uid"`
+	CreateTime string `json:"createTime"`
+	Like       int64  `json:"like"`
+}
+
+type GetSimilarFeedRequest struct {
+	VideoType *int   `json:"videoType"  binding:"required"`
+	Vid       string `json:"vid"  binding:"required"`
+	AppID     string `json:"-"`
+	Offset    int    `json:"offset"`
+	PageSize  int    `json:"pageSize"`
 }

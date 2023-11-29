@@ -53,5 +53,4 @@ func GetFeedStreamWithPlayAuthToken(httpCtx *gin.Context) {
 		return
 	}
 	httpCtx.String(http.StatusOK, response.NewVodCommonResponse(ctx, "", resp, nil))
-	return
 }

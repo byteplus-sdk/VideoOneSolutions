@@ -120,3 +120,27 @@ CREATE TABLE `video_info`
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_vid` (`vid`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='video info';
+
+CREATE TABLE `video_comments`
+(
+    `id`          bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `vid`         varchar(100) NOT NULL DEFAULT '' COMMENT 'vid',
+    `name`        varchar(100) NOT NULL DEFAULT '' COMMENT 'name',
+    `content`     text COMMENT 'content',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update_time',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='comments of video';
+
+INSERT INTO video_comments(`name`, `content`)
+VALUES ('Tom', 'This is a fantastic video.'),
+       ('Oliver', 'The way I would try.'),
+       ('Jake', 'wow!!!'),
+       ('Harry', 'This feeling is indescribable. '),
+       ('Jacob', 'broooo imagine.'),
+       ('Charlie', 'I love this view, I need to be there.😍'),
+       ('Oscar', 'It is what I like.'),
+       ('William', 'Visited this year was beautiful.'),
+       ('Robert', 'very empty magic.'),
+       ('Isabella', 'This is too pretty! 😍'),
+       ('Emma Emma', 'My perfect getaway ❤️❤️❤️');
