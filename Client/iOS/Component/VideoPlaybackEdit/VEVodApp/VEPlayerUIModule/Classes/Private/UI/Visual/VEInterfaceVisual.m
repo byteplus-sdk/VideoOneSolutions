@@ -85,7 +85,7 @@ NSString *const VEUIEventScreenClearStateChanged = @"VEUIEventScreenClearStateCh
         NSString *key = paramDic.allKeys.firstObject;
         for (UIView *view in self.elementViews) {
             if (view.elementDescription.elementNotify) {
-                view.elementDescription.elementNotify(view, key, @"");
+                view.elementDescription.elementNotify(view, key, [paramDic valueForKey:key] ?: @"");
             }
         }
     }

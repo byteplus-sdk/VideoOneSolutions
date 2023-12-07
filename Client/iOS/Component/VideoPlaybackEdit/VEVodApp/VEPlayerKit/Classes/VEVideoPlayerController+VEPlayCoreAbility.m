@@ -189,4 +189,8 @@
     return resolutionTitle;
 }
 
+- (NSTimeInterval)durationWatched {
+    return self.videoEngine.durationWatched;
+}
+
 @end

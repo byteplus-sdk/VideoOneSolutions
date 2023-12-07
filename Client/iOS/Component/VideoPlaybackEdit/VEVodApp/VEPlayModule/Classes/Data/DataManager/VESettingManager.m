@@ -5,6 +5,8 @@
 #import "VEVideoPlayerController+DebugTool.h"
 #import <ToolKit/Localizator.h>
 #import "ToastComponent.h"
+#import "VEPlayUrlConfigViewController.h"
+#import <ToolKit/DeviceInforTool.h>
 
 static NSString * const shortVideoSectionKey = @"短视频策略";
 
@@ -13,6 +15,8 @@ static NSString * const universalSectionKey = @"通用选项";
 NSString * const universalActionSectionKey = @"通用操作"; // clear, log out?
 
 NSString * const  universalDidSectionKey = @"did";
+
+NSString * const  universalVideoUrlSectionKey = @"示例测试页";
 
 @interface VESettingManager ()
 
@@ -117,12 +121,29 @@ static dispatch_once_t onceToken;
         };
         model;
     })];
+        
     [self.settings setValue:universalActionSection forKey:universalActionSectionKey];
+    
+    NSMutableArray *videoUrlSection = [NSMutableArray array];
+    [videoUrlSection addObject:({
+        VESettingModel *model = [VESettingModel new];
+        model.displayText = LocalizedStringFromBundle(@"play_video_url", @"VEVodApp");
+        model.settingKey = VESettingKeyUniversalActionPlayVidoeUrl;
+        model.settingType = VESettingTypeEntrance;
+        
+        model.allAreaAction = ^{
+            UIViewController *topViewController = [DeviceInforTool topViewController];
+            VEPlayUrlConfigViewController *configViewController = [VEPlayUrlConfigViewController new];
+            [topViewController.navigationController pushViewController:configViewController animated:YES];
+        };
+        model;
+    })];
+    [self.settings setValue:videoUrlSection forKey:universalVideoUrlSectionKey];
 }
 
 - (NSArray *)settingSections {
     @autoreleasepool {
-        return @[shortVideoSectionKey, universalSectionKey, universalDidSectionKey, universalActionSectionKey];
+        return @[shortVideoSectionKey, universalSectionKey, universalDidSectionKey, universalVideoUrlSectionKey, universalActionSectionKey];
     }
 }
 

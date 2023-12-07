@@ -3,27 +3,22 @@
 
 package com.bytedance.vod.scenekit.ui.video.layer;
 
-import android.graphics.Color;
-import android.util.TypedValue;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.bytedance.playerkit.player.PlayerEvent;
 import com.bytedance.playerkit.player.PlayerException;
 import com.bytedance.playerkit.player.event.StateError;
 import com.bytedance.playerkit.player.playback.PlaybackController;
 import com.bytedance.playerkit.player.playback.PlaybackEvent;
-
-import com.bytedance.vod.scenekit.ui.video.layer.base.BaseLayer;
 import com.bytedance.playerkit.utils.event.Dispatcher;
 import com.bytedance.playerkit.utils.event.Event;
 import com.bytedance.vod.scenekit.R;
+import com.bytedance.vod.scenekit.ui.video.layer.base.BaseLayer;
 
 public class PlayErrorLayer extends BaseLayer {
 
@@ -34,24 +29,11 @@ public class PlayErrorLayer extends BaseLayer {
         return "play_error";
     }
 
-    @Nullable
     @Override
     protected View createView(@NonNull ViewGroup parent) {
-        TextView textView = new TextView(parent.getContext());
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 8);
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        lp.setMarginStart(100);
-        lp.setMarginEnd(100);
-        textView.setLayoutParams(lp);
-        textView.setTextColor(Color.WHITE);
-        textView.setGravity(Gravity.LEFT);
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startPlayback();
-            }
-        });
+        View textView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.vevod_play_error_layer, parent, false);
+        textView.setOnClickListener(v -> startPlayback());
         return textView;
     }
 
@@ -60,7 +42,7 @@ public class PlayErrorLayer extends BaseLayer {
         super.show();
         TextView textView = getView();
         if (mException != null && textView != null) {
-            textView.setText(textView.getResources().getString(R.string.vevod_play_error_text) + "\n" + mException);
+            textView.setText(textView.getResources().getString(R.string.vevod_play_error_text, mException.toString()));
         }
     }
 

@@ -1,15 +1,16 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEInterfaceFactory.h"
-#import "VEEventConst.h"
-#import "VEInterfaceProtocol.h"
-#import "VEInterfaceElementDescription.h"
 #import "UIView+VEElementDescripition.h"
-#import "VEInterfaceContainer.h"
-#import "VEMaskView.h"
 #import "VEActionButton+Private.h"
-#import "VEProgressView+Private.h"
 #import "VEDisplayLabel+Private.h"
+#import "VEEventConst.h"
+#import "VEInterfaceContainer.h"
+#import "VEInterfaceElementDescription.h"
+#import "VEInterfaceProtocol.h"
+#import "VEMaskView.h"
+#import "VEMultiStatePlayButton.h"
+#import "VEProgressView+Private.h"
 
 @implementation VEInterfaceFactory
 
@@ -21,8 +22,7 @@
     return [self creatingElement:element scene:scene];
 }
 
-
-#pragma mark ----- Scene
+#pragma mark----- Scene
 
 + (UIView *)buildingScene:(id<VEInterfaceElementDataSource>)obj {
     if ([obj conformsToProtocol:@protocol(VEInterfaceElementDataSource)]) {
@@ -32,25 +32,26 @@
     return nil;
 }
 
-
-#pragma mark ----- Element
+#pragma mark----- Element
 
 + (UIView *)creatingElement:(id<VEInterfaceElementDescription>)obj scene:(id<VEInterfaceElementDataSource>)scene {
     if ([obj conformsToProtocol:@protocol(VEInterfaceElementDescription)]) {
         switch (obj.type) {
-            case VEInterfaceElementTypeProgressView :
+            case VEInterfaceElementTypeProgressView:
                 return [self createProgressView:obj scene:scene];
-            case VEInterfaceElementTypeButton :
+            case VEInterfaceElementTypeButton:
                 return [self createButton:obj scene:scene];
-            case VEInterfaceElementTypeLabel :
+            case VEInterfaceElementTypeLabel:
                 return [self createLabel:obj scene:scene];
-            case VEInterfaceElementTypeMaskView :
+            case VEInterfaceElementTypeMaskView:
                 return [self createMaskView:obj scene:scene];
-            case VEInterfaceElementTypeMenuNormalCell :
+            case VEInterfaceElementTypeMenuNormalCell:
                 break;
-            case VEInterfaceElementTypeMenuSwitcherCell :
+            case VEInterfaceElementTypeMenuSwitcherCell:
                 break;
-            case VEInterfaceElementTypeCustomView :
+            case VEInterfaceElementTypeReplayButton:
+                return [self createReplayButton:obj scene:scene];
+            case VEInterfaceElementTypeCustomView:
             default:
                 return [self loadCustomView:obj scene:scene];
         }
@@ -58,8 +59,7 @@
     return nil;
 }
 
-
-#pragma mark ----- Common
+#pragma mark----- Common
 
 + (void)loadElementAction:(UIView<VEInterfaceCustomView> *)elementView scene:(id<VEInterfaceElementDataSource>)scene {
     if ([elementView respondsToSelector:@selector(elementViewAction)]) {
@@ -67,7 +67,7 @@
     }
     if (elementView.elementDescription.elementNotify) {
         NSString *mayNotiKey = elementView.elementDescription.elementNotify(elementView, @"", @"");
-        void (^keyBlock) (NSString *) = ^(NSString *key) {
+        void (^keyBlock)(NSString *) = ^(NSString *key) {
             if ([key isKindOfClass:[NSString class]]) {
                 SEL selector = @selector(elementViewEventNotify:);
                 if ([elementView respondsToSelector:selector]) {
@@ -86,7 +86,7 @@
     }
 }
 
-#pragma mark ----- VEActionButton
+#pragma mark----- VEActionButton
 
 + (UIView *)createButton:(id<VEInterfaceElementDescription>)obj scene:(id<VEInterfaceElementDataSource>)scene {
     VEActionButton *button = [VEActionButton buttonWithType:UIButtonTypeCustom];
@@ -98,8 +98,7 @@
     return button;
 }
 
-
-#pragma mark ----- VEProgressView
+#pragma mark----- VEProgressView
 
 + (UIView *)createProgressView:(id<VEInterfaceElementDescription>)obj scene:(id<VEInterfaceElementDataSource>)scene {
     VEProgressView *progressView = [[VEProgressView alloc] init];
@@ -107,12 +106,22 @@
     progressView.eventPoster = [scene eventPoster];
     progressView.elementDescription = obj;
     [progressView setAutoBackStartPoint:YES];
+    if (obj.elementDisplay) obj.elementDisplay(progressView);
     [self loadElementAction:progressView scene:scene];
     return progressView;
 }
 
++ (UIView *)createReplayButton:(id<VEInterfaceElementDescription>)obj scene:(id<VEInterfaceElementDataSource>)scene {
+    VEMultiStatePlayButton *button = [[VEMultiStatePlayButton alloc] initWithFrame:CGRectZero];
+    button.eventMessageBus = [scene eventMessageBus];
+    button.eventPoster = [scene eventPoster];
+    button.elementDescription = obj;
 
-#pragma mark ----- VEDisplayLabel
+    [self loadElementAction:button scene:scene];
+    return button;
+}
+
+#pragma mark----- VEDisplayLabel
 
 + (UIView *)createLabel:(id<VEInterfaceElementDescription>)obj scene:(id<VEInterfaceElementDataSource>)scene {
     VEDisplayLabel *label = [VEDisplayLabel new];
@@ -125,19 +134,22 @@
     return label;
 }
 
-#pragma mark ----- VEDisplayLabel
+#pragma mark----- VEDisplayLabel
 
 + (UIView *)createMaskView:(id<VEInterfaceElementDescription>)obj scene:(id<VEInterfaceElementDataSource>)scene {
     VEMaskView *maskView = [VEMaskView new];
     maskView.elementDescription = obj;
+    if (obj.elementDisplay) obj.elementDisplay(maskView);
     [self loadElementAction:maskView scene:scene];
     return maskView;
 }
 
-#pragma mark ----- CustomView
+#pragma mark----- CustomView
 
 + (UIView *)loadCustomView:(id<VEInterfaceElementDescription>)obj scene:(id<VEInterfaceElementDataSource>)scene {
     UIView<VEInterfaceCustomView> *customView = [obj customView];
+    customView.elementDescription = obj;
+    if (obj.elementDisplay) obj.elementDisplay(customView);
     if ([customView isKindOfClass:[UIView class]]) {
         [self loadElementAction:customView scene:scene];
     }

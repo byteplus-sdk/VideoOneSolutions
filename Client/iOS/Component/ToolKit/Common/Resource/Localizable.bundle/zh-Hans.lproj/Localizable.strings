@@ -1,4 +1,5 @@
 "ok"="确定";
+"confirm"="确认";
 "cancel"="取消";
 "available_update"="应用有更新，\n立即去下载最新版本？";
 "settings"="设置";
@@ -92,3 +93,4 @@
 "report_message_6" = "涉及未成年人";
 "report_message_7" = "侵犯权益";
 "report_message_8" = "反馈不规范表达问题";
+"placeholder_message" = "请输入评论";

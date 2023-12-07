@@ -3,6 +3,7 @@
     <string name="vevod_option_category_debug">Debug</string>
     <string name="vevod_option_debug_enable_log_layer">Enable LogLayer</string>
     <string name="vevod_option_debug_enable_debug_tool">Enable Debug Tools</string>
+    <string name="vevod_option_debug_input_media_source">Input Media Source</string>
 
     <string name="vevod_option_category_short_video">Short-Video</string>
     <string name="vevod_option_short_video_scene_account_id">Short-Video account</string>

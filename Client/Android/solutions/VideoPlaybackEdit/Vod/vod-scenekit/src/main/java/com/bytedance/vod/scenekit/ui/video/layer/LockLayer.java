@@ -15,10 +15,9 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.playback.VideoLayerHost;
-
+import com.bytedance.vod.scenekit.R;
 import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.bytedance.vod.scenekit.utils.UIUtils;
-import com.bytedance.vod.scenekit.R;
 
 public class LockLayer extends AnimateLayer {
 
@@ -77,13 +76,23 @@ public class LockLayer extends AnimateLayer {
         return layerHost != null && layerHost.isLocked();
     }
 
+    private boolean hasVolumeBrightnessIconLayer() {
+        VideoLayerHost layerHost = layerHost();
+        if (layerHost != null) {
+            VolumeBrightnessIconLayer layer = layerHost.findLayer(VolumeBrightnessIconLayer.class);
+           return layer != null;
+        }
+       return false;
+    }
+
     private void syncLockedState(boolean locked) {
         if (mImageView != null) {
             mImageView.setSelected(locked);
             if (locked) {
                 mImageView.setTranslationY(0);
             } else {
-                mImageView.setTranslationY((int) UIUtils.dip2Px(context(), -56));
+                int transY = hasVolumeBrightnessIconLayer() ? (int) UIUtils.dip2Px(context(), -56) : 0;
+                mImageView.setTranslationY(transY);
             }
         }
     }

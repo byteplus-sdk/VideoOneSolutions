@@ -1,8 +1,8 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "NSObject+ToElementDescription.h"
-#import "VEInterfaceElementProtocol.h"
 #import "UIView+VEElementDescripition.h"
+#import "VEInterfaceElementProtocol.h"
 
 @implementation NSObject (ToElementDescription)
 
@@ -15,7 +15,6 @@
         if ([self respondsToSelector:@selector(type)]) {
             imp.type = [[self valueForKeyPath:@"type"] integerValue];
         }
-        
         imp.elementAction = ^id(id mayElementView) {
             if ([self respondsToSelector:@selector(elementAction:)]) {
                 return [self performSelector:@selector(elementAction:) withObject:mayElementView];
@@ -25,7 +24,7 @@
         };
         imp.elementNotify = ^id(id mayElementView, NSString *key, id obj) {
             id target = self;
-            SEL sel = NSSelectorFromString(@"elementNotify:::");
+            SEL sel = NSSelectorFromString(@"elementNotify:key:obj:");
             if ([target respondsToSelector:sel]) {
                 IMP imp = [target methodForSelector:sel];
                 void (*func)(id, SEL, id, NSString *, id) = (void *)imp;
@@ -39,7 +38,7 @@
         };
         imp.elementWillLayout = ^(UIView *elementView, NSSet<UIView *> *elementGroup, UIView *groupContainer) {
             id target = self;
-            SEL sel = NSSelectorFromString(@"elementWillLayout:::");
+            SEL sel = NSSelectorFromString(@"elementWillLayout:elementGroup:groupContainer:");
             if ([target respondsToSelector:sel]) {
                 IMP imp = [target methodForSelector:sel];
                 void (*func)(id, SEL, UIView *, NSSet *, UIView *) = (void *)imp;
@@ -64,6 +63,4 @@
     return nil;
 }
 
-
 @end
-

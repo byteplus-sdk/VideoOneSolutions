@@ -31,8 +31,7 @@ typedef NS_ENUM(NSInteger, VEVideoLoadState) {
 - (void)videoPlayerReadyToDisplay:(id<VEVideoPlayback> _Nullable)player;
 
 - (void)videoPlayer:(id<VEVideoPlayback> _Nullable)player loadStateDidChange:(VEVideoLoadState)state;
-
-- (void)videoPlayer:(id<VEVideoPlayback> _Nullable)player playbackStateDidChange:(VEVideoPlaybackState)state;
+- (void)videoPlayer:(id<VEVideoPlayback> _Nullable)player playbackStateDidChange:(VEVideoPlaybackState)state uniqueId:(NSString *)uniqueId;
 
 - (void)videoPlayer:(id<VEVideoPlayback> _Nullable)player key:(NSString * _Nullable)key hitVideoPreloadDataSize:(NSInteger)dataSize;
 
@@ -51,6 +50,7 @@ typedef NS_ENUM(NSInteger, VEVideoLoadState) {
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) NSTimeInterval currentPlaybackTime;
 @property (nonatomic, assign, readonly) NSTimeInterval playableDuration;
+@property (nonatomic, assign) NSTimeInterval startTime;
 
 @property (nonatomic, assign, readonly) VEVideoPlaybackState playbackState;
 @property (nonatomic, assign, readonly) VEVideoLoadState loadState;
@@ -96,7 +96,6 @@ typedef NS_ENUM(NSInteger, VEVideoLoadState) {
           complete:(void(^ _Nullable)(BOOL success))finised
     renderComplete:(void(^ _Nullable)(void)) renderComplete;
 
-- (void)setStartTime:(NSTimeInterval)time;
 
 @end
 

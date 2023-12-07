@@ -64,6 +64,9 @@ NSString *const VEPlayEventPlaySpeedChanged = @"VEPlayEventPlaySpeedChanged";
     for (NSDictionary *playSpeedDic in [[self.scene eventPoster] playSpeedSet]) {
         VEInterfaceDisplayItem *item = [VEInterfaceDisplayItem new];
         item.title = playSpeedDic.allKeys.firstObject;
+        if ([item.title containsString:@"1.0"]) {
+            item.title = [NSString stringWithFormat:@"%@(Default)", item.title];
+        }
         item.itemAction = VEPlayEventChangePlaySpeed;
         item.actionParam = playSpeedDic.allValues.firstObject;
         [playSpeedItems addObject:item];

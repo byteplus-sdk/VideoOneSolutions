@@ -3,12 +3,12 @@
 
 package com.vertcdemo.solution.interactivelive.feature.main;
 
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_BUTTON_NEGATIVE;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_BUTTON_POSITIVE;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_MESSAGE;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_REQUEST_KEY;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_RESULT;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_TITLE;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_BUTTON_NEGATIVE;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_BUTTON_POSITIVE;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_MESSAGE;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_REQUEST_KEY;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_RESULT;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_TITLE;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -36,7 +36,7 @@ import com.vertcdemo.solution.interactivelive.event.AudienceLinkFinishEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkStatusEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
 import com.vertcdemo.solution.interactivelive.util.CenteredToast;
-import com.vertcdemo.solution.interactivelive.view.LiveCommonDialog;
+import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -114,7 +114,7 @@ public class AudienceSettingsDialog extends BottomDialogFragmentX {
     }
 
     void showConfirmFinishInteractDialog() {
-        LiveCommonDialog dialog = new LiveCommonDialog();
+        SolutionCommonDialog dialog = new SolutionCommonDialog();
         final Bundle args = new Bundle();
         args.putString(EXTRA_REQUEST_KEY, REQUEST_KEY);
         args.putInt(EXTRA_TITLE, R.string.audience_finish_interact_title);

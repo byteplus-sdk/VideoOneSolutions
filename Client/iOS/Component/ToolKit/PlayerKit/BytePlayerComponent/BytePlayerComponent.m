@@ -139,7 +139,7 @@
 }
 
 - (VeLivePlayerStreamData *)createPlayerStreamData:(NSString *)defaultResolution {
-    NSString *originUrl = [self getOriginalUlr];
+    NSString *originUrl = [self getOriginalUrl];
     NSString *url = _urlMap[defaultResolution] ?: originUrl;
     self.currentURLString = url;
     VeLivePlayerStreamData *streamData = [[VeLivePlayerStreamData alloc] init];
@@ -184,12 +184,12 @@
 }
 
 - (TVLPlayerItem *)createPlayerItem:(NSString *)defaultResolution {
-    NSString *originUrl = [self getOriginalUlr];
+    NSString *originUrl = [self getOriginalUrl];
     NSString *url = _urlMap[defaultResolution] ?: originUrl;
     TTLiveURLComposer *composer = [[TTLiveURLComposer alloc] init];
     TVLPlayerItem *item = nil;
     if ([LiveSettingData rtmPullStreaming]) {
-        NSString *sdpUrl = [self changeToRTMUrl:url];
+        NSString *sdpUrl = [self changeToRTMUrl:originUrl];
         [composer addUrl:sdpUrl forFormat:TVLMediaFormatTypeLLS];
         [composer addUrl:url
             forResolution:TVLMediaResolutionTypeOrigin
@@ -279,7 +279,7 @@
 }
 
 /// 获取源流地址
-- (NSString *)getOriginalUlr {
+- (NSString *)getOriginalUrl {
     __block NSString *originalUrl = [self.urlMap objectForKey:@"origin"];
     if (originalUrl == nil) {
         NSArray<NSString *> *resolutions = @[@"ld", @"sd", @"hd", @"uhd"];

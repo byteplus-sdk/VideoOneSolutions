@@ -43,6 +43,8 @@ import static com.ss.avframework.livestreamv2.Constants.MSG_REPORT_NETWORK_QUALI
 import static com.ss.avframework.livestreamv2.Constants.MSG_REPORT_TRANSPORT_BPS;
 import static com.ss.avframework.livestreamv2.Constants.MSG_REPORT_TRANSPORT_FPS;
 
+import com.ss.avframework.livestreamv2.LiveStreamBuilder;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,5 +96,43 @@ class InfoMapper {
     public static String get(int code) {
         final String msg = CODE_MAP.get(code);
         return msg == null ? String.valueOf(code) : msg;
+    }
+
+    public static String mapVideoDevice(int videoCaptureDevice) {
+        switch (videoCaptureDevice) {
+            case LiveStreamBuilder.VIDEO_CAPTURE_DEVICE_NONE:
+                return "VIDEO_CAPTURE_DEVICE_NONE";
+            case LiveStreamBuilder.VIDEO_CAPTURE_DEVICE_CAM_FRONT:
+                return "VIDEO_CAPTURE_DEVICE_CAM_FRONT";
+            case LiveStreamBuilder.VIDEO_CAPTURE_DEVICE_CAM_BACK:
+                return "VIDEO_CAPTURE_DEVICE_CAM_BACK";
+            case LiveStreamBuilder.VIDEO_CAPTURE_DEVICE_SCREEN:
+                return "VIDEO_CAPTURE_DEVICE_SCREEN";
+            case LiveStreamBuilder.VIDEO_CAPTURE_DEVICE_EXTERN:
+                return "VIDEO_CAPTURE_DEVICE_EXTERN";
+            case LiveStreamBuilder.VIDEO_CAPTURE_RADIO_MODE:
+                return "VIDEO_CAPTURE_RADIO_MODE";
+            default:
+                return "[Unknown]";
+        }
+    }
+
+    public static String mapAudioDevice(int audioCaptureDevice) {
+        switch (audioCaptureDevice) {
+            case LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_NONE:
+                return "AUDIO_CAPTURE_DEVICE_NONE";
+            case LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_AUDIORECORD:
+                return "AUDIO_CAPTURE_DEVICE_AUDIORECORD";
+            case LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_OPENSL:
+                return "AUDIO_CAPTURE_DEVICE_OPENSL";
+            case LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_EXTERN:
+                return "AUDIO_CAPTURE_DEVICE_EXTERN";
+            case LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_ADM:
+                return "AUDIO_CAPTURE_DEVICE_ADM";
+            case LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_MUTE:
+                return "AUDIO_CAPTURE_DEVICE_MUTE";
+            default:
+                return "[Unknown]";
+        }
     }
 }

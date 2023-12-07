@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
+#import "BaseUserModel.h"
 #import "UIImage+Bundle.h"
 
 @implementation UIImage (Bundle)
@@ -36,6 +37,10 @@
                                 inBundle:subBundle
            compatibleWithTraitCollection:nil];
     return image;
+}
+
++ (UIImage *)avatarImageForUid:(NSString *)uid {
+    return [UIImage imageNamed:[BaseUserModel getAvatarNameWithUid:uid] bundleName:ToolKitBundleName subBundleName:AvatarBundleName];
 }
 
 @end

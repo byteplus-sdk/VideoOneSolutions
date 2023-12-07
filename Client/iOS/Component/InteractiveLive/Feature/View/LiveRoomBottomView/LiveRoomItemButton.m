@@ -41,7 +41,6 @@
 - (void)updateState:(LiveRoomItemButtonState)state {
     NSString *imageName = @"";
     self.desLabel.hidden = YES;
-    
     switch (state) {
         case LiveRoomItemButtonStateAddGuests:
             imageName = @"add_guests";
@@ -52,7 +51,7 @@
         case LiveRoomItemButtonStateChat:
             imageName = @"InteractiveLive_input";
             self.desLabel.hidden = NO;
-            self.desLabel.text = LocalizedString(@"placeholder_message");
+            self.desLabel.text = LocalizedStringFromBundle(@"placeholder_message", ToolKitBundleName);
             break;
         case LiveRoomItemButtonStateBeauty:
             imageName = @"beauty";

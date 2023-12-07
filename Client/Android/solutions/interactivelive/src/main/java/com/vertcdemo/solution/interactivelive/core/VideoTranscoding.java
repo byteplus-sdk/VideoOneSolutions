@@ -61,10 +61,32 @@ public abstract class VideoTranscoding {
         return mCoHostInfo != null;
     }
     protected int mCoHostVideoWidth;
-    protected int mCoHostVideoHeight; 
+    protected int mCoHostVideoHeight;
 
 
     private List<String> mAudienceUserIdList;
+    // local camera status
+    private boolean mIsCameraOn = true;
+    // local microphone status
+    private boolean mIsMicOn = true;
+
+    public boolean isCameraOn() {
+        return mIsCameraOn;
+    }
+
+    protected void setCameraOn(boolean value) {
+        mIsCameraOn = value;
+        notifyCameraStatusChanged(value);
+    }
+
+    public boolean isMicOn() {
+        return mIsMicOn;
+    }
+
+    protected void setMicOn(boolean value) {
+        mIsMicOn = value;
+        notifyMicrophoneStatusChanged(value);
+    }
 
     @Nullable
     private LiveCoreHolder mHolder;
@@ -525,7 +547,18 @@ public abstract class VideoTranscoding {
             return;
         }
         if (mHolder == null) {
-            mHolder = LiveCoreHolder.createLiveCore();
+            mHolder = LiveCoreHolder.createLiveCore(isCameraOn(), isMicOn());
+        } else {
+            if (isCameraOn()) {
+                mHolder.stopFakeVideo();
+            } else {
+                mHolder.startFakeVideo();
+            }
+            if (isMicOn()) {
+                mHolder.stopFakeAudio();
+            } else {
+                mHolder.startFakeAudio();
+            }
         }
         mIsLiveCoreTranscoding = true;
         assert mMyLiveInfo != null;
@@ -548,6 +581,26 @@ public abstract class VideoTranscoding {
         }
         mIsLiveCoreTranscoding = false;
         mHolder.stop(mRTCVideo);
+    }
+
+    private void notifyCameraStatusChanged(boolean value) {
+        if (mIsLiveCoreTranscoding && mHolder != null) {
+            if (value) {
+                mHolder.stopFakeVideo();
+            } else {
+                mHolder.startFakeVideo();
+            }
+        }
+    }
+
+    private void notifyMicrophoneStatusChanged(boolean value) {
+        if (mIsLiveCoreTranscoding && mHolder != null) {
+            if (value) {
+                mHolder.stopFakeAudio();
+            } else {
+                mHolder.startFakeAudio();
+            }
+        }
     }
 
     private static String appData(@LiveMode int liveMode) {

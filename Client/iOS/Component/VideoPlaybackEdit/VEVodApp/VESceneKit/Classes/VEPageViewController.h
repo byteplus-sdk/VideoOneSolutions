@@ -28,6 +28,8 @@ typedef enum : NSUInteger {
 
 - (void)stop;
 
+- (void)setVisible:(BOOL)visible;
+
 @end
 
 @protocol VEPageDataSource <NSObject>
@@ -49,8 +51,8 @@ typedef enum : NSUInteger {
 @optional
 
 - (void)pageViewController:(VEPageViewController *)pageViewController
-  didScrollChangeDirection:(VEPageItemMoveDirection)direction
-            offsetProgress:(CGFloat)progress;
+    didScrollChangeDirection:(VEPageItemMoveDirection)direction
+              offsetProgress:(CGFloat)progress;
 
 - (void)pageViewControllerWillBeginDragging:(VEPageViewController *)pageViewController;
 
@@ -70,9 +72,9 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, assign) NSUInteger currentIndex;
 
-@property (nonatomic, weak) id<VEPageDelegate>delegate;
+@property (nonatomic, weak) id<VEPageDelegate> delegate;
 
-@property (nonatomic, weak) id<VEPageDataSource>dataSource;
+@property (nonatomic, weak) id<VEPageDataSource> dataSource;
 
 @property (nonatomic, assign, getter=isViewAppeared) BOOL viewAppeared;
 

@@ -20,8 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
                   content:(NSDictionary *)content
                     block:(void (^__nullable)(NetworkingResponse *response))block;
 
++ (void)postWithPath:(NSString *)path
+          parameters:(nullable id)parameters
+             headers:(nullable NSDictionary<NSString *, NSString *> *)headers
+            progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress
+               block:(void (^__nullable)(NetworkingResponse *response))block;
+
 + (void)getWithPath:(NSString *)path
-         parameters:(NSDictionary *)parameters
+         parameters:(nullable id)parameters
               block:(void (^__nullable)(NetworkingResponse *response))block;
 
 #pragma mark - User

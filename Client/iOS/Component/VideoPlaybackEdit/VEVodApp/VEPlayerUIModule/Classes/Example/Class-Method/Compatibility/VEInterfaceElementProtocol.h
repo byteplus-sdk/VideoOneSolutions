@@ -1,7 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
-#import "VEInterfaceElementDescription.h"
 #import "NSObject+ToElementDescription.h"
+#import "VEInterfaceElementDescription.h"
 
 @protocol VEInterfaceElementProtocol <NSObject>
 
@@ -13,11 +13,11 @@
 
 - (id)elementAction:(id)mayElementView;
 
-- (void)elementNotify:(id)mayElementView :(NSString *)key :(id)obj;
+- (void)elementNotify:(id)mayElementView key:(NSString *)key obj:(id)obj;
 
 - (id)elementSubscribe:(id)mayElementView;
 
-- (void)elementWillLayout:(UIView *)elementView :(NSSet<UIView *> *)elementGroup :(UIView *)groupContainer;
+- (void)elementWillLayout:(UIView *)elementView elementGroup:(NSSet<UIView *> *)elementGroup groupContainer:(UIView *)groupContainer;
 
 - (void)elementDisplay:(UIView *)view;
 

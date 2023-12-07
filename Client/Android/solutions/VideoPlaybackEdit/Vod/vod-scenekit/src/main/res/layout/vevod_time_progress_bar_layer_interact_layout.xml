@@ -6,27 +6,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="44dp"
+    android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     tools:background="#000">
 
     <RelativeLayout
         android:id="@+id/likeContainer"
-        android:layout_width="40dp"
+        android:layout_width="50dp"
         android:layout_height="40dp"
         android:clipChildren="false"
-        android:clipToPadding="false"
-        android:visibility="@integer/vevod_under_construction_visibility"
-        tools:visibility="visible">
+        android:clipToPadding="false">
 
         <ImageView
             android:id="@+id/likeIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_centerInParent="true"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="6dp"
             android:scaleType="centerInside"
-            android:src="@drawable/vevod_time_progress_bar_layer_fullscreen_interact_like_num" />
+            android:src="@drawable/vevod_fullscreen_like_selector" />
 
         <TextView
             android:id="@+id/likeNum"
@@ -38,30 +37,31 @@
             android:layout_marginBottom="9dp"
             android:maxLines="1"
             android:padding="0dp"
+            android:text="1024"
             android:textColor="#FFFFFF"
             android:textSize="10sp"
-            android:translationX="12dp"
-            android:translationY="-14dp"
-            tools:text="11111111" />
+            android:textStyle="bold"
+            android:translationX="16dp"
+            android:translationY="-14dp" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/commentContainer"
-        android:layout_width="40dp"
+        android:layout_width="50dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="24dp"
+        android:layout_marginLeft="14dp"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:visibility="@integer/vevod_under_construction_visibility"
         tools:visibility="visible">
 
         <ImageView
             android:id="@+id/commentIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
             android:scaleType="centerInside"
-            android:src="@drawable/vevod_time_progress_bar_layer_fullscreen_interact_comment_num" />
+            android:src="@drawable/vevod_fullscreen_comment" />
 
         <TextView
             android:id="@+id/commentNum"
@@ -75,68 +75,16 @@
             android:padding="0dp"
             android:textColor="#FFFFFF"
             android:textSize="10sp"
-            android:translationX="12dp"
+            android:textStyle="bold"
+            android:translationX="16dp"
             android:translationY="-14dp"
-            tools:text="11111111" />
+            tools:text="302" />
     </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/danmakuContainer"
-        android:layout_width="160dp"
-        android:layout_height="36dp"
-        android:layout_marginLeft="24dp"
-        android:background="#29FFFFFF"
-        android:gravity="center_vertical"
-        android:visibility="@integer/vevod_under_construction_visibility"
-        tools:visibility="visible">
-
-        <ImageView
-            android:id="@+id/danmakuIcon"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/vevod_time_progress_bar_layer_danmaku_on" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:text="@string/vevod_time_progress_send_danmaku"
-            android:textColor="#A3FFFFFF"
-            android:textSize="13sp" />
-    </LinearLayout>
 
     <Space
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1" />
-
-    <LinearLayout
-        android:id="@+id/subtitleContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:visibility="@integer/vevod_under_construction_visibility"
-        tools:visibility="visible">
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginRight="4dp"
-            android:src="@drawable/vevod_time_progress_bar_layer_fullscreen_interact_subtitle_closed" />
-
-        <TextView
-            android:id="@+id/subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:gravity="center_vertical"
-            android:padding="0dp"
-            android:text="@string/vevod_time_progress_subtitle"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp" />
-    </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/speedContainer"
@@ -157,7 +105,6 @@
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:gravity="center_vertical"
-            android:padding="0dp"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             tools:text="Speed" />
@@ -182,7 +129,6 @@
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:gravity="center_vertical"
-            android:padding="0dp"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             tools:text="1080P" />

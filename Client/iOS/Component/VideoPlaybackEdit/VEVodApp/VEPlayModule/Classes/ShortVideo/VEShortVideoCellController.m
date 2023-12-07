@@ -1,15 +1,19 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEShortVideoCellController.h"
-#import "VEVideoModel.h"
-#import "VESettingManager.h"
-#import <ToolKit/ToolKit.h>
-#import <ToolKit/ReportComponent.h>
-#import <Masonry/Masonry.h>
-#import "VEPlayerUIModule.h"
-#import "VEInterfaceSimpleMethodSceneConf.h"
-#import "VEPlayerKit.h"
+#import "UIViewController+Orientation.h"
+#import "VEEventMessageBus.h"
 #import "VEGradientView.h"
+#import "VEInterfaceSimpleMethodSceneConf.h"
+#import "VEInterfaceSocialStackView.h"
+#import "VEPlayerKit.h"
+#import "VEPlayerUIModule.h"
+#import "VESettingManager.h"
+#import "VEVideoDetailViewController.h"
+#import "VEVideoModel.h"
+#import <Masonry/Masonry.h>
+#import <ToolKit/ReportComponent.h>
+#import <ToolKit/ToolKit.h>
 
 @interface VEShortVideoMaskView : VEGradientView
 
@@ -25,6 +29,7 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 - (instancetype)initWithType:(MaskViewType)type {
     self = [super init];
     if (self) {
+        self.userInteractionEnabled = NO;
         if (type == MaskViewTypeBottom) {
             UIColor *startColor = [UIColor colorFromRGBHexString:@"#000000" andAlpha:0.0 * 255];
             UIColor *middleColor = [UIColor colorFromRGBHexString:@"#000000" andAlpha:0.3 * 255];
@@ -46,8 +51,7 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 
 @end
 
-
-@interface VEShortVideoCellController () <VEInterfaceDelegate>
+@interface VEShortVideoCellController () <VEInterfaceDelegate, VEVideoDetailProtocol>
 
 @property (nonatomic, strong) VEVideoPlayerController *playerController;
 @property (nonatomic, strong) VEInterface *playerControlInterface;
@@ -55,7 +59,11 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 @property (nonatomic, strong) VEShortVideoMaskView *bottomMaskView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *subtitleLabel;
-
+@property (nonatomic, strong) BaseButton *fullScreenButton;
+@property (nonatomic, strong) UIImageView *avatar;
+@property (nonatomic, strong) VEInterfaceSocialStackView *socialView;
+@property (nonatomic, assign) VEVideoPlayerType currentType;
+@property (nonatomic, assign) BOOL isReturnPortrait;
 @end
 
 @implementation VEShortVideoCellController
@@ -64,6 +72,7 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.isReturnPortrait = NO;
     self.view.backgroundColor = [UIColor blackColor];
 }
 
@@ -76,11 +85,14 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 
 - (void)setVideoModel:(VEVideoModel *)videoModel {
     _videoModel = videoModel;
-    
-    self.titleLabel.text = videoModel.title;
-    self.subtitleLabel.text = videoModel.subTitle;
+    BOOL isHorizontalScreen = ([videoModel.width floatValue] / [videoModel.height floatValue] > 1) ? YES : NO;
+    VEVideoPlayerType type = isHorizontalScreen ? VEVideoPlayerTypeShortHorizontalScreen : VEVideoPlayerTypeShortVerticalScreen;
+    self.currentType = type;
+    self.titleLabel.text = [NSString stringWithFormat:@"@%@", videoModel.userName];
+    self.subtitleLabel.text = videoModel.title;
+    self.avatar.image = [UIImage avatarImageForUid:videoModel.uid];
+    self.socialView.videoModel = videoModel;
 }
-
 
 - (void)longPressAction:(UILongPressGestureRecognizer *)longPress {
     if (longPress.state == UIGestureRecognizerStateBegan) {
@@ -88,8 +100,7 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
     }
 }
 
-
-#pragma mark ----- Life Circle
+#pragma mark----- Life Circle
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -98,33 +109,37 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    self.isReturnPortrait = NO;
     [self playerStop];
 }
 
-
-#pragma mark ----- Play
+#pragma mark----- Play
 
 - (void)playerCover {
-    if (self.playerController.isPlaying) {
-        return;
-    }
-    [self createPlayer];
+    [self createPlayer:self.currentType];
     [self createPlayerControl];
     [self.playerController loadBackgourdImageWithMediaSource:[VEVideoModel videoEngineVidSource:self.videoModel]];
 }
 
 - (void)playerStart {
-    if (self.playerController.isPlaying){
+    if (self.playerController.isPlaying) {
         return;
     }
     if (self.playerController.isPause) {
-        [self.playerController play];
+        // 通过横屏切换成竖屏，如果是暂停状态，保持暂停状态。
+        if (!self.isReturnPortrait) {
+            [self.playerController play];
+        }
         return;
     }
-    [self createPlayer];
+    [self createPlayer:self.currentType];
     [self createPlayerControl];
     [self playerOptions];
-    [self.playerController setMediaSource:[VEVideoModel videoEngineVidSource:self.videoModel]];
+    if (self.videoModel.playUrl.length) {
+        [self.playerController setMediaSource:[VEVideoModel videoEngineUrlSource:self.videoModel]];
+    } else if (self.videoModel.videoId.length) {
+        [self.playerController setMediaSource:[VEVideoModel videoEngineVidSource:self.videoModel]];
+    }
     [self.playerController setLooping:YES];
     [self.playerController play];
 }
@@ -158,59 +173,104 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
     [self playerStop];
 }
 
-#pragma mark ----- Player
-
-- (void)createPlayer {
-    if (self.playerController) {
-        return;
+- (void)setVisible:(BOOL)visible {
+    self.playerControlInterface.scene.deActive = !visible;
+    if (visible) {
+        [self playerCover];
+        [self playerStart];
+    } else {
+        self.isReturnPortrait = NO;
+        [self.playerController pause];
     }
-    self.playerController = [[VEVideoPlayerController alloc] initWithType:VEVideoPlayerTypeShort];
+}
+
+#pragma mark----- Player
+
+- (void)createPlayer:(VEVideoPlayerType)playerType {
+    if (!self.playerController) {
+        self.playerController = [[VEVideoPlayerController alloc] initWithType:playerType];
+    }
     [self addChildViewController:self.playerController];
     [self.view addSubview:self.playerController.view];
     [self.view bringSubviewToFront:self.playerController.view];
-    [self.playerController.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
-    }];
+    if (playerType == VEVideoPlayerTypeShortHorizontalScreen) {
+        CGFloat videoModelWidth = MAX([self.videoModel.width floatValue], 1);
+        CGFloat width = MAX(self.view.frame.size.width, 1);
+        CGFloat height = width * [self.videoModel.height floatValue] / videoModelWidth;
+        [self.playerController.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.height.equalTo(@(height));
+            make.leading.trailing.equalTo(self.view);
+            make.center.equalTo(self.view);
+        }];
+        self.fullScreenButton.hidden = NO;
+    } else {
+        [self.playerController.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(self.view);
+        }];
+        self.fullScreenButton.hidden = YES;
+    }
 }
 
 - (void)createPlayerControl {
-    if (self.playerControlInterface) {
-        return;
+    if (!self.playerControlInterface) {
+        self.playerControlInterface = [[VEInterface alloc] initWithPlayerCore:self.playerController scene:[VEInterfaceSimpleMethodSceneConf new]];
+        self.socialView.eventMessageBus = self.playerControlInterface.eventMessageBus;
     }
-    self.playerControlInterface = [[VEInterface alloc] initWithPlayerCore:self.playerController scene:[VEInterfaceSimpleMethodSceneConf new]];
     self.playerControlInterface.delegate = self;
     [self.view addSubview:self.playerControlInterface];
-    [self.playerControlInterface mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.playerControlInterface mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
     }];
-    
+
     [self.playerControlInterface addSubview:self.topMaskView];
-    [self.topMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.playerControlInterface sendSubviewToBack:self.topMaskView];
+    [self.topMaskView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.right.top.equalTo(self.playerControlInterface);
         make.height.mas_equalTo(200);
     }];
-    
+
     [self.playerControlInterface addSubview:self.bottomMaskView];
     [self.playerControlInterface sendSubviewToBack:self.bottomMaskView];
-    [self.bottomMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.bottomMaskView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.right.bottom.equalTo(self.playerControlInterface);
         make.height.mas_equalTo(200);
     }];
-    
+
     [self.playerControlInterface addSubview:self.subtitleLabel];
-    [self.subtitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.subtitleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(12);
         make.bottom.mas_equalTo(-12);
         make.width.mas_equalTo(SCREEN_WIDTH * 0.73);
     }];
-    
+
     [self.playerControlInterface addSubview:self.titleLabel];
-    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(12);
         make.bottom.equalTo(self.subtitleLabel.mas_top).offset(-6);
         make.width.equalTo(self.subtitleLabel);
     }];
-    
+
+    [self.playerControlInterface addSubview:self.fullScreenButton];
+    [self.fullScreenButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(@0);
+        make.top.equalTo(self.playerController.view.mas_bottom).offset(12);
+        make.width.equalTo(@98);
+        make.height.equalTo(@32);
+    }];
+
+    [self.playerControlInterface addSubview:self.socialView];
+    [self.socialView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.equalTo(self.playerControlInterface).offset(-13);
+        make.bottom.equalTo(self.playerControlInterface).offset(-24);
+    }];
+
+    [self.playerControlInterface addSubview:self.avatar];
+    [self.avatar mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(48);
+        make.centerX.equalTo(self.socialView);
+        make.bottom.equalTo(self.socialView.mas_top).offset(-14);
+    }];
+
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressAction:)];
     [self.playerControlInterface addGestureRecognizer:longPress];
 }
@@ -218,23 +278,67 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 - (void)playerOptions {
     VESettingModel *preRender = [[VESettingManager universalManager] settingForKey:VESettingKeyShortVideoPreRenderStrategy];
     self.playerController.preRenderOpen = preRender.open;
-    
+
     VESettingModel *preload = [[VESettingManager universalManager] settingForKey:VESettingKeyShortVideoPreloadStrategy];
     self.playerController.preloadOpen = preload.open;
-    
+
     VESettingModel *h265 = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalH265];
     self.playerController.h265Open = h265.open;
-    
+
     VESettingModel *hardwareDecode = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalHardwareDecode];
     self.playerController.hardwareDecodeOpen = hardwareDecode.open;
 }
 
-
-#pragma mark ----- VEInterfaceDelegate
+#pragma mark----- VEInterfaceDelegate
 
 - (void)interfaceShouldEnableSlide:(BOOL)enable {
     if ([self.delegate respondsToSelector:@selector(shortVideoController:shouldLockVerticalScroll:)]) {
         [self.delegate shortVideoController:self shouldLockVerticalScroll:enable];
+    }
+}
+
+#pragma mark - Button Touch Action
+
+- (void)fullScreenButtonAction {
+    if ([self willPlayCurrentSource:self.videoModel]) {
+        [self.playerControlInterface removeFromSuperview];
+        [self.playerControlInterface destory];
+        self.playerControlInterface = nil;
+    }
+    VEVideoDetailViewController *detailViewController = [[VEVideoDetailViewController alloc] initWithType:self.currentType];
+    detailViewController.delegate = self;
+    detailViewController.landscapeMode = YES;
+    detailViewController.videoModel = self.videoModel;
+    [self.navigationController pushViewController:detailViewController animated:NO];
+    __weak __typeof(self) wself = self;
+    detailViewController.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
+        wself.playerController = playerController;
+        wself.isReturnPortrait = YES;
+        [wself.socialView reloadData];
+    };
+}
+
+#pragma mark----- VEVideoDetailProtocol
+
+- (VEVideoPlayerController *)currentPlayerController:(VEVideoModel *)videoModel {
+    if ([self willPlayCurrentSource:videoModel]) {
+        VEVideoPlayerController *c = self.playerController;
+        self.playerController = nil;
+        return c;
+    } else {
+        return nil;
+    }
+}
+
+- (BOOL)willPlayCurrentSource:(VEVideoModel *)videoModel {
+    NSString *currentVid = @"";
+    if (self.playerController && [self.playerController.mediaSource isKindOfClass:[TTVideoEngineVidSource class]]) {
+        currentVid = [self.playerController.mediaSource performSelector:@selector(vid)];
+    }
+    if ([currentVid isEqualToString:videoModel.videoId]) {
+        return YES;
+    } else {
+        return NO;
     }
 }
 
@@ -244,7 +348,7 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc] init];
         _titleLabel.tag = 3001;
-        _titleLabel.font = [UIFont systemFontOfSize:16 weight:UIFontWeightRegular];
+        _titleLabel.font = [UIFont systemFontOfSize:16 weight:UIFontWeightMedium];
         _titleLabel.textColor = [UIColor whiteColor];
         _titleLabel.numberOfLines = 1;
     }
@@ -276,6 +380,52 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
     return _bottomMaskView;
 }
 
+- (BaseButton *)fullScreenButton {
+    if (!_fullScreenButton) {
+        _fullScreenButton = [[BaseButton alloc] init];
+        _fullScreenButton.backgroundColor = [UIColor colorFromRGBHexString:@"#292929" andAlpha:0.34 * 255];
+        _fullScreenButton.layer.borderColor = [UIColor colorFromRGBHexString:@"#FFFFFF" andAlpha:0.2 * 255].CGColor;
+        _fullScreenButton.layer.borderWidth = 1;
+        _fullScreenButton.layer.cornerRadius = 4;
+        _fullScreenButton.layer.masksToBounds = YES;
+        _fullScreenButton.titleLabel.font = [UIFont systemFontOfSize:12];
+        [_fullScreenButton addTarget:self action:@selector(fullScreenButtonAction) forControlEvents:UIControlEventTouchUpInside];
 
+        UIImage *image = [UIImage imageNamed:@"vod_shortvideo_fullscreen"];
+        NSString *title = LocalizedStringFromBundle(@"shortvideo_fullscreen", @"VEVodApp");
+        CGFloat spacing = 4;
+        [_fullScreenButton setImage:image forState:UIControlStateNormal];
+        [_fullScreenButton setTitle:title forState:UIControlStateNormal];
+        [_fullScreenButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        _fullScreenButton.imageEdgeInsets = UIEdgeInsetsMake(0, -spacing / 2, 0, spacing / 2);
+        _fullScreenButton.titleEdgeInsets = UIEdgeInsetsMake(0, spacing / 2, 0, -spacing / 2);
+        _fullScreenButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        _fullScreenButton.hidden = YES;
+    }
+    return _fullScreenButton;
+}
+
+- (UIImageView *)avatar {
+    if (!_avatar) {
+        _avatar = [UIImageView new];
+        _avatar.clipsToBounds = YES;
+        _avatar.layer.borderColor = [UIColor whiteColor].CGColor;
+        _avatar.layer.borderWidth = 2;
+        _avatar.layer.cornerRadius = 24;
+    }
+    return _avatar;
+}
+
+- (VEInterfaceSocialStackView *)socialView {
+    if (!_socialView) {
+        _socialView = [VEInterfaceSocialStackView new];
+        _socialView.axis = UILayoutConstraintAxisVertical;
+    }
+    return _socialView;
+}
+
+- (void)dealloc {
+    NSLog(@"deallocdeallocdealloc");
+}
 
 @end

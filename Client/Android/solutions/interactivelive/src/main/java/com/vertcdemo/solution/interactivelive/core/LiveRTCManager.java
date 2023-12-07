@@ -62,10 +62,6 @@ import java.util.List;
 public class LiveRTCManager extends VideoTranscoding {
 
     private static final String TAG = "LiveRTCManager";
-    // local camera status
-    private boolean mIsCameraOn = true;
-    // local microphone status
-    private boolean mIsMicOn = true;
     // Whether is the front camera
     private boolean mIsFront = true;
     // anchor's video capture config
@@ -206,8 +202,8 @@ public class LiveRTCManager extends VideoTranscoding {
 
         release();
 
-        mIsMicOn = true;
-        mIsCameraOn = true;
+        setMicOn(true);
+        setCameraOn(true);
     }
 
     public LiveRTSClient getRTSClient() {
@@ -216,14 +212,6 @@ public class LiveRTCManager extends VideoTranscoding {
 
     public static LiveRTSClient rts() {
         return ins().getRTSClient();
-    }
-
-    public boolean isCameraOn() {
-        return mIsCameraOn;
-    }
-
-    public boolean isMicOn() {
-        return mIsMicOn;
     }
 
     private final HashMap<String, String> mRTCRoomInfos = new HashMap<>();
@@ -363,7 +351,7 @@ public class LiveRTCManager extends VideoTranscoding {
                 mRTCVideo.stopVideoCapture();
             }
         }
-        mIsCameraOn = on;
+        setCameraOn(on);
     }
 
     /**
@@ -372,7 +360,7 @@ public class LiveRTCManager extends VideoTranscoding {
      * @return true: camera on, off: camera off
      */
     public boolean toggleCamera() {
-        final boolean newValue = !mIsCameraOn;
+        final boolean newValue = !isCameraOn();
         startCaptureVideo(newValue);
         postMediaStatus();
         return isCameraOn();
@@ -387,14 +375,14 @@ public class LiveRTCManager extends VideoTranscoding {
                 mRTCVideo.stopAudioCapture();
             }
         }
-        mIsMicOn = on;
+        setMicOn(on);
     }
 
     public boolean toggleMicrophone() {
-        boolean newValue = !mIsMicOn;
+        boolean newValue = !isMicOn();
         startCaptureAudio(newValue);
         postMediaStatus();
-        return mIsMicOn;
+        return isMicOn();
     }
 
     public void stopAllCapture() {
@@ -434,8 +422,8 @@ public class LiveRTCManager extends VideoTranscoding {
         String selfUid = SolutionDataManager.ins().getUserId();
         event.userId = selfUid;
         event.operatorUserId = selfUid;
-        event.mic = mIsMicOn ? MediaStatus.ON : MediaStatus.OFF;
-        event.camera = mIsCameraOn ? MediaStatus.ON : MediaStatus.OFF;
+        event.mic = isMicOn() ? MediaStatus.ON : MediaStatus.OFF;
+        event.camera = isCameraOn() ? MediaStatus.ON : MediaStatus.OFF;
         SolutionEventBus.post(event);
     }
 

@@ -19,6 +19,9 @@ import com.bytedance.playerkit.player.source.MediaSource;
 import com.bytedance.playerkit.utils.Asserts;
 import com.bytedance.playerkit.utils.L;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * {@code VideoLayer} is a holder class of layer view. See {@link VideoLayerHost} class doc
  * for details of <b>Layer System</b>.
@@ -240,7 +243,9 @@ public abstract class VideoLayer extends VideoViewListener.Adapter
      * @return the created layer view.
      */
     @Nullable
-    protected abstract View createView(@NonNull ViewGroup parent);
+    protected View createView(@NonNull ViewGroup parent) {
+        return null;
+    }
 
     @Nullable
     public final <V extends View> V getView() {
@@ -383,7 +388,7 @@ public abstract class VideoLayer extends VideoViewListener.Adapter
      * @return the layer view.
      */
     @Nullable
-    public final View createView() {
+    protected final View createView() {
         final VideoLayerHost layerHost = mLayerHost;
         if (layerHost == null) return null;
 
@@ -504,5 +509,26 @@ public abstract class VideoLayer extends VideoViewListener.Adapter
      * @see #notifyEvent(int, Object)
      */
     protected void handleEvent(int code, @Nullable Object obj) {
+    }
+
+    @Nullable
+    protected final <T extends VideoLayer> T findLayer(String tag) {
+        VideoLayerHost layerHost = layerHost();
+        if (layerHost == null) return null;
+        return (T) layerHost.findLayer(tag);
+    }
+
+    @Nullable
+    protected final <T extends VideoLayer> T findLayer(Class<T> clazz) {
+        VideoLayerHost layerHost = layerHost();
+        if (layerHost == null) return null;
+        return layerHost.findLayer(clazz);
+    }
+
+    @NonNull
+    protected final <T extends VideoLayer> List<T> findLayers(Class<T> clazz) {
+        VideoLayerHost layerHost = layerHost();
+        if (layerHost == null) return Collections.emptyList();
+        return layerHost.findLayers(clazz);
     }
 }

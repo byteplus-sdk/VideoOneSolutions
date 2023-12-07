@@ -5,10 +5,9 @@
 
 @interface VEEventTimerProxy : NSObject
 
-@property (nonatomic, weak)   id target;
+@property (nonatomic, weak) id target;
 @property (nonatomic, assign) SEL selector;
 @property (nonatomic, assign) NSInteger interval;
-@property (nonatomic, assign) NSInteger timeSpan;
 @property (nonatomic, copy) void (^completion)(void);
 
 + (instancetype)proxyWithTarget:(id)target selector:(SEL)selector interval:(NSInteger)interval;
@@ -22,11 +21,16 @@
     proxy.target = target;
     proxy.selector = selector;
     proxy.interval = interval;
-    proxy.timeSpan = 0;
+    __weak typeof(target) weak_target = target;
     proxy.completion = ^{
-        IMP imp = [target methodForSelector:selector];
-        void (*func)(id, SEL) = (void *)imp;
-        func(target, selector);
+        if (!weak_target) {
+            return;
+        }
+        IMP imp = [weak_target methodForSelector:selector];
+        if (imp) {
+            void (*func)(id, SEL) = (void *)imp;
+            func(weak_target, selector);
+        }
     };
     return proxy;
 }
@@ -47,46 +51,31 @@
 
 @implementation VEEventTimer
 
-static id sharedInstance = nil;
-+ (instancetype)universalTimer {
-    if (!sharedInstance) {
-        sharedInstance = [[self alloc] init];
-    }
-    return sharedInstance;
-}
-
-+ (void)destroyUnit {
-    [sharedInstance stop];
-}
-
-
-#pragma mark ----- Public Func
+#pragma mark----- Public Func
 
 - (void)addTarget:(id)target action:(SEL)selector loopInterval:(NSInteger)interval {
-    [sharedInstance addResponder:target selector:selector interval:interval];
+    [self addResponder:target selector:selector interval:interval];
 }
 
 - (void)removeTarget:(id)target ofAction:(SEL)selector {
-    [sharedInstance removeResponder:target selector:selector];
+    [self removeResponder:target selector:selector];
 }
 
-
-#pragma mark ----- Private Func
+#pragma mark----- Private Func
 
 - (void)addResponder:(id)responder selector:(SEL)selector interval:(NSInteger)interval {
-    @synchronized(sharedInstance) {
+    @synchronized(self) {
         if (![responder respondsToSelector:selector] || interval <= 0) {
             return;
         }
         NSString *selectorStr = NSStringFromSelector(selector);
         for (VEEventTimerProxy *proxy in self.proxys) {
             NSString *proxySelectorStr = NSStringFromSelector(proxy.selector);
-            if (proxy.target == responder && [proxySelectorStr isEqualToString:selectorStr] ) {
+            if (proxy.target == responder && [proxySelectorStr isEqualToString:selectorStr]) {
                 return;
             }
         }
         [self.proxys addObject:[VEEventTimerProxy proxyWithTarget:responder selector:selector interval:interval]];
-        [self restart];
     }
 }
 
@@ -96,7 +85,7 @@ static id sharedInstance = nil;
         NSMutableArray *removedProxys = [NSMutableArray array];
         for (VEEventTimerProxy *proxy in self.proxys) {
             NSString *proxySelectorStr = NSStringFromSelector(proxy.selector);
-            if (proxy.target == responder && [proxySelectorStr isEqualToString:selectorStr] ) {
+            if (proxy.target == responder && [proxySelectorStr isEqualToString:selectorStr]) {
                 [removedProxys addObject:proxy];
             }
         }
@@ -117,8 +106,7 @@ static id sharedInstance = nil;
     }
 }
 
-
-#pragma mark ----- Timer
+#pragma mark----- Timer
 
 - (void)restart {
     NSInteger interval = [self interval];
@@ -130,9 +118,9 @@ static id sharedInstance = nil;
     if (_interval <= 0) {
         return;
     }
-    __weak __typeof(self)weakSelf = self;
+    __weak __typeof(self) weakSelf = self;
     _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.queue);
-    dispatch_source_set_timer(_timer, dispatch_walltime(DISPATCH_TIME_NOW, 0), _interval, 0);
+    dispatch_source_set_timer(_timer, dispatch_walltime(DISPATCH_TIME_NOW, _interval), _interval, 0);
     dispatch_source_set_event_handler(_timer, ^{
         dispatch_sync(dispatch_get_main_queue(), ^{
             [weakSelf timerFire];
@@ -157,18 +145,13 @@ static id sharedInstance = nil;
                 [removedProxys addObject:proxy];
                 continue;
             }
-            if (proxy.timeSpan >= proxy.interval) {
-                proxy.completion();
-                proxy.timeSpan = 0;
-            }
-            proxy.timeSpan += _interval;
+            proxy.completion();
         }
         [self removeProxys:removedProxys];
     }
 }
 
-
-#pragma mark ----- Tool
+#pragma mark----- Tool
 
 - (NSInteger)commonDivisor:(NSInteger)num1 num2:(NSInteger)num2 {
     if (0 == num2) return num1;
@@ -191,8 +174,7 @@ static id sharedInstance = nil;
     return interval;
 }
 
-
-#pragma mark ----- Lazy Load
+#pragma mark----- Lazy Load
 
 - (NSMutableArray *)proxys {
     if (!_proxys) {
@@ -203,10 +185,9 @@ static id sharedInstance = nil;
 
 - (dispatch_queue_t)queue {
     if (!_queue) {
-        _queue = dispatch_queue_create("com.xiaodu.crowdsourcing.timer.service.queue", DISPATCH_QUEUE_SERIAL);
+        _queue = dispatch_queue_create("com.videoone.timer.service.queue", DISPATCH_QUEUE_SERIAL);
     }
     return _queue;
 }
 
 @end
-

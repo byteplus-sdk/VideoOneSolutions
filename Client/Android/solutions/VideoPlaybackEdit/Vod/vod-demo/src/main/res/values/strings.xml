@@ -36,4 +36,15 @@
     <string name="vevod_network_error">Network error</string>
 
     <string name="vevod_not_support_ck_error">The open source code does not support VE SDK functions, please download Demo to experience it.</string>
+
+    <string name="vevod_comment_dialog_num">%1$,d comments</string>
+    <string name="vevod_delete_comment">Delete</string>
+
+    <string name="vevod_confirm_delete_title">Confirm deletion?</string>
+    <string name="vevod_confirm_delete_message">The comment content can not be restored after deletion. Please confirm the operation.</string>
+
+    <string name="vevod_comment_question_message">Comments you post are temporary and will be visible only to you. BytePlus assures that no collection, storage or backups of these comments will be made.</string>
+    <string name="vevod_tips">Tips</string>
+    <string name="vevod_close">Close</string>
+
 </resources>

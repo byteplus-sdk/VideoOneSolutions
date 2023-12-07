@@ -10,6 +10,7 @@ import static com.bytedance.playerkit.player.playback.DisplayModeHelper.map;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.Surface;
@@ -58,6 +59,7 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
 
     private VideoLayerHost mLayerHost;
 
+    @NonNull
     private final CopyOnWriteArrayList<VideoViewListener> mListeners = new CopyOnWriteArrayList<>();
 
     private OnClickListener mOnClickListener;
@@ -392,21 +394,17 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
         if (mDisplayView == null) {
             mDisplayView = DisplayView.create(getContext(), viewType);
             mDisplayView.setSurfaceListener(this);
-            if (mListeners != null) {
-                for (VideoViewListener listener : mListeners) {
-                    listener.onVideoViewDisplayViewCreated(mDisplayView.getDisplayView());
-                }
+            for (VideoViewListener listener : mListeners) {
+                listener.onVideoViewDisplayViewCreated(mDisplayView.getDisplayView());
             }
             addView(mDisplayView.getDisplayView(), 0,
                     new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER));
             mDisplayModeHelper.setContainerView(this);
             mDisplayModeHelper.setDisplayView(mDisplayView.getDisplayView());
 
-            if (mListeners != null) {
-                for (VideoViewListener listener : mListeners) {
-                    listener.onVideoViewDisplayViewChanged(current == null ? null : current.getDisplayView(),
-                            mDisplayView.getDisplayView());
-                }
+            for (VideoViewListener listener : mListeners) {
+                listener.onVideoViewDisplayViewChanged(current == null ? null : current.getDisplayView(),
+                        mDisplayView.getDisplayView());
             }
         }
     }
@@ -520,10 +518,8 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
             L.v(this, "setDisplayMode", map(current), map(displayMode));
             mDisplayModeHelper.setDisplayMode(displayMode);
 
-            if (mListeners != null) {
-                for (VideoViewListener listener : mListeners) {
-                    listener.onVideoViewDisplayModeChanged(current, displayMode);
-                }
+            for (VideoViewListener listener : mListeners) {
+                listener.onVideoViewDisplayModeChanged(current, displayMode);
             }
         }
     }
@@ -598,15 +594,32 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
     public void bindDataSource(@NonNull MediaSource source) {
         L.d(this, "bindDataSource", MediaSource.dump(mSource), MediaSource.dump(source));
         mSource = source;
-        if (mListeners != null) {
-            for (VideoViewListener listener : mListeners) {
-                listener.onVideoViewBindDataSource(source);
-            }
+        for (VideoViewListener listener : mListeners) {
+            listener.onVideoViewBindDataSource(source);
         }
 
         if (mSource != null && mSource.getDisplayAspectRatio() > 0) {
             mDisplayModeHelper.setDisplayAspectRatio(mSource.getDisplayAspectRatio());
         }
+    }
+
+    private final Bundle extras = new Bundle();
+
+    public void putExtra(@Nullable String key, int value) {
+        extras.putInt(key, value);
+    }
+
+    public void putExtra(@Nullable String key, @Nullable String value) {
+        extras.putString(key, value);
+    }
+
+    @Nullable
+    public String getStringExtra(@Nullable String key) {
+        return extras.getString(key);
+    }
+
+    public int getIntExtra(@Nullable String key) {
+        return extras.getInt(key);
     }
 
     public String dump() {

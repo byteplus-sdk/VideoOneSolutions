@@ -5,8 +5,10 @@ package com.bytedance.vod.scenekit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -59,6 +61,7 @@ public class VideoSettings {
 
     public static final String DEBUG_ENABLE_LOG_LAYER = "debug_enable_log_layer";
     public static final String DEBUG_ENABLE_DEBUG_TOOL = "debug_enable_debug_tool";
+    public static final String DEBUG_INPUT_MEDIA_SOURCE = "debug_input_media_source";
 
     public static final String COMMON_CODEC_STRATEGY = "common_codec_strategy";
     public static final String COMMON_HARDWARE_DECODE = "common_hardware_decode";
@@ -189,6 +192,23 @@ public class VideoSettings {
                         Boolean.class,
                         Boolean.FALSE,
                         null)));
+        settings.add(SettingItem.createOptionClickableItem(CATEGORY_DEBUG,
+                new Option(
+                        Option.TYPE_ARROW,
+                        CATEGORY_DEBUG,
+                        DEBUG_INPUT_MEDIA_SOURCE,
+                        R.string.vevod_option_debug_input_media_source,
+                        String.class,
+                        "",
+                        null), (eventType, context, settingItem, holder) -> {
+                            try {
+                                Class<?> calzz = Class.forName("com.bytedance.voddemo.ui.sample.SampleSourceActivity");
+                                Intent intent = new Intent(context, calzz);
+                                context.startActivity(intent);
+                            } catch (Exception e) {
+                                Toast.makeText(context, "Not Implemented", Toast.LENGTH_SHORT).show();
+                            }
+                        }));
     }
 
     private static void createShortVideoSettings(List<SettingItem> settings) {

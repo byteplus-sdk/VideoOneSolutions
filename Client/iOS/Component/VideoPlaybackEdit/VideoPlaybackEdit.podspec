@@ -14,6 +14,11 @@ Pod::Spec.new do |s|
 
   s.default_subspecs = 'VEPlayerUIModule', 'VEPlayerKit', 'VESceneKit', 'Setting', 'LongVideo', 'FeedVideo', 'ShortVideo', 'VideoDetail', 'Uploader', 'Entry'
   
+  $XCODE_VERSION = `xcrun xcodebuild -version | grep Xcode | cut -d' ' -f2`
+  if $XCODE_VERSION > '15.0.0'
+    s.user_target_xcconfig = {"OTHER_LDFLAGS"=> "-ld64", }
+  end
+
   s.subspec 'VEPlayerUIModule' do |subspec|
     subspec.public_header_files = [
       'VEVodApp/VEPlayerUIModule/Classes/**/*.h'
@@ -22,7 +27,8 @@ Pod::Spec.new do |s|
       'VEVodApp/VEPlayerUIModule/Classes/**/*'
     ]
     subspec.resources = [
-      'VEVodApp/VEPlayerUIModule/VEVodApp.xcassets'
+      'VEVodApp/VEPlayerUIModule/VEVodApp.xcassets',
+      'VEVodApp/VEPlayerUIModule/Resource/*.{json}'
     ]
     subspec.resource_bundle = {
       'VEVodApp' => 'VEVodApp/VEPlayerUIModule/*.bundle'
@@ -33,6 +39,7 @@ Pod::Spec.new do |s|
     subspec.dependency 'YYModel'
     subspec.dependency 'YYCache'
     subspec.dependency 'ToolKit'
+    subspec.dependency 'lottie-ios'
   end
 
   s.subspec 'VEPlayerKit' do |subspec|

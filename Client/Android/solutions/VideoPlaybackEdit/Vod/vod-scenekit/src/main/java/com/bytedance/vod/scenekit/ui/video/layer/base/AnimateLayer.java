@@ -21,12 +21,13 @@ public abstract class AnimateLayer extends BaseLayer {
     public static final long DEFAULT_ANIMATE_DURATION = 300;
     public static final long DEFAULT_ANIMATE_DISMISS_DELAY = 4000;
 
-    public static final int IDLE = 0;
-    public static final int SHOWING = 1;
-    public static final int DISMISSING = -1;
+    public enum State {
+        IDLE, SHOWING, DISMISSING;
+    }
+
 
     private Animator mAnimator;
-    private int mState = IDLE;
+    private State mState = State.IDLE;
 
     protected final Handler mH = new Handler(Looper.getMainLooper());
     protected final Runnable animateDismissRunnable = this::animateDismiss;
@@ -67,10 +68,6 @@ public abstract class AnimateLayer extends BaseLayer {
         }
     }
 
-    public final int getAnimateState() {
-        return mState;
-    }
-
     public final void animateToggle(boolean autoDismiss) {
         switch (mState) {
             case IDLE:
@@ -90,11 +87,11 @@ public abstract class AnimateLayer extends BaseLayer {
     }
 
     public boolean isAnimateShowing() {
-        return mState == SHOWING;
+        return mState == State.SHOWING;
     }
 
     public boolean isAnimateDismissing() {
-        return mState == DISMISSING;
+        return mState == State.DISMISSING;
     }
 
     public void animateShow(boolean autoDismiss) {
@@ -115,24 +112,18 @@ public abstract class AnimateLayer extends BaseLayer {
             @Nullable Animator.AnimatorListener showListener) {
 
         removeDismissRunnable();
-        if (mState == SHOWING) {
-            L.v(this, "animateShow", mapState(mState), mapState(SHOWING), "ignore");
+        if (mState == State.SHOWING || isShowing()) {
+            L.v(this, "animateShow", mState, State.SHOWING, "ignore");
             if (autoDismiss) {
                 postDismissRunnable();
             }
             return;
-        } else if (mState == DISMISSING) {
-            L.v(this, "animateShow", mapState(mState), mapState(SHOWING), "cancel");
+        }
+
+        if (mState == State.DISMISSING) {
+            L.v(this, "animateShow", mState, State.SHOWING, "cancel");
             if (mAnimator != null && mAnimator.isStarted()) {
                 mAnimator.cancel();
-            }
-        } else {
-            if (isShowing()) {
-                L.v(this, "animateShow", mapState(mState), mapState(SHOWING), "ignore");
-                if (autoDismiss) {
-                    postDismissRunnable();
-                }
-                return;
             }
         }
 
@@ -160,7 +151,7 @@ public abstract class AnimateLayer extends BaseLayer {
             @Override
             public void onAnimationEnd(Animator animation) {
                 resetViewAnimateProperty();
-                setState(IDLE);
+                setState(State.IDLE);
                 L.v(AnimateLayer.this, "animateShow", "end");
             }
         });
@@ -170,7 +161,7 @@ public abstract class AnimateLayer extends BaseLayer {
         if (mAnimateShowListener != null) {
             mAnimator.addListener(mAnimateShowListener);
         }
-        setState(SHOWING);
+        setState(State.SHOWING);
 
         if (autoDismiss) {
             postDismissRunnable();
@@ -182,28 +173,37 @@ public abstract class AnimateLayer extends BaseLayer {
     }
 
     public void animateDismiss() {
-        animateDismiss(null);
+        animateDismiss(false);
     }
 
-    public final void animateDismiss(Animator.AnimatorListener listener) {
-        animateDismiss(0, DEFAULT_ANIMATE_DURATION, listener);
-    }
+    public void animateDismiss(boolean force) {
+        final long startDelay = 0;
+        final long duration = DEFAULT_ANIMATE_DURATION;
 
-    public final void animateDismiss(long startDelay, long duration, Animator.AnimatorListener listener) {
         removeDismissRunnable();
-        if (mState == DISMISSING) {
-            L.v(this, "animateDismiss", mapState(mState), mapState(DISMISSING), "ignore");
+        if (mState == State.DISMISSING) {
+            L.v(this, "animateDismiss", mState, State.DISMISSING, "ignore");
             return;
-        } else if (mState == SHOWING) {
-            L.v(this, "animateDismiss", mapState(mState), mapState(DISMISSING), "cancel");
+        } else if (mState == State.SHOWING) {
+            L.v(this, "animateDismiss", mState, State.DISMISSING, "cancel");
             if (mAnimator != null && mAnimator.isStarted()) {
                 mAnimator.cancel();
             }
         } else {
             if (!isShowing()) {
-                L.v(this, "animateDismiss", mapState(mState), mapState(DISMISSING), "ignore");
+                L.v(this, "animateDismiss", mState, State.DISMISSING, "ignore");
                 return;
             }
+        }
+        if (force) {
+            L.v(this, "animateDismiss", "force/start");
+            dismiss();
+            L.v(AnimateLayer.this, "animateDismiss", "end");
+            return;
+        }
+        if (preventAnimateDismiss()) {
+            L.v(AnimateLayer.this, "animateDismiss", "preventAnimateDismiss");
+            return;
         }
         L.v(this, "animateDismiss", "start");
         if (mAnimator == null) {
@@ -223,17 +223,24 @@ public abstract class AnimateLayer extends BaseLayer {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                dismiss();
-                L.v(AnimateLayer.this, "animateDismiss", "end");
+                if (preventAnimateDismiss()) {
+                    resetViewAnimateProperty();
+                    setState(State.IDLE);
+                    L.v(AnimateLayer.this, "animateDismiss", "preventAnimateDismiss");
+                } else {
+                    dismiss();
+                    L.v(AnimateLayer.this, "animateDismiss", "end");
+                }
             }
         });
-        if (listener != null) {
-            mAnimator.addListener(listener);
-        }
         if (mAnimateDismissListener != null) {
             mAnimator.addListener(mAnimateDismissListener);
         }
-        setState(DISMISSING);
+        setState(State.DISMISSING);
+    }
+
+    protected boolean preventAnimateDismiss() {
+        return false;
     }
 
     @Override
@@ -245,7 +252,7 @@ public abstract class AnimateLayer extends BaseLayer {
         }
         super.show();
         resetViewAnimateProperty();
-        setState(IDLE);
+        setState(State.IDLE);
     }
 
     @Override
@@ -257,7 +264,7 @@ public abstract class AnimateLayer extends BaseLayer {
         }
         super.dismiss();
         resetViewAnimateProperty();
-        setState(IDLE);
+        setState(State.IDLE);
     }
 
     @Override
@@ -269,7 +276,7 @@ public abstract class AnimateLayer extends BaseLayer {
         }
         super.hide();
         resetViewAnimateProperty();
-        setState(IDLE);
+        setState(State.IDLE);
     }
 
     private void removeDismissRunnable() {
@@ -280,23 +287,10 @@ public abstract class AnimateLayer extends BaseLayer {
         mH.postDelayed(animateDismissRunnable, DEFAULT_ANIMATE_DISMISS_DELAY);
     }
 
-    private void setState(int state) {
+    private void setState(State state) {
         if (this.mState != state) {
-            L.v(this, "setState", mapState(mState), mapState(state));
+            L.v(this, "setState", mState, state);
             this.mState = state;
-        }
-    }
-
-    private static String mapState(int state) {
-        switch (state) {
-            case IDLE:
-                return "idle";
-            case DISMISSING:
-                return "dismissing";
-            case SHOWING:
-                return "showing";
-            default:
-                throw new IllegalArgumentException();
         }
     }
 }

@@ -30,6 +30,7 @@ public class Option {
     public static final int TYPE_RATIO_BUTTON = 1;
     public static final int TYPE_SELECTABLE_ITEMS = 2;
     public static final int TYPE_EDITABLE_TEXT = 3;
+    public static final int TYPE_ARROW = 4;
 
     public final int type;
     public final String category;

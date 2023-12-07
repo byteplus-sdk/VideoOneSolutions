@@ -90,6 +90,14 @@ public class RatioFrameLayout extends FrameLayout {
         }
     }
 
+    public void setRatio(@RatioMode int ratioMode, float ratio) {
+        if (mRatioMode != ratioMode || mRatio != ratio) {
+            this.mRatioMode = ratioMode;
+            this.mRatio = ratio;
+            requestLayout();
+        }
+    }
+
     public float getRatio() {
         return mRatio;
     }

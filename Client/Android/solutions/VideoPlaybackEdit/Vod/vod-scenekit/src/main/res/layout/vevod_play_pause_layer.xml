@@ -6,4 +6,5 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="48dp"
     android:layout_height="48dp"
+    android:layout_gravity="center"
     android:src="@drawable/vevod_play_pause_layer_fullscreen_ic_selector" />

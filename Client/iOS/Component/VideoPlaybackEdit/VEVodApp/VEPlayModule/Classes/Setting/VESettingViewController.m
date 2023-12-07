@@ -5,6 +5,7 @@
 #import "VESettingSwitcherCell.h"
 #import "VESettingDisplayDetailCell.h"
 #import "VESettingTypeMutilSelectorCell.h"
+#import "VESettingEntranceCell.h"
 #import "VESettingManager.h"
 #import <Masonry/Masonry.h>
 #import "UIColor+RGB.h"
@@ -14,6 +15,7 @@
 
 extern NSString *universalActionSectionKey;
 extern NSString *universalDidSectionKey;
+extern NSString *universalVideoUrlSectionKey;
 
 @interface VESettingViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -51,6 +53,7 @@ extern NSString *universalDidSectionKey;
     [self.tableView registerClass:[VESettingSwitcherCell class] forCellReuseIdentifier:VESettingSwitcherCellReuseID];
     [self.tableView registerClass:[VESettingDisplayDetailCell class] forCellReuseIdentifier:VESettingDisplayDetailCellReuseID];
     [self.tableView registerClass:[VESettingTypeMutilSelectorCell class] forCellReuseIdentifier:VESettingTypeMutilSelectorCellReuseID];
+    [self.tableView registerClass:[VESettingEntranceCell class] forCellReuseIdentifier:VESettingEntranceCellCellReuseID];
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.navView.mas_bottom);
         make.left.bottom.right.equalTo(self.view);
@@ -149,7 +152,7 @@ extern NSString *universalDidSectionKey;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     NSString *sectionKey = [[[VESettingManager universalManager] settingSections] objectAtIndex:section];
-    if ([sectionKey isEqualToString:universalActionSectionKey] || [sectionKey isEqualToString:universalDidSectionKey]) {
+    if ([sectionKey isEqualToString:universalActionSectionKey] || [sectionKey isEqualToString:universalDidSectionKey] || [sectionKey isEqualToString:universalVideoUrlSectionKey]) {
         return  0;
     } else {
         return 50;

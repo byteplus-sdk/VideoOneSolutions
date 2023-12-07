@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)mediaComponent:(LiveMediaComponent *)mediaComponent
        clickStreamInfo:(BOOL)isClick;
 
+- (void)mediaComponent:(LiveMediaComponent *)mediaComponent
+          toggleCamera:(BOOL)cameraOn;
+
 @end
 
 @interface LiveMediaComponent : NSObject

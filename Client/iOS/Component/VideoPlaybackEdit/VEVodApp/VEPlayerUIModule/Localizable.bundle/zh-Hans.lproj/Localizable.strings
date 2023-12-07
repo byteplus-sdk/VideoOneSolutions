@@ -15,6 +15,7 @@
 "device_id" = "设备ID";
 "clean_cache" = "清理缓存";
 "clean_cache_success" = "缓存已清理";
+"play_video_url" = "输入播放源";
 "copy" = "复制";
 "loop_mode_on" = "循环播放";
 "loop_mode_off" = "单次播放";
@@ -35,3 +36,12 @@
 "resolution_unknown" = "未知";
 "resolution_abr_auto" = "ABR自动";
 "resolution_auto" = "自动";
+"shortvideo_fullscreen" = "全屏观看";
+"vod_replay" = "重播";
+"comments"="条评论";
+"delete"="删除";
+"delete_comment_title"="确认删除？";
+"delete_comment_content"="当前评论内容删除后无法恢复，请确认操作。";
+"tip_title"="提示";
+"tip_comment_content"="您发布的评论是临时的，仅自己可见。BytePlus保证不会对这些评论进行收集、存储或备份。";
+"tip_close"="关闭";

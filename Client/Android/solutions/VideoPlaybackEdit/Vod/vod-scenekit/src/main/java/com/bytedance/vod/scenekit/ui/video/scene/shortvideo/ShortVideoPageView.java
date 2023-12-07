@@ -20,10 +20,11 @@ import com.bytedance.playerkit.player.PlayerEvent;
 import com.bytedance.playerkit.player.playback.PlaybackController;
 import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.utils.L;
-import com.bytedance.playerkit.utils.event.Dispatcher;
-import com.bytedance.playerkit.utils.event.Event;
-import com.bytedance.vod.scenekit.data.model.VideoItem;
+import com.bytedance.vod.scenekit.R;
 import com.bytedance.vod.scenekit.VideoSettings;
+import com.bytedance.vod.scenekit.data.model.VideoItem;
+import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
+import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.ui.widgets.viewpager2.OnPageChangeCallbackCompat;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public class ShortVideoPageView {
         this.mViewPager = viewPager;
 
         mViewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
-        mShortVideoAdapter = new ShortVideoAdapter();
+        mShortVideoAdapter = new ShortVideoAdapter(viewPager.getContext());
         mViewPager.setAdapter(mShortVideoAdapter);
         mViewPager.registerOnPageChangeCallback(new OnPageChangeCallbackCompat(mViewPager) {
             @Override
@@ -53,25 +54,43 @@ public class ShortVideoPageView {
                 togglePlayback(position);
             }
         });
-        mController.addPlaybackListener(new Dispatcher.EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                switch (event.code()) {
-                    case PlayerEvent.State.COMPLETED: {
-                        final Player player = event.owner(Player.class);
-                        if (player != null && !player.isLooping() &&
-                                VideoSettings.intValue(VideoSettings.SHORT_VIDEO_PLAYBACK_COMPLETE_ACTION) == 1 /* 1 means PlayNext */) {
-                            final int currentPosition = getCurrentItem();
-                            final int nextPosition = currentPosition + 1;
-                            if (nextPosition < mShortVideoAdapter.getItemCount()) {
-                                setCurrentItem(nextPosition, true);
-                            }
-                        }
-                        break;
+        mController.addPlaybackListener(event -> {
+            if (event.code() == PlayerEvent.State.COMPLETED) {
+                final Player player = event.owner(Player.class);
+                if (player != null && !player.isLooping() &&
+                        VideoSettings.intValue(VideoSettings.SHORT_VIDEO_PLAYBACK_COMPLETE_ACTION) == 1 /* 1 means PlayNext */) {
+                    VideoView videoView = mController.videoView();
+                    assert videoView != null;
+                    if (videoView.getPlayScene() == PlayScene.SCENE_FULLSCREEN) {
+                        // FullScreen mode, can't switch next
+                        return;
+                    }
+                    playNext();
+                }
+            }
+        });
+
+        mShortVideoAdapter.setAfterExitFullScreenListener(() -> {
+            final Player player = mController.player();
+            if (player != null && !player.isLooping() &&
+                    VideoSettings.intValue(VideoSettings.SHORT_VIDEO_PLAYBACK_COMPLETE_ACTION) == 1 /* 1 means PlayNext */) {
+                if (player.isCompleted()) {
+                    VideoView videoView = mController.videoView();
+                    if (videoView != null) {
+                        // Use post to wait videoView layout complete
+                        videoView.post(this::playNext);
                     }
                 }
             }
         });
+    }
+
+    void playNext() {
+        final int currentPosition = getCurrentItem();
+        final int nextPosition = currentPosition + 1;
+        if (nextPosition < mShortVideoAdapter.getItemCount()) {
+            setCurrentItem(nextPosition, true);
+        }
     }
 
     @MainThread
@@ -128,17 +147,12 @@ public class ShortVideoPageView {
         return mViewPager.getCurrentItem();
     }
 
-    public View getCurrentItemView() {
-        final int currentPosition = mViewPager.getCurrentItem();
-        return findItemViewByPosition(mViewPager, currentPosition);
-    }
-
     private void togglePlayback(int currentPosition) {
         if (!mLifeCycle.getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
             return;
         }
         L.d(this, "togglePlayback", currentPosition);
-        final VideoView videoView = (VideoView) findItemViewByPosition(mViewPager, currentPosition);
+        final VideoView videoView = findVideoViewByPosition(mViewPager, currentPosition);
         if (mController.videoView() == null) {
             if (videoView != null) {
                 mController.bind(videoView);
@@ -151,6 +165,7 @@ public class ShortVideoPageView {
             }
             mController.startPlayback();
         }
+        FullScreenLayer.enableAutoOrientation(videoView);
     }
 
     public void play() {
@@ -174,6 +189,7 @@ public class ShortVideoPageView {
         } else {
             mInterceptStartPlaybackOnResume = false;
             mController.pausePlayback();
+            FullScreenLayer.disableAutoOrientation(mController.videoView());
         }
     }
 
@@ -206,15 +222,21 @@ public class ShortVideoPageView {
     };
 
     @Nullable
-    private static View findItemViewByPosition(ViewPager2 pager, int position) {
+    private static VideoView findVideoViewByPosition(ViewPager2 pager, int position) {
         final RecyclerView recyclerView = (RecyclerView) pager.getChildAt(0);
-        if (recyclerView != null) {
-            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-            if (layoutManager != null) {
-                return layoutManager.findViewByPosition(position);
-            }
+        if (recyclerView == null) {
+            return null;
         }
-        return null;
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        if (layoutManager == null) {
+            return null;
+        }
+
+        View itemView = layoutManager.findViewByPosition(position);
+        if (itemView instanceof VideoView) {
+            return (VideoView) itemView;
+        }
+        return itemView == null ? null : itemView.findViewById(R.id.videoView);
     }
 
 }

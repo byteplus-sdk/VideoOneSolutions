@@ -8,7 +8,12 @@
 
 - (id)feedVideoCellShouldPlay:(VEFeedVideoNormalCell *)cell;
 
+- (CFTimeInterval)feedVideoWillStartPlay:(VEVideoModel *)videoModel;
+- (void)feedVideoDidEndPlay:(VEVideoModel *)videoModel playAt:(CFTimeInterval)time duration:(CFTimeInterval)duration;
+
 - (void)feedVideoCellReport:(VEFeedVideoNormalCell *)cell;
+
+- (void)feedVideoCellDidRotate:(VEFeedVideoNormalCell *)cell;
 
 @end
 

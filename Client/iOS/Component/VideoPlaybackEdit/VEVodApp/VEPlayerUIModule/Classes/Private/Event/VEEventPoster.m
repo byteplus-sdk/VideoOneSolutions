@@ -80,4 +80,12 @@
     return [self.bridge currentBrightness];
 }
 
+- (BOOL)isSeekingProgress {
+    return self.bridge.seeking;
+}
+
+- (NSTimeInterval)durationWatched {
+    return [self.bridge durationWatched];
+}
+
 @end

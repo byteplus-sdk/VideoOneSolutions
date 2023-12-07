@@ -1,12 +1,15 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEInterfacePlayElement.h"
-#import "VEPlayerUIModule.h"
 #import "Masonry.h"
+#import "VEEventConst.h"
+#import "VEPlayerUIModule.h"
 
 NSString *const playButtonId = @"playButtonId";
 
 NSString *const playGestureId = @"playGestureId";
+
+NSString *const likeGestureId = @"likeGestureId";
 
 @interface VEInterfacePlayElement ()
 
@@ -19,7 +22,7 @@ NSString *const playGestureId = @"playGestureId";
 @synthesize elementID;
 @synthesize type;
 
-#pragma mark ----- VEInterfaceElementProtocol
+#pragma mark----- VEInterfaceElementProtocol
 
 - (NSString *)elementAction:(id)mayElementView {
     VEPlaybackState playbackState = [self.eventPoster currentPlaybackState];
@@ -30,7 +33,7 @@ NSString *const playGestureId = @"playGestureId";
     }
 }
 
-- (void)elementNotify:(id)mayElementView :(NSString *)key :(id)obj {
+- (void)elementNotify:(id)mayElementView key:(NSString *)key obj:(id)obj {
     if (self.type == VEInterfaceElementTypeButton) {
         VEActionButton *button = (VEActionButton *)mayElementView;
         BOOL screenIsClear = [self.eventPoster screenIsClear];
@@ -55,7 +58,7 @@ NSString *const playGestureId = @"playGestureId";
     }
 }
 
-- (void)elementWillLayout:(UIView *)elementView :(NSSet<UIView *> *)elementGroup :(UIView *)groupContainer {
+- (void)elementWillLayout:(UIView *)elementView elementGroup:(NSSet<UIView *> *)elementGroup groupContainer:(UIView *)groupContainer {
     [elementView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.center.equalTo(groupContainer);
         make.size.equalTo(@(CGSizeMake(80.0, 80.0)));
@@ -64,11 +67,14 @@ NSString *const playGestureId = @"playGestureId";
 
 - (void)elementDisplay:(VEActionButton *)button {
     [button setImage:[UIImage imageNamed:@"video_play"] forState:UIControlStateSelected];
+    VEPlaybackState playbackState = [self.eventPoster currentPlaybackState];
+    button.hidden = playbackState != VEPlaybackStatePause;
+    button.selected = playbackState != VEPlaybackStatePlaying;
 }
 
-#pragma mark ----- Element output
+#pragma mark----- Element output
 
-+ (VEInterfaceElementDescriptionImp *)playButtonWithEventPoster:(VEEventPoster *)eventPoster{
++ (VEInterfaceElementDescriptionImp *)playButtonWithEventPoster:(VEEventPoster *)eventPoster {
     @autoreleasepool {
         VEInterfacePlayElement *element = [VEInterfacePlayElement new];
         element.eventPoster = eventPoster;
@@ -80,11 +86,44 @@ NSString *const playGestureId = @"playGestureId";
 
 + (VEInterfaceElementDescriptionImp *)playGestureWithEventPoster:(VEEventPoster *)eventPoster {
     @autoreleasepool {
-        VEInterfacePlayElement *element = [VEInterfacePlayElement new];
-        element.eventPoster = eventPoster;
-        element.type = VEInterfaceElementTypeGestureSingleTap;
-        element.elementID = playGestureId;
-        return element.elementDescription;
+        return ({
+            VEInterfaceElementDescriptionImp *gestureDes = [VEInterfaceElementDescriptionImp new];
+            gestureDes.elementID = playGestureId;
+            gestureDes.type = VEInterfaceElementTypeGestureSingleTap;
+            gestureDes.elementAction = ^NSString *(id sender) {
+                VEPlaybackState playbackState = [eventPoster currentPlaybackState];
+                if (playbackState == VEPlaybackStatePlaying) {
+                    return VEPlayEventPause;
+                } else {
+                    return VEPlayEventPlay;
+                }
+            };
+            gestureDes;
+        });
+    }
+}
+
++ (VEInterfaceElementDescriptionImp *)likeGesture {
+    @autoreleasepool {
+        return ({
+            VEInterfaceElementDescriptionImp *gestureDes = [VEInterfaceElementDescriptionImp new];
+            gestureDes.elementID = likeGestureId;
+            gestureDes.type = VEInterfaceElementTypeGestureDoubleTap;
+            gestureDes.elementAction = ^NSString *(id sender) {
+                return VEUIEventLikeVideo;
+            };
+            gestureDes;
+        });
+    }
+}
+
++ (VEInterfaceElementDescriptionImp *)autoHideControllerGesture {
+    @autoreleasepool {
+        return ({
+            VEInterfaceElementDescriptionImp *gestureDes = [VEInterfaceElementDescriptionImp new];
+            gestureDes.type = VEInterfaceElementTypeGestureAutoHideController;
+            gestureDes;
+        });
     }
 }
 

@@ -3,6 +3,7 @@
 #import "VEInterfaceBridge.h"
 #import "VEEventConst.h"
 #import "VEPlayProtocol.h"
+#import "VEVideoPlayerController.h"
 
 NSString *const VEPlayEventStateChanged = @"VEPlayEventStateChanged";
 
@@ -35,7 +36,7 @@ NSString *const VEPlayEventTimeIntervalChanged = @"VEPlayEventTimeIntervalChange
     [self.eventMessageBus destroyUnit];
 }
 
-#pragma mark ----- Action / Message
+#pragma mark----- Action / Message
 
 - (void)registEvents {
     [self.eventMessageBus registEvent:VETaskPlayCoreTransfer withAction:@selector(bindPlayerCore:) ofTarget:self];
@@ -47,7 +48,7 @@ NSString *const VEPlayEventTimeIntervalChanged = @"VEPlayEventTimeIntervalChange
     [self.eventMessageBus registEvent:VEPlayEventChangeResolution withAction:@selector(changeResolutionAction:) ofTarget:self];
     [self.eventMessageBus registEvent:VEUIEventBrightnessIncrease withAction:@selector(changeBrightnessAction:) ofTarget:self];
     [self.eventMessageBus registEvent:VEUIEventVolumeIncrease withAction:@selector(changeVolumeAction:) ofTarget:self];
-    [self.eventMessageBus registEvent:VEPlayEventSeeking withAction:@selector(seekingAction:) ofTarget:self];
+    [self.eventMessageBus registEvent:VEUIEventSeeking withAction:@selector(seekingAction:) ofTarget:self];
 }
 
 - (void)bindPlayerCore:(id)param {
@@ -79,8 +80,18 @@ NSString *const VEPlayEventTimeIntervalChanged = @"VEPlayEventTimeIntervalChange
         id value = paramDic.allValues.firstObject;
         if ([value isKindOfClass:[NSNumber class]]) {
             NSTimeInterval interval = [((NSNumber *)value) doubleValue];
-            if ([self.core respondsToSelector:@selector(seek:)]) {
-                [self.core seek:interval];
+            VEPlaybackState state = [self.core currentPlaybackState];
+            if (state == VEPlaybackStateStopped || (state == VEPlaybackStatePlaying && [self.core currentPlaybackTime] == 0)) {
+                if ([self.core isKindOfClass:[VEVideoPlayerController class]]) {
+                    VEVideoPlayerController *vc = (VEVideoPlayerController *)self.core;
+                    vc.startTime = interval;
+                    [self.core play];
+                }
+            } else {
+                if ([self.core respondsToSelector:@selector(seek:)]) {
+                    [self.core seek:interval];
+                }
+                [self.core play];
             }
         }
     }
@@ -105,7 +116,6 @@ NSString *const VEPlayEventTimeIntervalChanged = @"VEPlayEventTimeIntervalChange
             [self.core setLooping:loop];
         }
     }
-    
 }
 
 - (void)changePlaySpeedAction:(id)param {
@@ -130,6 +140,9 @@ NSString *const VEPlayEventTimeIntervalChanged = @"VEPlayEventTimeIntervalChange
             NSInteger resolutionType = [(NSNumber *)value integerValue];
             if ([self.core respondsToSelector:@selector(setCurrentResolution:)]) {
                 [self.core setCurrentResolution:resolutionType];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self.core play];
+                });
             }
         }
     }
@@ -168,8 +181,7 @@ NSString *const VEPlayEventTimeIntervalChanged = @"VEPlayEventTimeIntervalChange
     }
 }
 
-
-#pragma mark ----- VEInfoProtocol, Static Info / Poster
+#pragma mark----- VEInfoProtocol, Static Info / Poster
 
 - (NSInteger)currentPlaybackState {
     if ([self.core respondsToSelector:@selector(currentPlaybackState)]) {
@@ -275,7 +287,14 @@ NSString *const VEPlayEventTimeIntervalChanged = @"VEPlayEventTimeIntervalChange
     return [[UIScreen mainScreen] brightness];
 }
 
-#pragma mark ----- VEPlayCoreCallBackAbilityProtocol
+- (NSTimeInterval)durationWatched {
+    if ([self.core respondsToSelector:@selector(durationWatched)]) {
+        return [self.core durationWatched];
+    }
+    return 0.0;
+}
+
+#pragma mark----- VEPlayCoreCallBackAbilityProtocol
 
 - (void)playerCore:(id<VEPlayCoreAbilityProtocol>)core playbackStateDidChanged:(VEPlaybackState)currentState info:(NSDictionary *)info {
     if (core == self.core) {

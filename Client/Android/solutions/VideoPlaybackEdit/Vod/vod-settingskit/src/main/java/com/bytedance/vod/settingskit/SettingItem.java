@@ -35,12 +35,23 @@ public class SettingItem {
     public static SettingItem createOptionItem(String category, Option option) {
         return createOptionItem(category, option, null);
     }
+    public static SettingItem createOptionClickableItem(String category,
+                                                        Option option,
+                                                        OnEventListener eventListener) {
+        return createOptionItem(category, option, null, eventListener);
+    }
 
     public static SettingItem createOptionItem(String category, Option option, ValueMapper mapper) {
+        return createOptionItem(category, option, mapper, null);
+    }
+
+    public static SettingItem createOptionItem(String category, Option option,
+                                               ValueMapper mapper, OnEventListener eventListener) {
         SettingItem item = new SettingItem(SettingItem.TYPE_OPTION);
         item.category = category;
         item.option = option;
         item.mapper = mapper != null ? mapper : ValueMapper.DEFAULT;
+        item.listener = eventListener;
         return item;
     }
 

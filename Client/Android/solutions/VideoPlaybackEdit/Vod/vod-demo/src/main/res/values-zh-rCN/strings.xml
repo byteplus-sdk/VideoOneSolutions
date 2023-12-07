@@ -34,4 +34,15 @@
     <string name="vevod_network_error">网络错误</string>
 
     <string name="vevod_not_support_ck_error">开源代码暂不支持 VE SDK 相关功能，体验效果请下载Demo</string>
+
+    <string name="vevod_comment_dialog_num">%1$d 条评论</string>
+    <string name="vevod_delete_comment">删除评论</string>
+
+    <string name="vevod_confirm_delete_title">确认删除？</string>
+    <string name="vevod_confirm_delete_message">当前评论内容删除后无法恢复，请确认操作。</string>
+
+    <string name="vevod_comment_question_message">您发布的评论是临时的，仅自己可见。Byteplus保证不会对这些评论进行收集、存储或备份。</string>
+    <string name="vevod_tips">提示</string>
+    <string name="vevod_close">关闭</string>
+
 </resources>

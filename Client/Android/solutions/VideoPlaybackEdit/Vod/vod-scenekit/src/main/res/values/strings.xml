@@ -9,7 +9,7 @@
 
     <string name="vevod_time_progress_bar_speed">Speed</string>
     <string name="vevod_tips_sync_start_time">Watched at %1$s last time, continue playback.</string>
-    <string name="vevod_play_error_text">Playback Error</string>
+    <string name="vevod_play_error_text">"Playback Error:\n%1$s"</string>
     <string name="vevod_play_complete_replay">Replay</string>
     <string name="vevod_more_dialog_item_share">Share</string>
     <string name="vevod_more_dialog_item_collect">Star</string>
@@ -41,4 +41,7 @@
     <string name="vevod_more_dialog_category_volume">Volume</string>
     <string name="vevod_more_dialog_category_brightness">Brightness</string>
     <string name="vevod_more_dialog_report">Report</string>
+    <string name="add_a_comment">Add a Comment</string>
+    <string name="say_something">Add comment</string>
+    <string name="vevod_button_fullscreen">Full screen</string>
 </resources>

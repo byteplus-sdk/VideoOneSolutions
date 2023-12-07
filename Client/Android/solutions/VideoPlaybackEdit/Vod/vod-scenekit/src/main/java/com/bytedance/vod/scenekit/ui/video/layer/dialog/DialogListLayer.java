@@ -28,7 +28,11 @@ public abstract class DialogListLayer<T> extends DialogLayer {
     private CharSequence mTitle;
 
     public DialogListLayer() {
-        this.mAdapter = new Adapter<>();
+        this.mAdapter = initAdapter();
+    }
+
+    protected Adapter<T> initAdapter() {
+        return new Adapter<>();
     }
 
     public void setTitle(CharSequence title) {

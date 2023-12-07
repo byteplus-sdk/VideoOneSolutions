@@ -109,12 +109,6 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
         return "fullscreen";
     }
 
-    @Nullable
-    @Override
-    protected View createView(@NonNull ViewGroup parent) {
-        return null;
-    }
-
     @Override
     public boolean onBackPressed() {
         if (isFullScreen()) {
@@ -249,19 +243,27 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
         public void onEvent(Event event) {
             switch (event.code()) {
                 case PlaybackEvent.Action.START_PLAYBACK:
-                    if (mOrientationHelper != null) {
-                        mOrientationHelper.enable();
-                    }
+                    enableOrientation();
                     break;
 
                 case PlaybackEvent.Action.STOP_PLAYBACK:
-                    if (mOrientationHelper != null) {
-                        mOrientationHelper.disable();
-                    }
+                    disableOrientation();
                     break;
             }
         }
     };
+
+    private void enableOrientation() {
+        if (mOrientationHelper != null) {
+            mOrientationHelper.enable();
+        }
+    }
+
+    private void disableOrientation() {
+        if (mOrientationHelper != null) {
+            mOrientationHelper.disable();
+        }
+    }
 
     public void toggle(boolean changeOrientation) {
         if (isFullScreen()) {
@@ -309,6 +311,10 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
                 playScene() == PlayScene.SCENE_FULLSCREEN;
     }
 
+    protected void afterExitFullScreen() {
+
+    }
+
     private void exitFullScreen() {
         if (!isFullScreen()) return;
 
@@ -332,6 +338,8 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mFullScreen = false;
+
+        afterExitFullScreen();
     }
 
     private void enterFullScreen() {
@@ -415,5 +423,38 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
             }
         }
         return ratio;
+    }
+
+
+    public static void enableAutoOrientation(@Nullable VideoView videoView) {
+        if (videoView == null) {
+            return;
+        }
+
+        VideoLayerHost layerHost = videoView.layerHost();
+        if (layerHost == null) {
+            return;
+        }
+
+        FullScreenLayer layer = layerHost.findLayer(FullScreenLayer.class);
+        if (layer != null) {
+            layer.enableOrientation();
+        }
+    }
+
+    public static void disableAutoOrientation(@Nullable VideoView videoView) {
+        if (videoView == null) {
+            return;
+        }
+
+        VideoLayerHost layerHost = videoView.layerHost();
+        if (layerHost == null) {
+            return;
+        }
+
+        FullScreenLayer layer = layerHost.findLayer(FullScreenLayer.class);
+        if (layer != null) {
+            layer.disableOrientation();
+        }
     }
 }

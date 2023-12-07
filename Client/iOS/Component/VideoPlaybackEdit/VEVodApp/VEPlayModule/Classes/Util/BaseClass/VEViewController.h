@@ -6,6 +6,8 @@
 
 - (void)tabViewDidAppear;
 
+- (void)clickTabCenterAction;
+
 - (void)close;
 
 @end

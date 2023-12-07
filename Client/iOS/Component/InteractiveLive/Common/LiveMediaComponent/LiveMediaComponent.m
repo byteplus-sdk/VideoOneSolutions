@@ -207,7 +207,7 @@
                                          [[ToastComponent shareToastComponent] showWithMessage:model.message];
                                      } else {
                                          wself.currentCamera = camera;
-                                         [[LiveRTCManager shareRtc] switchVideoCapture:camera];
+                                         [wself.delegate mediaComponent:wself toggleCamera:camera];
                                      }
                                      if (block) {
                                          block(model.result);

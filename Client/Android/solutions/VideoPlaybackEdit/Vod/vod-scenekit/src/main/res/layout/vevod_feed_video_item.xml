@@ -21,7 +21,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:ratio="1.7777777"
-        app:ratioMode="width">
+        app:ratioMode="width"
+        tools:layout_height="250dp">
 
         <!-- FrameLayout is holder Layout for toggle full screen -->
         <com.bytedance.playerkit.player.playback.VideoView
@@ -32,12 +33,6 @@
             app:ratioMode="width" />
 
     </com.bytedance.playerkit.player.playback.widgets.RatioFrameLayout>
-
-    <include
-        android:id="@+id/footer"
-        layout="@layout/vevod_feed_video_item_footer"
-        android:visibility="@integer/vevod_under_construction_visibility"
-        tools:visibility="visible" />
 
     <View
         android:layout_width="match_parent"

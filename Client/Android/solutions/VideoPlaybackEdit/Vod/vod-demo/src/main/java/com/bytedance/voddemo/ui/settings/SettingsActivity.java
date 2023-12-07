@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.bytedance.vod.scenekit.utils.UIUtils;
@@ -45,14 +46,12 @@ public class SettingsActivity extends BaseActivity {
         );
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(ResourcesCompat.getDrawable(
-                getResources(),
-                R.drawable.vevod_actionbar_back,
-                null));
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.black));
+        toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.vevod_actionbar_back));
+        int color = ContextCompat.getColor(this, android.R.color.black);
+        toolbar.setTitleTextColor(color);
         toolbar.setBackgroundColor(Color.WHITE);
         if (toolbar.getNavigationIcon() != null) {
-            toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.black));
+            toolbar.getNavigationIcon().setTint(color);
         }
 
         setSupportActionBar(toolbar);

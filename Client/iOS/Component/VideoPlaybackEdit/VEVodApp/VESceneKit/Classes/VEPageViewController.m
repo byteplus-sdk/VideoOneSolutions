@@ -13,7 +13,7 @@ NSUInteger const VEPageMaxCount = NSIntegerMax;
 
 @end
 
-@implementation UIViewController(VEPageViewControllerItem)
+@implementation UIViewController (VEPageViewControllerItem)
 
 - (void)setVeIndex:(NSUInteger)veIndex {
     objc_setAssociatedObject(self, @selector(veIndex), @(veIndex), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -42,7 +42,6 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
         unsigned hasWillDisplayItem : 1;
         unsigned hasDidEndDisplayItem : 1;
     } _delegateHas;
-    
     struct {
         unsigned hasPageForItemAtIndex : 1;
         unsigned hasNumberOfItemInPageViewController : 1;
@@ -76,12 +75,11 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
 
 @implementation VEPageViewController
 
-
-#pragma mark ----- UIViewController
+#pragma mark----- UIViewController
 
 - (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if(self) {
+    if (self) {
         [self commonInit];
     }
     return self;
@@ -89,7 +87,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
 
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
-    if(self) {
+    if (self) {
         [self commonInit];
     }
     return self;
@@ -115,6 +113,12 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+
+    if (orientation == UIInterfaceOrientationLandscapeLeft ||
+        orientation == UIInterfaceOrientationLandscapeRight) {
+        return;
+    }
     self.scrollView.frame = self.view.bounds;
     [self _reloadDataIfNeeded];
     [self _layoutChildViewControllers];
@@ -122,21 +126,17 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    if ([self.currentViewController respondsToSelector:@selector(pause)]) {
-        [self.currentViewController pause];
+    if ([self.currentViewController respondsToSelector:@selector(setVisible:)]) {
+        [self.currentViewController setVisible:NO];
     }
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [self.currentViewController beginAppearanceTransition:YES animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self.currentViewController endAppearanceTransition];
     if (self.isViewAppeared) {
-        [self.currentViewController play];
+        if ([self.currentViewController respondsToSelector:@selector(setVisible:)]) {
+            [self.currentViewController setVisible:YES];
+        }
     }
 }
 
@@ -146,7 +146,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
 }
 
 - (void)_layoutChildViewControllers {
-    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
         obj.view.frame = CGRectMake(obj.view.frame.origin.x, obj.view.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height);
     }];
 }
@@ -158,7 +158,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
 }
 
 - (void)_clearData {
-    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
         [self _veRemoveChildViewController:obj];
     }];
     [self.viewControllers removeAllObjects];
@@ -173,13 +173,14 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
         [viewController endAppearanceTransition];
     }
     viewController.veTransitioning = NO;
-    
+
     if (viewController) return viewController;
-    
+
     viewController = [self.dataSource pageViewController:self pageForItemAtIndex:index];
     if (!viewController) {
-        [NSException raise:VEPageViewControllerExceptionKey format:@"VEPageViewController(%p) pageViewController:pageForItemAtIndex: must return a no nil instance", self]; }
-    
+        [NSException raise:VEPageViewControllerExceptionKey format:@"VEPageViewController(%p) pageViewController:pageForItemAtIndex: must return a no nil instance", self];
+    }
+
     [self addChildViewController:viewController];
     if (!self.isVerticalScroll) {
         viewController.view.frame = CGRectMake(index * self.view.frame.size.width, 0, self.view.frame.size.width, self.view.frame.size.height);
@@ -189,11 +190,11 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
     [self.scrollView addSubview:viewController.view];
     [viewController didMoveToParentViewController:self];
     viewController.veIndex = index;
-    
+
     if ([viewController respondsToSelector:@selector(itemDidLoad)]) {
         [viewController itemDidLoad];
     }
-    
+
     return viewController;
 }
 
@@ -203,7 +204,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
     [removedViewController removeFromParentViewController];
     removedViewController.veIndex = VEPageMaxCount;
     if ([removedViewController respondsToSelector:@selector(reuseIdentifier)] && removedViewController.reuseIdentifier.length) {
-        NSMutableArray<UIViewController<VEPageItem> *>*reuseViewControllers = [self.cacheViewControllers objectForKey:removedViewController.reuseIdentifier];
+        NSMutableArray<UIViewController<VEPageItem> *> *reuseViewControllers = [self.cacheViewControllers objectForKey:removedViewController.reuseIdentifier];
         if (!reuseViewControllers) {
             reuseViewControllers = [[NSMutableArray<UIViewController<VEPageItem> *> alloc] init];
             [self.cacheViewControllers setObject:reuseViewControllers forKey:removedViewController.reuseIdentifier];
@@ -216,7 +217,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
 
 - (UIViewController<VEPageItem> *)_childViewControllerAtIndex:(NSUInteger)index {
     __block UIViewController<VEPageItem> *findViewController = nil;
-    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
         if (obj.veIndex == index) {
             findViewController = obj;
         }
@@ -224,20 +225,20 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
     return findViewController;
 }
 
-
 #pragma mark - Public Methods
 - (void)setCurrentIndex:(NSUInteger)currentIndex {
     [self setCurrentIndex:currentIndex autoAdjustOffset:YES];
 }
 
 - (void)setCurrentIndex:(NSUInteger)currentIndex autoAdjustOffset:(BOOL)autoAdjustOffset {
+    if (currentIndex > self.itemCount - 1) {
+        NSLog(@"VEPageViewController(%p) currentIndex out of bounds %lu", self, (unsigned long)currentIndex);
+        return;
+    }
     if (_currentIndex == currentIndex) return;
     if (_itemCount == 0) {
         _currentIndex = currentIndex;
         return;
-    }
-    if (currentIndex > self.itemCount - 1) {
-        [NSException raise:VEPageViewControllerExceptionKey format:@"VEPageViewController(%p) currentIndex out of bounds %lu", self, (unsigned long)currentIndex];
     }
     NSMutableArray *addedViewControllers = [[NSMutableArray alloc] init];
     UIViewController<VEPageItem> *currentVieController = [self _addChildViewControllerFromDataSourceIndex:currentIndex];
@@ -250,11 +251,11 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
         UIViewController<VEPageItem> *preViewController = [self _addChildViewControllerFromDataSourceIndex:currentIndex + 1];
         [addedViewControllers addObject:preViewController];
     }
-    
+
     NSMutableArray *removedViewController = [[NSMutableArray alloc] init];
-    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> * _Nonnull vc, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> *_Nonnull vc, NSUInteger idx, BOOL *_Nonnull stop) {
         __block BOOL findVC = NO;
-        [addedViewControllers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [addedViewControllers enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
             if (vc == obj) {
                 findVC = YES;
             }
@@ -263,10 +264,10 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
             [removedViewController addObject:vc];
         }
     }];
-    [removedViewController enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [removedViewController enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
         [self _veRemoveChildViewController:obj];
     }];
-    [addedViewControllers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [addedViewControllers enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
         if (![self.viewControllers containsObject:obj]) {
             [self.viewControllers addObject:obj];
         }
@@ -292,7 +293,6 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
         }
     }
 }
-
 
 #pragma mark - Variable Setter & Getter
 - (UIScrollView *)scrollView {
@@ -441,7 +441,6 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
     }
 }
 
-
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -502,7 +501,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
         [self.delegate pageViewControllerWillBeginDragging:self];
     }
     if (self.currentDirection == VEPageItemMoveDirectionUnknown) {
-        [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<VEPageItem> *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
             if (obj.veTransitioning) {
                 obj.veTransitioning = NO;
             }
@@ -529,6 +528,11 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
         [self _shouldChangeToNextPage];
     } else {
         self.currentDirection = VEPageItemMoveDirectionUnknown;
+    }
+    for (UIViewController<VEPageItem> *vc in self.viewControllers) {
+        if (vc != self.currentViewController) {
+            [vc pause];
+        }
     }
 }
 

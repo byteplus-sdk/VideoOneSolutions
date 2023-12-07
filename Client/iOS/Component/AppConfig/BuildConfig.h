@@ -4,7 +4,6 @@
 #ifndef BuildConfig_h
 #define BuildConfig_h
 
-
 /**
  * @brief You can fill in the provided server domain name for testing. However, you need to deploy your own server and replace this address with your own domain name, when officially launching this function.
  */

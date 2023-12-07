@@ -1,12 +1,12 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEInterfaceContainer.h"
-#import "VEInterfaceProtocol.h"
-#import "VEInterfaceVisual.h"
-#import "VEInterfaceSensor.h"
-#import "VEInterfaceFloater.h"
-#import "VEEventConst.h"
 #import "Masonry.h"
+#import "VEEventConst.h"
+#import "VEInterfaceFloater.h"
+#import "VEInterfaceProtocol.h"
+#import "VEInterfaceSensor.h"
+#import "VEInterfaceVisual.h"
 
 @interface VEInterfaceContainer ()
 
@@ -34,6 +34,9 @@
 - (void)registEvents {
     [self.scene.eventMessageBus registEvent:VEUIEventLockScreen withAction:@selector(lockScreenAction:) ofTarget:self];
     [self.scene.eventMessageBus registEvent:VEUIEventClearScreen withAction:@selector(clearScreenAction:) ofTarget:self];
+    [self.scene.eventMessageBus registEvent:VEUIEventScreenClearStateChanged withAction:@selector(performClearScreenLater:) ofTarget:self];
+    [self.scene.eventMessageBus registEvent:VEPlayEventStateChanged withAction:@selector(performClearScreenLater:) ofTarget:self];
+    [self.scene.eventMessageBus registEvent:VEUIEventResetAutoHideController withAction:@selector(performClearScreenLater:) ofTarget:self];
 }
 
 - (void)initializeSublayers:(id<VEInterfaceElementDataSource>)scene {
@@ -57,7 +60,6 @@
     [self.visualView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self).offset(0);
     }];
-    
     [self.sensorView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self).offset(0);
     }];
@@ -80,6 +82,10 @@
         }
         [self.scene.eventMessageBus postEvent:VEUIEventScreenClearStateChanged withObject:nil rightNow:YES];
     }
+}
+
+- (void)performClearScreenLater:(id)param {
+    [self.sensorView performClearScreenLater];
 }
 
 @end

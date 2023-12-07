@@ -144,5 +144,11 @@
             app:layout_constraintTop_toBottomOf="@id/loop_on"
             tools:drawableTop="@drawable/vevod_ic_report" />
 
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_loop_mode"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="loop_on, loop_off, cyclic_title" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bytedance.playerkit.player.Player;
@@ -37,9 +38,11 @@ public class CoverLayer extends BaseLayer {
     protected View createView(@NonNull ViewGroup parent) {
         ImageView imageView = new ImageView(parent.getContext());
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        imageView.setBackgroundColor(parent.getResources().getColor(android.R.color.black));
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        lp.gravity = Gravity.CENTER;
+        imageView.setBackgroundColor(ContextCompat.getColor(parent.getContext(), android.R.color.black));
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER);
         imageView.setLayoutParams(lp);
         return imageView;
     }

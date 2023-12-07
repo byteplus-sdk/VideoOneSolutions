@@ -1,11 +1,11 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
-#import "VEProgressView+Private.h"
 #import "Masonry.h"
 #import "UIView+VEElementDescripition.h"
+#import "VEEventConst.h"
 #import "VEInterfaceElementDescription.h"
 #import "VEProgressSlider.h"
-#import "VEEventConst.h"
+#import "VEProgressView+Private.h"
 
 @interface VEProgressView () <VEProgressSliderDelegate>
 
@@ -93,7 +93,7 @@
     [self setCurrentValue:eventPoster.currentPlaybackTime];
 }
 
-#pragma mark ----- Action
+#pragma mark----- Action
 
 - (void)sliderValueIncrease:(id)param {
     if ([param isKindOfClass:[NSDictionary class]]) {
@@ -101,23 +101,30 @@
         id value = paramDic.allValues.firstObject;
         if ([value isKindOfClass:[NSDictionary class]]) {
             NSDictionary *param = (NSDictionary *)value;
+            NSNumber *began = [param objectForKey:@"touchBegan"];
+            if ([began isKindOfClass:[NSNumber class]] && began.boolValue) {
+                [self.eventMessageBus postEvent:VEUIEventSeeking withObject:@(YES) rightNow:YES];
+                return;
+            }
             NSNumber *progress = [param objectForKey:@"changeValue"];
             NSNumber *end = [param objectForKey:@"touchEnd"];
             if ([progress isKindOfClass:[NSNumber class]] && [end isKindOfClass:[NSNumber class]]) {
                 CGFloat increaseValue = [progress floatValue];
                 self.progressSlider.progressValue += increaseValue;
                 [self progressManualChanged:self.progressSlider.progressValue touchEnd:end.boolValue];
+                if (end.boolValue) {
+                    [self.eventMessageBus postEvent:VEUIEventSeeking withObject:@(NO) rightNow:YES];
+                }
             }
         }
     }
 }
 
-
-#pragma mark ----- Setter
+#pragma mark----- Setter
 
 - (void)setIsHiddenText:(BOOL)isHiddenText {
     _isHiddenText = isHiddenText;
-    
+
     if (isHiddenText) {
         self.totalValueLabel.hidden = YES;
         self.currentValueLabel.hidden = YES;
@@ -162,7 +169,7 @@
 }
 
 - (void)setBufferValue:(NSTimeInterval)bufferValue {
-    if (self.totalValue > 0 ) {
+    if (self.totalValue > 0) {
         bufferValue = MAX(0.0, MIN(bufferValue, self.totalValue));
         _bufferValue = bufferValue;
         CGFloat rate = bufferValue / self.totalValue;
@@ -175,8 +182,7 @@
     self.totalValueLabel.text = [NSString stringWithFormat:@"%@", [self intervalForDisplay:totalValue]];
 }
 
-
-#pragma mark ----- Lazy Load
+#pragma mark----- Lazy Load
 
 - (UILabel *)totalValueLabel {
     if (!_totalValueLabel) {
@@ -232,13 +238,12 @@
     }
 }
 
-
-#pragma mark ----- Tool
+#pragma mark----- Tool
 
 - (NSString *)intervalForDisplay:(NSTimeInterval)interval {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.locale = [NSLocale systemLocale];
-    formatter.calendar = [[NSCalendar alloc]initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    formatter.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     if (interval > 3601) {
         [formatter setDateFormat:@"HH:mm:ss"];
     } else {
@@ -250,8 +255,7 @@
     return dateString;
 }
 
-
-#pragma mark ----- VEInterfaceFactoryProduction
+#pragma mark----- VEInterfaceFactoryProduction
 
 - (void)elementViewAction {
     __weak typeof(self) weak_self = self;

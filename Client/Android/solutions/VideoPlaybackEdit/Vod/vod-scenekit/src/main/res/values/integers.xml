@@ -4,6 +4,5 @@
   -->
 
 <resources>
-    <integer name="vevod_under_construction_visibility">2</integer> <!-- View.GONE -->
     <bool name="vevod_settings_filter_enabled">true</bool>
 </resources>

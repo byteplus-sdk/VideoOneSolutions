@@ -3,7 +3,7 @@
 #import "VEMaskView.h"
 #import "UIView+VEElementDescripition.h"
 
-@interface VEMaskView () 
+@interface VEMaskView ()
 
 @property (nonatomic, strong) CALayer *fullMask;
 @property (nonatomic, strong) CAGradientLayer *topMask;
@@ -17,29 +17,33 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.userInteractionEnabled = NO;
-        self.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha: 0.12];
-        
+        self.backgroundColor = [UIColor clearColor];
+
         _topHeight = 48.0;
         _bottomHeight = 50.0;
-        
+
+        _fullMask = [[CALayer alloc] init];
+        _fullMask.frame = self.bounds;
+        _fullMask.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.12].CGColor;
+        [self.layer addSublayer:_fullMask];
+
         _topMask = [[CAGradientLayer alloc] init];
         _topMask.startPoint = CGPointMake(0.5, 0);
         _topMask.endPoint = CGPointMake(0.5, 1.0);
         [self.layer addSublayer:_topMask];
-        
         _bottomMask = [[CAGradientLayer alloc] init];
         _bottomMask.startPoint = CGPointMake(0.5, 0);
         _bottomMask.endPoint = CGPointMake(0.5, 1.0);
         _bottomMask.colors = @[
-            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.0].CGColor,
-            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.02].CGColor,
-            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.05].CGColor,
-            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.11].CGColor,
-            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.18].CGColor,
-            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.27].CGColor,
-            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.36].CGColor,
-            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.46].CGColor,
-            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.55].CGColor,
+            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.0].CGColor,
+            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.02].CGColor,
+            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.05].CGColor,
+            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.11].CGColor,
+            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.18].CGColor,
+            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.27].CGColor,
+            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.36].CGColor,
+            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.46].CGColor,
+            (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.55].CGColor,
         ];
         [self.layer addSublayer:_bottomMask];
     }
@@ -51,6 +55,7 @@
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     CGSize size = self.bounds.size;
+    _fullMask.frame = self.bounds;
     _topMask.frame = CGRectMake(0, 0, size.width, _topHeight);
     _bottomMask.frame = CGRectMake(0, size.height - _bottomHeight, size.width, _bottomHeight);
     [CATransaction commit];
@@ -67,7 +72,6 @@
 }
 
 - (void)elementViewAction {
-    
 }
 
 - (void)elementViewEventNotify:(id)obj {

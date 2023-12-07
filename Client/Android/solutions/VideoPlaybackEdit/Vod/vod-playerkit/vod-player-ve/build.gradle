@@ -11,8 +11,7 @@ if (publishFile.exists()) {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
 
     resourcePrefix 'vevod_'
 

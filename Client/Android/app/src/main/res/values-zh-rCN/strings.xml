@@ -13,6 +13,6 @@
     <string name="cancel_account">注销账号</string>
     <string name="try_it_now">进入</string>
     <string name="same_logged_in">相同ID用户已登录，您已被强制下线！</string>
-    <string name="videoone_center_title">VOS 中心</string>
-    <string name="videoone_center_welcome">欢迎来到 VOS 中心，请选择感兴趣的场景进入体验</string>
+    <string name="videoone_center_title">VideoOne 中心</string>
+    <string name="videoone_center_welcome">欢迎来到 VideoOne 中心，请选择感兴趣的场景进入体验</string>
 </resources>

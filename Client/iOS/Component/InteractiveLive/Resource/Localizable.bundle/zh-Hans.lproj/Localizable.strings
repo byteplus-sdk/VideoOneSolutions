@@ -81,7 +81,6 @@
 "end_live_alert_info" = "退出直播间，当前直播将立即结束。";
 "room_id" = "房间ID";
 "co-host_connecting_message" = "连接中";
-"placeholder_message" = "请输入评论";
 "from_%@" = "来自%@";
 "confirm" = "确认";
 "co-host_application" = "连线申请";

@@ -210,6 +210,10 @@
     [self.informationComponent show];
 }
 
+- (void)mediaComponent:(LiveMediaComponent *)mediaComponent toggleCamera:(BOOL)cameraOn {
+    [self.linkSession switchVideoCapture:cameraOn];
+}
+
 #pragma mark - LivePullStreamComponentDelegate
 - (void)pullStreamComponent:(LivePullStreamComponent *)pullStreamComponent
             didChangeStatus:(PullRenderStatus)status {

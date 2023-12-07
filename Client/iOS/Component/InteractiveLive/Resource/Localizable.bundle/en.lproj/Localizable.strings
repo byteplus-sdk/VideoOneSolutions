@@ -81,7 +81,6 @@
 "end_live_alert_info"="Leaving the live streaming room, the live will end immediately.";
 "room_id"="Room ID";
 "co-host_connecting_message"="Connecting";
-"placeholder_message" = "Add a comment";
 "from_%@" = "from %@";
 "confirm" = "Confirm";
 "co-host_application" = "Co-host application";

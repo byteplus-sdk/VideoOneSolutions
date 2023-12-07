@@ -12,7 +12,8 @@ typedef enum : NSUInteger {
     VESettingTypeDisplay,
     VESettingTypeDisplayDetail,
     VESettingTypeSwitcher,
-    VESettingTypeMutilSelector
+    VESettingTypeMutilSelector,
+    VESettingTypeEntrance
 } VESettingDisplayType;
 
 typedef enum : NSUInteger {
@@ -21,6 +22,7 @@ typedef enum : NSUInteger {
     VESettingKeyUniversalDeviceID,
     
     VESettingKeyUniversalActionCleanCache = 1000,
+    VESettingKeyUniversalActionPlayVidoeUrl = 1001,
     
     
     VESettingKeyShortVideoPreloadStrategy = 10000,

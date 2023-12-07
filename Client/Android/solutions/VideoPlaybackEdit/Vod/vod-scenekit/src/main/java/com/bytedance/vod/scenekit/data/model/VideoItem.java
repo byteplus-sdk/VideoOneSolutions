@@ -50,6 +50,14 @@ public class VideoItem implements Parcelable {
         subtitle = in.readString();
         playCount = in.readInt();
         createTime = (Date) in.readSerializable();
+        width = in.readInt();
+        height = in.readInt();
+        userName = in.readString();
+        userId = in.readString();
+        likeCount = in.readInt();
+        commentCount = in.readInt();
+        playScene = in.readInt();
+        subtitleAuthToken = in.readString();
     }
 
     @Override
@@ -69,6 +77,14 @@ public class VideoItem implements Parcelable {
         dest.writeString(subtitle);
         dest.writeInt(playCount);
         dest.writeSerializable(createTime);
+        dest.writeInt(width);
+        dest.writeInt(height);
+        dest.writeString(userName);
+        dest.writeString(userId);
+        dest.writeInt(likeCount);
+        dest.writeInt(commentCount);
+        dest.writeInt(playScene);
+        dest.writeString(subtitleAuthToken);
     }
 
     @Override
@@ -155,10 +171,21 @@ public class VideoItem implements Parcelable {
             long duration,
             @Nullable String cover,
             @Nullable String title) {
+        return createVideoModelItem(vid, videoModel, "", duration,cover, title);
+    }
+
+    public static VideoItem createVideoModelItem(
+            @NonNull String vid,
+            @NonNull String videoModel,
+            @Nullable String subtitleAuthToken,
+            long duration,
+            @Nullable String cover,
+            @Nullable String title) {
         VideoItem videoItem = new VideoItem();
         videoItem.sourceType = SOURCE_TYPE_MODEL;
         videoItem.vid = vid;
         videoItem.videoModel = videoModel;
+        videoItem.subtitleAuthToken = subtitleAuthToken;
         videoItem.duration = duration;
         videoItem.cover = cover;
         videoItem.title = title;
@@ -168,6 +195,8 @@ public class VideoItem implements Parcelable {
     private String vid;
 
     private String playAuthToken;
+
+    private String subtitleAuthToken;
 
     private String videoModel;
 
@@ -195,6 +224,19 @@ public class VideoItem implements Parcelable {
 
     private Date createTime;
 
+    private int width;
+
+    private int height;
+
+    private String userName;
+    private String userId;
+    private int likeCount;
+    private int commentCount;
+
+    private boolean iLikeIt = false;
+
+    private int playScene;
+
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
     }
@@ -217,6 +259,56 @@ public class VideoItem implements Parcelable {
 
     public Date getCreateTime() {
         return createTime;
+    }
+
+    public void setSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setUser(String userId, String username) {
+        this.userId = userId;
+        this.userName = username;
+    }
+
+    public void setLikeCount(int count) {
+        likeCount = count;
+    }
+
+    public void setILikeIt(boolean value) {
+        iLikeIt = value;
+    }
+
+    public boolean isILikeIt() {
+        return iLikeIt;
+    }
+
+    public void setCommentCount(int count) {
+        commentCount = count;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
     }
 
     public String getVid() {
@@ -253,6 +345,14 @@ public class VideoItem implements Parcelable {
 
     public int getSourceType() {
         return sourceType;
+    }
+
+    public int getPlayScene() {
+        return playScene;
+    }
+    @NonNull
+    public static MediaSource toMediaSource(VideoItem videoItem) {
+        return toMediaSource(videoItem, false);
     }
 
     @NonNull
@@ -323,5 +423,20 @@ public class VideoItem implements Parcelable {
         for (VideoItem videoItem : videoItems) {
             tag(videoItem, tag, subTag);
         }
+    }
+
+    public static void tag(List<VideoItem> videoItems, String tag) {
+        tag(videoItems, tag, null);
+    }
+
+    public static void playScene(List<VideoItem> videoItems, int playScene) {
+        for (VideoItem videoItem : videoItems) {
+            playScene(videoItem, playScene);
+        }
+    }
+
+    public static void playScene(VideoItem videoItem, int playScene) {
+        if (videoItem == null) return;
+        videoItem.playScene = playScene;
     }
 }

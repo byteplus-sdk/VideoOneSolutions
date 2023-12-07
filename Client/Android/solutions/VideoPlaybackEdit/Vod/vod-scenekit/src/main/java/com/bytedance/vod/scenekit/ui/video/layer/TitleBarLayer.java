@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bytedance.playerkit.player.playback.VideoLayerHost;
+import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.player.source.MediaSource;
 import com.bytedance.vod.scenekit.R;
@@ -30,9 +30,19 @@ public class TitleBarLayer extends AnimateLayer {
 
     private View mMore;
 
+    private final int[] showInScenes;
+
     @Override
     public String tag() {
         return "title_bar";
+    }
+
+    public TitleBarLayer() {
+        this(PlayScene.SCENE_UNKNOWN, PlayScene.SCENE_DETAIL, PlayScene.SCENE_FULLSCREEN);
+    }
+
+    public TitleBarLayer(int... scenes) {
+        showInScenes = scenes;
     }
 
     @Nullable
@@ -40,51 +50,26 @@ public class TitleBarLayer extends AnimateLayer {
     protected View createView(@NonNull ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.vevod_title_bar_layer, parent, false);
         View back = view.findViewById(R.id.back);
-        View search = view.findViewById(R.id.search);
-        View cast = view.findViewById(R.id.cast);
-        View more = view.findViewById(R.id.more);
-        mMore = more;
+        back.setOnClickListener(v -> {
+            Activity activity = activity();
+            if (activity != null) {
+                activity.onBackPressed();
+            }
+        });
 
         mTitle = view.findViewById(R.id.title);
         mTitleBar = view.findViewById(R.id.titleBar);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity activity = activity();
-                if (activity != null) {
-                    activity.onBackPressed();
-                }
-            }
-        });
 
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(activity(), "Search is not supported yet!", Toast.LENGTH_SHORT).show();
+        mMore = view.findViewById(R.id.more);
+        mMore.setOnClickListener(v -> {
+            if (playScene() != PlayScene.SCENE_FULLSCREEN) {
+                Toast.makeText(context(), "More is only supported in fullscreen for now!",
+                        Toast.LENGTH_SHORT).show();
+                return;
             }
-        });
-
-        cast.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(activity(), "Cast is not supported yet!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (playScene() != PlayScene.SCENE_FULLSCREEN) {
-                    Toast.makeText(context(), "More is only supported in fullscreen for now!",
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                VideoLayerHost layerHost = layerHost();
-                if (layerHost == null) return;
-                MoreDialogLayer layer = layerHost.findLayer(MoreDialogLayer.class);
-                if (layer != null) {
-                    layer.animateShow(false);
-                }
+            MoreDialogLayer layer = findLayer(MoreDialogLayer.class);
+            if (layer != null) {
+                layer.animateShow(false);
             }
         });
         return view;
@@ -102,47 +87,58 @@ public class TitleBarLayer extends AnimateLayer {
 
     @Override
     public void onVideoViewPlaySceneChanged(int fromScene, int toScene) {
-        applyTheme();
         if (!checkShow()) {
             dismiss();
+        } else {
+            applyTheme();
         }
     }
 
-    private boolean checkShow() {
-        switch (playScene()) {
-            case PlayScene.SCENE_FULLSCREEN:
-            case PlayScene.SCENE_DETAIL:
-            case PlayScene.SCENE_UNKNOWN:
+    protected boolean checkShow() {
+        int scene = playScene();
+        for (int showInScene : showInScenes) {
+            if (scene == showInScene) {
                 return true;
-            default:
-                return false;
+            }
         }
+
+        return false;
+    }
+
+    @Override
+    protected boolean preventAnimateDismiss() {
+        final Player player = player();
+        return player != null && player.isPaused();
     }
 
     private String resolveTitle() {
         VideoView videoView = videoView();
-        if (videoView != null) {
-            MediaSource mediaSource = videoView.getDataSource();
-            if (mediaSource != null) {
-                VideoItem videoItem = VideoItem.get(mediaSource);
-                if (videoItem != null) {
-                    return videoItem.getTitle();
-                }
-            }
+        if (videoView == null) {
+            return null;
+        }
+        MediaSource mediaSource = videoView.getDataSource();
+        if (mediaSource == null) {
+            return null;
+        }
+        VideoItem videoItem = VideoItem.get(mediaSource);
+        if (videoItem != null) {
+            return videoItem.getTitle();
         }
         return null;
     }
 
-    public void applyTheme() {
+    private void applyTheme() {
         if (playScene() == PlayScene.SCENE_FULLSCREEN) {
             applyFullScreenTheme();
+        } else if (playScene() == PlayScene.SCENE_DETAIL) {
+            applyHalfScreenTheme();
         } else {
             applyHalfScreenTheme();
         }
     }
 
     private void applyFullScreenTheme() {
-        setTitleBarLeftRightMargin(44);
+        setTitleBarHorizontalMargin(44);
         if (mTitle != null) {
             mTitle.setVisibility(View.VISIBLE);
         }
@@ -153,7 +149,7 @@ public class TitleBarLayer extends AnimateLayer {
     }
 
     private void applyHalfScreenTheme() {
-        setTitleBarLeftRightMargin(0);
+        setTitleBarHorizontalMargin(0);
         if (mTitle != null) {
             mTitle.setVisibility(View.GONE);
         }
@@ -162,15 +158,11 @@ public class TitleBarLayer extends AnimateLayer {
         }
     }
 
-    private void setTitleBarLeftRightMargin(int marginDp) {
+    private void setTitleBarHorizontalMargin(int margin) {
         if (mTitleBar == null) return;
 
-        ViewGroup.MarginLayoutParams titleBarLP = (ViewGroup.MarginLayoutParams) mTitleBar.getLayoutParams();
-        if (titleBarLP != null) {
-            int margin = (int) UIUtils.dip2Px(context(), marginDp);
-            titleBarLP.leftMargin = margin;
-            titleBarLP.rightMargin = margin;
-            mTitleBar.setLayoutParams(titleBarLP);
-        }
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) mTitleBar.getLayoutParams();
+        params.leftMargin = params.rightMargin = (int) UIUtils.dip2Px(context(), margin);
+        mTitleBar.setLayoutParams(params);
     }
 }
