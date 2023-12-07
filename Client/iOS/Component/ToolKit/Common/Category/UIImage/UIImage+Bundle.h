@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
                       bundleName:(NSString *)bundle
                    subBundleName:(NSString *)subBundleName;
 
++ (UIImage *)avatarImageForUid:(NSString *)uid;
+
 @end
 
 NS_ASSUME_NONNULL_END

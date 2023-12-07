@@ -224,7 +224,7 @@ API_AVAILABLE(ios(8.0))
 
 - (void)show:(BOOL)show {
     [[self.scene eventPoster] setScreenIsClear:show];
-    [[self.scene eventMessageBus] postEvent:VEUIEventScreenClearStateChanged withObject:nil rightNow:YES];
+    [[self.scene eventMessageBus] postEvent:VEUIEventScreenClearStateChanged withObject:VEPlayEventResolutionChanged rightNow:YES];
     self.hidden = !show;
     if (show) {
         [self.menuView reloadData];

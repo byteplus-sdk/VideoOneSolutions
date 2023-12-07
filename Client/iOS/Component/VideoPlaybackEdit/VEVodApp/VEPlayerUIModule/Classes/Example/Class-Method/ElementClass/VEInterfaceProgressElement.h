@@ -12,6 +12,6 @@ extern NSString *const progressGestureId;
 
 + (VEInterfaceElementDescriptionImp *)progressViewWithEventPoster:(VEEventPoster *)eventPoster;
 
-+ (VEInterfaceElementDescriptionImp *)progressGestureWithEventPoster:(VEEventPoster *)eventPoster;
++ (VEInterfaceElementDescriptionImp *)progressGesture;
 
 @end

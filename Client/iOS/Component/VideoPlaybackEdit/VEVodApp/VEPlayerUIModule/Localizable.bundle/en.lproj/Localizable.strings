@@ -15,6 +15,7 @@
 "device_id" = "Device ID";
 "clean_cache" = "Clear cache";
 "clean_cache_success" = "Cache has been cleaned";
+"play_video_url" = "Input media source";
 "copy" = "Copy";
 "loop_mode_on" = "Loop Play";
 "loop_mode_off" = "Single Play";
@@ -25,7 +26,7 @@
 "copy_did_success"="Copied";
 "video_strategy_changed"="Please return to the homepage and re-enter the playback so that you can check the effect.";
 "vod_report" = "Report";
-"play_back_speed" = "Playback speed";
+"play_back_speed" = "Speed Select";
 "play_quality" = "Quality";
 "longvideo_top" = "Top";
 "longvideo_playlist" = "Hot Shows";
@@ -35,3 +36,12 @@
 "resolution_unknown" = "Unknown";
 "resolution_abr_auto" = "ABR Auto";
 "resolution_auto" = "Auto";
+"shortvideo_fullscreen" = "Full screen";
+"vod_replay" = "Replay";
+"comments"="comments";
+"delete"="Delete";
+"delete_comment_title"="Confirm deletion?";
+"delete_comment_content"="The comment content can not be restored after deletion. Please confirm the operation.";
+"tip_title"="Tips";
+"tip_comment_content"="Comments you post are temporary and will be visible only to you. BytePlus assures that no collection, storage or backups of these comments will be made.";
+"tip_close"="Close";

@@ -33,6 +33,8 @@
 
 - (CGFloat)currentBrightness;
 
+- (NSTimeInterval)durationWatched;
+
 @property(nonatomic, assign, readonly) BOOL seeking;
 
 @end

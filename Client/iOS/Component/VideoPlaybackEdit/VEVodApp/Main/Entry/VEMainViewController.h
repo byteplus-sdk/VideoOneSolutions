@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VEMainViewController : UIViewController
 
-@property (nonatomic, copy) void (^clickTabCKBolck)(void);
+@property (nonatomic, copy) void (^clickTabCenterBolck)(void);
 
 @end
 

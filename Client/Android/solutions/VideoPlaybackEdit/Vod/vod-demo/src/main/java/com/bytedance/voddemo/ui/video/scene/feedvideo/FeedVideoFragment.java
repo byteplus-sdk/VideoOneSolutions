@@ -174,11 +174,20 @@ public class FeedVideoFragment extends BaseFragment implements FeedVideoPageView
                 continuesPlayback = controller.player() != null;
                 controller.unbindPlayer();
             }
-            final Bundle bundle = DetailVideoFragment.createBundle(holder.getVideoItem(), source, continuesPlayback);
+            final Bundle bundle = DetailVideoFragment.createBundle(
+                    holder.getVideoItem(),
+                    source,
+                    continuesPlayback,
+                    RemoteApi.VideoType.FEED
+            );
             VideoActivity.intentInto(getActivity(), SCENE_DETAIL, bundle);
         } else {
             final FragmentActivity activity = requireActivity();
-            final Bundle arguments = DetailVideoFragment.createBundle(holder.getVideoItem());
+            final Bundle arguments = DetailVideoFragment.createBundle(
+                    holder.getVideoItem(),
+                    RemoteApi.VideoType.FEED
+            );
+            arguments.putBoolean(DetailVideoFragment.EXTRA_KEEP_PLAYBACK_STATE, true);
             final DetailVideoFragment detail = DetailVideoFragment.newInstance(arguments);
             detail.setFeedVideoViewHolder(holder);
             detail.getLifecycle().addObserver(mDetailLifeCycle);

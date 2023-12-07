@@ -9,12 +9,12 @@ import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActi
 import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActivity.EXTRA_RTC_TOKEN;
 import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActivity.EXTRA_RTS_TOKEN;
 import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActivity.EXTRA_USER_INFO;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_BUTTON_NEGATIVE;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_BUTTON_POSITIVE;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_MESSAGE;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_REQUEST_KEY;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_RESULT;
-import static com.vertcdemo.solution.interactivelive.view.LiveCommonDialog.EXTRA_TITLE;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_BUTTON_NEGATIVE;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_BUTTON_POSITIVE;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_MESSAGE;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_REQUEST_KEY;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_RESULT;
+import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_TITLE;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -106,7 +106,7 @@ import com.vertcdemo.solution.interactivelive.event.UserMediaControlEvent;
 import com.vertcdemo.solution.interactivelive.util.CenteredToast;
 import com.vertcdemo.solution.interactivelive.util.CollectionUtils;
 import com.vertcdemo.solution.interactivelive.util.ViewUtils;
-import com.vertcdemo.solution.interactivelive.view.LiveCommonDialog;
+import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 import com.vertcdemo.solution.interactivelive.view.LiveSendMessageInputDialog;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -496,7 +496,7 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
             return;
         }
 
-        LiveCommonDialog dialog = new LiveCommonDialog();
+        SolutionCommonDialog dialog = new SolutionCommonDialog();
         final Bundle args = new Bundle();
         args.putString(EXTRA_REQUEST_KEY, REQUEST_KEY_END_LIVE);
         args.putInt(EXTRA_TITLE, R.string.end_live_title);

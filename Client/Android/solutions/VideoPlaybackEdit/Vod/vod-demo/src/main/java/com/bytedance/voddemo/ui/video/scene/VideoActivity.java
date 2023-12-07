@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -175,7 +176,7 @@ public class VideoActivity extends BaseActivity {
                         true,
                         getString(R.string.vevod_short_video),
                         Color.TRANSPARENT,
-                        getResources().getColor(android.R.color.white));
+                        ContextCompat.getColor(this, android.R.color.white));
                 UIUtils.setSystemBarTheme(
                         this,
                         Color.TRANSPARENT,
@@ -191,8 +192,8 @@ public class VideoActivity extends BaseActivity {
                         true,
                         false,
                         getString(R.string.vevod_long_video),
-                        getResources().getColor(android.R.color.white),
-                        getResources().getColor(android.R.color.black));
+                        ContextCompat.getColor(this, android.R.color.white),
+                        ContextCompat.getColor(this, android.R.color.black));
                 UIUtils.setSystemBarTheme(
                         this,
                         Color.WHITE,
@@ -207,8 +208,8 @@ public class VideoActivity extends BaseActivity {
                 setActionBarTheme(
                         true,
                         false, getString(R.string.vevod_feed_video),
-                        getResources().getColor(android.R.color.white),
-                        getResources().getColor(android.R.color.black));
+                        ContextCompat.getColor(this, android.R.color.white),
+                        ContextCompat.getColor(this, android.R.color.black));
                 UIUtils.setSystemBarTheme(
                         this,
                         Color.WHITE,

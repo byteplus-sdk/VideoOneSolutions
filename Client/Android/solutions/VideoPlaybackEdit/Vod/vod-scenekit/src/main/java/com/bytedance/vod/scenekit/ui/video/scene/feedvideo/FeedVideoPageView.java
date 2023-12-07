@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.playback.PlaybackEvent;
@@ -25,6 +27,7 @@ import com.bytedance.playerkit.player.playback.VideoLayerHost;
 import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.utils.event.Event;
 import com.bytedance.vod.scenekit.data.model.VideoItem;
+import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.ui.video.scene.feedvideo.FeedVideoAdapter.OnItemViewListener;
 
@@ -32,7 +35,10 @@ import java.util.List;
 
 
 public class FeedVideoPageView extends FrameLayout {
+    private static final String TAG = "FeedVideoPageView";
+
     private final RecyclerView mRecyclerView;
+    private final LinearLayoutManager mLayoutManager;
     private final FeedVideoAdapter mFeedVideoAdapter;
     private Lifecycle mLifeCycle;
     private DetailPageNavigator mNavigator;
@@ -68,7 +74,7 @@ public class FeedVideoPageView extends FrameLayout {
     public FeedVideoPageView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(context,
+        mLayoutManager = new LinearLayoutManager(context,
                 LinearLayoutManager.VERTICAL, false) {
             @Override
             public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state,
@@ -107,6 +113,33 @@ public class FeedVideoPageView extends FrameLayout {
         mRecyclerView = new RecyclerView(context);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mFeedVideoAdapter);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private boolean isUserInitiated = false;
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Log.d(TAG, "onScrollStateChanged: SCROLL_STATE_IDLE, isUserInitiated=" + isUserInitiated);
+                    if(!isUserInitiated){
+                        return;
+                    }
+                    isUserInitiated = false;
+                    // find a VideoItem to play
+                    Object parent = getParent();
+                    boolean isRefreshing = false;
+                    if (parent instanceof SwipeRefreshLayout) {
+                        isRefreshing = ((SwipeRefreshLayout) parent).isRefreshing();
+                    }
+                    if (!isRefreshing) {
+                        autoplaySomeVideo();
+                    } else {
+                        Log.d(TAG, "onScrollStateChanged: Parent trigger refreshing, stop auto play");
+                    }
+                } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    Log.d(TAG, "onScrollStateChanged: SCROLL_STATE_DRAGGING");
+                    isUserInitiated = true;
+                }
+            }
+        });
         addView(mRecyclerView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
 
@@ -118,6 +151,11 @@ public class FeedVideoPageView extends FrameLayout {
         @Override
         public void onItemClick(FeedVideoAdapter.ViewHolder holder) {
             if (mNavigator != null) {
+                if (mCurrentVideoView != null && mCurrentVideoView != holder.controller.videoView()) {
+                    // Clicked another item, stop current
+                    mCurrentVideoView.stopPlayback();
+                }
+
                 mNavigator.enterDetail(holder);
             }
         }
@@ -140,18 +178,14 @@ public class FeedVideoPageView extends FrameLayout {
 
         @Override
         public void onEvent(FeedVideoAdapter.ViewHolder viewHolder, Event event) {
-            switch (event.code()) {
-                case PlaybackEvent.Action.START_PLAYBACK: {
-                    // toggle play
-                    final VideoView videoView = viewHolder.controller.videoView();
-                    if (mCurrentVideoView != null && videoView != null) {
-                        if (mCurrentVideoView != videoView) {
-                            mCurrentVideoView.stopPlayback();
-                        }
+            if (event.code() == PlaybackEvent.Action.START_PLAYBACK) {// toggle play
+                final VideoView videoView = viewHolder.controller.videoView();
+                if (mCurrentVideoView != null && videoView != null) {
+                    if (mCurrentVideoView != videoView) {
+                        mCurrentVideoView.stopPlayback();
                     }
-                    mCurrentVideoView = videoView;
-                    break;
                 }
+                mCurrentVideoView = videoView;
             }
         }
     };
@@ -197,8 +231,14 @@ public class FeedVideoPageView extends FrameLayout {
     }
 
     public void setItems(List<VideoItem> videoItems) {
+        int oldItemCount = mFeedVideoAdapter.getItemCount();
         mFeedVideoAdapter.setItems(videoItems);
         FeedVideoStrategy.setItems(videoItems);
+        if (oldItemCount != 0 && !videoItems.isEmpty()) {
+            // User trigger refresh
+            // Need post to wait for RecyclerView layout fresh completed
+            post(this::autoplaySomeVideo);
+        }
     }
 
     public void prependItems(List<VideoItem> videoItems) {
@@ -214,10 +254,18 @@ public class FeedVideoPageView extends FrameLayout {
     public void play() {
         if (mCurrentVideoView != null) {
             mCurrentVideoView.startPlayback();
+            FullScreenLayer.enableAutoOrientation(mCurrentVideoView);
         }
     }
 
     public void resume() {
+        autoplaySomeVideo();
+    }
+
+    /**
+     * Old version of resume, only resume ourself pausePlayback
+     */
+    public void _resume() {
         if (!mInterceptStartPlaybackOnResume) {
             play();
         }
@@ -232,6 +280,7 @@ public class FeedVideoPageView extends FrameLayout {
             } else {
                 mInterceptStartPlaybackOnResume = false;
                 mCurrentVideoView.pausePlayback();
+                FullScreenLayer.disableAutoOrientation(mCurrentVideoView);
             }
         }
     }
@@ -251,10 +300,33 @@ public class FeedVideoPageView extends FrameLayout {
     public boolean onBackPressed() {
         if (mCurrentVideoView != null) {
             final VideoLayerHost layerHost = mCurrentVideoView.layerHost();
-            if (layerHost != null && layerHost.onBackPressed()) {
-                return true;
-            }
+            return layerHost != null && layerHost.onBackPressed();
         }
         return false;
+    }
+
+    void autoplaySomeVideo() {
+        if (mFeedVideoAdapter.getItemCount() == 0) {
+            Log.d(TAG, "autoplaySomeVideo: Skip by empty");
+            return;
+        }
+        Log.d(TAG, "autoplaySomeVideo: itemCount=" + mFeedVideoAdapter.getItemCount());
+        int position = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+        if (position == RecyclerView.NO_POSITION) {
+            Log.d(TAG, "autoplaySomeVideo: findFirstCompletelyVisibleItemPosition: " + position);
+            return;
+        }
+        RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForAdapterPosition(position);
+        if (viewHolder == null) {
+            Log.d(TAG, "autoplaySomeVideo: viewHolder: null");
+            return;
+        }
+
+        FeedVideoAdapter.ViewHolder videoHolder = (FeedVideoAdapter.ViewHolder) viewHolder;
+        Log.d(TAG, "autoplaySomeVideo: found an item: " + videoHolder.videoItem.getTitle());
+        VideoView videoView = videoHolder.sharedVideoView;
+        if (videoView == null) return;
+        videoView.startPlayback();
+        FullScreenLayer.enableAutoOrientation(videoView);
     }
 }

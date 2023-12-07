@@ -1,8 +1,8 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 @class VEVideoModel, VEVideoPlayerController;
-#import "VEViewController.h"
 #import "VEVideoPlayerController.h"
+#import "VEViewController.h"
 
 @protocol VEVideoDetailProtocol <NSObject>
 
@@ -26,5 +26,9 @@
 @property (nonatomic, strong) VEVideoModel *videoModel;
 
 @property (nonatomic, weak) id<VEVideoDetailProtocol> delegate;
+
+@property (nonatomic, copy) void (^closeCallback)(BOOL landscapeMode, VEVideoPlayerController *playerController);
+
+@property (nonatomic, assign) BOOL landscapeMode; // 全屏模式
 
 @end

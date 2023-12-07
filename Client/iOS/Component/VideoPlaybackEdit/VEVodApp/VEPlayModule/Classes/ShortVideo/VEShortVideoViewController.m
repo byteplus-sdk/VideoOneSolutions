@@ -177,11 +177,13 @@ static NSInteger VEShortVideoPreloadVideoCount = 3;
 
 #pragma mark----- UI
 - (void)initialUI {
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor blackColor];
     [self addChildViewController:self.pageContainer];
     [self.view addSubview:self.pageContainer.view];
     [self.pageContainer.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
+        NSInteger height = SCREEN_HEIGHT - ([DeviceInforTool getVirtualHomeHeight] + 48);
+        make.left.right.top.equalTo(self.view);
+        make.height.mas_equalTo(ceil(height));
     }];
     [self.view addSubview:self.backButton];
     [self.backButton mas_makeConstraints:^(MASConstraintMaker *make) {

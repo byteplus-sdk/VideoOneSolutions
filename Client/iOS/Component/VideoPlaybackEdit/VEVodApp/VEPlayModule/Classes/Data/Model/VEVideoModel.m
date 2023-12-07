@@ -1,16 +1,16 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEVideoModel.h"
-#import "VEVideoPlayerController+Resolution.h"
 #import "NSString+VE.h"
 #import "VESettingManager.h"
+#import "VEVideoPlayerController+Resolution.h"
 #import <ToolKit/Localizator.h>
-#import <ToolKit/Localizator.h>
+#import <ToolKit/NSString+Valid.h>
 
 @implementation VEVideoModel
 
-+ (NSDictionary<NSString *,id> *)modelCustomPropertyMapper {
-    return  @{
++ (NSDictionary<NSString *, id> *)modelCustomPropertyMapper {
+    return @{
         @"videoId": @"vid",
         @"title": @"caption",
         @"subTitle": @"subtitle",
@@ -18,61 +18,27 @@
         @"coverUrl": @"coverUrl",
         @"playTimes": @"playTimes",
         @"playAuthToken": @"playAuthToken",
-        @"duration": @"duration"
+        @"duration": @"duration",
+        @"userName": @"name",
+        @"likeCount": @"like",
+        @"commentCount": @"comment",
+        @"playUrl": @"httpUrl"
     };
 }
 
+- (BOOL)modelCustomTransformFromDictionary:(NSDictionary *)dic {
+    NSString *createTime = dic[@"createTime"];
+    if (createTime) {
+        _createTime = [NSString timeStringForUTCTime:createTime];
+    }
+    return YES;
+}
+
 - (NSString *)playTimeToString {
-    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-    [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-    [numberFormatter setMaximumFractionDigits:1];
-    if ([[Localizator getCurrentLanguage] isEqualToString:@"en"]) {
-        if (_playTimes < 1000) {
-            return [NSString stringWithFormat:@"%ld %@",_playTimes, LocalizedStringFromBundle(@"views", @"VEVodApp")];
-        } else if (_playTimes < 1e6) {
-            NSNumber *result = [NSNumber numberWithInteger:_playTimes];
-            float times = [result floatValue] / 1000;
-            NSString *playTimeString = [numberFormatter stringFromNumber:[NSNumber numberWithFloat:times]];
-            return [NSString stringWithFormat:@"%@K %@",playTimeString, LocalizedStringFromBundle(@"views", @"VEVodApp")];
-        } else {
-            NSNumber *result = [NSNumber numberWithInteger:_playTimes];
-            float times = [result floatValue] / (1e6);
-            NSString *playTimeString = [numberFormatter stringFromNumber:[NSNumber numberWithFloat:times]];
-            return [NSString stringWithFormat:@"%@M %@",playTimeString, LocalizedStringFromBundle(@"views", @"VEVodApp")];
-        }
-    } else {
-        if (_playTimes < 10000) {
-            return [NSString stringWithFormat:@"%ld %@", _playTimes, LocalizedStringFromBundle(@"views", @"VEVodApp")];
-        } else {
-            NSNumber *result = [NSNumber numberWithInteger:_playTimes];
-            float times = [result floatValue] / 10000;
-            NSString *playTimeString = [numberFormatter stringFromNumber:[NSNumber numberWithFloat:times]];
-            return [NSString stringWithFormat:@"%@万 %@",playTimeString, LocalizedStringFromBundle(@"views", @"VEVodApp")];
-        }
-    }
+    return [NSString stringWithFormat:@"%@ %@", [NSString stringForCount:_playTimes], LocalizedStringFromBundle(@"views", @"VEVodApp")];
 }
 
-- (NSString *)createTime {
-    if (_createTime) {
-        NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
-        [utcFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-        [utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-        [utcFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en"]];
-        NSDate *date = [utcFormatter dateFromString:_createTime];
-        NSDateFormatter *ymdFormatter = [[NSDateFormatter alloc] init];
-        [ymdFormatter setDateFormat:@"dd/MM/yyyy"];
-        NSString *ymdDateStr = [ymdFormatter stringFromDate:date];
-        if (!ymdDateStr) {
-            NSArray *components = [_createTime componentsSeparatedByString:@"T"];
-            return components[0];
-        }
-        return ymdDateStr;
-    }
-    return _createTime;
-}
-
-
-+ (BOOL)propertyIsOptional:(NSString*)propertyName {
++ (BOOL)propertyIsOptional:(NSString *)propertyName {
     return YES;
 }
 
@@ -91,7 +57,5 @@
     source.cover = videoModel.coverUrl;
     return source;
 }
-
-
 
 @end

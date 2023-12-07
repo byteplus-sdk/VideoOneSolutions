@@ -1,22 +1,27 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEInterfaceSimpleBlockSceneConf.h"
-#import "VEPlayerUIModule.h"
 #import "Masonry.h"
 #import "VEActionButton.h"
-#import "VEProgressView.h"
+#import "VEDataPersistance.h"
 #import "VEDisplayLabel.h"
+#import "VEEventMessageBus.h"
+#import "VEEventPoster+Private.h"
+#import "VEInterfaceElementDescriptionImp.h"
+#import "VEInterfacePlayElement.h"
+#import "VEInterfaceProgressElement.h"
+#import "VEInterfaceSlideButtonCell.h"
 #import "VEInterfaceSlideMenuCell.h"
 #import "VEInterfaceSlideMenuPercentageCell.h"
-#import "VEInterfaceSlideButtonCell.h"
-#import "VEInterfaceElementDescriptionImp.h"
-#import "VEEventMessageBus.h"
+#import "VEInterfaceSocialStackView.h"
+#import "VEMaskView.h"
+#import "VEMultiStatePlayButton.h"
+#import "VEPlayerUIModule.h"
+#import "VEProgressView.h"
+#import "VEVerticalProgressSlider.h"
+#import "VEVideoModel.h"
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ReportComponent.h>
-#import "VEEventPoster+Private.h"
-#import "VEVideoModel.h"
-#import "VEDataPersistance.h"
-#import "VEMaskView.h"
 
 static NSString *playButtonIdentifier = @"playButtonIdentifier";
 
@@ -42,8 +47,6 @@ static NSString *volumeGestureIdentifier = @"volumeGestureIdentifier";
 
 static NSString *brightnessGestureIdentifier = @"brightnessGestureIdentifier";
 
-static NSString *progressGestureIdentifier = @"progressGestureIdentifier";
-
 static NSString *clearScreenGestureIdentifier = @"clearScreenGestureIdentifier";
 
 static NSString *playGestureIdentifier = @"playGestureIdentifier";
@@ -52,15 +55,29 @@ static NSString *reportIdentifier = @"reportIdentifier";
 
 static NSString *maskViewIdentifier = @"maskViewIdentifier";
 
+static NSString *socialStackViewIdentifier = @"socialStackViewIdentifier";
+
+static NSString *leftBrightnessSliderIdentifier = @"leftBrightnessSliderIdentifier";
+
+static NSString *rightVolumeSliderIdentifier = @"rightVolumeSliderIdentifier";
+
 @interface VEInterfaceSimpleBlockSceneConf ()
 
 @property (nonatomic, strong) VEEventMessageBus *eventMessageBus;
 
 @property (nonatomic, strong) VEEventPoster *eventPoster;
 
+@property (nonatomic, strong) VEInterfaceSocialStackView *socialView;
+
+@property (nonatomic, strong) VEVerticalProgressSlider *leftBrightnessSlider;
+
+@property (nonatomic, strong) VEVerticalProgressSlider *rightVolumeSlider;
+
 @end
 
 @implementation VEInterfaceSimpleBlockSceneConf
+
+@synthesize deActive;
 
 - (instancetype)init {
     self = [super init];
@@ -71,13 +88,14 @@ static NSString *maskViewIdentifier = @"maskViewIdentifier";
     return self;
 }
 
-#pragma mark ----- Tool
-
-static inline BOOL normalScreenBehaivor (void) {
-    return ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait);
+- (void)setVideoModel:(VEVideoModel *)videoModel {
+    _videoModel = videoModel;
+    _socialView.videoModel = videoModel;
 }
 
-static inline CGSize squareSize (void) {
+#pragma mark----- Tool
+
+static inline CGSize squareSize(void) {
     if (normalScreenBehaivor()) {
         return CGSizeMake(24.0, 24.0);
     } else {
@@ -94,20 +112,25 @@ static inline CGSize squareSize (void) {
     return nil;
 }
 
-
-#pragma mark ----- Element Statement
+#pragma mark----- Element Statement
 
 - (VEInterfaceElementDescriptionImp *)playButton {
     __weak typeof(self) weak_self = self;
     return ({
         VEInterfaceElementDescriptionImp *playBtnDes = [VEInterfaceElementDescriptionImp new];
         playBtnDes.elementID = playButtonIdentifier;
-        playBtnDes.type = VEInterfaceElementTypeButton;
-        playBtnDes.elementDisplay = ^(VEActionButton *button) {
-            [button setImage:[UIImage imageNamed:@"video_pause"] forState:UIControlStateNormal];
-            [button setImage:[UIImage imageNamed:@"video_play"] forState:UIControlStateSelected];
+        playBtnDes.type = VEInterfaceElementTypeReplayButton;
+        playBtnDes.elementDisplay = ^(VEMultiStatePlayButton *button) {
+            VEPlaybackState playbackState = [weak_self.eventPoster currentPlaybackState];
+            if (playbackState == VEPlaybackStateStopped && [weak_self.eventPoster durationWatched] > 0.5) {
+                button.playState = VEMultiStatePlayStateReplay;
+            } else if (playbackState == VEPlaybackStatePlaying) {
+                button.playState = VEMultiStatePlayStatePause;
+            } else {
+                button.playState = VEMultiStatePlayStatePlay;
+            }
         };
-        playBtnDes.elementAction = ^NSString *(VEActionButton *button) {
+        playBtnDes.elementAction = ^NSString *(VEMultiStatePlayButton *button) {
             VEPlaybackState playbackState = [weak_self.eventPoster currentPlaybackState];
             if (playbackState == VEPlaybackStatePlaying) {
                 return VEPlayEventPause;
@@ -115,14 +138,31 @@ static inline CGSize squareSize (void) {
                 return VEPlayEventPlay;
             }
         };
-        playBtnDes.elementNotify = ^id (VEActionButton *button, NSString *key, id obj) {
+        playBtnDes.elementNotify = ^id(VEMultiStatePlayButton *button, NSString *key, id obj) {
             BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
             if ([key isEqualToString:VEPlayEventStateChanged]) {
                 VEPlaybackState playbackState = [weak_self.eventPoster currentPlaybackState];
-                button.selected = playbackState != VEPlaybackStatePlaying;
+                if (playbackState == VEPlaybackStateStopped && fabs([weak_self.eventPoster duration] - [weak_self.eventPoster currentPlaybackTime]) < 1) {
+                    button.playState = VEMultiStatePlayStateReplay;
+                } else if (playbackState == VEPlaybackStatePlaying) {
+                    button.playState = VEMultiStatePlayStatePause;
+                } else {
+                    button.playState = VEMultiStatePlayStatePlay;
+                }
+                if (screenIsClear) {
+                    if (playbackState == VEPlaybackStateStopped) {
+                        button.hidden = NO;
+                    } else {
+                        button.hidden = YES;
+                    }
+                }
             } else if ([key isEqualToString:VEUIEventScreenClearStateChanged]) {
-                button.hidden = screenIsLocking ?: screenIsClear;
+                if ([obj isEqualToString:VEPlayEventResolutionChanged] && fabs([weak_self.eventPoster duration] - [weak_self.eventPoster currentPlaybackTime]) < 1) {
+                    button.hidden = YES;
+                } else {
+                    button.hidden = screenIsLocking ?: screenIsClear;
+                }
             } else if ([key isEqualToString:VEUIEventScreenLockStateChanged]) {
                 button.hidden = screenIsLocking;
             }
@@ -131,7 +171,6 @@ static inline CGSize squareSize (void) {
         playBtnDes.elementWillLayout = ^(UIView *elementView, NSSet<UIView *> *elementGroup, UIView *groupContainer) {
             [elementView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.center.equalTo(groupContainer);
-                make.size.equalTo(@(CGSizeMake(50.0, 50.0)));
             }];
         };
         playBtnDes;
@@ -144,13 +183,12 @@ static inline CGSize squareSize (void) {
         VEInterfaceElementDescriptionImp *progressViewDes = [VEInterfaceElementDescriptionImp new];
         progressViewDes.elementID = progressViewIdentifier;
         progressViewDes.type = VEInterfaceElementTypeProgressView;
-        
-        progressViewDes.elementAction = ^NSDictionary* (VEProgressView *progressView) {
-            return @{VEPlayEventSeek : @(progressView.currentValue)};
+
+        progressViewDes.elementAction = ^NSDictionary *(VEProgressView *progressView) {
+            return @{VEPlayEventSeek: @(progressView.currentValue)};
         };
-        
-        
-        progressViewDes.elementNotify = ^id (VEProgressView *progressView, NSString *key, id obj) {
+
+        progressViewDes.elementNotify = ^id(VEProgressView *progressView, NSString *key, id obj) {
             BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
             if ([key isEqualToString:VEPlayEventTimeIntervalChanged]) {
@@ -161,11 +199,21 @@ static inline CGSize squareSize (void) {
                     progressView.bufferValue = [weak_self.eventPoster playableDuration];
                 };
             } else if ([key isEqualToString:VEUIEventScreenClearStateChanged]) {
-                progressView.hidden = screenIsLocking ?: screenIsClear;
+                progressView.hidden = screenIsClear;
             } else if ([key isEqualToString:VEUIEventScreenLockStateChanged]) {
-                progressView.hidden = screenIsLocking;
+                progressView.hidden = screenIsClear;
+                progressView.userInteractionEnabled = !screenIsLocking;
+            } else if ([key isEqualToString:VEUIEventSeeking]) {
+                if ([obj isKindOfClass:[NSNumber class]]) {
+                    BOOL isSeeking = [obj boolValue];
+                    progressView.hidden = isSeeking ? NO : screenIsClear;
+                };
+            } else if ([key isEqualToString:VEPlayEventStateChanged]) {
+                if ([weak_self.eventPoster currentPlaybackState] == VEPlaybackStateStopped) {
+                    progressView.hidden = NO;
+                }
             }
-            return @[VEPlayEventTimeIntervalChanged, VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged];
+            return @[VEPlayEventTimeIntervalChanged, VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventSeeking, VEPlayEventStateChanged];
         };
         progressViewDes.elementWillLayout = ^(UIView *elementView, NSSet<UIView *> *elementGroup, UIView *groupContainer) {
             VEProgressView *progressView = (VEProgressView *)elementView;
@@ -187,9 +235,39 @@ static inline CGSize squareSize (void) {
                 }];
                 progressView.currentOrientation = UIInterfaceOrientationLandscapeRight;
             }
+            [groupContainer addSubview:weak_self.leftBrightnessSlider];
+            [weak_self.leftBrightnessSlider mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.equalTo(groupContainer);
+                make.leading.equalTo(groupContainer).offset(51);
+                make.size.equalTo(@(CGSizeMake(5, 160)));
+            }];
+            [groupContainer addSubview:weak_self.rightVolumeSlider];
+            [weak_self.rightVolumeSlider mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.equalTo(groupContainer);
+                make.trailing.equalTo(groupContainer).offset(-51);
+                make.size.equalTo(@(CGSizeMake(5, 160)));
+            }];
         };
         progressViewDes;
     });
+}
+
+- (VEVerticalProgressSlider *)leftBrightnessSlider {
+    if (!_leftBrightnessSlider) {
+        _leftBrightnessSlider = [VEVerticalProgressSlider new];
+        _leftBrightnessSlider.hidden = YES;
+        _leftBrightnessSlider.userInteractionEnabled = NO;
+    }
+    return _leftBrightnessSlider;
+}
+
+- (VEVerticalProgressSlider *)rightVolumeSlider {
+    if (!_rightVolumeSlider) {
+        _rightVolumeSlider = [VEVerticalProgressSlider new];
+        _rightVolumeSlider.hidden = YES;
+        _rightVolumeSlider.userInteractionEnabled = NO;
+    }
+    return _rightVolumeSlider;
 }
 
 - (VEInterfaceElementDescriptionImp *)fullScreenButton {
@@ -204,7 +282,7 @@ static inline CGSize squareSize (void) {
         fullScreenBtnDes.elementAction = ^NSString *(VEActionButton *button) {
             return VEUIEventScreenRotation;
         };
-        fullScreenBtnDes.elementNotify = ^id (VEActionButton *button, NSString *key, id obj) {
+        fullScreenBtnDes.elementNotify = ^id(VEActionButton *button, NSString *key, id obj) {
             BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
             if ([key isEqualToString:VEUIEventScreenClearStateChanged]) {
@@ -242,17 +320,17 @@ static inline CGSize squareSize (void) {
             [button setImage:[UIImage imageNamed:@"video_page_back"] forState:UIControlStateNormal];
         };
         backBtnDes.elementAction = ^NSString *(VEActionButton *button) {
-            if (normalScreenBehaivor()) {
-                return VEUIEventPageBack;
-            } else {
-                return VEUIEventScreenRotation;
-            }
+            return VEUIEventPageBack;
         };
-        backBtnDes.elementNotify = ^id (VEActionButton *button, NSString *key, id obj) {
+        backBtnDes.elementNotify = ^id(VEActionButton *button, NSString *key, id obj) {
             BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
             if ([key isEqualToString:VEUIEventScreenClearStateChanged]) {
-                button.hidden = screenIsLocking ?: screenIsClear;
+                if (normalScreenBehaivor()) {
+                    button.hidden = NO;
+                } else {
+                    button.hidden = screenIsLocking ?: screenIsClear;
+                }
             } else if ([key isEqualToString:VEUIEventScreenLockStateChanged]) {
                 button.hidden = screenIsLocking;
             }
@@ -281,10 +359,10 @@ static inline CGSize squareSize (void) {
             [button setImage:[UIImage imageNamed:@"long_video_resolution"] forState:UIControlStateNormal];
             [button setTitle:LocalizedStringFromBundle(@"resolution_default", @"VEVodApp") forState:UIControlStateNormal];
         };
-        resolutionBtnDes.elementAction = ^NSString* (VEActionButton *button) {
+        resolutionBtnDes.elementAction = ^NSString *(VEActionButton *button) {
             return VEUIEventShowResolutionMenu;
         };
-        resolutionBtnDes.elementNotify = ^id (VEActionButton *button,  NSString *key, id obj) {
+        resolutionBtnDes.elementNotify = ^id(VEActionButton *button, NSString *key, id obj) {
             BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
             if ([key isEqualToString:VEPlayEventResolutionChanged]) {
@@ -325,10 +403,10 @@ static inline CGSize squareSize (void) {
             [button setImage:[UIImage imageNamed:@"long_video_speed"] forState:UIControlStateNormal];
             [button setTitle:@"1.0x" forState:UIControlStateNormal];
         };
-        playSpeedBtnDes.elementAction = ^NSString* (VEActionButton *button) {
+        playSpeedBtnDes.elementAction = ^NSString *(VEActionButton *button) {
             return VEUIEventShowPlaySpeedMenu;
         };
-        playSpeedBtnDes.elementNotify = ^id (VEActionButton *button, NSString *key, id obj) {
+        playSpeedBtnDes.elementNotify = ^id(VEActionButton *button, NSString *key, id obj) {
             BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
             if ([key isEqualToString:VEPlayEventPlaySpeedChanged]) {
@@ -339,7 +417,8 @@ static inline CGSize squareSize (void) {
             } else if ([key isEqualToString:VEUIEventScreenLockStateChanged]) {
                 button.hidden = screenIsLocking;
             }
-            return @[VEPlayEventPlaySpeedChanged, VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged];;
+            return @[VEPlayEventPlaySpeedChanged, VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged];
+            ;
         };
         playSpeedBtnDes.elementWillLayout = ^(UIView *elementView, NSSet<UIView *> *elementGroup, UIView *groupContainer) {
             if (normalScreenBehaivor()) {
@@ -369,19 +448,19 @@ static inline CGSize squareSize (void) {
         moreButtonDes.elementDisplay = ^(VEActionButton *button) {
             [button setImage:[UIImage imageNamed:@"long_video_more"] forState:UIControlStateNormal];
         };
-        moreButtonDes.elementAction = ^NSString* (VEActionButton *button) {
+        moreButtonDes.elementAction = ^NSString *(VEActionButton *button) {
             return VEUIEventShowMoreMenu;
         };
-        moreButtonDes.elementNotify = ^id (VEActionButton *button, NSString *key, id obj) {
+        moreButtonDes.elementNotify = ^id(VEActionButton *button, NSString *key, id obj) {
             BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
-            
-            if ([key isEqualToString:VEUIEventScreenRotation]) {
-                //state: rotate back to portrait.
+
+            if ([key isEqualToString:VEUIEventScreenOrientationChanged]) {
+                // state: rotate back to portrait.
                 if (screenIsClear) {
                     button.hidden = YES;
                 } else {
-                    button.hidden = !button.hidden;
+                    button.hidden = normalScreenBehaivor();
                 }
             } else if (normalScreenBehaivor()) {
                 button.hidden = YES;
@@ -390,7 +469,7 @@ static inline CGSize squareSize (void) {
             } else if ([key isEqualToString:VEUIEventScreenLockStateChanged]) {
                 button.hidden = screenIsLocking;
             }
-            return @[VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventScreenRotation];
+            return @[VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventScreenOrientationChanged];
         };
         moreButtonDes.elementWillLayout = ^(UIView *elementView, NSSet<UIView *> *elementGroup, UIView *groupContainer) {
             CGFloat trailing = normalScreenBehaivor() ? 14.0 : 54.0;
@@ -415,20 +494,20 @@ static inline CGSize squareSize (void) {
             [button setImage:[UIImage imageNamed:@"long_video_unlock"] forState:UIControlStateNormal];
             [button setImage:[UIImage imageNamed:@"long_video_lock"] forState:UIControlStateSelected];
         };
-        lockButtonDes.elementAction = ^NSString* (VEActionButton *button) {
+        lockButtonDes.elementAction = ^NSString *(VEActionButton *button) {
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
             [weak_self.eventPoster setScreenIsLocking:!screenIsLocking];
             return VEUIEventLockScreen;
         };
-        lockButtonDes.elementNotify = ^id (VEActionButton *button, NSString *key, id obj) {
+        lockButtonDes.elementNotify = ^id(VEActionButton *button, NSString *key, id obj) {
             BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
-            if ([key isEqualToString:VEUIEventScreenRotation]) {
-                //state: rotate back to portrait.
+            if ([key isEqualToString:VEUIEventScreenOrientationChanged]) {
+                // state: rotate back to portrait.
                 if (screenIsClear) {
                     button.hidden = YES;
                 } else {
-                    button.hidden = !button.hidden;
+                    button.hidden = normalScreenBehaivor();
                 }
             } else if (normalScreenBehaivor()) {
                 button.hidden = YES;
@@ -437,7 +516,7 @@ static inline CGSize squareSize (void) {
             } else if ([key isEqualToString:VEUIEventScreenLockStateChanged]) {
                 button.selected = screenIsLocking;
             }
-            return @[VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventScreenRotation];
+            return @[VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventScreenOrientationChanged];
         };
         lockButtonDes.elementWillLayout = ^(UIView *elementView, NSSet<UIView *> *elementGroup, UIView *groupContainer) {
             UIView *moreButton = [weak_self viewOfElementIdentifier:moreButtonIdentifier inGroup:elementGroup];
@@ -460,16 +539,16 @@ static inline CGSize squareSize (void) {
         titleLabelDes.elementDisplay = ^(VEDisplayLabel *label) {
             label.text = [weak_self.eventPoster title];
         };
-        titleLabelDes.elementNotify = ^id (VEDisplayLabel *label, NSString *key, id obj) {
+        titleLabelDes.elementNotify = ^id(VEDisplayLabel *label, NSString *key, id obj) {
             BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
             BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
-            
-            if ([key isEqualToString:VEUIEventScreenRotation]) {
-                //state: rotate back to portrait.
+
+            if ([key isEqualToString:VEUIEventScreenOrientationChanged]) {
+                // state: rotate back to portrait.
                 if (screenIsClear) {
                     label.hidden = YES;
                 } else {
-                    label.hidden = !label.hidden;
+                    label.hidden = normalScreenBehaivor();
                 }
             } else if (normalScreenBehaivor()) {
                 label.hidden = YES;
@@ -478,7 +557,8 @@ static inline CGSize squareSize (void) {
             } else if ([key isEqualToString:VEUIEventScreenLockStateChanged]) {
                 label.hidden = screenIsLocking;
             }
-            return @[VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventScreenRotation];;
+            return @[VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventScreenOrientationChanged];
+            ;
         };
         titleLabelDes.elementWillLayout = ^(UIView *elementView, NSSet<UIView *> *elementGroup, UIView *groupContainer) {
             UIView *backBtn = [weak_self viewOfElementIdentifier:backButtonIdentifier inGroup:elementGroup];
@@ -507,7 +587,7 @@ static inline CGSize squareSize (void) {
             BOOL loop = [VEDataPersistance boolValueFor:VEDataCacheKeyPlayLoop defaultValue:YES];
             [cell highlightLeftButton:loop];
         };
-        loopPlayButtonDes.elementAction = ^NSString* (VEInterfaceSlideMenuCell *cell) {
+        loopPlayButtonDes.elementAction = ^NSString *(VEInterfaceSlideMenuCell *cell) {
             return VEPlayEventChangeLoopPlayMode;
         };
         loopPlayButtonDes.elementNotify = ^id(UIButton *btn, NSString *key, NSNumber *value) {
@@ -527,7 +607,7 @@ static inline CGSize squareSize (void) {
         VEInterfaceElementDescriptionImp *volumeGestureDes = [VEInterfaceElementDescriptionImp new];
         volumeGestureDes.elementID = volumeGestureIdentifier;
         volumeGestureDes.type = VEInterfaceElementTypeMenuPercentageCell;
-        volumeGestureDes.elementAction = ^NSString* (id sender) {
+        volumeGestureDes.elementAction = ^NSString *(id sender) {
             return VEUIEventVolumeIncrease;
         };
         volumeGestureDes.elementDisplay = ^(VEInterfaceSlideMenuPercentageCell *cell) {
@@ -551,13 +631,14 @@ static inline CGSize squareSize (void) {
         VEInterfaceElementDescriptionImp *brightnessGestureDes = [VEInterfaceElementDescriptionImp new];
         brightnessGestureDes.elementID = brightnessGestureIdentifier;
         brightnessGestureDes.type = VEInterfaceElementTypeMenuPercentageCell;
-        brightnessGestureDes.elementAction = ^NSString* (id sender) {
+        brightnessGestureDes.elementAction = ^NSString *(id sender) {
             return VEUIEventBrightnessIncrease;
         };
         brightnessGestureDes.elementDisplay = ^(VEInterfaceSlideMenuPercentageCell *cell) {
             cell.titleLabel.text = LocalizedStringFromBundle(@"brightness", @"VEVodApp");
             cell.iconImgView.image = [UIImage imageNamed:@"vod_videosettting_brightness"];
-            cell.percentage = [weak_self.eventPoster currentBrightness];;
+            cell.percentage = [weak_self.eventPoster currentBrightness];
+            ;
         };
         brightnessGestureDes.elementNotify = ^id(UIView *view, NSString *key, NSValue *value) {
             if (value) {
@@ -575,12 +656,26 @@ static inline CGSize squareSize (void) {
         VEInterfaceElementDescriptionImp *brightnessGestureDes = [VEInterfaceElementDescriptionImp new];
         brightnessGestureDes.elementID = brightnessGestureIdentifier;
         brightnessGestureDes.type = VEInterfaceElementTypeGestureLeftVerticalPan;
-        brightnessGestureDes.elementAction = ^NSString* (id sender) {
+        brightnessGestureDes.elementAction = ^NSString *(id sender) {
             return VEUIEventBrightnessIncrease;
         };
-        brightnessGestureDes.elementNotify = ^id(UIView *view, NSString *key, NSNumber *value) {
+        brightnessGestureDes.elementNotify = ^id(UIView *view, NSString *key, NSDictionary *param) {
+            if (normalScreenBehaivor()) {
+                return view;
+            }
+            NSNumber *began = [param objectForKey:@"touchBegan"];
+            if (began.boolValue) {
+                weak_self.leftBrightnessSlider.hidden = NO;
+                return view;
+            }
+            NSNumber *value = param[@"changeValue"];
             if (value) {
                 [weak_self.eventMessageBus postEvent:VEUIEventBrightnessIncrease withObject:value rightNow:YES];
+                weak_self.leftBrightnessSlider.progress = [weak_self.eventPoster currentBrightness];
+            }
+            NSNumber *end = [param objectForKey:@"touchEnd"];
+            if (end.boolValue) {
+                weak_self.leftBrightnessSlider.hidden = YES;
             }
             return view;
         };
@@ -588,35 +683,36 @@ static inline CGSize squareSize (void) {
     });
 }
 
-
 - (VEInterfaceElementDescriptionImp *)volumeVerticalGesture {
     __weak typeof(self) weak_self = self;
     return ({
         VEInterfaceElementDescriptionImp *volumeDes = [VEInterfaceElementDescriptionImp new];
         volumeDes.elementID = brightnessGestureIdentifier;
         volumeDes.type = VEInterfaceElementTypeGestureRightVerticalPan;
-        volumeDes.elementAction = ^NSString* (id sender) {
+        volumeDes.elementAction = ^NSString *(id sender) {
             return VEUIEventVolumeIncrease;
         };
-        volumeDes.elementNotify = ^id(UIView *view, NSString *key, NSNumber *value) {
+        volumeDes.elementNotify = ^id(UIView *view, NSString *key, NSDictionary *param) {
+            if (normalScreenBehaivor()) {
+                return view;
+            }
+            NSNumber *began = [param objectForKey:@"touchBegan"];
+            if (began.boolValue) {
+                weak_self.rightVolumeSlider.hidden = NO;
+                return view;
+            }
+            NSNumber *value = param[@"changeValue"];
             if (value) {
                 [weak_self.eventMessageBus postEvent:VEUIEventVolumeIncrease withObject:value rightNow:YES];
+                weak_self.rightVolumeSlider.progress = [weak_self.eventPoster currentVolume];
+            }
+            NSNumber *end = [param objectForKey:@"touchEnd"];
+            if (end.boolValue) {
+                weak_self.rightVolumeSlider.hidden = YES;
             }
             return view;
         };
         volumeDes;
-    });
-}
-
-- (VEInterfaceElementDescriptionImp *)progressGesture {
-    return ({
-        VEInterfaceElementDescriptionImp *progressGestureDes = [VEInterfaceElementDescriptionImp new];
-        progressGestureDes.elementID = progressGestureIdentifier;
-        progressGestureDes.type = VEInterfaceElementTypeGestureHorizontalPan;
-        progressGestureDes.elementAction = ^NSString* (id sender) {
-            return VEPlayEventProgressValueIncrease;
-        };
-        progressGestureDes;
     });
 }
 
@@ -626,7 +722,7 @@ static inline CGSize squareSize (void) {
         VEInterfaceElementDescriptionImp *playGestureDes = [VEInterfaceElementDescriptionImp new];
         playGestureDes.elementID = playGestureIdentifier;
         playGestureDes.type = VEInterfaceElementTypeGestureDoubleTap;
-        playGestureDes.elementAction = ^NSString* (id sender) {
+        playGestureDes.elementAction = ^NSString *(id sender) {
             if ([weak_self.eventPoster screenIsLocking] || [weak_self.eventPoster screenIsClear]) {
                 return nil;
             }
@@ -646,7 +742,7 @@ static inline CGSize squareSize (void) {
         VEInterfaceElementDescriptionImp *clearScreenGestureDes = [VEInterfaceElementDescriptionImp new];
         clearScreenGestureDes.elementID = clearScreenGestureIdentifier;
         clearScreenGestureDes.type = VEInterfaceElementTypeGestureSingleTap;
-        clearScreenGestureDes.elementAction = ^NSString* (id sender) {
+        clearScreenGestureDes.elementAction = ^NSString *(id sender) {
             return VEUIEventClearScreen;
         };
         clearScreenGestureDes;
@@ -659,15 +755,15 @@ static inline CGSize squareSize (void) {
         VEInterfaceElementDescriptionImp *reportDes = [VEInterfaceElementDescriptionImp new];
         reportDes.elementID = reportIdentifier;
         reportDes.type = VEInterfaceElementTypeButtonCell;
-        reportDes.elementAction = ^NSString* (id sender) {
-            return VEUIEventScreenRotation;
-        };
         reportDes.elementDisplay = ^(__kindof VEInterfaceSlideButtonCell *cell) {
             [cell.button setImage:[UIImage imageNamed:@"vod_video_report"] forState:UIControlStateNormal];
             cell.titleLabel.text = LocalizedStringFromBundle(@"vod_report", @"VEVodApp");
         };
         reportDes.elementNotify = ^id(UIButton *btn, NSString *key, id obj) {
             [ReportComponent report:weak_self.videoModel.videoId cancelHandler:nil completion:nil];
+            return nil;
+        };
+        reportDes.elementAction = ^NSString *(id sender) {
             return nil;
         };
         reportDes;
@@ -681,35 +777,44 @@ static inline CGSize squareSize (void) {
         maskVewDes.elementID = maskViewIdentifier;
         maskVewDes.type = VEInterfaceElementTypeMaskView;
         maskVewDes.elementWillLayout = ^(VEMaskView *elementView, NSSet<UIView *> *elementGroup, UIView *groupContainer) {
+            if (normalScreenBehaivor()) {
+                elementView.topHeight = 48.0;
+                elementView.bottomHeight = 50.0;
+            } else {
+                elementView.topHeight = 120.0;
+                elementView.bottomHeight = 160.0;
+            }
             elementView.topMask.colors = @[
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.5].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.495].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.475].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.45].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.41].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.37].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.325].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.275].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.225].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.18].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.11].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.05].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.02].CGColor,
-                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha: 0.0].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.5].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.495].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.475].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.45].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.41].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.37].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.325].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.275].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.225].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.18].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.11].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.05].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.02].CGColor,
+                (id)[UIColor colorWithRed:0 green:0 blue:0 alpha:0.0].CGColor,
             ];
             [elementView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.edges.equalTo(groupContainer);
             }];
         };
-        maskVewDes.elementNotify = ^id (VEMaskView *elementView, NSString *key, id obj) {
+        maskVewDes.elementNotify = ^id(VEMaskView *elementView, NSString *key, id obj) {
             if ([key isEqual:VEUIEventScreenClearStateChanged]) {
+                BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
                 BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
-                elementView.hidden = screenIsClear;
-            } else if ([key isEqual:VEUIEventScreenLockStateChanged])  {
+                elementView.topMask.hidden = screenIsLocking ?: screenIsClear;
+                elementView.fullMask.hidden = screenIsClear;
+                elementView.bottomMask.hidden = screenIsClear;
+            } else if ([key isEqual:VEUIEventScreenLockStateChanged]) {
                 BOOL screenIsLocking = [weak_self.eventPoster screenIsLocking];
                 elementView.topMask.hidden = screenIsLocking;
-                elementView.bottomMask.hidden = screenIsLocking;
-            } else if ([key isEqual:VEUIEventScreenRotation])  {
+            } else if ([key isEqual:VEUIEventScreenOrientationChanged]) {
                 if (normalScreenBehaivor()) {
                     elementView.topHeight = 48.0;
                     elementView.bottomHeight = 50.0;
@@ -717,37 +822,81 @@ static inline CGSize squareSize (void) {
                     elementView.topHeight = 120.0;
                     elementView.bottomHeight = 160.0;
                 }
+            } else if ([key isEqualToString:VEUIEventSeeking]) {
+                if ([obj isKindOfClass:[NSNumber class]]) {
+                    BOOL screenIsClear = [weak_self.eventPoster screenIsClear];
+                    BOOL isSeeking = [obj boolValue];
+                    elementView.bottomMask.hidden = isSeeking ? NO : screenIsClear;
+                };
             }
-            return @[VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventScreenRotation];
+            return @[VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventScreenOrientationChanged, VEUIEventSeeking];
         };
         maskVewDes;
     });
 }
 
-#pragma mark ----- VEInterfaceElementProtocol
-
-- (NSArray<id<VEInterfaceElementDescription>> *)customizedElements {
-    return @[[self maskView],
-             [self playButton],
-             [self progressView],
-             [self fullScreenButton],
-             [self backButton],
-             [self resolutionButton],
-             [self playSpeedButton],
-             [self moreButton],
-             [self lockButton],
-             [self titleLabel],
-             [self volumeGesture],
-             [self brightnessGesture],
-             [self loopPlayButton],
-             [self progressGesture],
-             [self playGesture],
-             [self clearScreenGesture],
-             [self report],
-             [self brightnessVerticalGesture],
-             [self volumeVerticalGesture]
-    ];
+- (VEInterfaceElementDescriptionImp *)socialStackView {
+    __weak typeof(self) weak_self = self;
+    return ({
+        VEInterfaceElementDescriptionImp *viewDes = [VEInterfaceElementDescriptionImp new];
+        viewDes.elementID = socialStackViewIdentifier;
+        viewDes.type = VEInterfaceElementTypeCustomView;
+        viewDes.customView = weak_self.socialView;
+        viewDes.elementWillLayout = ^(UIView *elementView, NSSet<UIView *> *elementGroup, UIView *groupContainer) {
+            elementView.hidden = normalScreenBehaivor();
+            [elementView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.offset(52);
+                make.bottom.offset(-16);
+            }];
+        };
+        viewDes.elementNotify = ^id(UIView *elementView, NSString *key, id obj) {
+            return @[VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged, VEUIEventScreenOrientationChanged];
+        };
+        viewDes;
+    });
 }
 
+- (VEInterfaceSocialStackView *)socialView {
+    if (!_socialView) {
+        _socialView = [VEInterfaceSocialStackView new];
+        _socialView.axis = UILayoutConstraintAxisHorizontal;
+        _socialView.videoModel = self.videoModel;
+        _socialView.eventMessageBus = self.eventMessageBus;
+        _socialView.eventPoster = self.eventPoster;
+    }
+    return _socialView;
+}
+
+#pragma mark----- VEInterfaceElementProtocol
+
+- (NSArray<id<VEInterfaceElementDescription>> *)customizedElements {
+    NSMutableArray *array = [NSMutableArray arrayWithArray:
+                                                @[
+                                                    [self maskView],
+                                                    [self playButton],
+                                                    [self progressView],
+                                                    [self fullScreenButton],
+                                                    [self backButton],
+                                                    [self socialStackView],
+                                                    [self resolutionButton],
+                                                    [self playSpeedButton],
+                                                    [self moreButton],
+                                                    [self lockButton],
+                                                    [self titleLabel],
+                                                    [self volumeGesture],
+                                                    [self brightnessGesture],
+                                                    [self playGesture],
+                                                    [self clearScreenGesture],
+                                                    [self report],
+                                                    [self brightnessVerticalGesture],
+                                                    [self volumeVerticalGesture],
+                                                    [VEInterfaceProgressElement progressGesture],
+                                                    [VEInterfacePlayElement autoHideControllerGesture],
+                                                ]];
+    if (!self.skipPlayMode) {
+        [array addObject:[self loopPlayButton]];
+    }
+    return array;
+}
 
 @end

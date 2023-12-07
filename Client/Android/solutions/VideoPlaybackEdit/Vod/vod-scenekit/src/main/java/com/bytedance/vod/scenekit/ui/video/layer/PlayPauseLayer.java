@@ -3,11 +3,9 @@
 
 package com.bytedance.vod.scenekit.ui.video.layer;
 
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -19,14 +17,12 @@ import com.bytedance.playerkit.player.PlayerEvent;
 import com.bytedance.playerkit.player.playback.PlaybackController;
 import com.bytedance.playerkit.player.playback.PlaybackEvent;
 import com.bytedance.playerkit.player.playback.VideoView;
-
+import com.bytedance.playerkit.utils.L;
+import com.bytedance.playerkit.utils.event.Dispatcher;
+import com.bytedance.vod.scenekit.R;
 import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.utils.UIUtils;
-import com.bytedance.playerkit.utils.L;
-import com.bytedance.playerkit.utils.event.Dispatcher;
-import com.bytedance.playerkit.utils.event.Event;
-import com.bytedance.vod.scenekit.R;
 
 public class PlayPauseLayer extends AnimateLayer {
 
@@ -38,16 +34,10 @@ public class PlayPauseLayer extends AnimateLayer {
     @Nullable
     @Override
     protected View createView(@NonNull ViewGroup parent) {
-        final ImageView ivPlayPause = (ImageView) LayoutInflater.from(parent.getContext())
+        final View ivPlayPause = (ImageView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.vevod_play_pause_layer, parent, false);
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) ivPlayPause.getLayoutParams();
-        layoutParams.gravity = Gravity.CENTER;
-        ivPlayPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                togglePlayPause();
-            }
-        });
+
+        ivPlayPause.setOnClickListener(v -> togglePlayPause());
         return ivPlayPause;
     }
 
@@ -61,6 +51,12 @@ public class PlayPauseLayer extends AnimateLayer {
     protected void onUnbindPlaybackController(@NonNull PlaybackController controller) {
         controller.removePlaybackListener(mPlaybackListener);
         show();
+    }
+
+    @Override
+    protected boolean preventAnimateDismiss() {
+        final Player player = player();
+        return player != null && player.isPaused();
     }
 
     protected void togglePlayPause() {
@@ -121,46 +117,41 @@ public class PlayPauseLayer extends AnimateLayer {
         }
     }
 
-    private final Dispatcher.EventListener mPlaybackListener = new Dispatcher.EventListener() {
+    private final Dispatcher.EventListener mPlaybackListener = event -> {
+        switch (event.code()) {
+            case PlaybackEvent.Action.START_PLAYBACK:
+                if (player() == null) {
+                    dismiss();
+                }
+                break;
+        }
 
-        @Override
-        public void onEvent(Event event) {
-            switch (event.code()) {
-                case PlaybackEvent.Action.START_PLAYBACK:
-                    if (player() == null) {
-                        dismiss();
-                    }
-                    break;
-            }
-
-            switch (event.code()) {
-                case PlayerEvent.State.STARTED:
-                    syncState();
-                    break;
-                case PlayerEvent.State.PAUSED:
-                    syncState();
-                    break;
-                case PlayerEvent.State.COMPLETED:
-                    syncState();
-                    dismiss();
-                    break;
-                case PlayerEvent.State.STOPPED:
-                case PlayerEvent.State.RELEASED:
-                    show();
-                    break;
-                case PlayerEvent.State.ERROR:
-                    dismiss();
-                    break;
-                case PlayerEvent.Info.BUFFERING_END:
-                case PlayerEvent.Info.BUFFERING_START:
-                    dismiss();
-                    break;
-            }
+        switch (event.code()) {
+            case PlayerEvent.State.STARTED:
+            case PlayerEvent.State.PAUSED:
+                syncState();
+                break;
+            case PlayerEvent.State.COMPLETED:
+                syncState();
+                dismiss();
+                break;
+            case PlayerEvent.State.STOPPED:
+            case PlayerEvent.State.RELEASED:
+                show();
+                break;
+            case PlayerEvent.State.ERROR:
+            case PlayerEvent.Info.BUFFERING_END:
+            case PlayerEvent.Info.BUFFERING_START:
+                dismiss();
+                break;
         }
     };
 
     @Override
     public void show() {
+        if (!checkShow()) {
+            return;
+        }
         super.show();
         syncState();
         syncTheme();
@@ -168,7 +159,15 @@ public class PlayPauseLayer extends AnimateLayer {
 
     @Override
     public void onVideoViewPlaySceneChanged(int fromScene, int toScene) {
-        syncState();
-        syncTheme();
+        if (checkShow()) {
+            syncState();
+            syncTheme();
+        } else {
+            dismiss();
+        }
+    }
+
+    protected boolean checkShow() {
+        return true;
     }
 }

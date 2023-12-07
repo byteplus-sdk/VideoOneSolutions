@@ -37,7 +37,7 @@ public class SceneEntry {
                 Object instance = clazz.newInstance();
                 consumer.accept(new SceneEntry(clazz, instance, entry.isNew));
             } catch (ReflectiveOperationException e) {
-                Log.d(TAG, entryClass, e);
+                Log.w(TAG, "Entry not found: " + entryClass);
             }
         }
     }
@@ -90,7 +90,7 @@ public class SceneEntry {
             Method method = entryClass.getDeclaredMethod("startup", Activity.class);
             method.invoke(entryInstance, activity);
         } catch (ReflectiveOperationException e) {
-            Log.d(TAG, "startup", e);
+            Log.w(TAG, "startup failed", e);
             throw new RuntimeException(e);
         }
     }
@@ -130,7 +130,7 @@ public class SceneEntry {
             Object result = method.invoke(entryInstance);
             return result == null ? ResourcesCompat.ID_NULL : (int) result;
         } catch (ReflectiveOperationException e) {
-            Log.d(TAG, methodName, e);
+            Log.w(TAG, "Not implement" + methodName);
             return ResourcesCompat.ID_NULL;
         }
     }

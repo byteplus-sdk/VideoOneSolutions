@@ -28,12 +28,13 @@
     [self.videoEngine setOptionForKey:VEKKeyPlayerHardwareDecode_BOOL value:@(self.hardwareDecodeOpen)];
     // h265
     [self.videoEngine setOptionForKey:VEKKeyPlayerh265Enabled_BOOL value:@(self.h265Open)];
-    
-    [self.videoEngine setOptionForKey:VEKKeyPlayerSeekEndEnabled_BOOL value:@(YES)];
-    
-    [self.videoEngine setOptionForKey:VEKKeyViewScaleMode_ENUM value:@(TTVideoEngineScalingModeAspectFill)];
-}
 
+    [self.videoEngine setOptionForKey:VEKKeyPlayerSeekEndEnabled_BOOL value:@(YES)];
+
+    if (self.videoPlayerType & VEVideoPlayerTypeShortVerticalScreen) {
+        [self.videoEngine setOptionForKey:VEKKeyViewScaleMode_ENUM value:@(TTVideoEngineScalingModeAspectFill)];
+    }
+}
 
 - (void)openVideoEngineFeedDefaultOptions {
     // system idle
@@ -42,7 +43,6 @@
     [self.videoEngine setOptionForKey:VEKKeyPlayerHardwareDecode_BOOL value:@(self.hardwareDecodeOpen)];
     // h265
     [self.videoEngine setOptionForKey:VEKKeyPlayerh265Enabled_BOOL value:@(self.h265Open)];
-    
     [self.videoEngine setOptionForKey:VEKKeyPlayerSeekEndEnabled_BOOL value:@(YES)];
 }
 

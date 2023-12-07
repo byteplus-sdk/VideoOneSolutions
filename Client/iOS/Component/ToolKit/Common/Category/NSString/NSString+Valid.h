@@ -12,4 +12,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isValidNumber;
 @end
 
+@interface NSString (Format)
+
++ (NSString *)stringForCount:(NSUInteger)count;
+
++ (NSString *)timeStringForUTCTime:(NSString *)utcTime;
+
++ (NSString *)timeStringSinceNow;
+
++ (NSString *)timeStringForDate:(NSDate *)date;
+
+@end
+
 NS_ASSUME_NONNULL_END

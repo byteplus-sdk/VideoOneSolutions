@@ -7,5 +7,6 @@
 @interface VEInterfaceSimpleBlockSceneConf : NSObject <VEInterfaceElementDataSource>
 
 @property (nonatomic, strong) VEVideoModel *videoModel;
+@property (nonatomic, assign) BOOL skipPlayMode;
 
 @end

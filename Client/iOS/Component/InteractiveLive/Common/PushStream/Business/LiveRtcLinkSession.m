@@ -28,7 +28,6 @@
 }
 
 - (void)dealloc {
-    NSLog(@"aaa dealloc linkSession");
     [self stopInteractive];
     [self stopNormalStreaming];
 }
@@ -74,7 +73,6 @@
     }
     [self.interactivePushStreaming startInteractive];
     [self switchPlayMode:playMode];
-    NSLog(@"bb pull %@", [self.roomModel.streamPullStreamList objectForKey:@"720"]);
 }
 
 - (void)stopInteractive {
@@ -95,6 +93,9 @@
 }
 
 - (void)switchVideoCapture:(BOOL)isStart {
+    if (self.normalPushStreaming) {
+        [self.normalPushStreaming cameraStateChanged:isStart];
+    }
     [[LiveRTCManager shareRtc] switchVideoCapture:isStart];
 }
 

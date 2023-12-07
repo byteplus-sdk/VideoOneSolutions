@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion project.compileSdkVersion
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
@@ -16,6 +16,10 @@ android {
 
         ensureProperty('SERVER_URL')
         buildConfigField('String', 'SERVER_URL', "\"${project.SERVER_URL}\"")
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     buildTypes {
@@ -43,6 +47,7 @@ dependencies {
     implementation project.libs['eventbus']
     implementation project.libs['gson']
     implementation project.libs['okhttp']
+    implementation project.libs['constraint-layout']
 }
 
 private def ensureProperty(String propertyName) {

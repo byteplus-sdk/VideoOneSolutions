@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIViewController (Orientation)
 
+@property (nonatomic, assign, readonly) BOOL isLandscape;
+
 - (void)setDeviceInterfaceOrientation:(UIDeviceOrientation)orientation;
 
 - (void)addOrientationNotice;

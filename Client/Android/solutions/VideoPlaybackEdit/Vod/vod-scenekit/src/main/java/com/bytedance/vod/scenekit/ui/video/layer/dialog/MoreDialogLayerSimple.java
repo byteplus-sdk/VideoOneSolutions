@@ -36,6 +36,12 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
 
     private VevodMoreDialogLayerSimpleBinding binding;
 
+    private final boolean mShowLoopMode;
+
+    MoreDialogLayerSimple(boolean showLoopMode) {
+        this.mShowLoopMode = showLoopMode;
+    }
+
     @Override
     public String tag() {
         return "more_dialog_simple";
@@ -45,6 +51,8 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
     protected View createDialogView(@NonNull ViewGroup parent) {
         Context context = parent.getContext();
         binding = VevodMoreDialogLayerSimpleBinding.inflate(LayoutInflater.from(context), parent, false);
+
+        binding.groupLoopMode.setVisibility(mShowLoopMode ? View.VISIBLE : View.GONE);
 
         binding.loopOn.setOnClickListener(v -> setLoop(true));
         binding.loopOff.setOnClickListener(v -> setLoop(false));

@@ -14,7 +14,7 @@ NSString *const VEPlayEventPause = @"VEPlayEventPause";
 
 NSString *const VEPlayEventSeek = @"VEPlayEventSeek";
 
-NSString *const VEPlayEventSeeking = @"VEPlayEventSeeking";
+NSString *const VEUIEventSeeking = @"VEUIEventSeeking";
 
 NSString *const VEUIEventScreenOrientationChanged = @"VEUIEventScreenOrientationChanged";
 
@@ -22,7 +22,6 @@ extern NSString *const VEPlayProgressSliderGestureEnable;
 
 @interface VEInterface ()
 
-@property (nonatomic, strong) id<VEInterfaceElementDataSource> scene;
 
 @end
 
@@ -116,12 +115,6 @@ extern NSString *const VEPlayProgressSliderGestureEnable;
 
 - (void)screenOrientationChanged:(NSNotification *)notification {
     [self.eventMessageBus postEvent:VEUIEventScreenOrientationChanged withObject:nil rightNow:YES];
-}
-
-#pragma mark----- Tool
-
-static inline BOOL normalScreenBehaivor(void) {
-    return ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait);
 }
 
 @end

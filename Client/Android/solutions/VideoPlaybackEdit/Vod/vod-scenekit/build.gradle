@@ -3,6 +3,7 @@
 
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
 }
 
 def publishFile = rootProject.file("publish.gradle")
@@ -11,8 +12,7 @@ if (publishFile.exists()) {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
 
     resourcePrefix 'vevod_'
 
@@ -40,6 +40,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
@@ -52,7 +55,9 @@ dependencies {
     implementation rootProject.libs["swiperefreshlayout"]
     implementation rootProject.libs["material"]
     implementation rootProject.libs["glide"]
+    implementation rootProject.libs["lottie"]
 
+    implementation project(':component:Avatars')
     implementation project(rootProject.projects[":Vod:vod-playerkit:vod-player"])
     implementation project(rootProject.projects[":Vod:vod-playerkit:vod-player-utils"])
     implementation project(rootProject.projects[":Vod:vod-playerkit:vod-player-ve"])

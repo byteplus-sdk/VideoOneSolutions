@@ -30,12 +30,6 @@ public class SyncStartTimeLayer extends BaseLayer {
         return "sync_start_time";
     }
 
-    @Nullable
-    @Override
-    protected View createView(@NonNull ViewGroup parent) {
-        return null;
-    }
-
     @Override
     protected void onBindPlaybackController(@NonNull PlaybackController controller) {
         controller.addPlaybackListener(mPlaybackListener);

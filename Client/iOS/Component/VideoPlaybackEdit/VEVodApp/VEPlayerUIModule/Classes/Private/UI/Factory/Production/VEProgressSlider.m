@@ -1,9 +1,9 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEProgressSlider.h"
-#import "VEEventMessageBus.h"
 #import "Masonry.h"
 #import "VEEventConst.h"
+#import "VEEventMessageBus.h"
 
 const CGFloat thumbWidth = 24.0;
 
@@ -44,25 +44,21 @@ NSString *const VEPlayProgressSliderGestureEnable = @"VEPlayProgressSliderGestur
     [self.backView addSubview:self.bufferView];
     [self.backView addSubview:self.progressView];
     [self addSubview:self.thumbView];
-    
     [self.backView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(self).offset(thumbWidth / 2.0);
         make.trailing.equalTo(self).offset(-(thumbWidth / 2.0));
         make.centerY.equalTo(self);
         make.height.equalTo(@2);
     }];
-    
     [self.bufferView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.top.bottom.equalTo(self.backView);
         make.width.equalTo(@0);
     }];
-    
     [self.thumbView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.progressView.mas_trailing);
         make.centerY.equalTo(self);
         make.size.equalTo(@(CGSizeMake(thumbWidth, thumbWidth)));
     }];
-    
     [self mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.greaterThanOrEqualTo(@(thumbWidth));
     }];
@@ -72,16 +68,16 @@ NSString *const VEPlayProgressSliderGestureEnable = @"VEPlayProgressSliderGestur
     [super layoutSubviews];
     CGRect rect = CGRectMake(0, 0, self.backView.frame.size.width, self.backView.frame.size.height);
     if (rect.size.width > 0) {
-        rect.size.width = _progressValue*rect.size.width;
+        rect.size.width = _progressValue * rect.size.width;
         self.progressView.frame = rect;
     }
 }
 
-#pragma mark ----- Function
+#pragma mark----- Function
 
 - (void)setEventMessageBus:(VEEventMessageBus *)eventMessageBus {
     _eventMessageBus = eventMessageBus;
-    [eventMessageBus registEvent:VEPlayEventSeeking withAction:@selector(seekingAction:) ofTarget:self];
+    [eventMessageBus registEvent:VEUIEventSeeking withAction:@selector(seekingAction:) ofTarget:self];
 }
 
 - (void)setProgressValue:(CGFloat)progressValue {
@@ -91,11 +87,10 @@ NSString *const VEPlayProgressSliderGestureEnable = @"VEPlayProgressSliderGestur
 
 - (void)setBufferValue:(CGFloat)bufferValue {
     _bufferValue = MAX(0.0, MIN(1.0, bufferValue));
-    
-    
+
     CGRect rect = self.backView.frame;
     if (rect.size.width > 0) {
-        rect.size.width = bufferValue*rect.size.width;
+        rect.size.width = bufferValue * rect.size.width;
         self.bufferView.frame = rect;
     }
 }
@@ -126,7 +121,7 @@ NSString *const VEPlayProgressSliderGestureEnable = @"VEPlayProgressSliderGestur
     }
 }
 
-#pragma mark ----- Lazy Load
+#pragma mark----- Lazy Load
 
 - (UIView *)backView {
     if (!_backView) {
@@ -164,15 +159,14 @@ NSString *const VEPlayProgressSliderGestureEnable = @"VEPlayProgressSliderGestur
     return _thumbView;
 }
 
-
-#pragma mark ----- UIResponder
+#pragma mark----- UIResponder
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     CGPoint touchPoint = [[touches anyObject] locationInView:self];
     self.beginPoint = touchPoint;
     self.touching = NO;
     self.beginValue = 0.0;
-    [self.eventMessageBus postEvent:VEPlayEventSeeking withObject:@(YES) rightNow:YES];
+    [self.eventMessageBus postEvent:VEUIEventSeeking withObject:@(YES) rightNow:YES];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -191,12 +185,12 @@ NSString *const VEPlayProgressSliderGestureEnable = @"VEPlayProgressSliderGestur
     CGFloat movedX = touchPoint.x - self.beginPoint.x;
     if (CGPointEqualToPoint(self.beginPoint, touchPoint)) {
         [self singleTapEventByMovedX:touchPoint.x];
-        [self.eventMessageBus postEvent:VEPlayEventSeeking withObject:@(NO) rightNow:YES];
+        [self.eventMessageBus postEvent:VEUIEventSeeking withObject:@(NO) rightNow:YES];
         return;
     }
     [self checkEventByMovedX:movedX touchEnd:YES];
     self.touchDetective = NO;
-    [self.eventMessageBus postEvent:VEPlayEventSeeking withObject:@(NO) rightNow:YES];
+    [self.eventMessageBus postEvent:VEUIEventSeeking withObject:@(NO) rightNow:YES];
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -204,12 +198,12 @@ NSString *const VEPlayProgressSliderGestureEnable = @"VEPlayProgressSliderGestur
     CGFloat movedX = touchPoint.x - self.beginPoint.x;
     if (CGPointEqualToPoint(self.beginPoint, touchPoint)) {
         [self singleTapEventByMovedX:touchPoint.x];
-        [self.eventMessageBus postEvent:VEPlayEventSeeking withObject:@(NO) rightNow:YES];
+        [self.eventMessageBus postEvent:VEUIEventSeeking withObject:@(NO) rightNow:YES];
         return;
     }
     [self checkEventByMovedX:movedX touchEnd:YES];
     self.touchDetective = NO;
-    [self.eventMessageBus postEvent:VEPlayEventSeeking withObject:@(NO) rightNow:YES];
+    [self.eventMessageBus postEvent:VEUIEventSeeking withObject:@(NO) rightNow:YES];
 }
 
 - (void)singleTapEventByMovedX:(CGFloat)movedX {
@@ -233,7 +227,7 @@ NSString *const VEPlayProgressSliderGestureEnable = @"VEPlayProgressSliderGestur
     }
 }
 
-#pragma mark ----- Hit Test
+#pragma mark----- Hit Test
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
     CGRect bounds = self.bounds;

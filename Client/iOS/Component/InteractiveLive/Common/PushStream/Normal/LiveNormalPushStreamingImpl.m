@@ -7,10 +7,13 @@
 #import "LiveRTCManager.h"
 #import "LiveSettingData.h"
 #import "LiveStreamConfiguration.h"
+#import "LiveDarkFrameProvider.h"
 
-@interface LiveNormalPushStreamingImpl ()
+@interface LiveNormalPushStreamingImpl () <LiveDarkFrameProviderDelegate>
 
 @property (nonatomic, strong) LiveCore *liveCore;
+
+@property (nonatomic, strong) LiveDarkFrameProvider *darkFrameProvider;
 
 @end
 
@@ -50,10 +53,8 @@
 }
 
 - (void)startNormalStreaming {
-    NSLog(@"aaa startNormalStreaming");
     [self setupLiveCoreIfNeed];
     if (![self.liveCore isStreaming]) {
-        NSLog(@"aaa update normal config");
         LiveStreamConfiguration *sessionConfig = [LiveStreamConfiguration defaultConfiguration];
         NSString *rtmpUrl = self.streamConfig.rtmpUrl;
         rtmpUrl = [LiveRTCInteractUtils setPriorityForUrl:rtmpUrl];
@@ -111,10 +112,19 @@
 }
 
 - (void)stopNormalStreaming {
-    NSLog(@"aaa stopNormalStreaming");
     [self.liveCore stopStreaming];
     [[LiveRTCManager shareRtc].rtcEngineKit setLocalVideoSink:ByteRTCStreamIndexMain withSink:nil withPixelFormat:ByteRTCVideoSinkPixelFormatI420];
     [[LiveRTCManager shareRtc].rtcEngineKit setAudioFrameObserver:nil];
+}
+
+- (void)cameraStateChanged:(BOOL)cameraOn {
+    if (cameraOn) {
+        [self stopPushDarkFrame];
+    } else {
+        if ([self.liveCore isStreaming]) {
+            [self startPushDarkFrame];
+        }
+    }
 }
 
 - (void)setupLiveCoreIfNeed {
@@ -168,7 +178,30 @@
     }];
 }
 
-#pragma mark-- ByteRTCVideoSinkDelegate
+- (void)startPushDarkFrame {
+    if (!self.darkFrameProvider) {
+        self.darkFrameProvider = [[LiveDarkFrameProvider alloc] init];
+        self.darkFrameProvider.delegate = self;
+    }
+    [self.darkFrameProvider startPushDarkFrame];
+}
+
+- (void)stopPushDarkFrame {
+    [self.darkFrameProvider stopPushDarkFrame];
+    self.darkFrameProvider = nil;
+}
+
+
+#pragma mark -- LiveDarkFrameProviderDelegate
+- (void)darkFrameProviderDidOutput:(CVPixelBufferRef)darkframe {
+    if (darkframe != NULL && [self.liveCore isStreaming]) {
+        int64_t value = (int64_t) (CACurrentMediaTime() * 1000000000);
+        CMTime pts_audio = CMTimeMake(value, 1000000000);
+        [self.liveCore pushVideoBuffer:darkframe andTimestamp:pts_audio];
+    }
+}
+
+#pragma mark -- ByteRTCVideoSinkDelegate
 - (void)renderPixelBuffer:(CVPixelBufferRef)pixelBuffer rotation:(ByteRTCVideoRotation)rotation contentType:(ByteRTCVideoContentType)contentType extendedData:(NSData *)extendedData {
     int64_t value = (int64_t)(CACurrentMediaTime() * 1000000000);
     int32_t timeScale = 1000000000;

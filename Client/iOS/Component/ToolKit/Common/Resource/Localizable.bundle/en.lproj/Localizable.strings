@@ -1,4 +1,5 @@
 "ok"="OK";
+"confirm"="Confirm";
 "cancel"="Cancel";
 "available_update"="Available Update.  \n Get the latest version?";
 "settings"="Settings";
@@ -92,3 +93,4 @@
 "report_message_6" = "Minor related";
 "report_message_7" = "Violation of rights";
 "report_message_8" = "Feedback on irregular expression problems";
+"placeholder_message" = "Add a comment";

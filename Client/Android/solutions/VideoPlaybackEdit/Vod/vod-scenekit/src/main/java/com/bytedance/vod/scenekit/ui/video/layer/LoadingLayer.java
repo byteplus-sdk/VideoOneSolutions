@@ -4,25 +4,20 @@
 package com.bytedance.vod.scenekit.ui.video.layer;
 
 import android.os.Handler;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.PlayerEvent;
 import com.bytedance.playerkit.player.playback.PlaybackController;
 import com.bytedance.playerkit.player.playback.PlaybackEvent;
-
-import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.bytedance.playerkit.utils.event.Dispatcher;
 import com.bytedance.playerkit.utils.event.Event;
 import com.bytedance.vod.scenekit.R;
+import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
 
 public class LoadingLayer extends AnimateLayer {
 
@@ -37,13 +32,9 @@ public class LoadingLayer extends AnimateLayer {
         return "loading";
     }
 
-    @Nullable
     @Override
     protected View createView(@NonNull ViewGroup parent) {
-        ProgressBar progressBar = (ProgressBar) LayoutInflater.from(parent.getContext()).inflate(R.layout.vevod_loading_layer, parent, false);
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) progressBar.getLayoutParams();
-        layoutParams.gravity = Gravity.CENTER;
-        return progressBar;
+        return LayoutInflater.from(parent.getContext()).inflate(R.layout.vevod_loading_layer, parent, false);
     }
 
     @Override
@@ -62,17 +53,18 @@ public class LoadingLayer extends AnimateLayer {
         @Override
         public void onEvent(Event event) {
             switch (event.code()) {
-                case PlaybackEvent.Action.STOP_PLAYBACK: {
-                    dismiss();
-                    break;
-                }
                 case PlayerEvent.Action.PREPARE:
-                case PlayerEvent.Action.START: {
+                case PlayerEvent.Action.START:
+                case PlayerEvent.Info.BUFFERING_START: {
                     showOpt();
                     break;
                 }
+                case PlayerEvent.Info.BUFFERING_END:
+                case PlayerEvent.State.COMPLETED:
+                case PlayerEvent.State.ERROR:
                 case PlayerEvent.Action.PAUSE:
                 case PlayerEvent.Action.STOP:
+                case PlaybackEvent.Action.STOP_PLAYBACK:
                 case PlayerEvent.Action.RELEASE: {
                     dismiss();
                     break;
@@ -97,16 +89,6 @@ public class LoadingLayer extends AnimateLayer {
                     } else {
                         dismiss();
                     }
-                    break;
-                }
-                case PlayerEvent.Info.BUFFERING_END:
-                case PlayerEvent.State.COMPLETED:
-                case PlayerEvent.State.ERROR: {
-                    dismiss();
-                    break;
-                }
-                case PlayerEvent.Info.BUFFERING_START: {
-                    showOpt();
                     break;
                 }
             }

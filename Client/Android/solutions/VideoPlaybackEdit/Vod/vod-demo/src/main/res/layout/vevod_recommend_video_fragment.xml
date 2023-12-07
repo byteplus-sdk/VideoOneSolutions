@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recycler"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:itemCount="5"
+    tools:listitem="@layout/vevod_recommend_video_item"
+    tools:showIn="@layout/vevod_detail_video_fragment" />

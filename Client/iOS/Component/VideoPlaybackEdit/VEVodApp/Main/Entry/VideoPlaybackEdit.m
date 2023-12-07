@@ -4,10 +4,10 @@
 
 #import "VideoPlaybackEdit.h"
 #import "VEMainViewController.h"
+#import <AppConfig/BuildConfig.h>
 #import <TTSDK/TTSDKManager.h>
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
-#import <AppConfig/BuildConfig.h>
 
 @implementation VideoPlaybackEdit
 
@@ -34,7 +34,7 @@
     [self prepareEnvironment];
     VEMainViewController *vc = [[VEMainViewController alloc] init];
     __weak __typeof__(self) weakSelf = self;
-    vc.clickTabCKBolck = ^{
+    vc.clickTabCenterBolck = ^{
         __strong __typeof__(weakSelf) self = weakSelf;
         [self presentCKEditor];
     };

@@ -19,6 +19,8 @@
 
 - (void)stopNormalStreaming;
 
+- (void)cameraStateChanged:(BOOL)cameraOn;
+
 @end
 
 #endif /* LiveNormalPushStreaming_h */

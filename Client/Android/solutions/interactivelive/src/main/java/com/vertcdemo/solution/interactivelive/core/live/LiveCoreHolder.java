@@ -13,6 +13,8 @@ import static com.ss.avframework.livestreamv2.Constants.MSG_ERROR_VIDEO_ENCODER;
 import static com.ss.avframework.livestreamv2.Constants.MSG_INFO_STARTED_PUBLISH;
 import static com.ss.avframework.livestreamv2.Constants.MSG_REPORT_NETWORK_QUALITY;
 import static com.ss.avframework.livestreamv2.Constants.MSG_STATUS_EXCEPTION;
+import static com.vertcdemo.solution.interactivelive.core.live.InfoMapper.mapAudioDevice;
+import static com.vertcdemo.solution.interactivelive.core.live.InfoMapper.mapVideoDevice;
 
 import android.net.Uri;
 import android.util.Log;
@@ -37,7 +39,7 @@ import java.util.ArrayList;
 public class LiveCoreHolder {
     private static final String TAG = "LiveCore";
 
-    public static LiveCoreEngine createEngine() {
+    public static LiveCoreEngine createEngine(boolean video, boolean audio) {
         TTSdkHelper.initTTVodSdk();
 
         final int videoWidth = 540;
@@ -64,14 +66,27 @@ public class LiveCoreHolder {
                 .setVideoProfile(LiveStreamBuilder.VIDEO_ENCODER_PROFILE_HIGH)
                 .setEnableVideoBFrame(false)
                 .setVideoEncoder(LiveStreamBuilder.VIDEO_ENCODER_AVC);
-        builder.setVideoCaptureDevice(LiveStreamBuilder.VIDEO_CAPTURE_DEVICE_EXTERN);
-        builder.setAudioCaptureDevice(LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_EXTERN);
+        if (video) {
+            builder.setVideoCaptureDevice(LiveStreamBuilder.VIDEO_CAPTURE_DEVICE_EXTERN);
+        } else {
+            builder.setVideoCaptureDevice(LiveStreamBuilder.VIDEO_CAPTURE_RADIO_MODE);
+        }
+        if (audio) {
+            builder.setAudioCaptureDevice(LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_EXTERN);
+        } else {
+            builder.setAudioCaptureDevice(LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_MUTE);
+        }
+
 
         return builder.getLiveCoreEngine();
     }
 
     public static LiveCoreHolder createLiveCore() {
-        return new LiveCoreHolder(createEngine());
+        return createLiveCore(true, true);
+    }
+
+    public static LiveCoreHolder createLiveCore(boolean video, boolean audio) {
+        return new LiveCoreHolder(createEngine(video, audio));
     }
 
     final LiveCoreEngine mEngine;
@@ -218,5 +233,31 @@ public class LiveCoreHolder {
         builder.scheme("http");
         builder.path(uri.getPath() + ".sdp");
         return builder.toString();
+    }
+
+    public void startFakeVideo() {
+        switchVideoCapture(LiveStreamBuilder.VIDEO_CAPTURE_RADIO_MODE);
+    }
+
+    public void stopFakeVideo() {
+        switchVideoCapture(LiveStreamBuilder.VIDEO_CAPTURE_DEVICE_EXTERN);
+    }
+
+    private void switchVideoCapture(int videoCaptureDevice) {
+        Log.d(TAG, "switchVideoCapture: " + mapVideoDevice(videoCaptureDevice));
+        mLiveCore.switchVideoCapture(videoCaptureDevice);
+    }
+
+    public void startFakeAudio() {
+        switchAudioCapture(LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_MUTE);
+    }
+
+    public void stopFakeAudio() {
+        switchAudioCapture(LiveStreamBuilder.AUDIO_CAPTURE_DEVICE_EXTERN);
+    }
+
+    private void switchAudioCapture(int audioCaptureDevice) {
+        Log.d(TAG, "switchAudioCapture: " + mapAudioDevice(audioCaptureDevice));
+        mLiveCore.switchAudioCapture(audioCaptureDevice);
     }
 }

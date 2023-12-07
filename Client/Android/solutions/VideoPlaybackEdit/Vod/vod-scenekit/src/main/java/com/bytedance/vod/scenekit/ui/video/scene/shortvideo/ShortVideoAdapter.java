@@ -4,29 +4,49 @@
 package com.bytedance.vod.scenekit.ui.video.scene.shortvideo;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.text.TextUtils;
+import android.view.GestureDetector;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieCompositionFactory;
 import com.bytedance.playerkit.player.playback.DisplayModeHelper;
 import com.bytedance.playerkit.player.playback.DisplayView;
 import com.bytedance.playerkit.player.playback.VideoLayerHost;
 import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.player.source.MediaSource;
-import com.bytedance.vod.scenekit.data.model.VideoItem;
-import com.bytedance.vod.scenekit.ui.video.layer.LoadingLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.PlayerConfigLayer;
-import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoCoverLayer;
-import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoDetailsLayer;
-import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoProgressBarLayer;
+import com.bytedance.vod.scenekit.R;
 import com.bytedance.vod.scenekit.VideoSettings;
+import com.bytedance.vod.scenekit.data.model.VideoItem;
+import com.bytedance.vod.scenekit.ui.base.VideoViewExtras;
+import com.bytedance.vod.scenekit.ui.video.layer.LoadingLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.LockLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LogLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PauseLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PlayErrorLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.PlayerConfigLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.TitleBarLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.dialog.MoreDialogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.dialog.SpeedSelectDialogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
+import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoDetailsLayer;
+import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoFullScreenLayer;
+import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoGestureLayer;
+import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoPlayCompleteLayer;
+import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoPlayPauseLayer;
+import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoProgressBarLayer;
+import com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer.ShortVideoTimeProgressBarLayer;
 import com.vertcdemo.base.ReportDialog;
 
 import java.util.ArrayList;
@@ -36,6 +56,19 @@ import java.util.List;
 public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.ViewHolder> {
 
     private final List<VideoItem> mItems = new ArrayList<>();
+
+    @Nullable
+    private Runnable mAfterExitFullScreenListener;
+
+    ShortVideoAdapter(Context context) {
+        // Preload the lottie resource to reduce lag
+        LottieCompositionFactory.fromAsset(context, "like_cancel.json");
+        LottieCompositionFactory.fromAsset(context, "like_icondata.json");
+    }
+
+    public void setAfterExitFullScreenListener(@Nullable Runnable listener) {
+        mAfterExitFullScreenListener = listener;
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     public void setItems(List<VideoItem> videoItems) {
@@ -98,7 +131,7 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         VideoItem videoItem = mItems.get(position);
-        holder.bind(position, videoItem);
+        holder.bind(position, videoItem, mAfterExitFullScreenListener);
     }
 
     @Override
@@ -109,51 +142,114 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final VideoView videoView;
 
+        private final ShortVideoDetailsLayer detailsLayer;
+
         public static ViewHolder create(ViewGroup parent) {
-            VideoView videoView = createVideoView(parent);
-            videoView.setLayoutParams(new RecyclerView.LayoutParams(
-                    RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
-            return new ViewHolder(videoView);
+            View itemview = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.vevod_short_video_item, parent, false
+            );
+            return new ViewHolder(itemview);
         }
 
+        private final GestureDetectorCompat mDetector;
+
+        @SuppressLint("ClickableViewAccessibility")
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            videoView = (VideoView) itemView;
-            videoView.setLayoutParams(new RecyclerView.LayoutParams(
-                    RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
+            Context context = itemView.getContext();
 
-            videoView.setOnLongClickListener(v -> {
-                ReportDialog.show(v.getContext());
-                return true;
+            videoView = itemView.findViewById(R.id.videoView);
+            setupVideoView(itemView, videoView);
+            VideoLayerHost layerHost = videoView.layerHost();
+            assert layerHost != null;
+            detailsLayer = layerHost.findLayer(ShortVideoDetailsLayer.class);
+            assert detailsLayer != null;
+
+            mDetector = new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDown(@NonNull MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
+                    videoView.performClick();
+                    return true;
+                }
+
+                @Override
+                public boolean onDoubleTap(@NonNull MotionEvent e) {
+                    DoubleTapHeartHelper.show((ViewGroup) itemView, (int) e.getX(), (int) e.getY());
+                    detailsLayer.onDoubleTap();
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(@NonNull MotionEvent e) {
+                    ReportDialog.show(context);
+                }
             });
+            videoView.setOnTouchListener((v, event) -> mDetector.onTouchEvent(event));
         }
 
-        public void bind(int position, VideoItem videoItem) {
+        public void bind(int position, VideoItem videoItem, @Nullable Runnable listener) {
+            VideoLayerHost layerHost = videoView.layerHost();
+            ShortVideoFullScreenLayer fsLayer = layerHost == null ? null : layerHost.findLayer(ShortVideoFullScreenLayer.class);
+            if ((videoItem.getWidth() != 0 && videoItem.getHeight() != 0)
+                    && videoItem.getWidth() > videoItem.getHeight()) {  // Support Landscape mode
+                videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FILL_X);
+
+                detailsLayer.updateDisplayAnchor(videoItem.getWidth(), videoItem.getHeight());
+                if (fsLayer != null) {
+                    fsLayer.setAfterExitFullScreenListener(listener);
+                }
+            } else { // Support Portrait mode
+                videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FILL);
+
+                detailsLayer.updateDisplayFullScreen();
+                if (fsLayer != null) {
+                    fsLayer.setAfterExitFullScreenListener(null);
+                }
+            }
+
+            detailsLayer.bind(videoItem);
+
             MediaSource mediaSource = videoView.getDataSource();
             if (mediaSource == null) {
-                mediaSource = VideoItem.toMediaSource(videoItem, false);
+                mediaSource = VideoItem.toMediaSource(videoItem);
                 videoView.bindDataSource(mediaSource);
+                VideoViewExtras.updateExtra(videoView, videoItem);
             } else {
                 if (!TextUtils.equals(videoItem.getVid(), mediaSource.getMediaId())) {
                     videoView.stopPlayback();
-                    mediaSource = VideoItem.toMediaSource(videoItem, false);
+                    mediaSource = VideoItem.toMediaSource(videoItem);
                     videoView.bindDataSource(mediaSource);
+                    VideoViewExtras.updateExtra(videoView, videoItem);
                 } else {
                     // do nothing
                 }
             }
-
-            ShortVideoDetailsLayer detailsLayer = videoView.layerHost().findLayer(ShortVideoDetailsLayer.class);
-            assert detailsLayer != null;
-            detailsLayer.bind(videoItem);
         }
     }
 
-    static VideoView createVideoView(ViewGroup parent) {
-        VideoView videoView = new VideoView(parent.getContext());
+    static void setupVideoView(@NonNull View parent, @NonNull VideoView videoView) {
         VideoLayerHost layerHost = new VideoLayerHost(parent.getContext());
-        layerHost.addLayer(new ShortVideoCoverLayer());
+        layerHost.addLayer(new ShortVideoFullScreenLayer());
         layerHost.addLayer(new ShortVideoDetailsLayer());
+
+        layerHost.addLayer(new ShortVideoGestureLayer());
+
+        layerHost.addLayer(new TitleBarLayer(PlayScene.SCENE_FULLSCREEN));
+        layerHost.addLayer(MoreDialogLayer.createWithoutLoopMode());
+
+        layerHost.addLayer(new ShortVideoTimeProgressBarLayer());
+        layerHost.addLayer(new QualitySelectDialogLayer());
+        layerHost.addLayer(new SpeedSelectDialogLayer());
+
+        layerHost.addLayer(new VolumeBrightnessDialogLayer());
+        layerHost.addLayer(new ShortVideoPlayPauseLayer());
+        layerHost.addLayer(new LockLayer());
+
         layerHost.addLayer(new LoadingLayer());
         layerHost.addLayer(new PauseLayer());
         layerHost.addLayer(new ShortVideoProgressBarLayer());
@@ -161,16 +257,16 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Vi
         layerHost.addLayer(new PlayerConfigLayer(() -> {
             return VideoSettings.intValue(VideoSettings.SHORT_VIDEO_PLAYBACK_COMPLETE_ACTION) == 0; /* 0 means Loop */
         }));
+        layerHost.addLayer(new ShortVideoPlayCompleteLayer());
         if (VideoSettings.booleanValue(VideoSettings.DEBUG_ENABLE_LOG_LAYER)) {
             layerHost.addLayer(new LogLayer());
         }
         layerHost.attachToVideoView(videoView);
-        videoView.setBackgroundColor(parent.getResources().getColor(android.R.color.black));
+        videoView.setBackgroundColor(ContextCompat.getColor(parent.getContext(), android.R.color.black));
         //videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT); // fit mode
         videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FILL); // immersive mode
         videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);
         videoView.setPlayScene(PlayScene.SCENE_SHORT);
-        return videoView;
     }
 }
 

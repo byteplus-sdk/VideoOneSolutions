@@ -1,1 +1,0 @@
-The BytePlus VideoOne demo project utilizes multiple BytePlus media SDKs along with BytePlus video cloud services to provide a set of demos for industry-specific scenarios. For detailed instructions on how to run the demo, refer to [Running the demo (iOS)](https://docs.byteplus.com/byteplus-vos/docs/running-the-demo-ios-).

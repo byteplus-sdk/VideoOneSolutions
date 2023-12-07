@@ -6,6 +6,7 @@ extern NSString *VESettingDisplayDetailCellReuseID;
 extern NSString *VESettingTypeMutilSelectorCellReuseID;
 extern NSString *VESettingSwitcherCellReuseID;
 extern NSString *VESettingDisplayCellReuseID;
+extern NSString *VESettingEntranceCellCellReuseID;
 
 @implementation VESettingModel
 
@@ -19,6 +20,7 @@ extern NSString *VESettingDisplayCellReuseID;
         case VESettingTypeSwitcher: return @{VESettingSwitcherCellReuseID : @"VESettingSwitcherCell"};
         case VESettingTypeDisplayDetail: return @{VESettingDisplayDetailCellReuseID : @"VESettingDisplayDetailCell"};
         case VESettingTypeMutilSelector: return @{VESettingTypeMutilSelectorCellReuseID : @"VESettingTypeMutilSelectorCell"};
+        case VESettingTypeEntrance:  return @{VESettingEntranceCellCellReuseID : @"VESettingEntranceCell"};
     }
     return @{@"UITableViewCell" : @""};
 }
@@ -27,6 +29,7 @@ extern NSString *VESettingDisplayCellReuseID;
     switch (self.settingType) {
         case VESettingTypeSwitcher:
         case VESettingTypeMutilSelector:
+        case VESettingTypeEntrance:
         case VESettingTypeDisplay: return 55.0;
         case VESettingTypeDisplayDetail: return 95.0;
     }

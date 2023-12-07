@@ -7,4 +7,6 @@
 
 - (instancetype)initWithScene:(id<VEInterfaceElementDataSource>)scene;
 
+- (void)performClearScreenLater;
+
 @end

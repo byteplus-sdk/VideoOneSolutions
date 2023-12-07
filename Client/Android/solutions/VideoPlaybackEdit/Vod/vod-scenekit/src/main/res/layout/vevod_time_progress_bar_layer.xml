@@ -3,94 +3,84 @@
 // SPDX-License-Identifier: Apache-2.0
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/controlPanel"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom">
-
-    <View
-        android:id="@+id/shadow"
-        android:layout_width="wrap_content"
-        android:layout_height="160dp"
-        android:background="@drawable/vevod_time_progress_bar_layer_fullscreen_shadow_shape" />
+    android:layout_height="160dp"
+    android:layout_gravity="bottom"
+    android:background="@drawable/vevod_time_progress_bar_layer_fullscreen_shadow_shape"
+    android:gravity="bottom"
+    android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
+        android:id="@+id/timeContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginLeft="40dp"
+        android:orientation="horizontal"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:visibility="gone"
+        tools:visibility="visible">
 
-        <LinearLayout
-            android:id="@+id/timeContainer"
+        <TextView
+            android:id="@+id/currentPosition"
             android:layout_width="wrap_content"
             android:layout_height="16dp"
-            android:layout_marginLeft="40dp"
-            android:orientation="horizontal"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:visibility="gone">
+            android:textColor="#FFFFFF"
+            android:typeface="monospace"
+            tools:text="08:47" />
 
-            <TextView
-                android:id="@+id/currentPosition"
-                android:layout_width="wrap_content"
-                android:layout_height="16dp"
-                android:textColor="#FFFFFF"
-                android:typeface="monospace"
-                tools:text="08:47" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:text="/"
+            android:textColor="#A3FFFFFF"
+            android:typeface="monospace" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="16dp"
-                android:layout_marginLeft="3dp"
-                android:layout_marginRight="3dp"
-                android:text="/"
-                android:textColor="#A3FFFFFF"
-                android:typeface="monospace" />
-
-            <TextView
-                android:id="@+id/duration"
-                android:layout_width="wrap_content"
-                android:layout_height="16dp"
-                android:textColor="#A3FFFFFF"
-                android:typeface="monospace"
-                tools:text="36:32" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/progressContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <com.bytedance.vod.scenekit.ui.widgets.MediaSeekBar
-                android:id="@+id/mediaSeekBar"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:id="@+id/fullScreen"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginRight="2dp"
-                android:scaleType="centerInside"
-                android:visibility="gone"
-                android:src="@drawable/vevod_time_progress_bar_layer_fullscreen" />
-        </LinearLayout>
-
-        <ViewStub
-            android:id="@+id/interact_stub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginBottom="16dp"
-            android:layout="@layout/vevod_time_progress_bar_layer_interact_layout" />
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:textColor="#A3FFFFFF"
+            android:typeface="monospace"
+            tools:text="36:32" />
 
     </LinearLayout>
-</FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/progressContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.bytedance.vod.scenekit.ui.widgets.MediaSeekBar
+            android:id="@+id/mediaSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/fullScreen"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginRight="2dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/vevod_time_progress_bar_layer_fullscreen"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <include
+        android:id="@+id/interact_stub"
+        layout="@layout/vevod_time_progress_bar_layer_interact_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginBottom="16dp" />
+</LinearLayout>

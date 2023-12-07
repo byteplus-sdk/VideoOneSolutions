@@ -4,12 +4,12 @@
 
 #import "LiveTextInputComponent.h"
 #import "LiveMessageModel.h"
-#import "LiveTextInputView.h"
+#import <ToolKit/TextInputView.h>
 
 @interface LiveTextInputComponent ()
 
 @property (nonatomic, weak) UIView *contentView;
-@property (nonatomic, weak) LiveTextInputView *textInputView;
+@property (nonatomic, weak) TextInputView *textInputView;
 @property (nonatomic, copy) NSString *textMessage;
 
 @end
@@ -98,7 +98,7 @@
     [contentView addGestureRecognizer:tap];
     _contentView = contentView;
 
-    LiveTextInputView *textInputView = [[LiveTextInputView alloc] initWithMessage:self.textMessage];
+    TextInputView *textInputView = [[TextInputView alloc] initWithMessage:self.textMessage];
     [contentView addSubview:textInputView];
     [textInputView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(contentView);

@@ -4,5 +4,6 @@
   -->
 
 <resources>
-
+    <dimen name="vevod_heart_view_size">50dp</dimen>
+    <dimen name="vevod_heart_view_up_distance">50dp</dimen>
 </resources>

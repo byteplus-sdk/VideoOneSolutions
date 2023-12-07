@@ -1,41 +1,21 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEVideoPlayerController.h"
-#import "VEVideoPlayerController+Observer.h"
-#import "VEVideoPlayerController+Resolution.h"
-#import "VEVideoPlayerController+Options.h"
+#import "VEDataPersistance.h"
 #import "VEVideoPlayerController+DebugTool.h"
+#import "VEVideoPlayerController+Observer.h"
+#import "VEVideoPlayerController+Options.h"
+#import "VEVideoPlayerController+Resolution.h"
 #import "VEVideoPlayerController+Strategy.h"
 #import "VEVideoPlayerController+VEPlayCoreAbility.h"
 #import <Masonry/Masonry.h>
 #import <SDWebImage/SDWebImage.h>
-#import "VEDataPersistance.h"
-
-@implementation VEPreRenderVideoEngineMediatorDelegate
-
-+ (VEPreRenderVideoEngineMediatorDelegate *)shareInstance {
-    static VEPreRenderVideoEngineMediatorDelegate * preRenderVideoEngineMediatorDelegate = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        if (preRenderVideoEngineMediatorDelegate == nil) {
-            preRenderVideoEngineMediatorDelegate = [[VEPreRenderVideoEngineMediatorDelegate alloc] init];
-        }
-    });
-    return preRenderVideoEngineMediatorDelegate;
-}
-
-#pragma mark - TTVideoEnginePreRenderDelegate
-
-- (void)videoEngineWillPrepare:(TTVideoEngine *)videoEngine {
-}
-
-@end
-
+#import <ToolKit/ToolKit.h>
 
 @interface VEVideoPlayerController () <
-TTVideoEngineDelegate,
-TTVideoEngineDataSource,
-TTVideoEngineResolutionDelegate>
+    TTVideoEngineDelegate,
+    TTVideoEngineDataSource,
+    TTVideoEngineResolutionDelegate>
 
 @property (nonatomic, strong) TTVideoEngine *videoEngine;
 
@@ -59,6 +39,7 @@ TTVideoEngineResolutionDelegate>
 @synthesize duration;
 @synthesize currentPlaybackTime;
 @synthesize playableDuration;
+@synthesize startTime;
 
 @dynamic playbackRate;
 @dynamic playbackVolume;
@@ -79,13 +60,12 @@ TTVideoEngineResolutionDelegate>
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self configuratoinCustomView];
 }
 
 - (void)configVideoEngine {
     if (_videoEngine == nil) {
-        TTVideoEngine* engine = [[TTVideoEngine alloc] initWithOwnPlayer:YES];
+        TTVideoEngine *engine = [[TTVideoEngine alloc] initWithOwnPlayer:YES];
         self.videoEngine = engine;
     }
     /*
@@ -101,7 +81,11 @@ TTVideoEngineResolutionDelegate>
     self.videoEngine.resolutionDelegate = self;
     self.videoEngine.reportLogEnable = YES;
     self.videoEngine.dataSource = self;
-    self.videoEngine.looping = [VEDataPersistance boolValueFor:VEDataCacheKeyPlayLoop defaultValue:YES];
+    if (self.videoPlayerType == VEVideoPlayerTypeFeed) {
+        self.videoEngine.looping = NO;
+    } else {
+        self.videoEngine.looping = [VEDataPersistance boolValueFor:VEDataCacheKeyPlayLoop defaultValue:YES];
+    }
     [self.videoEngine configResolution:[VEVideoPlayerController getPlayerCurrentResolution]];
     if (@available(iOS 14.0, *)) {
         [self.videoEngine setSupportPictureInPictureMode:YES];
@@ -109,9 +93,9 @@ TTVideoEngineResolutionDelegate>
     self.videoEngine.playerView.backgroundColor = [UIColor clearColor];
     /// add observer
     [self addObserver];
-    
+
     /// config video engine option
-    if (self.videoPlayerType == VEVideoPlayerTypeShort) {
+    if (self.videoPlayerType & VEVideoPlayerTypeShort) {
         [self openVideoEngineShortDefaultOptions];
     } else {
         [self openVideoEngineFeedDefaultOptions];
@@ -122,12 +106,10 @@ TTVideoEngineResolutionDelegate>
 
 - (void)configuratoinCustomView {
     self.view.backgroundColor = [UIColor blackColor];
-    
     [self.view addSubview:self.posterImageView];
     [self.posterImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
     }];
-    
     [self.view addSubview:self.playerPanelContainerView];
     [self.playerPanelContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
@@ -164,7 +146,6 @@ TTVideoEngineResolutionDelegate>
             return;
         }
     }
-    
     self.posterImageView.hidden = NO;
     [self.posterImageView sd_setImageWithURL:[NSURL URLWithString:[self __getBackgroudImageUrl:mediaSource]] completed:nil];
 }
@@ -187,8 +168,8 @@ TTVideoEngineResolutionDelegate>
     [self.videoEngine addPeriodicTimeObserverForInterval:0.3f queue:dispatch_get_main_queue() usingBlock:^{
         if (weak_self.playerPanelViewController) {
             [weak_self.playerPanelViewController videoPlayerTimeTrigger:weak_self.videoEngine.duration
-                                               currentPlaybackTime:weak_self.videoEngine.currentPlaybackTime
-                                                  playableDuration:weak_self.videoEngine.playableDuration];
+                                                    currentPlaybackTime:weak_self.videoEngine.currentPlaybackTime
+                                                       playableDuration:weak_self.videoEngine.playableDuration];
         }
         if ([weak_self.receiver respondsToSelector:@selector(playerCore:playTimeDidChanged:info:)]) {
             [weak_self.receiver playerCore:weak_self playTimeDidChanged:weak_self.currentPlaybackTime info:@{}];
@@ -198,7 +179,7 @@ TTVideoEngineResolutionDelegate>
 
 #pragma mark - Player control
 
-- (void)resetVideoEngine:(TTVideoEngine * _Nonnull)videoEngine mediaSource:(id<TTVideoEngineMediaSource> _Nonnull)mediaSource {
+- (void)resetVideoEngine:(TTVideoEngine *_Nonnull)videoEngine mediaSource:(id<TTVideoEngineMediaSource> _Nonnull)mediaSource {
     _mediaSource = mediaSource;
     self.videoEngine = nil;
     self.videoEngine = videoEngine;
@@ -212,6 +193,7 @@ TTVideoEngineResolutionDelegate>
         if (preRenderVideoEngine) {
             [self resetVideoEngine:preRenderVideoEngine mediaSource:mediaSource];
             NSLog(@"EngineStrategy: ===== use pre render video engine play");
+            [[BaseLoadingView sharedInstance] startLoadingIn:self.playerPanelContainerView];
             return;
         }
     }
@@ -219,6 +201,7 @@ TTVideoEngineResolutionDelegate>
     [self configVideoEngine];
     [self.videoEngine setVideoEngineVideoSource:mediaSource];
     [self loadStrategyVideoModel];
+    [[BaseLoadingView sharedInstance] startLoadingIn:self.playerPanelContainerView];
 }
 
 - (void)loadBackgourdImageWithMediaSource:(id<TTVideoEngineMediaSource> _Nonnull)mediaSource {
@@ -235,6 +218,10 @@ TTVideoEngineResolutionDelegate>
 }
 
 - (void)play {
+    if (self.startTime > 0) {
+        [self.videoEngine setOptionForKey:VEKKeyPlayerStartTime_CGFloat value:@(self.startTime)];
+        self.startTime = 0;
+    }
     [self.videoEngine play];
     [self reLayoutVideoPlayerView];
     [self __addPeriodicTimeObserver];
@@ -245,13 +232,9 @@ TTVideoEngineResolutionDelegate>
 }
 
 - (void)seekToTime:(NSTimeInterval)time
-          complete:(void(^ _Nullable)(BOOL success))finised
-    renderComplete:(void(^ _Nullable)(void)) renderComplete {
+          complete:(void (^_Nullable)(BOOL success))finised
+    renderComplete:(void (^_Nullable)(void))renderComplete {
     [self.videoEngine setCurrentPlaybackTime:time complete:finised renderComplete:renderComplete];
-}
-
-- (void)setStartTime:(NSTimeInterval)time {
-    [self.videoEngine setOptionForKey:VEKKeyPlayerStartTime_CGFloat value:@(time)];
 }
 
 - (void)stop {
@@ -319,7 +302,7 @@ TTVideoEngineResolutionDelegate>
 #pragma mark - TTVideoEngineDelegate
 
 - (void)videoEnginePrepared:(TTVideoEngine *)videoEngine {
-    if (self.delegate &&[self.delegate respondsToSelector:@selector(videoPlayerPrepared:)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayerPrepared:)]) {
         [self.delegate videoPlayerPrepared:self];
     }
     if ([self.receiver respondsToSelector:@selector(playerCore:resolutionChanged:info:)]) {
@@ -328,6 +311,7 @@ TTVideoEngineResolutionDelegate>
 }
 
 - (void)videoEngineReadyToDisPlay:(TTVideoEngine *)videoEngine {
+    [[BaseLoadingView sharedInstance] stopLoading];
     self.videoEngine.playerView.hidden = NO;
     if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayerReadyToDisplay:)]) {
         [self.delegate videoPlayerReadyToDisplay:self];
@@ -335,6 +319,9 @@ TTVideoEngineResolutionDelegate>
 }
 
 - (void)videoEngine:(TTVideoEngine *)videoEngine playbackStateDidChanged:(TTVideoEnginePlaybackState)playbackState {
+    if (playbackState == TTVideoEnginePlaybackStatePaused) {
+        [[BaseLoadingView sharedInstance] stopLoading];
+    }
     [self __handlePlaybackStateChanged:[self __getPlaybackState:playbackState]];
     if ([self.receiver respondsToSelector:@selector(playerCore:playbackStateDidChanged:info:)]) {
         [self.receiver playerCore:self playbackStateDidChanged:self.currentPlaybackState info:@{}];
@@ -345,7 +332,7 @@ TTVideoEngineResolutionDelegate>
     [self __handleLoadStateChanged:[self __getLoadState:loadState]];
 }
 
-- (void)videoEngine:(TTVideoEngine *)videoEngine loadStateDidChanged:(TTVideoEngineLoadState)loadState extra:(nullable NSDictionary<NSString *,id> *)extraInfo {
+- (void)videoEngine:(TTVideoEngine *)videoEngine loadStateDidChanged:(TTVideoEngineLoadState)loadState extra:(nullable NSDictionary<NSString *, id> *)extraInfo {
     [self __handleLoadStateChanged:[self __getLoadState:loadState]];
 }
 
@@ -406,31 +393,25 @@ TTVideoEngineResolutionDelegate>
     switch (state) {
         case VEVideoPlaybackStatePlaying: {
             self.videoEngine.playerView.hidden = NO;
-        }
-            break;
+        } break;
         case VEVideoPlaybackStatePaused: {
-        }
-            break;
+        } break;
         case VEVideoPlaybackStateStopped: {
-        }
-            break;
+        } break;
         case VEVideoPlaybackStateError: {
-        }
-            break;
+        } break;
         case VEVideoPlaybackStateFinished: {
-        }
-            break;
+        } break;
         case VEVideoPlaybackStateFinishedBecauseUser: {
-        }
-            break;
+        } break;
         default:
             break;
     }
     if (self.playerPanelViewController) {
         [self.playerPanelViewController videoPlayerPlaybackStateChanged:oldPlaybackState newState:state];
     }
-    if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayer:playbackStateDidChange:)]) {
-        [self.delegate videoPlayer:self playbackStateDidChange:self.playbackState];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayer:playbackStateDidChange:uniqueId:)]) {
+        [self.delegate videoPlayer:self playbackStateDidChange:self.playbackState uniqueId:self.mediaSource.uniqueId];
     }
 }
 
@@ -439,18 +420,15 @@ TTVideoEngineResolutionDelegate>
     self.loadState = state;
     switch (state) {
         case VEVideoLoadStateStalled: {
-        }
-            break;
+        } break;
         case VEVideoLoadStatePlayable: {
-        }
-            break;
+        } break;
         case VEVideoLoadStateError: {
-        }
-            break;
+        } break;
         default:
             break;
     }
-    
+
     if (self.playerPanelViewController) {
         [self.playerPanelViewController videoPlayerLoadStateChanged:oldState newState:state];
     }
@@ -513,7 +491,7 @@ TTVideoEngineResolutionDelegate>
         _posterImageView = [[UIImageView alloc] init];
         _posterImageView.backgroundColor = [UIColor clearColor];
         _posterImageView.clipsToBounds = YES;
-        if (self.videoPlayerType == VEVideoPlayerTypeShort) {
+        if (self.videoPlayerType & VEVideoPlayerTypeShortVerticalScreen) {
             _posterImageView.contentMode = UIViewContentModeScaleAspectFill;
         } else {
             _posterImageView.contentMode = UIViewContentModeScaleAspectFit;

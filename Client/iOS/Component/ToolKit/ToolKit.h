@@ -63,3 +63,5 @@
 #import "LocalUserComponent.h"
 
 //endif /* ToolKit_h */
+
+#import "BaseLoadingView.h"

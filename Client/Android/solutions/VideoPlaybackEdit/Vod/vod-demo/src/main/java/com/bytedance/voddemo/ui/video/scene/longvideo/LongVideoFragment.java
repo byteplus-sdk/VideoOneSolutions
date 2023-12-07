@@ -97,8 +97,9 @@ public class LongVideoFragment extends BaseFragment {
     }
 
     private void enterDetail(VideoItem item) {
-        final MediaSource source = VideoItem.toMediaSource(item, true);
-        final Bundle bundle = DetailVideoFragment.createBundle(item, source, false);
+        final MediaSource source = VideoItem.toMediaSource(item);
+        final Bundle bundle = DetailVideoFragment.createBundle(
+                item, source, false, RemoteApi.VideoType.LONG);
 
         final String pageType = VideoSettings.stringValue(VideoSettings.DETAIL_VIDEO_SCENE_FRAGMENT_OR_ACTIVITY);
 

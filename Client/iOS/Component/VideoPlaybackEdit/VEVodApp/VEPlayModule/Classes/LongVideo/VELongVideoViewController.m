@@ -1,18 +1,19 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VELongVideoViewController.h"
-#import "VELongVideoViewLayout.h"
-#import "VELongVideoViewTopCell.h"
-#import "VELongVideoViewNormalCell.h"
-#import "VEDataManager.h"
-#import "VEVideoModel.h"
-#import "VEVideoDetailViewController.h"
-#import <Masonry/Masonry.h>
 #import "BaseButton.h"
 #import "DeviceInforTool.h"
-#import "UIScrollView+Refresh.h"
-#import "ToolKit.h"
 #import "Localizator.h"
+#import "NetworkingManager+Vod.h"
+#import "ToolKit.h"
+#import "UIScrollView+Refresh.h"
+#import "VELongVideoViewLayout.h"
+#import "VELongVideoViewNormalCell.h"
+#import "VELongVideoViewTopCell.h"
+#import "VEVideoDetailViewController.h"
+#import "VEVideoModel.h"
+#import <MJRefresh/MJRefresh.h>
+#import <Masonry/Masonry.h>
 
 static NSString *VELongVideoTopCellReuseID = @"VELongVideoTopCellReuseID";
 
@@ -43,7 +44,7 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initialUI];
-    [self loadData];
+    [self loadDataWithMore:NO];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -55,8 +56,7 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     [super tabViewDidAppear];
 }
 
-
-#pragma mark ----- Base
+#pragma mark----- Base
 
 - (void)initialUI {
     self.view.backgroundColor = [UIColor whiteColor];
@@ -77,7 +77,7 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     WeakSelf;
     [self.collectionView systemRefresh:^{
         StrongSelf;
-        [sself loadData];
+        [sself loadDataWithMore:NO];
     }];
     self.title = @"长视频";
     BaseButton *button = [[BaseButton alloc] init];
@@ -90,7 +90,12 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     [button mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(16, 16));
         make.left.mas_equalTo(15);
-        make.top.mas_equalTo(44 + [DeviceInforTool getStatusBarHight]-30);
+        make.top.mas_equalTo(44 + [DeviceInforTool getStatusBarHight] - 30);
+    }];
+
+    self.collectionView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        StrongSelf;
+        [sself loadDataWithMore:YES];
     }];
 }
 
@@ -98,8 +103,7 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     [self.navigationController popViewControllerAnimated:NO];
 }
 
-
-#pragma mark ----- UICollectionView Delegate & DataSource
+#pragma mark----- UICollectionView Delegate & DataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return [[self sectionKeys] count];
@@ -129,8 +133,7 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    if (kind == UICollectionElementKindSectionHeader
-        && indexPath.section) {
+    if (kind == UICollectionElementKindSectionHeader && indexPath.section) {
         VELongVideoHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:VELongVideoHeaderViewReuseID forIndexPath:indexPath];
         NSDictionary *map = [self sectionKeyLanguageMap];
         NSString *key = [[self sectionKeys] objectAtIndex:indexPath.section];
@@ -140,7 +143,6 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
         return [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:VELongVideoHeaderEmptyViewReuseID forIndexPath:indexPath];
     }
 }
-
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     NSArray *sectionKeys = [self sectionKeys];
@@ -152,7 +154,7 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
-#pragma mark ----- lazy load
+#pragma mark----- lazy load
 
 - (UICollectionView *)collectionView {
     if (!_collectionView) {
@@ -172,20 +174,48 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     return _videoModelDic;
 }
 
+#pragma mark----- Data
 
-#pragma mark ----- Data
+- (void)loadDataWithMore:(BOOL)more {
+    NSArray *allValues = self.videoModelDic.allValues;
+    NSInteger currentCount = 0;
+    for (id obj in allValues) {
+        if ([obj isKindOfClass:[NSArray class]]) {
+            currentCount += [(NSArray *)obj count];
+        }
+    }
+    NSInteger fetchCount = 10;
+    [NetworkingManager dataForScene:VESceneTypeLongVideo
+                              range:NSMakeRange(more ? currentCount : 0, fetchCount)
+                            success:^(NSArray<VEVideoModel *> *_Nonnull videoModels) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    if (more) {
+                                        if (videoModels.count) {
+                                            NSMutableArray *array = [NSMutableArray array];
+                                            NSArray *ary = [self.videoModelDic valueForKey:VELongSectionRecommendForUHeaderKey];
+                                            if (ary.count) {
+                                                [array addObjectsFromArray:ary];
+                                            }
+                                            [array addObjectsFromArray:videoModels];
+                                            [self.videoModelDic setObject:array.mutableCopy forKey:VELongSectionRecommendForUHeaderKey];
+                                        }
+                                        if (videoModels.count == fetchCount) {
+                                            [self.collectionView.mj_footer endRefreshing];
+                                        } else {
+                                            [self.collectionView.mj_footer endRefreshingWithNoMoreData];
+                                        }
 
-- (void)loadData {
-    [VEDataManager dataForScene:VESceneTypeLongVideo
-                          range:NSMakeRange(0, 10)
-                        success:^(NSArray<VEVideoModel *> * _Nonnull videoModels) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectionView endRefresh];
-            [self.videoModelDic removeAllObjects];
-            [self _fakeSection:videoModels];
-            [self.collectionView reloadData];
-        });
-    } failure:nil];
+                                    } else {
+                                        [self.collectionView endRefresh];
+                                        [self.collectionView.mj_footer resetNoMoreData];
+                                        [self.videoModelDic removeAllObjects];
+                                        [self _fakeSection:videoModels];
+                                    }
+
+                                    [self.collectionView reloadData];
+                                });
+                            }
+                            failure:nil];
 }
 
 - (void)_fakeSection:(NSArray *)originalArray {
@@ -210,10 +240,11 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
 }
 
 - (NSDictionary *)sectionKeyLanguageMap {
-    return @{VELongSectionTopHeaderKey:LocalizedStringFromBundle(@"longvideo_top", @"VEVodApp"),
-             VELongSectionHotHeaderKey:LocalizedStringFromBundle(@"longvideo_playlist", @"VEVodApp"),
-             VELongSectionRecommendTodayHeaderKey:LocalizedStringFromBundle(@"longvideo_recommended", @"VEVodApp"),
-             VELongSectionRecommendForUHeaderKey:LocalizedStringFromBundle(@"longvideo_recommended_foru", @"VEVodApp"),
+    return @{
+        VELongSectionTopHeaderKey: LocalizedStringFromBundle(@"longvideo_top", @"VEVodApp"),
+        VELongSectionHotHeaderKey: LocalizedStringFromBundle(@"longvideo_playlist", @"VEVodApp"),
+        VELongSectionRecommendTodayHeaderKey: LocalizedStringFromBundle(@"longvideo_recommended", @"VEVodApp"),
+        VELongSectionRecommendForUHeaderKey: LocalizedStringFromBundle(@"longvideo_recommended_foru", @"VEVodApp"),
     };
 }
 

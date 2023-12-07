@@ -3,6 +3,7 @@
 
 package com.bytedance.vod.scenekit.utils;
 
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,5 +15,10 @@ public class ViewUtils {
             parent.removeView(view);
         }
         return parent;
+    }
+
+    public static int dp2px(float dpValue) {
+        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 }

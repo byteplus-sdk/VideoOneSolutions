@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<resources>
+
+    <style name="vevod_bottom_sheet_dialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/vevod_bottom_sheet_style</item>
+    </style>
+
+    <style name="vevod_bottom_sheet_style" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="vevod_full_screen_dialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+</resources>

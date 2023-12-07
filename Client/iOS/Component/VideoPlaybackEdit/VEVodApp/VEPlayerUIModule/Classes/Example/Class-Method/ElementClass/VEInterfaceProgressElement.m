@@ -1,8 +1,8 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEInterfaceProgressElement.h"
-#import "VEPlayerUIModule.h"
 #import "Masonry.h"
+#import "VEPlayerUIModule.h"
 
 NSString *const progressViewId = @"progressViewId";
 
@@ -19,18 +19,18 @@ NSString *const progressGestureId = @"progressGestureId";
 @synthesize elementID;
 @synthesize type;
 
-#pragma mark ----- VEInterfaceElementProtocol
+#pragma mark----- VEInterfaceElementProtocol
 
 - (id)elementAction:(id)mayElementView {
     if ([mayElementView isKindOfClass:[VEProgressView class]]) {
         VEProgressView *progressView = (VEProgressView *)mayElementView;
-        return @{VEPlayEventSeek : @(progressView.currentValue)};
+        return @{VEPlayEventSeek: @(progressView.currentValue)};
     } else {
         return VEPlayEventProgressValueIncrease;
     }
 }
 
-- (void)elementNotify:(id)mayElementView :(NSString *)key :(id)obj {
+- (void)elementNotify:(id)mayElementView key:(NSString *)key obj:(id)obj {
     if ([mayElementView isKindOfClass:[VEProgressView class]]) {
         VEProgressView *progressView = (VEProgressView *)mayElementView;
         BOOL screenIsClear = [self.eventPoster screenIsClear];
@@ -52,9 +52,10 @@ NSString *const progressGestureId = @"progressGestureId";
                 }
             };
         } else if ([key isEqualToString:VEUIEventScreenClearStateChanged]) {
-            progressView.hidden = screenIsLocking ?: screenIsClear;
+            progressView.hidden = screenIsClear;
         } else if ([key isEqualToString:VEUIEventScreenLockStateChanged]) {
-            progressView.hidden = screenIsLocking;
+            progressView.hidden = screenIsClear;
+            progressView.userInteractionEnabled = !screenIsLocking;
         }
     }
 }
@@ -63,7 +64,7 @@ NSString *const progressGestureId = @"progressGestureId";
     return @[VEPlayEventTimeIntervalChanged, VEUIEventScreenClearStateChanged, VEUIEventScreenLockStateChanged];
 }
 
-- (void)elementWillLayout:(UIView *)elementView :(NSSet<UIView *> *)elementGroup :(UIView *)groupContainer {
+- (void)elementWillLayout:(UIView *)elementView elementGroup:(NSSet<UIView *> *)elementGroup groupContainer:(UIView *)groupContainer {
     VEProgressView *progressView = (VEProgressView *)elementView;
     progressView.hidden = YES;
     progressView.isHiddenText = YES;
@@ -76,8 +77,7 @@ NSString *const progressGestureId = @"progressGestureId";
     }];
 }
 
-
-#pragma mark ----- Element output
+#pragma mark----- Element output
 
 + (VEInterfaceElementDescriptionImp *)progressViewWithEventPoster:(id)eventPoster {
     @autoreleasepool {
@@ -89,13 +89,17 @@ NSString *const progressGestureId = @"progressGestureId";
     }
 }
 
-+ (VEInterfaceElementDescriptionImp *)progressGestureWithEventPoster:(id)eventPoster {
++ (VEInterfaceElementDescriptionImp *)progressGesture {
     @autoreleasepool {
-        VEInterfaceProgressElement *element = [VEInterfaceProgressElement new];
-        element.eventPoster = eventPoster;
-        element.type = VEInterfaceElementTypeGestureHorizontalPan;
-        element.elementID = progressGestureId;
-        return element.elementDescription;
+        return ({
+            VEInterfaceElementDescriptionImp *progressGestureDes = [VEInterfaceElementDescriptionImp new];
+            progressGestureDes.elementID = progressGestureId;
+            progressGestureDes.type = VEInterfaceElementTypeGestureHorizontalPan;
+            progressGestureDes.elementAction = ^NSString *(id sender) {
+                return VEPlayEventProgressValueIncrease;
+            };
+            progressGestureDes;
+        });
     }
 }
 

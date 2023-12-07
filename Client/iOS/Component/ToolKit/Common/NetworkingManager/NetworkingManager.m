@@ -6,8 +6,8 @@
 #import "BuildConfig.h"
 #import "Localizator.h"
 #import "NetworkingTool.h"
-#import "PublicParameterComponent.h"
 #import "NotificationConstans.h"
+#import "PublicParameterComponent.h"
 #import <AFNetworking/AFNetworking.h>
 #import <YYModel/YYModel.h>
 
@@ -65,29 +65,36 @@
                                  @"content": [content yy_modelToJSONString] ?: @{},
                                  @"device_id": [NetworkingTool getDeviceId] ?: @"",
                                  @"app_id": appid ? appid : @""};
-    NSString *URLString = [NSString stringWithFormat:@"%@/%@", ServerUrl, space];
+    [self postWithPath:space parameters:parameters headers:nil progress:nil block:block];
+}
+
++ (void)postWithPath:(NSString *)path
+          parameters:(id)parameters
+             headers:(NSDictionary<NSString *, NSString *> *)headers
+            progress:(void (^)(NSProgress *_Nonnull))uploadProgress
+               block:(void (^)(NetworkingResponse *_Nonnull))block {
+    NSString *URLString = [NSString stringWithFormat:@"%@/%@", ServerUrl, path];
     [[self shareManager].sessionManager POST:URLString
         parameters:parameters
-        headers:nil
-        progress:nil
-        success:^(NSURLSessionDataTask *_Nonnull task,
-                  id _Nullable responseObject) {
+        headers:headers
+        progress:uploadProgress
+        success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
             [self processResponse:responseObject block:block];
-            NSLog(@"[%@]-%@ %@", [self class], eventName, responseObject);
+            NSLog(@"[%@]-%@ %@", [self class], path, responseObject);
         } failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
             if (block) {
                 block([NetworkingResponse responseWithError:error]);
             }
-            NSLog(@"[%@]-%@ failure %@", [self class], eventName, task.response);
+            NSLog(@"[%@]-%@ failure %@", [self class], path, task.response);
         }];
 }
 
 + (void)getWithPath:(NSString *)path
-         parameters:(NSDictionary *)parameters
+         parameters:(nullable id)parameters
               block:(void (^)(NetworkingResponse *_Nonnull))block {
     NSString *URLString = [NSString stringWithFormat:@"%@/%@", ServerUrl, path];
     [[self shareManager].sessionManager GET:URLString
-        parameters:parameters.copy
+        parameters:parameters
         headers:nil
         progress:nil
         success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {

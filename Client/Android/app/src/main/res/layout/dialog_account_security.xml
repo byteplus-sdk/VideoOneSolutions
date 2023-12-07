@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="310dp"
-    android:layout_height="172dp">
+    android:layout_height="172dp"
+    tools:layout_gravity="center">
 
     <TextView
         android:id="@+id/title"
@@ -13,57 +14,38 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/cancel_account" />
 
     <TextView
         android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="12dp"
-        android:gravity="center"
+        android:gravity="center_horizontal|top"
         android:paddingHorizontal="16dp"
         android:textColor="@color/black"
         android:textSize="14sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintBottom_toTopOf="@id/cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
         tools:text="@string/cancel_account_alert_message" />
 
-    <View
-        android:id="@+id/horizontal_line"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:background="#1e161823"
-        app:layout_constraintTop_toBottomOf="@+id/content" />
-
-    <View
-        android:id="@+id/vertical_line"
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:background="#1e161823"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/horizontal_line" />
 
     <TextView
         android:id="@+id/cancel"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="48dp"
         android:gravity="center"
         android:text="@string/cancel"
         android:textColor="@color/black"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="@+id/vertical_line"
-        app:layout_constraintTop_toBottomOf="@+id/horizontal_line" />
+        app:layout_constraintEnd_toStartOf="@id/confirm"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/confirm"
@@ -74,9 +56,27 @@
         android:textColor="#D7312A"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@+id/vertical_line"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/horizontal_line" />
+        app:layout_constraintBottom_toBottomOf="@id/cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cancel"
+        app:layout_constraintTop_toTopOf="@id/cancel" />
+
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#1E161823"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/cancel" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="#1E161823"
+        app:layout_constraintBottom_toBottomOf="@id/cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/cancel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

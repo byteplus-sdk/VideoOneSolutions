@@ -16,31 +16,29 @@ NSString *const VEUIEventClearScreen = @"VEUIEventClearScreen";
 
 NSString *const VEUIEventReport = @"VEUIEventReport";
 
+NSString *const VEUIEventLikeVideo = @"VEUIEventLikeVideo";
+
 @implementation VEInterfaceArea
 
 - (instancetype)initWithElements:(NSArray<id<VEInterfaceElementDescription>> *)elements {
     self = [super initWithFrame:CGRectZero];
     if (self) {
         self.clipsToBounds = YES;
-//        [self _registEvents];
+        //        [self _registEvents];
         [self layoutElements:elements];
     }
     return self;
 }
 
-
-#pragma mark ----- Layout
+#pragma mark----- Layout
 
 - (void)invalidateLayout {
-    
 }
 
 - (void)layoutElements:(NSArray<id<VEInterfaceElementDescription>> *)elements {
-    
 }
 
-
-#pragma mark ----- Hidden behavior
+#pragma mark----- Hidden behavior
 
 - (BOOL)isEnableZone:(CGPoint)point {
     if (self.hidden) {
@@ -79,7 +77,7 @@ NSString *const VEUIEventReport = @"VEUIEventReport";
     }
 }
 
-#pragma mark ----- Message / Action
+#pragma mark----- Message / Action
 
 //- (void)_registEvents {
 //    [[VEEventMessageBus universalBus] registEvent:VEUIEventScreenClearStateChanged withAction:@selector(screenAction) ofTarget:self];
@@ -97,4 +95,3 @@ NSString *const VEUIEventReport = @"VEUIEventReport";
 //}
 
 @end
-

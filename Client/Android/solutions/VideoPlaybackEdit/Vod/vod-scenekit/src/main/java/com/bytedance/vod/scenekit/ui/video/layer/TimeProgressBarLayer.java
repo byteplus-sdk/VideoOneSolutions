@@ -6,14 +6,11 @@ package com.bytedance.vod.scenekit.ui.video.layer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.PlayerEvent;
@@ -25,7 +22,13 @@ import com.bytedance.playerkit.player.playback.PlaybackController;
 import com.bytedance.playerkit.player.playback.VideoLayerHost;
 import com.bytedance.playerkit.player.source.Quality;
 import com.bytedance.playerkit.player.source.Track;
-
+import com.bytedance.playerkit.utils.L;
+import com.bytedance.playerkit.utils.event.Dispatcher;
+import com.bytedance.playerkit.utils.event.Event;
+import com.bytedance.vod.scenekit.R;
+import com.bytedance.vod.scenekit.data.model.VideoItem;
+import com.bytedance.vod.scenekit.ui.base.OuterActions;
+import com.bytedance.vod.scenekit.ui.base.VideoViewExtras;
 import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.SpeedSelectDialogLayer;
@@ -33,20 +36,26 @@ import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.ui.widgets.MediaSeekBar;
 import com.bytedance.vod.scenekit.utils.TimeUtils;
 import com.bytedance.vod.scenekit.utils.UIUtils;
-import com.bytedance.playerkit.utils.event.Dispatcher;
-import com.bytedance.playerkit.utils.event.Event;
-import com.bytedance.vod.scenekit.R;
 
 import java.util.List;
 
 public class TimeProgressBarLayer extends AnimateLayer {
 
+    public enum CompletedPolicy {
+        /**
+         * Dismiss ProgressBar after play completed
+         */
+        DISMISS,
+        /**
+         * Keep show ProgressBar after play completed
+         */
+        KEEP
+    }
+
     private MediaSeekBar mSeekBar;
-    private View mShadowView;
 
-    private boolean mHalfScreenInit;
-    private boolean mFullScreenInit;
-
+    @NonNull
+    private final CompletedPolicy mCompletedPolicy;
 
     @Override
     public String tag() {
@@ -54,14 +63,18 @@ public class TimeProgressBarLayer extends AnimateLayer {
     }
 
     public TimeProgressBarLayer() {
+        this(CompletedPolicy.DISMISS);
+    }
+
+    public TimeProgressBarLayer(@NonNull CompletedPolicy policy) {
         setIgnoreLock(true);
+        mCompletedPolicy = policy;
     }
 
     @Nullable
     @Override
     protected View createView(@NonNull ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.vevod_time_progress_bar_layer, parent, false);
-        mShadowView = view.findViewById(R.id.shadow);
 
         mSeekBar = view.findViewById(R.id.mediaSeekBar);
         mSeekBar.setOnSeekListener(new MediaSeekBar.OnUserSeekListener() {
@@ -93,61 +106,111 @@ public class TimeProgressBarLayer extends AnimateLayer {
                 showControllerLayers();
             }
         });
-        syncTheme(view);
+
+        mFullScreenIcon = view.findViewById(R.id.fullScreen);
+        mFullScreenIcon.setOnClickListener(v -> {
+            FullScreenLayer.toggle(videoView(), true);
+        });
+
+        mTimeContainer = view.findViewById(R.id.timeContainer);
+        mCurrentPosition = mTimeContainer.findViewById(R.id.currentPosition);
+        mDuration = mTimeContainer.findViewById(R.id.duration);
+
+        mInteractLayout = view.findViewById(R.id.interact_stub);
+        mLikeContainer = mInteractLayout.findViewById(R.id.likeContainer);
+        mLikeNum = mLikeContainer.findViewById(R.id.likeNum);
+        mCommentContainer = mInteractLayout.findViewById(R.id.commentContainer);
+        mCommentNum = mCommentContainer.findViewById(R.id.commentNum);
+
+        mLikeContainer.setOnClickListener(v -> {
+            boolean newValue = !v.isSelected();
+            v.setSelected(newValue);
+            VideoItem item = VideoViewExtras.getVideoItem(videoView());
+            if (item != null) {
+                item.setILikeIt(newValue);
+                item.setLikeCount(item.getLikeCount() + (newValue ? 1 : -1));
+                mLikeNum.setText(String.valueOf(item.getLikeCount()));
+            }
+        });
+        mCommentContainer.setOnClickListener(v -> {
+            FragmentActivity activity = activity();
+            if (activity == null) {
+                return;
+            }
+            String vid = VideoViewExtras.getVid(videoView());
+            if (vid != null) {
+                OuterActions.showCommentDialogL(activity, vid);
+                GestureLayer layer = findLayer(GestureLayer.class);
+                if (layer != null) {
+                    layer.dismissController();
+                }
+            } else {
+                L.w(this, "vid not found");
+            }
+        });
+
+        mQuality = mInteractLayout.findViewById(R.id.quality);
+        mQualityContainer = view.findViewById(R.id.qualityContainer);
+        mQualityContainer.setOnClickListener(v -> {
+            QualitySelectDialogLayer qualitySelectLayer = findLayer(QualitySelectDialogLayer.class);
+            if (qualitySelectLayer != null) {
+                qualitySelectLayer.animateShow(false);
+            }
+        });
+        mSpeed = mInteractLayout.findViewById(R.id.speed);
+        mSpeedContainer = mInteractLayout.findViewById(R.id.speedContainer);
+        mSpeedContainer.setOnClickListener(v -> {
+            SpeedSelectDialogLayer speedSelectLayer = findLayer(SpeedSelectDialogLayer.class);
+            if (speedSelectLayer != null) {
+                speedSelectLayer.animateShow(false);
+            }
+        });
+
+        applyTheme(view);
         return view;
     }
 
     private void showControllerLayers() {
-        VideoLayerHost layerHost = layerHost();
-        if (layerHost != null) {
-            GestureLayer gestureLayer = layerHost.findLayer(GestureLayer.class);
-            if (gestureLayer != null) {
-                gestureLayer.showController();
-            }
+        GestureLayer gestureLayer = findLayer(GestureLayer.class);
+        if (gestureLayer != null) {
+            gestureLayer.showController();
         }
     }
 
-    private void syncTheme(View view) {
+    private void applyTheme(View view) {
         if (view == null) return;
         if (playScene() == PlayScene.SCENE_FULLSCREEN) {
-            initFullScreen(view);
+            applyFullScreen(view);
         } else {
-            initHalfScreen(view);
+            applyHalfScreen(view);
         }
     }
 
-    private View mFullScreen;
+    // region Half Screen View
+    private View mFullScreenIcon;
 
-    private void initHalfScreen(View view) {
-        if (!mHalfScreenInit) {
-            mHalfScreenInit = true;
-            mFullScreen = view.findViewById(R.id.fullScreen);
-            mFullScreen.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FullScreenLayer.toggle(videoView(), true);
-                }
-            });
-        }
+    private void applyHalfScreen(View view) {
+        mInteractLayout.setVisibility(View.GONE);
+        mTimeContainer.setVisibility(View.GONE);
 
-        if (mFullScreenInit) {
-            if (mInteractLayout != null) mInteractLayout.setVisibility(View.GONE);
-            if (mTimeContainer != null) mTimeContainer.setVisibility(View.GONE);
-        }
+        final VideoLayerHost layerHost = layerHost();
+        final boolean isLocked = layerHost != null && layerHost.isLocked();
+        mSeekBar.setTextVisibility(!isLocked);
+        mSeekBar.setSeekEnabled(!isLocked);
 
-        mFullScreen.setVisibility(View.VISIBLE);
-        mSeekBar.setTextVisibility(true);
-        mSeekBar.setSeekEnabled(true);
+        mFullScreenIcon.setVisibility(isLocked ? View.GONE : View.VISIBLE);
+
+
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mSeekBar.getLayoutParams();
-        if (lp != null) {
-            lp.height = (int) UIUtils.dip2Px(context(), 44);
-            lp.leftMargin = lp.rightMargin = (int) UIUtils.dip2Px(context(), 10);
-            mSeekBar.setLayoutParams(lp);
-        }
-        mShadowView.setBackground(ResourcesCompat.getDrawable(view.getResources(), R.drawable.vevod_time_progress_bar_layer_halfscreen_shadow_shape, null));
-    }
+        lp.height = (int) UIUtils.dip2Px(context(), 44);
+        lp.leftMargin = lp.rightMargin = (int) UIUtils.dip2Px(context(), 10);
+        mSeekBar.setLayoutParams(lp);
 
-    private ViewStub mInteractViewStub;
+        view.setBackgroundResource(R.drawable.vevod_time_progress_bar_layer_halfscreen_shadow_shape);
+    }
+    // endregion
+
+    // region Full Screen View
     private View mInteractLayout;
 
     private View mTimeContainer;
@@ -155,18 +218,10 @@ public class TimeProgressBarLayer extends AnimateLayer {
     private TextView mDuration;
 
     private View mLikeContainer;
-    private ImageView mLikeIcon;
     private TextView mLikeNum;
 
     private View mCommentContainer;
-    private ImageView mCommentIcon;
     private TextView mCommentNum;
-
-    private View mDanmakuContainer;
-    private ImageView mDanmakuIcon;
-
-    private View mSubtitleContainer;
-    private TextView mSubtitle;
 
     private View mQualityContainer;
     private TextView mQuality;
@@ -174,98 +229,41 @@ public class TimeProgressBarLayer extends AnimateLayer {
     private View mSpeedContainer;
     private TextView mSpeed;
 
-    private void initFullScreen(View view) {
-        if (!mFullScreenInit) {
-            mFullScreenInit = true;
-            mTimeContainer = view.findViewById(R.id.timeContainer);
-            mCurrentPosition = mTimeContainer.findViewById(R.id.currentPosition);
-            mDuration = mTimeContainer.findViewById(R.id.duration);
-            mInteractViewStub = view.findViewById(R.id.interact_stub);
-            mInteractLayout = mInteractViewStub.inflate();
+    private void applyFullScreen(View view) {
+        mFullScreenIcon.setVisibility(View.GONE);
 
-            mLikeContainer = mInteractLayout.findViewById(R.id.likeContainer);
-            mCommentContainer = mInteractLayout.findViewById(R.id.commentContainer);
-            mDanmakuContainer = mInteractLayout.findViewById(R.id.danmakuContainer);
-            mSubtitleContainer = mInteractLayout.findViewById(R.id.subtitleContainer);
-
-
-            mLikeContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(context(), "Like is not supported yet!", Toast.LENGTH_SHORT).show();
-                }
-            });
-            mCommentContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(context(), "Comment is not supported yet!", Toast.LENGTH_SHORT).show();
-                }
-            });
-            mDanmakuContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(context(), "Danmaku is not supported yet!", Toast.LENGTH_SHORT).show();
-                }
-            });
-            mSubtitleContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(context(), "Subtitle is not supported yet!", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            mQuality = mInteractLayout.findViewById(R.id.quality);
-            mQualityContainer = view.findViewById(R.id.qualityContainer);
-            mQualityContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    QualitySelectDialogLayer qualitySelectLayer = layerHost().findLayer(QualitySelectDialogLayer.class);
-                    if (qualitySelectLayer != null) {
-                        qualitySelectLayer.animateShow(false);
-                    }
-                }
-            });
-            mSpeed = mInteractLayout.findViewById(R.id.speed);
-            mSpeedContainer = mInteractLayout.findViewById(R.id.speedContainer);
-            mSpeedContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SpeedSelectDialogLayer speedSelectLayer = layerHost().findLayer(SpeedSelectDialogLayer.class);
-                    if (speedSelectLayer != null) {
-                        speedSelectLayer.animateShow(false);
-                    }
-                }
-            });
-        }
-
-        if (mHalfScreenInit) {
-            if (mFullScreen != null) mFullScreen.setVisibility(View.GONE);
-        }
         mTimeContainer.setVisibility(View.VISIBLE);
-        mInteractLayout.setVisibility(layerHost().isLocked() ? View.GONE : View.VISIBLE);
+
+        final VideoLayerHost layerHost = layerHost();
+        final boolean isLocked = layerHost != null && layerHost.isLocked();
+        mInteractLayout.setVisibility(isLocked ? View.GONE : View.VISIBLE);
+
         mSeekBar.setTextVisibility(false);
-        mSeekBar.setSeekEnabled(!layerHost().isLocked());
+        mSeekBar.setSeekEnabled(!isLocked);
 
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mSeekBar.getLayoutParams();
         lp.height = (int) UIUtils.dip2Px(context(), 40);
-        lp.leftMargin = lp.rightMargin = (int) UIUtils.dip2Px(context(), 40);
+        lp.leftMargin = lp.rightMargin = (int) UIUtils.dip2Px(context(), 36);
         mSeekBar.setLayoutParams(lp);
-        mShadowView.setBackground(ResourcesCompat.getDrawable(view.getResources(), R.drawable.vevod_time_progress_bar_layer_fullscreen_shadow_shape, null));
+        view.setBackgroundResource(R.drawable.vevod_time_progress_bar_layer_fullscreen_shadow_shape);
+
+        applyCounts();
     }
+    // endregion
 
     private void syncProgress() {
-        final PlaybackController controller = this.controller();
-        if (controller != null) {
-            final Player player = controller.player();
-            if (player != null) {
-                if (player.isInPlaybackState()) {
-                    setProgress(player.getCurrentPosition(), player.getDuration(), player.getBufferedPercentage());
-                }
+        final Player player = player();
+        if (player != null) {
+            if (player.isInPlaybackState()) {
+                setProgress(player.getCurrentPosition(), player.getDuration(), player.getBufferedPercentage());
             }
         }
     }
 
     private void setProgress(long currentPosition, long duration, int bufferPercent) {
+        if (!checkShow() || !isShowing()) {
+            return;
+        }
         if (mSeekBar != null) {
             if (duration >= 0) {
                 mSeekBar.setDuration(duration);
@@ -303,7 +301,7 @@ public class TimeProgressBarLayer extends AnimateLayer {
             }
 
             List<Track> tracks = player.getTracks(Track.TRACK_TYPE_VIDEO);
-            if (tracks == null || tracks.size() < 2) {
+            if (tracks == null) {
                 mQualityContainer.setVisibility(View.GONE);
             } else {
                 mQualityContainer.setVisibility(View.VISIBLE);
@@ -348,6 +346,9 @@ public class TimeProgressBarLayer extends AnimateLayer {
                 case PlayerEvent.State.STARTED:
                 case PlayerEvent.Info.SEEKING_START: {
                     syncProgress();
+                    if (mCompletedPolicy == CompletedPolicy.KEEP && isShowing()) {
+                        dismiss();
+                    }
                     break;
                 }
                 case PlayerEvent.State.PAUSED: {
@@ -356,7 +357,11 @@ public class TimeProgressBarLayer extends AnimateLayer {
                 }
                 case PlayerEvent.State.COMPLETED: {
                     syncProgress();
-                    dismiss();
+                    if (checkShow() && (mCompletedPolicy == CompletedPolicy.KEEP)) {
+                        show();
+                    } else {
+                        dismiss();
+                    }
                     break;
                 }
                 case PlayerEvent.State.STOPPED:
@@ -409,12 +414,13 @@ public class TimeProgressBarLayer extends AnimateLayer {
 
     @Override
     public void show() {
+        if (!checkShow()) return;
         super.show();
         sync();
     }
 
     private void sync() {
-        syncTheme(getView());
+        applyTheme(getView());
         syncProgress();
         syncQuality();
         syncSpeed();
@@ -422,11 +428,43 @@ public class TimeProgressBarLayer extends AnimateLayer {
 
     @Override
     public void onVideoViewPlaySceneChanged(int fromScene, int toScene) {
-        sync();
+        if (checkShow()) {
+            sync();
+        } else {
+            dismiss();
+        }
     }
 
     @Override
     protected void onLayerHostLockStateChanged(boolean locked) {
-        sync();
+        if (checkShow() && isShowing()) {
+            sync();
+        }
+    }
+
+    protected boolean checkShow() {
+        return true;
+    }
+
+    @Override
+    protected boolean preventAnimateDismiss() {
+        final Player player = player();
+        return player != null && player.isPaused();
+    }
+
+    private void applyCounts() {
+        VideoItem item = VideoViewExtras.getVideoItem(videoView());
+        if (mLikeContainer != null) {
+            boolean isILikeIt = item != null && item.isILikeIt();
+            mLikeContainer.setSelected(isILikeIt);
+        }
+        if (mLikeNum != null) {
+            int likeCount = item == null ? 0 : item.getLikeCount();
+            mLikeNum.setText(String.valueOf(likeCount));
+        }
+        if (mCommentNum != null) {
+            int commentCount = item == null ? 0 : item.getCommentCount();
+            mCommentNum.setText(String.valueOf(commentCount));
+        }
     }
 }

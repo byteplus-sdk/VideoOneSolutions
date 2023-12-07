@@ -24,7 +24,7 @@
     <string name="vevod_speed_select_dialog_title">倍速</string>
     <string name="vevod_speed_select_default">%1$s(默认)</string>
     <string name="vevod_tips_sync_start_time">从上次观看的位置播放 %1$s</string>
-    <string name="vevod_play_error_text">播放错误</string>
+    <string name="vevod_play_error_text">"播放错误:\n%1$s"</string>
     <string name="vevod_play_complete_replay">重播</string>
     <string name="vevod_quality_select_tips_will_switch">清晰度正在切到 %1$s</string>
     <string name="vevod_quality_select_tips_switched">清晰度切换成功，当前清晰度 %1$s</string>
@@ -41,4 +41,7 @@
     <string name="vevod_more_dialog_category_volume">音量</string>
     <string name="vevod_more_dialog_category_brightness">亮度</string>
     <string name="vevod_more_dialog_report">举报</string>
+    <string name="add_a_comment">请输入评论</string>
+    <string name="say_something">说点什么</string>
+    <string name="vevod_button_fullscreen">全屏播放</string>
 </resources>

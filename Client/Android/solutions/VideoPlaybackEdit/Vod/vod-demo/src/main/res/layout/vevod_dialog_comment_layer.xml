@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null">
+
+    <LinearLayout
+        android:id="@+id/listPanel"
+        android:layout_width="360dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:layout_marginVertical="8dp"
+        android:layout_marginEnd="44dp"
+        android:background="@drawable/vevod_dialog_layer_bg"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="start"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:textColor="#EBEDF0"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="2,345 Comments" />
+
+            <ImageView
+                android:id="@+id/question"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="2dp"
+                android:padding="14dp"
+                android:src="@drawable/vevod_ic_question" />
+        </FrameLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#19FFFFFF" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:itemCount="18"
+            tools:listitem="@layout/vevod_dialog_comment_layer_item" />
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/vevod_fullscreen_input_container_bg"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp">
+
+            <TextView
+                android:id="@+id/input_comment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/vevod_fullscreen_input_bg"
+                android:gravity="center_vertical|start"
+                android:paddingHorizontal="12dp"
+                android:text="@string/add_a_comment"
+                android:textColor="@color/white"
+                android:textSize="13sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/vevod_ic_face_20" />
+        </FrameLayout>
+    </LinearLayout>
+
+</FrameLayout>

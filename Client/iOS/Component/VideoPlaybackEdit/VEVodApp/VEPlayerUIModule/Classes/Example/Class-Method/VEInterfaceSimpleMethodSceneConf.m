@@ -1,10 +1,10 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEInterfaceSimpleMethodSceneConf.h"
+#import "VEEventMessageBus.h"
+#import "VEEventPoster.h"
 #import "VEInterfacePlayElement.h"
 #import "VEInterfaceProgressElement.h"
-#import "VEEventPoster.h"
-#import "VEEventMessageBus.h"
 
 @interface VEInterfaceSimpleMethodSceneConf ()
 
@@ -15,6 +15,8 @@
 @end
 
 @implementation VEInterfaceSimpleMethodSceneConf
+
+@synthesize deActive;
 
 - (instancetype)init {
     self = [super init];
@@ -29,6 +31,7 @@
     return @[
         [VEInterfacePlayElement playButtonWithEventPoster:self.eventPoster],
         [VEInterfacePlayElement playGestureWithEventPoster:self.eventPoster],
+        [VEInterfacePlayElement likeGesture],
         [VEInterfaceProgressElement progressViewWithEventPoster:self.eventPoster],
     ];
 }

@@ -7,6 +7,8 @@ extern NSString *const playButtonId;
 
 extern NSString *const playGestureId;
 
+extern NSString *const likeGestureId;
+
 @class VEEventPoster;
 @interface VEInterfacePlayElement : NSObject <VEInterfaceElementProtocol>
 
@@ -14,6 +16,8 @@ extern NSString *const playGestureId;
 
 + (VEInterfaceElementDescriptionImp *)playGestureWithEventPoster:(VEEventPoster *)eventPoster;
 
++ (VEInterfaceElementDescriptionImp *)likeGesture;
+
++ (VEInterfaceElementDescriptionImp *)autoHideControllerGesture;
+
 @end
-
-

@@ -5,6 +5,7 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vevod_shortvideo_fl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
@@ -23,10 +24,13 @@
 
     <androidx.core.widget.ContentLoadingProgressBar
         android:id="@+id/vevod_load_more_progress_bar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <View
         android:layout_width="match_parent"

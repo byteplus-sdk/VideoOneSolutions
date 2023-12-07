@@ -35,6 +35,20 @@ public class VideoDetail {
     @SerializedName("createTime")
     public Date createTime;
 
+    @SerializedName("width")
+    public int width;
+    @SerializedName("height")
+    public int height;
+
+    @SerializedName("name")
+    public String userName;
+    @SerializedName("uid")
+    public String userId;
+    @SerializedName("like")
+    public int likeCount;
+    @SerializedName("comment")
+    public int commentCount;
+
     @Nullable
     public static VideoItem toVideoItem(VideoDetail detail) {
         if (detail.playAuthToken != null) {
@@ -45,9 +59,7 @@ public class VideoDetail {
                     (long) (detail.duration * 1000),
                     detail.coverUrl,
                     detail.caption);
-            item.setSubtitle(detail.subtitle);
-            item.setPlayCount(detail.playCount);
-            item.setCreateTime(detail.createTime);
+            fillVideoItem(item, detail);
             return item;
         } else if (detail.videoModel != null) {
             final int sourceType = VideoSettings.intValue(VideoSettings.COMMON_SOURCE_TYPE);
@@ -59,10 +71,8 @@ public class VideoDetail {
                             (long) (detail.duration * 1000),
                             detail.coverUrl,
                             detail.caption);
-                    VideoItem.toMediaSource(videoItem, false);
-                    videoItem.setSubtitle(detail.subtitle);
-                    videoItem.setPlayCount(detail.playCount);
-                    videoItem.setCreateTime(detail.createTime);
+                    VideoItem.toMediaSource(videoItem);
+                    fillVideoItem(videoItem, detail);
                     return videoItem;
                 }
                 case VideoSettings.SourceType.SOURCE_TYPE_URL: {
@@ -81,13 +91,21 @@ public class VideoDetail {
                             (long) (detail.duration * 1000),
                             detail.coverUrl,
                             detail.caption);
-                    item.setSubtitle(detail.subtitle);
-                    item.setPlayCount(detail.playCount);
-                    item.setCreateTime(detail.createTime);
+                    fillVideoItem(item, detail);
                     return item;
                 }
             }
         }
         return null;
+    }
+
+    static void fillVideoItem(VideoItem item, VideoDetail detail) {
+        item.setSubtitle(detail.subtitle);
+        item.setPlayCount(detail.playCount);
+        item.setCreateTime(detail.createTime);
+        item.setSize(detail.width, detail.height);
+        item.setUser(detail.userId, detail.userName);
+        item.setLikeCount(detail.likeCount);
+        item.setCommentCount(detail.commentCount);
     }
 }

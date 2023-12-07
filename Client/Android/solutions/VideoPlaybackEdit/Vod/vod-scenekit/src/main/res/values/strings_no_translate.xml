@@ -3,4 +3,5 @@
     <string name="vevod_feed_video_count_ten_thousand_zh" translatable="false">%1$.1fW</string>
     <string name="vevod_feed_video_count_thousand" translatable="false">%1$.1fK</string>
     <string name="vevod_feed_video_count_million" translatable="false">%1$.1fM</string>
+    <string name="vevod_short_video_at" translatable="false">"@%1$s"</string>
 </resources>

@@ -22,6 +22,10 @@
     //  override in subclasss
 }
 
+- (void)clickTabCenterAction {
+    //  override in subclasss
+}
+
 - (void)close {
     [self.navigationController popViewControllerAnimated:YES];
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="SolutionCommonDialogTheme" parent="Theme.AppCompat.Light.Dialog.MinWidth">
+        <item name="android:windowBackground">@drawable/bg_dialog_solution_common</item>
+        <item name="android:windowMinWidthMinor">83%</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
+</resources>

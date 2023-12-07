@@ -56,10 +56,12 @@ extern NSString *const VEUIEventClearScreen;
 
 extern NSString *const VEUIEventScreenClearStateChanged;
 
+extern NSString *const VEUIEventSeeking;
+
 extern NSString *const VEUIEventVolumeIncrease;
 
 extern NSString *const VEUIEventBrightnessIncrease;
 
 extern NSString *const VEUIEventReport;
 
-extern NSString *const VEPlayEventSeeking;
+extern NSString *const VEUIEventLikeVideo;

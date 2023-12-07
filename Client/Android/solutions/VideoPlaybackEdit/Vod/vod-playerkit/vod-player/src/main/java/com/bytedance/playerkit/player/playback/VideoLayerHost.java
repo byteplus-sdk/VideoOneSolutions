@@ -19,6 +19,7 @@ import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.utils.Asserts;
 import com.bytedance.playerkit.utils.L;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -213,19 +214,37 @@ public class VideoLayerHost {
     }
 
     /**
-     * Find layers by layer class.
+     * Find layer by layer class.
      *
-     * @param layerClazz the implementation class of {@link VideoLayer}
+     * @param clazz the implementation class of {@link VideoLayer}
      * @param <T>        cast to requested type simply.
      * @return the {@link VideoLayer} instance of class
      */
-    public final <T extends VideoLayer> T findLayer(Class<T> layerClazz) {
+    public final <T extends VideoLayer> T findLayer(Class<T> clazz) {
         for (VideoLayer layer : mLayers) {
-            if (layer != null && layerClazz.isInstance(layer)) {
-                return (T) layer;
+            if (layer != null && clazz.isInstance(layer)) {
+                return clazz.cast(layer);
             }
         }
         return null;
+    }
+
+    /**
+     * Find layers by layer class.
+     *
+     * @param clazz the implementation class of {@link VideoLayer}
+     * @param <T>   cast to requested type simply.
+     * @return the {@link VideoLayer} instance of class
+     */
+    @NonNull
+    public final <T extends VideoLayer> List<T> findLayers(Class<T> clazz) {
+        ArrayList<T> layers = new ArrayList<>();
+        for (VideoLayer layer : mLayers) {
+            if (layer != null && clazz.isInstance(layer)) {
+                layers.add(clazz.cast(layer));
+            }
+        }
+        return layers;
     }
 
     /**

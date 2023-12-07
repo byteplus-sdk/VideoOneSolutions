@@ -16,10 +16,14 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.playback.DisplayModeHelper;
 import com.bytedance.playerkit.player.playback.DisplayView;
@@ -30,6 +34,7 @@ import com.bytedance.playerkit.player.source.MediaSource;
 import com.bytedance.vod.scenekit.VideoSettings;
 import com.bytedance.vod.scenekit.data.model.VideoItem;
 import com.bytedance.vod.scenekit.ui.base.BaseFragment;
+import com.bytedance.vod.scenekit.ui.base.VideoViewExtras;
 import com.bytedance.vod.scenekit.ui.video.layer.CoverLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.GestureLayer;
@@ -51,10 +56,13 @@ import com.bytedance.vod.scenekit.ui.video.layer.dialog.TimeProgressDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.ui.video.scene.feedvideo.FeedVideoPageView;
-import com.bytedance.vod.scenekit.utils.VideoItemHelper;
+import com.bytedance.vod.scenekit.utils.FormatHelper;
 import com.bytedance.vod.scenekit.utils.ViewUtils;
+import com.bytedance.voddemo.data.remote.RemoteApi;
 import com.bytedance.voddemo.impl.R;
 import com.bytedance.voddemo.impl.databinding.VevodDetailVideoFragmentBinding;
+import com.bytedance.voddemo.ui.video.scene.detail.bean.RecommendInfo;
+import com.videoone.avatars.Avatars;
 
 
 public class DetailVideoFragment extends BaseFragment {
@@ -64,7 +72,9 @@ public class DetailVideoFragment extends BaseFragment {
 
     public static final String EXTRA_VIDEO_ITEM = "extra_video_item";
 
-    private MediaSource mMediaSource;
+    public static final String EXTRA_KEEP_PLAYBACK_STATE = "extra_keep_playback_state";
+
+    public static final String EXTRA_RECOMMEND_TYPE = "extra_recommend_type";
 
     @Nullable
     private VideoItem mVideoItem;
@@ -76,6 +86,9 @@ public class DetailVideoFragment extends BaseFragment {
     private VideoView mSharedVideoView;
     private View mTransitionView;
     private boolean mInterceptStartPlaybackOnResume;
+    private boolean mKeepPlaybackState = false;
+
+    private DetailViewModel mDetailModel;
 
     public interface DetailVideoSceneEventListener {
         void onEnterDetail();
@@ -86,24 +99,21 @@ public class DetailVideoFragment extends BaseFragment {
     public DetailVideoFragment() {
     }
 
-    public static Bundle createBundle(MediaSource mediaSource, boolean continuesPlay) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(EXTRA_MEDIA_SOURCE, mediaSource);
-        bundle.putBoolean(EXTRA_CONTINUES_PLAYBACK, continuesPlay);
-        return bundle;
-    }
 
-    public static Bundle createBundle(VideoItem item, MediaSource mediaSource, boolean continuesPlay) {
+    public static Bundle createBundle(VideoItem item, MediaSource mediaSource, boolean continuesPlay,
+                                      @RemoteApi.VideoType int videoType) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(EXTRA_VIDEO_ITEM, item);
         bundle.putSerializable(EXTRA_MEDIA_SOURCE, mediaSource);
         bundle.putBoolean(EXTRA_CONTINUES_PLAYBACK, continuesPlay);
+        bundle.putInt(EXTRA_RECOMMEND_TYPE, videoType);
         return bundle;
     }
 
-    public static Bundle createBundle(VideoItem item) {
+    public static Bundle createBundle(VideoItem item, @RemoteApi.VideoType int videoType) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(EXTRA_VIDEO_ITEM, item);
+        bundle.putInt(EXTRA_RECOMMEND_TYPE, videoType);
         return bundle;
     }
 
@@ -134,11 +144,14 @@ public class DetailVideoFragment extends BaseFragment {
                 return true;
             }
         }
+        if (mVideoView != null && isCurrentRecommendItem()) {
+            mVideoView.stopPlayback();
+        }
         if (mFeedVideoViewHolder != null) {
             mVideoView = null;
             return animateExit();
         }
-        if (mContinuesPlayback) {
+        if (mContinuesPlayback || isCurrentRecommendItem()) {
             if (mVideoView != null) {
                 final PlaybackController controller = mVideoView.controller();
                 if (controller != null) {
@@ -148,6 +161,10 @@ public class DetailVideoFragment extends BaseFragment {
             }
         }
         return super.onBackPressed();
+    }
+
+    private boolean isCurrentRecommendItem() {
+        return mDetailModel.recommendVideoItem.getValue() != null;
     }
 
     private boolean animateExit() {
@@ -169,11 +186,19 @@ public class DetailVideoFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mDetailModel = new ViewModelProvider(this).get(DetailViewModel.class);
         Bundle bundle = getArguments();
         if (bundle != null) {
-            mMediaSource = (MediaSource) bundle.getSerializable(EXTRA_MEDIA_SOURCE);
             mContinuesPlayback = bundle.getBoolean(EXTRA_CONTINUES_PLAYBACK);
-            mVideoItem = bundle.getParcelable(EXTRA_VIDEO_ITEM);
+            VideoItem videoItem = mVideoItem = bundle.getParcelable(EXTRA_VIDEO_ITEM);
+            mKeepPlaybackState = bundle.getBoolean(EXTRA_KEEP_PLAYBACK_STATE, false);
+
+            String vid = videoItem == null ? null : videoItem.getVid();
+            if (vid != null) {
+                int videoType = bundle.getInt(EXTRA_RECOMMEND_TYPE, RemoteApi.VideoType.FEED);
+                RecommendInfo info = new RecommendInfo(vid, videoType);
+                mDetailModel.recommendInfo.setValue(info);
+            }
         }
     }
 
@@ -200,16 +225,19 @@ public class DetailVideoFragment extends BaseFragment {
 
         mTransitionView = binding.transitionView;
         if (mFeedVideoViewHolder != null) {
-            mSharedVideoView = mFeedVideoViewHolder.getSharedVideoView();
+            mVideoView = mSharedVideoView = mFeedVideoViewHolder.getSharedVideoView();
             ViewUtils.removeFromParent(mSharedVideoView);
             startEnterTransition();
 
             // take Over SharedVideoView
             mFeedVideoViewHolder.detachSharedVideoView(mSharedVideoView);
-            mVideoView = mSharedVideoView;
         } else {
             mVideoView = createVideoView(requireActivity());
-            mVideoView.bindDataSource(mMediaSource);
+
+            MediaSource mediaSource = (MediaSource) requireArguments().getSerializable(EXTRA_MEDIA_SOURCE);
+            assert mediaSource != null;
+            mVideoView.bindDataSource(mediaSource);
+            VideoViewExtras.updateExtra(mVideoView, mVideoItem);
         }
 
         binding.videoViewContainer.addView(mVideoView,
@@ -217,9 +245,48 @@ public class DetailVideoFragment extends BaseFragment {
                         FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER));
         mVideoView.setPlayScene(PlayScene.SCENE_DETAIL);
 
-        if (mVideoItem != null) {
-            binding.title.setText(mVideoItem.getTitle());
-            binding.subtitle.setText(VideoItemHelper.formatPlayCountAndCreateTime(requireContext(), mVideoItem));
+        renderVideoInfo(binding, mVideoItem);
+
+        mDetailModel.recommendVideoItem.observe(getViewLifecycleOwner(), videoItem -> {
+            if (videoItem == null) {
+                return;
+            }
+
+            renderVideoInfo(binding, videoItem);
+
+            assert mVideoView != null;
+            if (mVideoView == mSharedVideoView) {
+                // Prevent reuse shared VideoView for recommend Item
+                mVideoView.stopPlayback();
+                ViewUtils.removeFromParent(mVideoView);
+
+                mVideoView = createVideoView(requireActivity());
+                binding.videoViewContainer.addView(mVideoView,
+                        new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER));
+                mVideoView.setPlayScene(PlayScene.SCENE_DETAIL);
+            }
+            mVideoView.stopPlayback();
+            MediaSource mediaSource = VideoItem.toMediaSource(videoItem);
+            mVideoView.bindDataSource(mediaSource);
+            VideoViewExtras.updateExtra(mVideoView, videoItem);
+            mVideoView.startPlayback();
+
+            mDetailModel.updateRecommendInfoVid(videoItem.getVid());
+        });
+    }
+
+    private void renderVideoInfo(VevodDetailVideoFragmentBinding binding, VideoItem item) {
+        if (item != null) {
+            binding.title.setText(item.getTitle());
+            binding.subtitle.setText(FormatHelper.formatCountAndCreateTime(requireContext(), item));
+
+            Glide.with(binding.avatar)
+                    .load(Avatars.byUserId(item.getUserId()))
+                    .transform(new CircleCrop())
+                    .into(binding.avatar);
+
+            binding.username.setText(item.getUserName());
         } else {
             binding.title.setVisibility(View.GONE);
             binding.subtitle.setVisibility(View.GONE);
@@ -252,7 +319,10 @@ public class DetailVideoFragment extends BaseFragment {
 
     private void resume() {
         if (!mInterceptStartPlaybackOnResume) {
-            play();
+            if (!mKeepPlaybackState) {
+                play();
+            }
+            mKeepPlaybackState = false;
         }
         mInterceptStartPlaybackOnResume = false;
     }
@@ -282,8 +352,7 @@ public class DetailVideoFragment extends BaseFragment {
         layerHost.addLayer(new GestureLayer());
         layerHost.addLayer(new FullScreenLayer());
         layerHost.addLayer(new CoverLayer());
-
-        layerHost.addLayer(new TimeProgressBarLayer());
+        layerHost.addLayer(new TimeProgressBarLayer(TimeProgressBarLayer.CompletedPolicy.KEEP));
         layerHost.addLayer(new TitleBarLayer());
         layerHost.addLayer(new QualitySelectDialogLayer());
         layerHost.addLayer(new SpeedSelectDialogLayer());
@@ -302,7 +371,7 @@ public class DetailVideoFragment extends BaseFragment {
             layerHost.addLayer(new LogLayer());
         }
         layerHost.attachToVideoView(videoView);
-        videoView.setBackgroundColor(getResources().getColor(android.R.color.black));
+        videoView.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.black));
         videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT);
         videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);
         new PlaybackController().bind(videoView);
@@ -310,6 +379,9 @@ public class DetailVideoFragment extends BaseFragment {
     }
 
     private void giveBackSharedVideoView() {
+        if (mVideoView != null && mSharedVideoView != mVideoView) {
+            mVideoView.stopPlayback();
+        }
         ViewUtils.removeFromParent(mSharedVideoView);
         mFeedVideoViewHolder.attachSharedVideoView(mSharedVideoView);
         mSharedVideoView = null;

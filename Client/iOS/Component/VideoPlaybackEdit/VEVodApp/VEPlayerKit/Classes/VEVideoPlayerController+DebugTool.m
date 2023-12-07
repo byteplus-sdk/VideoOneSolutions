@@ -1,9 +1,9 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEVideoPlayerController+DebugTool.h"
-#import <objc/runtime.h>
-#import <RangersAppLog.h>
 #import <AppConfig/BuildConfig.h>
+#import <RangersAppLog.h>
+#import <objc/runtime.h>
 
 @implementation VEVideoPlayerController (DebugTool)
 

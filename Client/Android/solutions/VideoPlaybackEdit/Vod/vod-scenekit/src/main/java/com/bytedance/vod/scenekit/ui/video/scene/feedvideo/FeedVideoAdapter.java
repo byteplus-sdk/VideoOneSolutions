@@ -13,8 +13,11 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bytedance.playerkit.player.playback.DisplayModeHelper;
 import com.bytedance.playerkit.player.playback.DisplayView;
 import com.bytedance.playerkit.player.playback.PlaybackController;
@@ -22,34 +25,34 @@ import com.bytedance.playerkit.player.playback.VideoLayerHost;
 import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.player.source.MediaSource;
 import com.bytedance.playerkit.utils.event.Event;
-import com.bytedance.vod.scenekit.data.model.VideoItem;
-import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.LoadingLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.PlayCompleteLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.TipsLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.TitleBarLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.VolumeBrightnessIconLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.dialog.TimeProgressDialogLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
-import com.bytedance.vod.scenekit.ui.video.scene.feedvideo.layer.FeedVideoCoverShadowLayer;
-import com.bytedance.vod.scenekit.utils.UIUtils;
-import com.bytedance.vod.scenekit.utils.VideoItemHelper;
-import com.bytedance.vod.scenekit.utils.ViewUtils;
 import com.bytedance.vod.scenekit.VideoSettings;
+import com.bytedance.vod.scenekit.data.model.VideoItem;
 import com.bytedance.vod.scenekit.databinding.VevodFeedVideoItemBinding;
-import com.bytedance.vod.scenekit.databinding.VevodFeedVideoItemFooterBinding;
+import com.bytedance.vod.scenekit.ui.base.VideoViewExtras;
 import com.bytedance.vod.scenekit.ui.video.layer.CoverLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.GestureLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.LoadingLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LockLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.PlayCompleteLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PlayErrorLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PlayPauseLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.SyncStartTimeLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.TimeProgressBarLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.TipsLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.TitleBarLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.MoreDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.SpeedSelectDialogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.dialog.TimeProgressDialogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
+import com.bytedance.vod.scenekit.ui.video.scene.feedvideo.layer.FeedVideoCoverShadowLayer;
+import com.bytedance.vod.scenekit.utils.UIUtils;
+import com.bytedance.vod.scenekit.utils.FormatHelper;
+import com.bytedance.vod.scenekit.utils.ViewUtils;
+import com.videoone.avatars.Avatars;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +153,6 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
             super(binding.getRoot());
             this.binding = binding;
             initVideoView(binding, listener);
-            initFooter(binding.footer, listener);
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onItemClick(ViewHolder.this);
@@ -160,21 +162,21 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
 
         private void initVideoView(@NonNull VevodFeedVideoItemBinding binding, OnItemViewListener listener) {
             videoViewContainer = binding.videoViewContainer;
-            sharedVideoView = binding.videoView;
+            VideoView videoView = sharedVideoView = binding.videoView;
 
             VideoLayerHost layerHost = new VideoLayerHost(itemView.getContext());
             layerHost.addLayer(new GestureLayer());
             layerHost.addLayer(new FullScreenLayer());
             layerHost.addLayer(new CoverLayer());
             layerHost.addLayer(new FeedVideoCoverShadowLayer());
-            layerHost.addLayer(new TimeProgressBarLayer());
+            layerHost.addLayer(new TimeProgressBarLayer(TimeProgressBarLayer.CompletedPolicy.KEEP));
             layerHost.addLayer(new TitleBarLayer());
             layerHost.addLayer(new QualitySelectDialogLayer());
             layerHost.addLayer(new SpeedSelectDialogLayer());
             layerHost.addLayer(MoreDialogLayer.create());
             layerHost.addLayer(new TipsLayer());
             layerHost.addLayer(new SyncStartTimeLayer());
-            layerHost.addLayer(new VolumeBrightnessIconLayer());
+            // layerHost.addLayer(new VolumeBrightnessIconLayer());
             layerHost.addLayer(new VolumeBrightnessDialogLayer());
             layerHost.addLayer(new TimeProgressDialogLayer());
             // layerHost.addLayer(new FeedVideoVVLayer());
@@ -186,17 +188,17 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
             if (VideoSettings.booleanValue(VideoSettings.DEBUG_ENABLE_LOG_LAYER)) {
                 layerHost.addLayer(new LogLayer());
             }
-            layerHost.attachToVideoView(sharedVideoView);
+            layerHost.attachToVideoView(videoView);
 
-            sharedVideoView.setBackgroundColor(itemView.getResources().getColor(android.R.color.black));
-            sharedVideoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT);
-            sharedVideoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);
-            sharedVideoView.setPlayScene(PlayScene.SCENE_FEED);
+            videoView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), android.R.color.black));
+            videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT);
+            videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);
+            videoView.setPlayScene(PlayScene.SCENE_FEED);
 
             controller = new PlaybackController();
-            controller.bind(sharedVideoView);
+            controller.bind(videoView);
 
-            sharedVideoView.setOnClickListener(v -> {
+            videoView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onVideoViewClick(ViewHolder.this);
                 }
@@ -208,17 +210,10 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
             });
         }
 
-        private void initFooter(@NonNull VevodFeedVideoItemFooterBinding binding, OnItemViewListener listener) {
-            binding.collectContainer.setOnClickListener(v -> Toast.makeText(v.getContext(), "collect is not implement yet", Toast.LENGTH_SHORT).show());
-            binding.commentContainer.setOnClickListener(v -> Toast.makeText(v.getContext(), "comment is not implement yet", Toast.LENGTH_SHORT).show());
-            binding.likeContainer.setOnClickListener(v -> Toast.makeText(v.getContext(), "like is not implement yet", Toast.LENGTH_SHORT).show());
-        }
-
         void bindSource(int position, VideoItem videoItem, List<VideoItem> videoItems) {
             this.videoItem = videoItem;
             bindHeader(position, videoItem, videoItems);
             bindVideoView(position, videoItem, videoItems);
-            bindFooter(position, videoItem, videoItems);
         }
 
         void bindHeader(int position, VideoItem videoItem, List<VideoItem> videoItems) {
@@ -226,8 +221,13 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
 
             Context context = binding.header.description.getContext();
             binding.header.description.setText(
-                    VideoItemHelper.formatPlayCountAndCreateTime(context, videoItem)
+                    FormatHelper.formatCountAndCreateTime(context, videoItem)
             );
+
+            Glide.with(binding.header.avatar)
+                    .load(Avatars.byUserId(videoItem.getUserId()))
+                    .transform(new CircleCrop())
+                    .into(binding.header.avatar);
         }
 
         void bindVideoView(int position, VideoItem videoItem, List<VideoItem> videoItems) {
@@ -236,6 +236,7 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
             if (mediaSource == null) {
                 mediaSource = VideoItem.toMediaSource(videoItem, true);
                 videoView.bindDataSource(mediaSource);
+                VideoViewExtras.updateExtra(videoView, videoItem);
             } else {
                 if (TextUtils.equals(videoItem.getVid(), mediaSource.getMediaId())) {
                     // do nothing
@@ -243,11 +244,9 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
                     videoView.stopPlayback();
                     mediaSource = VideoItem.toMediaSource(videoItem, true);
                     videoView.bindDataSource(mediaSource);
+                    VideoViewExtras.updateExtra(videoView, videoItem);
                 }
             }
-        }
-
-        void bindFooter(int position, VideoItem videoItem, List<VideoItem> videoItems) {
         }
 
         @Override
@@ -267,8 +266,8 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
         public void attachSharedVideoView(VideoView videoView) {
             sharedVideoView = videoView;
             videoViewContainer.addView(videoView);
-            sharedVideoView.setPlayScene(PlayScene.SCENE_FEED);
-            sharedVideoView.startPlayback();
+            videoView.setPlayScene(PlayScene.SCENE_FEED);
+            // sharedVideoView.startPlayback();
             int position = getAbsoluteAdapterPosition();
             if (position >= 0) {
                 if (itemView.getParent() instanceof RecyclerView) {

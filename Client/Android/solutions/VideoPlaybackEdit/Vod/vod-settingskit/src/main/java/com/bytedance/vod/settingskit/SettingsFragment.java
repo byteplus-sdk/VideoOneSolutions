@@ -29,8 +29,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bytedance.vod.settingskit.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,6 +206,8 @@ public class SettingsFragment extends Fragment {
                         return SelectableItemsViewHolder.create(parent);
                     case Option.TYPE_EDITABLE_TEXT:
                         return EditableTextViewHolder.create(parent);
+                    case Option.TYPE_ARROW:
+                        return ClickableArrowItemHolder.create(parent);
                     case SettingItem.TYPE_COPYABLE_TEXT:
                         return CopyableTextViewHolder.create(parent);
                     case SettingItem.TYPE_CLICKABLE_ITEM:
@@ -397,6 +397,34 @@ public class SettingsFragment extends Fragment {
 
             static EditableTextViewHolder create(ViewGroup parent) {
                 return new EditableTextViewHolder(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.vevod_settings_item_selectable_items, parent, false));
+            }
+        }
+
+        static class ClickableArrowItemHolder extends ItemViewHolder {
+            private final TextView titleView;
+            private final TextView valueView;
+
+            public ClickableArrowItemHolder(@NonNull View itemView) {
+                super(itemView);
+                titleView = itemView.findViewById(R.id.itemTitle);
+                valueView = itemView.findViewById(R.id.valueView);
+            }
+
+            @Override
+            void bind(SettingItem item, int position) {
+                titleView.setText(item.option.title);
+                valueView.setText(item.mapper.toString(item.option.value()));
+                itemView.setOnClickListener(v -> {
+                    if (item.listener != null) {
+                        item.listener.onEvent(SettingItem.OnEventListener.EVENT_TYPE_CLICK,
+                                v.getContext(), item, ClickableArrowItemHolder.this);
+                    }
+                });
+            }
+
+            static ClickableArrowItemHolder create(ViewGroup parent) {
+                return new ClickableArrowItemHolder(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.vevod_settings_item_selectable_items, parent, false));
             }
         }

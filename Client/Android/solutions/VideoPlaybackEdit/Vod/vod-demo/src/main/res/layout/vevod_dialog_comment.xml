@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="#000">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="572dp"
+        android:background="@drawable/vevod_bg_dialog_comment"
+        android:orientation="vertical"
+        tools:layout_gravity="bottom">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_gravity="left"
+            android:layout_marginLeft="16dp"
+            android:gravity="center"
+            android:textColor="#0C0D0F"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="2,345 Comments" />
+
+        <ImageView
+            android:id="@+id/question"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="2dp"
+            android:scaleType="center"
+            android:src="@drawable/vevod_ic_question"
+            app:layout_constraintBottom_toBottomOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/title" />
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:scaleType="center"
+            android:src="@drawable/vevod_ic_comment_close"
+            app:layout_constraintBottom_toBottomOf="@id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/title" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="#33161823"
+            app:layout_constraintBottom_toBottomOf="@id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:background="#F00" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toTopOf="@id/bottom_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:itemCount="7"
+            tools:listitem="@layout/vevod_dialog_comment_item" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottom_bar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="44dp" />
+
+        <TextView
+            android:id="@+id/input_comment"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_marginHorizontal="12dp"
+            android:background="@drawable/vevod_bg_dialog_comment_input"
+            android:gravity="center_vertical|start"
+            android:paddingHorizontal="16dp"
+            android:text="@string/add_a_comment"
+            android:textColor="#A3A7AD"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/bottom_bar" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/vevod_ic_face_24"
+            app:layout_constraintBottom_toBottomOf="@id/input_comment"
+            app:layout_constraintEnd_toEndOf="@id/input_comment"
+            app:layout_constraintTop_toTopOf="@id/input_comment" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="#33161823"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/bottom_bar"
+            tools:background="#F00" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

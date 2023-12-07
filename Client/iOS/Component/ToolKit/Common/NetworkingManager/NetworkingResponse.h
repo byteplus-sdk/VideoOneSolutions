@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) BOOL result;
 
-@property (nonatomic, copy) NSDictionary *response;
+@property (nonatomic, copy) id response;
 
 @property (nonatomic, strong, nonnull) NSError *error;
 

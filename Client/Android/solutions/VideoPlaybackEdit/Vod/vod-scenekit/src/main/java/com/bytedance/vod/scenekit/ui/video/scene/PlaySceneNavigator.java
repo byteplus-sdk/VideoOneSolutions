@@ -25,8 +25,7 @@ public class PlaySceneNavigator {
     public static void navigateTo(VideoView videoView, PlaySceneInfo playSceneInfo) {
         ViewUtils.removeFromParent(videoView);
         playSceneInfo.container.addView(videoView, playSceneInfo.lp);
-        videoView.setRatio(playSceneInfo.ratio);
-        videoView.setRatioMode(playSceneInfo.ratioMode);
+        videoView.setRatio(playSceneInfo.ratioMode, playSceneInfo.ratio);
         videoView.setDisplayMode(playSceneInfo.displayMode);
         videoView.setPlayScene(playSceneInfo.videoScene);
         setSystemBarTheme(videoView, playSceneInfo);

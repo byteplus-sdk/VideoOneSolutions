@@ -45,12 +45,6 @@ import com.bytedance.voddemo.ui.video.scene.shortvideo.ShortVideoFragment;
 
 public class MainTabFragment extends Fragment {
 
-    public static MainTabFragment newInstance(Bundle bundle) {
-        MainTabFragment fragment = new MainTabFragment();
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
     private MainTabViewModel viewModel;
 
     @Override

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 
+import com.bytedance.playerkit.player.Player;
 import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
 import com.bytedance.vod.scenekit.R;
@@ -57,6 +58,12 @@ public class VolumeBrightnessIconLayer extends AnimateLayer {
             }
         });
         return view;
+    }
+
+    @Override
+    protected boolean preventAnimateDismiss() {
+        final Player player = player();
+        return player != null && player.isPaused();
     }
 
     public View getVolumeView() {

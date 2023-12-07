@@ -1,23 +1,27 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEFeedVideoViewController.h"
+#import "NetworkingManager+Vod.h"
 #import "UIScrollView+Refresh.h"
-#import "VEDataManager.h"
 #import "VEFeedVideoNormalCell.h"
 #import "VEVideoDetailViewController.h"
 #import "VEVideoModel.h"
 #import "VEVideoPlayerController.h"
+#import "VEVideoStartTimeRecorder.h"
+#import <MJRefresh/MJRefresh.h>
 #import <Masonry/Masonry.h>
 #import <ToolKit/ToolKit.h>
 
 static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
 
-@interface VEFeedVideoViewController () <UITableViewDelegate, UITableViewDataSource, VEFeedVideoNormalCellDelegate, VEVideoDetailProtocol>
+@interface VEFeedVideoViewController () <UITableViewDelegate, UITableViewDataSource, VEFeedVideoNormalCellDelegate, VEVideoDetailProtocol, VEVideoPlaybackDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *videoModels;
 @property (nonatomic, strong) VEVideoPlayerController *playerController;
 @property (nonatomic, strong) UIView *navView;
+@property (nonatomic, assign) BOOL viewDidAppearTag;
+@property (nonatomic, assign) BOOL isFetchingData;
 
 @end
 
@@ -26,7 +30,7 @@ static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initialUI];
-    [self loadData];
+    [self loadDataWithMore:NO];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -38,20 +42,19 @@ static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
 - (void)tabViewDidAppear {
     [super tabViewDidAppear];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
+    self.viewDidAppearTag = YES;
+    [self playSuitableVideo];
 }
 
 - (void)tabViewDidDisappear {
     [super tabViewDidDisappear];
-    for (VEFeedVideoNormalCell *cell in self.tableView.visibleCells) {
-        if ([cell isPlaying]) {
-            [cell cellDidEndDisplay:NO];
-            break;
-        }
-    }
+    self.playerController.startTime = 0;
+    self.viewDidAppearTag = NO;
+    [self stopVideos:NO];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillAppear:animated];
+- (void)clickTabCenterAction {
+    [self stopVideos:NO];
 }
 
 - (void)dealloc {
@@ -77,8 +80,58 @@ static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
     WeakSelf;
     [self.tableView systemRefresh:^{
         StrongSelf;
-        [sself loadData];
+        [sself loadDataWithMore:NO];
     }];
+    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        StrongSelf;
+        [sself loadDataWithMore:YES];
+    }];
+}
+
+- (void)resumePlay {
+    NSString *mediaId = self.playerController.mediaSource.uniqueId;
+    if (!mediaId.length) {
+        return;
+    }
+    for (VEFeedVideoNormalCell *cell in self.tableView.visibleCells) {
+        if ([cell.videoModel.videoId isEqualToString:mediaId]) {
+            [cell startPlay];
+        } else {
+            [cell cellDidEndDisplay:YES];
+        }
+    }
+}
+
+- (void)playSuitableVideo {
+    if (!self.viewDidAppearTag) {
+        return;
+    }
+    if (self.videoModels.count) {
+        VEFeedVideoNormalCell *suitableCell = nil;
+        VEFeedVideoNormalCell *currentPlayingCell = nil;
+        CGFloat maxOffset = 100000;
+        for (VEFeedVideoNormalCell *cell in self.tableView.visibleCells) {
+            CGFloat offsetY = cell.frame.origin.y - self.tableView.contentOffset.y;
+            if (offsetY >= 0 && offsetY < maxOffset) {
+                maxOffset = offsetY;
+                suitableCell = cell;
+            }
+            if ([cell isPlaying] && offsetY >= 0 && offsetY + cell.frame.size.height <= self.tableView.frame.size.height) {
+                currentPlayingCell = cell;
+            }
+        }
+        if (currentPlayingCell) {
+            return;
+        } else {
+            for (VEFeedVideoNormalCell *cell in self.tableView.visibleCells) {
+                if (cell != suitableCell) {
+                    [cell cellDidEndDisplay:YES];
+                } else {
+                    [cell startPlay];
+                }
+            }
+        }
+    }
 }
 
 #pragma mark----- UITableView Delegate & DataSource
@@ -97,12 +150,6 @@ static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
     return normalCell;
 }
 
-- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([cell respondsToSelector:@selector(cellDidEndDisplay:)]) {
-        [(VEFeedVideoNormalCell *)cell cellDidEndDisplay:YES];
-    }
-}
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     VEVideoModel *videoModel = [self.videoModels objectAtIndex:indexPath.row];
     return [VEFeedVideoNormalCell cellHeight:videoModel];
@@ -118,19 +165,95 @@ static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
     VEVideoDetailViewController *detailViewController = [[VEVideoDetailViewController alloc] initWithType:VEVideoPlayerTypeFeed];
     detailViewController.delegate = self;
     detailViewController.videoModel = videoModel;
+    __weak __typeof(self) wself = self;
+    detailViewController.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
+        wself.playerController = playerController;
+        [wself resumePlay];
+    };
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    /*When switching back from video detail view controller, the orientation is changing from landscapeRight to portrait.
+     so we will receive this unexpect callback because the height of tableview is smaller than usual, and some cells might be unvisiable.
+    */
+    if (!normalScreenBehaivor()) {
+        return;
+    }
+    if ([cell respondsToSelector:@selector(cellDidEndDisplay:)]) {
+        [(VEFeedVideoNormalCell *)cell cellDidEndDisplay:YES];
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (!decelerate && !self.isFetchingData) {
+        if (scrollView.tracking && !scrollView.dragging && !scrollView.decelerating) {
+            [self playSuitableVideo];
+        }
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    if (!self.isFetchingData) {
+        [self playSuitableVideo];
+    }
+}
+
+#pragma mark - VEFeedVideoNormalCellDelegate
 - (id)feedVideoCellShouldPlay:(VEFeedVideoNormalCell *)cell {
-    if ([self willPlayCurrentSource:cell.videoModel]) {
-    } else {
+    CGFloat offsetY = cell.frame.origin.y - self.tableView.contentOffset.y;
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    if (normalScreenBehaivor()) {
+        if (offsetY < 0) {
+            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        } else if (offsetY + cell.frame.size.height > self.tableView.frame.size.height) {
+            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+        }
+    }
+    [self.playerController.view removeFromSuperview];
+    [self.playerController removeFromParentViewController];
+    NSString *mediaId = self.playerController.mediaSource.uniqueId;
+    if (!mediaId || ![mediaId isEqualToString:cell.videoModel.videoId]) {
         [self stopVideos:YES];
         self.playerController = [[VEVideoPlayerController alloc] initWithType:VEVideoPlayerTypeFeed];
     }
+    [self addChildViewController:self.playerController];
+    self.playerController.delegate = self;
     return self.playerController;
 }
 
 - (void)feedVideoCellReport:(VEFeedVideoNormalCell *)cell {
+}
+
+- (void)feedVideoCellDidRotate:(VEFeedVideoNormalCell *)cell {
+    [cell playerControlInterfaceDestory];
+    VEVideoDetailViewController *detailViewController = [[VEVideoDetailViewController alloc] initWithType:VEVideoPlayerTypeFeed];
+    detailViewController.landscapeMode = YES;
+    detailViewController.delegate = self;
+    detailViewController.videoModel = cell.videoModel;
+    [self.navigationController pushViewController:detailViewController animated:NO];
+    __weak __typeof(self) wself = self;
+    detailViewController.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
+        wself.playerController = playerController;
+        [wself resumePlay];
+    };
+}
+
+- (CFTimeInterval)feedVideoWillStartPlay:(VEVideoModel *)videoModel {
+    return [[VEVideoStartTimeRecorder sharedInstance] startTimeFor:videoModel.videoId];
+}
+
+- (void)feedVideoDidEndPlay:(VEVideoModel *)videoModel playAt:(CFTimeInterval)time duration:(CFTimeInterval)duration {
+    if (videoModel.videoId.length > 0 && time > 0 && time < duration - 1) {
+        [[VEVideoStartTimeRecorder sharedInstance] record:videoModel.videoId startTime:time];
+    }
+}
+
+#pragma mark -VEVideoPlaybackDelegate
+- (void)videoPlayer:(id<VEVideoPlayback>)player playbackStateDidChange:(VEVideoPlaybackState)state uniqueId:(NSString *)uniqueId {
+    if (state == VEVideoPlaybackStateStopped && player.currentPlaybackTime > 1 && fabs(player.duration - player.currentPlaybackTime) < 1) {
+        [[VEVideoStartTimeRecorder sharedInstance] removeRecord:uniqueId];
+    }
 }
 
 - (void)stopVideos:(BOOL)force {
@@ -200,18 +323,37 @@ static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
 
 #pragma mark----- Data
 
-- (void)loadData {
-    [VEDataManager dataForScene:VESceneTypeFeedVideo
-                          range:NSMakeRange(0, 10)
-                        success:^(NSArray<VEVideoModel *> *_Nonnull videoModels) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [self.tableView endRefresh];
-                                [self.videoModels removeAllObjects];
-                                [self.videoModels addObjectsFromArray:videoModels];
-                                [self.tableView reloadData];
-                            });
-                        }
-                        failure:nil];
+- (void)loadDataWithMore:(BOOL)more {
+    NSInteger fetchCount = 10;
+    self.isFetchingData = YES;
+    [NetworkingManager dataForScene:VESceneTypeFeedVideo
+                              range:NSMakeRange(more ? self.videoModels.count : 0, fetchCount)
+                            success:^(NSArray<VEVideoModel *> *_Nonnull videoModels) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    if (!more) {
+                                        [self.videoModels removeAllObjects];
+                                    }
+                                    if (videoModels.count) {
+                                        [self.videoModels addObjectsFromArray:videoModels];
+                                    }
+                                    [self.tableView reloadData];
+                                    if (more) {
+                                        if (videoModels.count < fetchCount) {
+                                            [self.tableView.mj_footer endRefreshingWithNoMoreData];
+                                        } else {
+                                            [self.tableView.mj_footer resetNoMoreData];
+                                        }
+                                    } else {
+                                        [self.tableView endRefresh];
+                                        [self.tableView.mj_footer resetNoMoreData];
+                                    }
+                                    self.isFetchingData = NO;
+                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                        [self playSuitableVideo];
+                                    });
+                                });
+                            }
+                            failure:nil];
 }
 
 #pragma mark----- VEVideoDetailProtocol

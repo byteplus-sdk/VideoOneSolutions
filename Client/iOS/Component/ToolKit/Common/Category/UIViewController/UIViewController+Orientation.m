@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-#import "UIViewController+Orientation.h"
 #import "NotificationConstans.h"
+#import "UIViewController+Orientation.h"
 
 @implementation UIViewController (Orientation)
 
@@ -11,7 +11,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onDeviceOrientationDidChange)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 }
 
 - (void)postInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -22,34 +21,22 @@
 }
 
 - (void)onDeviceOrientationDidChange {
-    BOOL isLandscape = NO;
-    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    switch (interfaceOrientation) {
-        case UIInterfaceOrientationUnknown:
-            break;
-
-        case UIInterfaceOrientationPortrait:
-            break;
-
-        case UIInterfaceOrientationPortraitUpsideDown:
-            break;
-
-        case UIInterfaceOrientationLandscapeLeft:
-            isLandscape = YES;
-            break;
-
-        case UIInterfaceOrientationLandscapeRight:
-            isLandscape = YES;
-            break;
-
-        default:
-            break;
-    }
-    [self orientationDidChang:isLandscape];
+    [self orientationDidChang:self.isLandscape];
 }
 
 - (void)orientationDidChang:(BOOL)isLandscape {
     // Rewrite in UIViewController
+}
+
+- (BOOL)isLandscape {
+    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    switch (interfaceOrientation) {
+        case UIInterfaceOrientationLandscapeLeft:
+        case UIInterfaceOrientationLandscapeRight:
+            return YES;
+        default:
+            return NO;
+    }
 }
 
 - (void)setDeviceInterfaceOrientation:(UIDeviceOrientation)orientation {
