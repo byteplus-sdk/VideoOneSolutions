@@ -44,21 +44,25 @@ NSString *const VEPlayProgressSliderGestureEnable = @"VEPlayProgressSliderGestur
     [self.backView addSubview:self.bufferView];
     [self.backView addSubview:self.progressView];
     [self addSubview:self.thumbView];
+
     [self.backView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(self).offset(thumbWidth / 2.0);
         make.trailing.equalTo(self).offset(-(thumbWidth / 2.0));
         make.centerY.equalTo(self);
         make.height.equalTo(@2);
     }];
+
     [self.bufferView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.top.bottom.equalTo(self.backView);
         make.width.equalTo(@0);
     }];
+
     [self.thumbView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.progressView.mas_trailing);
         make.centerY.equalTo(self);
         make.size.equalTo(@(CGSizeMake(thumbWidth, thumbWidth)));
     }];
+
     [self mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.greaterThanOrEqualTo(@(thumbWidth));
     }];

@@ -31,6 +31,7 @@
         _topMask.startPoint = CGPointMake(0.5, 0);
         _topMask.endPoint = CGPointMake(0.5, 1.0);
         [self.layer addSublayer:_topMask];
+
         _bottomMask = [[CAGradientLayer alloc] init];
         _bottomMask.startPoint = CGPointMake(0.5, 0);
         _bottomMask.endPoint = CGPointMake(0.5, 1.0);

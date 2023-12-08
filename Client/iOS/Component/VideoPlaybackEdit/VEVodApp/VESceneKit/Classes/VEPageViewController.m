@@ -42,6 +42,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
         unsigned hasWillDisplayItem : 1;
         unsigned hasDidEndDisplayItem : 1;
     } _delegateHas;
+
     struct {
         unsigned hasPageForItemAtIndex : 1;
         unsigned hasNumberOfItemInPageViewController : 1;

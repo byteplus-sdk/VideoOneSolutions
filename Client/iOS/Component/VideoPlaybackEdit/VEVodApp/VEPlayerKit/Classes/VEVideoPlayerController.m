@@ -60,6 +60,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     [self configuratoinCustomView];
 }
 
@@ -106,10 +107,12 @@
 
 - (void)configuratoinCustomView {
     self.view.backgroundColor = [UIColor blackColor];
+
     [self.view addSubview:self.posterImageView];
     [self.posterImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
     }];
+
     [self.view addSubview:self.playerPanelContainerView];
     [self.playerPanelContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
@@ -146,6 +149,7 @@
             return;
         }
     }
+
     self.posterImageView.hidden = NO;
     [self.posterImageView sd_setImageWithURL:[NSURL URLWithString:[self __getBackgroudImageUrl:mediaSource]] completed:nil];
 }

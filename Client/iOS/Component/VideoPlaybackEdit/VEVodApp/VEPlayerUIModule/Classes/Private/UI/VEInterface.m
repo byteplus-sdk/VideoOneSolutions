@@ -23,6 +23,7 @@ extern NSString *const VEPlayProgressSliderGestureEnable;
 @interface VEInterface ()
 
 
+
 @end
 
 @implementation VEInterface
