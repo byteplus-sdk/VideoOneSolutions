@@ -41,6 +41,7 @@
 - (void)updateState:(LiveRoomItemButtonState)state {
     NSString *imageName = @"";
     self.desLabel.hidden = YES;
+
     switch (state) {
         case LiveRoomItemButtonStateAddGuests:
             imageName = @"add_guests";
