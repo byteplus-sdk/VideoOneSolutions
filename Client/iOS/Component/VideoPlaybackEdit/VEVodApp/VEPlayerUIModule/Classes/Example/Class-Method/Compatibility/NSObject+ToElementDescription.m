@@ -15,6 +15,7 @@
         if ([self respondsToSelector:@selector(type)]) {
             imp.type = [[self valueForKeyPath:@"type"] integerValue];
         }
+
         imp.elementAction = ^id(id mayElementView) {
             if ([self respondsToSelector:@selector(elementAction:)]) {
                 return [self performSelector:@selector(elementAction:) withObject:mayElementView];

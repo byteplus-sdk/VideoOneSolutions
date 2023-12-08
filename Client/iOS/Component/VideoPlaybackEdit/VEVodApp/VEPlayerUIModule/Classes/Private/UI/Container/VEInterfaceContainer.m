@@ -60,6 +60,7 @@
     [self.visualView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self).offset(0);
     }];
+
     [self.sensorView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self).offset(0);
     }];

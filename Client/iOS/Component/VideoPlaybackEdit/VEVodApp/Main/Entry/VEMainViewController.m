@@ -25,6 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorFromHexString:@"#F6F8FA"];
+
     [self addSubviewAndmakeConstraints];
     [self scenesButtonAction:self.itemButtonArray.firstObject];
 }
@@ -69,11 +70,13 @@
         make.left.right.bottom.equalTo(self.view);
         make.height.mas_equalTo([DeviceInforTool getVirtualHomeHeight] + 48);
     }];
+
     NSMutableArray *list = [[NSMutableArray alloc] init];
     for (int i = 0; i < self.viewControllerDic.count; i++) {
         VEMainItemButton *scenesButton = [self createItemButton:i];
         [self.bottomView addSubview:scenesButton];
         [list addObject:scenesButton];
+
         UIViewController *viewController = self.viewControllerDic[@(i).stringValue];
         if (![viewController isKindOfClass:[UIViewController class]]) {
             continue;
@@ -111,6 +114,7 @@
                    status:ButtonStatusNone];
     [itemButton bingImage:[UIImage imageNamed:imageActionName]
                    status:ButtonStatusActive];
+
     return itemButton;
 }
 
@@ -129,6 +133,7 @@
                    status:ButtonStatusNone];
         [button bingImage:[UIImage imageNamed:imageActionName]
                    status:ButtonStatusActive];
+
         [button bingLabelColor:[self getTitleColor:NO isDark:isDark]
                         status:ButtonStatusNone];
         [button bingLabelColor:[self getTitleColor:YES isDark:isDark]
@@ -144,6 +149,7 @@
         case 2:
             isDrak = YES;
             break;
+
         default:
             break;
     }
@@ -174,6 +180,7 @@
             }
             break;
         }
+
         case 1: {
             if (isDark) {
                 name = isAction ? @"vod_entry_feed_s" : @"vod_entry_feed";
@@ -195,6 +202,7 @@
             }
             break;
         }
+
         case 4: {
             if (isDark) {
                 name = @"vod_entry_setting";
@@ -203,6 +211,7 @@
             }
             break;
         }
+
         default:
             break;
     }
