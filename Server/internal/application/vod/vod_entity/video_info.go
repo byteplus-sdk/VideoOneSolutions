@@ -19,12 +19,13 @@ package vod_entity
 import "time"
 
 type VideoInfo struct {
-	ID         int64     `gorm:"column:id"`
-	Vid        string    `gorm:"column:vid"`
-	AuthorID   string    `gorm:"column:author_id"`
-	VideoType  int       `gorm:"column:video_type"`
-	CreateTime time.Time `gorm:"column:create_time"`
-	UpdateTime time.Time `gorm:"column:update_time"`
+	ID                      int64     `gorm:"column:id"`
+	Vid                     string    `gorm:"column:vid"`
+	VideoType               int       `gorm:"column:video_type"`
+	AntiScreenshotAndRecord int       `gorm:"column:anti_screenshot_and_record"`
+	SupportSmartSubtitle    int       `gorm:"column:support_smart_subtitle"`
+	CreateTime              time.Time `gorm:"column:create_time"`
+	UpdateTime              time.Time `gorm:"column:update_time"`
 }
 
 type VideoComments struct {

@@ -34,7 +34,8 @@ import (
 
 func GetFeedStreamWithPlayAuthToken(ctx context.Context, req *vod_models.GetFeedStreamRequest) ([]*vod_models.VideoDetail, error) {
 	repo := vod_repo.GetVodRepo()
-	videos, err := repo.GetVideoInfoListFromTMVideoInfoByUser(ctx, req.Vid, req.Offset, req.PageSize, req.VideoType)
+	videos, err := repo.GetVideoInfoListFromTMVideoInfoByUser(ctx, req.Vid, req.Offset, req.PageSize, req.VideoType,
+		req.AntiScreenshotAndRecord, req.SupportSmartSubtitle)
 	if err != nil {
 		logs.CtxError(ctx, "err: %v", err)
 		return nil, err
@@ -71,11 +72,14 @@ func getVideoPlayAuthToken(ctx context.Context, req *vod_models.GetFeedStreamReq
 			continue
 		}
 
-		subtitleToken, err := instance.GetSubtitleAuthToken(&request.VodGetSubtitleInfoListRequest{
-			Vid: video.Vid,
-		}, tokenExpires)
-		if err != nil {
-			logs.CtxError(ctx, "GetSubtitleAuthToken Failed! *Error is: %v", err)
+		var subtitleToken string
+		if len(info.Result.SubtitleInfoList) != 0 {
+			subtitleToken, err = instance.GetSubtitleAuthToken(&request.VodGetSubtitleInfoListRequest{
+				Vid: video.Vid,
+			}, tokenExpires)
+			if err != nil {
+				logs.CtxError(ctx, "GetSubtitleAuthToken Failed! *Error is: %v", err)
+			}
 		}
 
 		mediaInfo, _, err := instance.GetMediaInfos(&request.VodGetMediaInfosRequest{Vids: video.Vid})

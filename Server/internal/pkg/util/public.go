@@ -42,3 +42,10 @@ func Hashcode(s string) int64 {
 	hashValue := h.Sum32()
 	return int64(hashValue)
 }
+
+func Bool2Int(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}

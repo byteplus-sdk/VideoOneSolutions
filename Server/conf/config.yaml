@@ -6,3 +6,4 @@ server_url: "https://{server_ip}:{port}/videoone_opensource/rts"
 live_timer_enable: true
 live_experience_time: 20
 app_id: "{your_vod_appid}"
+vod_play_list_id: "{your_vod_play_list_id}"

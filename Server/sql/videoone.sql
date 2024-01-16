@@ -112,11 +112,13 @@ CREATE TABLE `user_profile`
 
 CREATE TABLE `video_info`
 (
-    `id`          bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `vid`         varchar(100) NOT NULL DEFAULT '' COMMENT 'vid',
-    `video_type`  tinyint(4) NOT NULL DEFAULT '0' COMMENT 'video type 0: short video 1:medium video 2: long video',
-    `update_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update_time',
-    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `id`                         bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `vid`                        varchar(100) NOT NULL DEFAULT '' COMMENT 'vid',
+    `video_type`                 tinyint(4) NOT NULL DEFAULT '0' COMMENT 'video type 0: short video 1:medium video 2: long video',
+    `anti_screenshot_and_record` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'support screen recording and screenshot prevention? 0: Not supported, 1: Supported',
+    `support_smart_subtitle`     tinyint(4) NOT NULL DEFAULT '0' COMMENT 'support intelligent subtitles? 0: not supported, 1: supported',
+    `update_time`                datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update_time',
+    `create_time`                datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_vid` (`vid`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='video info';

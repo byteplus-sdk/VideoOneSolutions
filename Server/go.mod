@@ -3,7 +3,7 @@ module github.com/byteplus/VideoOneServer
 go 1.18
 
 require (
-	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.17
+	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.22
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/jinzhu/configor v1.2.1
