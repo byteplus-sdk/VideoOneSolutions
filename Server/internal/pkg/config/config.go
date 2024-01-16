@@ -32,6 +32,7 @@ type Configuration struct {
 	LiveTimerEnable    bool   `yaml:"live_timer_enable"`
 	LiveExperienceTime int    `yaml:"live_experience_time"`
 	AppID              string `yaml:"app_id"`
+	VodPlayListID      string `yaml:"vod_play_list_id"`
 }
 
 var configs *Configuration

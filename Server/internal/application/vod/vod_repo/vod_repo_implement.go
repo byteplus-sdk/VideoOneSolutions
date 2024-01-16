@@ -24,6 +24,7 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/db"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/byteplus/VideoOneServer/internal/pkg/util"
 )
 
 const (
@@ -33,9 +34,22 @@ const (
 
 type VodRepoImpl struct{}
 
-func (v *VodRepoImpl) GetVideoInfoListFromTMVideoInfoByUser(ctx context.Context, vid string, offset, pageSize, videoType int) ([]*vod_entity.VideoInfo, error) {
+func (v *VodRepoImpl) GetVideoInfoListFromTMVideoInfoByUser(ctx context.Context, vid string, offset, pageSize, videoType int,
+	antiScreenshotAndRecord, supportSmartSubtitle *bool) ([]*vod_entity.VideoInfo, error) {
+	var ignoreVideoType = false
 	var resp []*vod_entity.VideoInfo
-	query := db.Client.WithContext(ctx).Debug().Table(VideoInfo).Where("video_type = ?", videoType)
+	query := db.Client.WithContext(ctx).Debug().Table(VideoInfo)
+	if antiScreenshotAndRecord != nil {
+		query = query.Where("anti_screenshot_and_record = ?", util.Bool2Int(*antiScreenshotAndRecord))
+		ignoreVideoType = true
+	}
+	if supportSmartSubtitle != nil {
+		query = query.Where("support_smart_subtitle = ?", util.Bool2Int(*supportSmartSubtitle))
+		ignoreVideoType = true
+	}
+	if !ignoreVideoType {
+		query = query.Where("video_type = ?", videoType)
+	}
 	if vid != "" {
 		query = query.Where("vid = ?", vid)
 	}

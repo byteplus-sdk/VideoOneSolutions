@@ -120,24 +120,26 @@ const (
 )
 
 type GetFeedStreamRequest struct {
-	Offset             int        `json:"offset"`
-	PageSize           int        `json:"pageSize"`
-	VideoType          int        `json:"videoType"`
-	AppID              string     `json:"AppId" form:"AppId"`
-	Vid                string     `json:"vid" form:"vid"`
-	Format             Format     `json:"format" form:"format"`
-	Codec              Codec      `json:"codec" form:"codec"`
-	Definition         Definition `json:"definition" form:"definition"`
-	FileType           string     `json:"fileType" form:"fileType"`
-	NeedThumbs         bool       `json:"needThumbs" form:"needThumbs"`
-	NeedSsl            bool       `json:"needSsl" form:"needSsl"`
-	LogoType           string     `json:"logoType" form:"logoType"`
-	NeedBarrageMask    bool       `json:"needBarrageMask" form:"needBarrageMask"`
-	CdnType            CdnType    `json:"cdnType" form:"cdnType"`
-	UnionInfo          string     `json:"UnionInfo" form:"UnionInfo"`
-	HdrDefinition      string     `json:"hdrDefinition" form:"hdrDefinition"`
-	DrmExpireTimestamp string     `json:"drmExpireTimestamp" form:"drmExpireTimestamp"`
-	Quality            string     `json:"quality" form:"quality"`
+	Offset                  int        `json:"offset"`
+	PageSize                int        `json:"pageSize"`
+	VideoType               int        `json:"videoType"`
+	AppID                   string     `json:"AppId" form:"AppId"`
+	Vid                     string     `json:"vid" form:"vid"`
+	Format                  Format     `json:"format" form:"format"`
+	Codec                   Codec      `json:"codec" form:"codec"`
+	Definition              Definition `json:"definition" form:"definition"`
+	FileType                string     `json:"fileType" form:"fileType"`
+	NeedThumbs              bool       `json:"needThumbs" form:"needThumbs"`
+	NeedSsl                 bool       `json:"needSsl" form:"needSsl"`
+	LogoType                string     `json:"logoType" form:"logoType"`
+	NeedBarrageMask         bool       `json:"needBarrageMask" form:"needBarrageMask"`
+	CdnType                 CdnType    `json:"cdnType" form:"cdnType"`
+	UnionInfo               string     `json:"UnionInfo" form:"UnionInfo"`
+	HdrDefinition           string     `json:"hdrDefinition" form:"hdrDefinition"`
+	DrmExpireTimestamp      string     `json:"drmExpireTimestamp" form:"drmExpireTimestamp"`
+	Quality                 string     `json:"quality" form:"quality"`
+	AntiScreenshotAndRecord *bool      `json:"antiScreenshotAndRecord" form:"antiScreenshotAndRecord"`
+	SupportSmartSubtitle    *bool      `json:"supportSmartSubtitle" form:"supportSmartSubtitle"`
 }
 
 type Comments struct {
@@ -154,4 +156,9 @@ type GetSimilarFeedRequest struct {
 	AppID     string `json:"-"`
 	Offset    int    `json:"offset"`
 	PageSize  int    `json:"pageSize"`
+}
+
+type PlayListDetail struct {
+	PlayMode  string         `json:"playMode"`
+	VideoList []*VideoDetail `json:"videoList"`
 }

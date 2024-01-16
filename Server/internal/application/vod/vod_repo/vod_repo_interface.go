@@ -32,7 +32,8 @@ func GetVodRepo() VodRepoInterface {
 }
 
 type VodRepoInterface interface {
-	GetVideoInfoListFromTMVideoInfoByUser(ctx context.Context, vid string, offset, pageSize, videoType int) ([]*vod_entity.VideoInfo, error)
+	GetVideoInfoListFromTMVideoInfoByUser(ctx context.Context, vid string, offset, pageSize, videoType int,
+		antiScreenshotAndRecord, supportSmartSubtitle *bool) ([]*vod_entity.VideoInfo, error)
 	GetCommentsByVid(ctx context.Context, vid string) ([]*vod_entity.VideoComments, error)
 	GetSimilarVideoInfoList(ctx context.Context, similarVid string, offset, pageSize, videoType int) ([]*vod_entity.VideoInfo, error)
 }
