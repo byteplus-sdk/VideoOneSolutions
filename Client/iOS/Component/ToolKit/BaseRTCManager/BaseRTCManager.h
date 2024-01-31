@@ -83,7 +83,7 @@ typedef void (^RTCRoomMessageBlock)(RTSNoticeModel *noticeModel);
  * @brief Get Sdk Version.
  */
 
-+ (NSString *_Nullable)getSdkVersion;
++ (NSString *_Nullable)getSDKVersion;
 
 @end
 

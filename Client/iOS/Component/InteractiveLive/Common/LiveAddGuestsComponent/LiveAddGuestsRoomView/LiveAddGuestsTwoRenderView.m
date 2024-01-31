@@ -32,7 +32,7 @@
         [self.smallRenderView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(120, 120));
             make.right.mas_equalTo(-12);
-            make.bottom.mas_equalTo(-(68 + [DeviceInforTool getVirtualHomeHeight]));
+            make.bottom.equalTo(self.mas_safeAreaLayoutGuideBottom).offset(-68);
         }];
 
         __weak __typeof(self) wself = self;

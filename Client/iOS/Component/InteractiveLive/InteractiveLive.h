@@ -4,7 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ToolKit/BaseSceneEntrance.h>
+#import <ToolKit/BaseEntrance.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

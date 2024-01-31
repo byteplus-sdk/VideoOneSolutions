@@ -31,7 +31,7 @@
         [self.timeView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.height.mas_equalTo(20);
             make.left.mas_equalTo(12);
-            make.top.mas_equalTo(50 + [DeviceInforTool getStatusBarHight]);
+            make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(50);
         }];
 
         [self addSubview:self.netQualityView];
@@ -44,13 +44,13 @@
         [self addSubview:self.micView];
         [self.micView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.height.left.equalTo(self.netQualityView);
-            make.top.mas_equalTo(75 + [DeviceInforTool getStatusBarHight]);
+            make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(75);
         }];
 
         [self addSubview:self.cameraView];
         [self.cameraView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.height.left.equalTo(self.netQualityView);
-            make.top.mas_equalTo(100 + [DeviceInforTool getStatusBarHight]);
+            make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(100);
         }];
     }
     return self;
@@ -63,9 +63,9 @@
     self.cameraView.hidden = camera;
     self.streamView.isCamera = camera;
 
-    CGFloat top = self.micView.hidden ? 75 + [DeviceInforTool getStatusBarHight] : 100 + [DeviceInforTool getStatusBarHight];
+    CGFloat top = self.micView.hidden ? 75 : 100;
     [self.cameraView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(top);
+        make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(top);
     }];
 }
 

@@ -37,7 +37,7 @@
 
         [self.contentView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.bottom.left.mas_equalTo(0);
-            make.height.mas_offset(180 + [DeviceInforTool getVirtualHomeHeight]);
+            make.top.equalTo(self.mas_safeAreaLayoutGuideBottom).offset(-180);
         }];
 
         [self.topSelectView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -57,7 +57,7 @@
             make.left.mas_equalTo(16);
             make.right.mas_equalTo(-16);
             make.height.mas_equalTo(48);
-            make.bottom.equalTo(self.contentView).offset(-([DeviceInforTool getVirtualHomeHeight] + 2));
+            make.bottom.equalTo(self.contentView.mas_safeAreaLayoutGuideBottom).offset(-2);
         }];
 
         [self.topBackgroundImageView mas_makeConstraints:^(MASConstraintMaker *make) {

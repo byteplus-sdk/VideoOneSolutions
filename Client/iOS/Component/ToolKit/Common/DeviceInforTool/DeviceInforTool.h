@@ -17,14 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isIpad;
 
 /*
- * Get the height of the status bar
- * @return The height of the current device status bar
- */
-+ (CGFloat)getStatusBarHight;
-
-+ (CGFloat)getTabBarHight;
-
-/*
  * Get the height of the bottom safe area
  * @return The height of the safe area at the bottom of the current device
  */
@@ -35,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The the safe area
  */
 + (UIEdgeInsets)getSafeAreaInsets;
+
++ (UIViewController *)rootViewController;
 
 + (UIViewController *)topViewController;
 

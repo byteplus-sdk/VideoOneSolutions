@@ -6,15 +6,12 @@
 #import "BytePlayerComponent.h"
 #import "LiveSettingData.h"
 #import <Masonry/Masonry.h>
-#import <TTSDK/TTLiveURLComposer.h>
 #import <TTSDK/TTSDKManager.h>
 #import <TTSDK/TTVideoLive.h>
-#import <TTSDK/TVLPlayerItem+TTSDK.h>
 
 @interface BytePlayerComponent () <VeLivePlayerObserver>
 @property (nonatomic, strong) TVLManager *player;
 @property (nonatomic, copy) NSString *currentURLString;
-@property (nonatomic, copy) NSString *currentRTMURLString;
 @property (nonatomic, strong) NSDictionary<NSString *, NSString *> *urlMap;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *urlMapCache;
 @property (nonatomic, copy) void (^SEIBlcok)(NSDictionary *SEIBlock);
@@ -54,10 +51,12 @@
 #pragma mark - Methods
 
 - (void)configPlayerItem:(NSString *)defaultResolution {
-    if ([LiveSettingData abr] || ![LiveSettingData rtmPullStreaming]) {
-        [self.player setPlayStreamData:[self createPlayerStreamData:defaultResolution]];
+    if ([LiveSettingData rtmPullStreaming]) {
+        [self.player setPlayStreamData:[self createRTMStreamData:defaultResolution]];
+    } else if ([LiveSettingData abr]) {
+        [self.player setPlayStreamData:[self createABRStreamData:defaultResolution]];
     } else {
-        [self.player replaceCurrentItemWithPlayerItem:[self createPlayerItem:defaultResolution]];
+        [self.player setPlayStreamData:[self createSingleStreamData:defaultResolution]];
     }
 }
 
@@ -104,7 +103,7 @@
 - (void)replaceWithUrlMap:(NSDictionary<NSString *, NSString *> *)urlMap
         defaultResolution:(NSString *)defaultResolution {
     if ([_urlMap isEqualToDictionary:urlMap] && [LiveSettingData abr] && [_urlMap.allKeys containsObject:defaultResolution]) {
-        [self.player switchResolution:[self getResolutionFromResolution:defaultResolution]];
+        [self.player switchResolution:[self getResolutionByKey:defaultResolution]];
     } else {
         _urlMap = urlMap;
         [self configPlayerItem:defaultResolution];
@@ -121,11 +120,11 @@
 }
 
 #pragma mark - Player Private Method
-- (VeLivePlayerStream *)createStream:(NSString *)url {
+- (VeLivePlayerStream *)createStream:(NSString *)url resolution:(VeLivePlayerResolution)resolution {
     VeLivePlayerStream *stream = [[VeLivePlayerStream alloc] init];
     stream.url = url;
     stream.type = VeLivePlayerStreamTypeMain;
-    stream.resolution = VeLivePlayerResolutionOrigin;
+    stream.resolution = resolution;
     NSURLComponents *urlComponts = [[NSURLComponents alloc] initWithString:url];
     if ([urlComponts.path hasSuffix:@".sdp"]) {
         stream.format = VeLivePlayerFormatRTM;
@@ -138,87 +137,77 @@
     return stream;
 }
 
-- (VeLivePlayerStreamData *)createPlayerStreamData:(NSString *)defaultResolution {
+- (VeLivePlayerStreamData *)createABRStreamData:(NSString *)defaultResolution {
     NSString *originUrl = [self getOriginalUrl];
     NSString *url = _urlMap[defaultResolution] ?: originUrl;
     self.currentURLString = url;
-    VeLivePlayerStreamData *streamData = [[VeLivePlayerStreamData alloc] init];
-    __block VeLivePlayerStream *defaultStream = nil;
-    if ([LiveSettingData abr]) {
-        NSMutableArray<VeLivePlayerStream *> *streams = [NSMutableArray arrayWithCapacity:_urlMap.count];
-        if (originUrl.length > 0) {
-            VeLivePlayerStream *stream = [self createStream:originUrl];
-            stream.resolution = [self getResolutionFromResolution:nil];
-            stream.url = [self checkAppendfor:originUrl suffix:[self getStreamSuffixFor:nil]];
-            stream.bitrate = (int)[self getStreamBitrateFor:nil];
-            [streams addObject:stream];
-        }
-        [_urlMap enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, NSString *_Nonnull obj, BOOL *_Nonnull stop) {
-            if ([obj isEqualToString:originUrl]) {
-                return;
-            }
-            VeLivePlayerStream *stream = [self createStream:obj];
-            stream.resolution = [self getResolutionFromResolution:key];
-            stream.url = [self checkAppendfor:obj suffix:[self getStreamSuffixFor:key]];
-            stream.bitrate = (int)[self getStreamBitrateFor:key];
-            [streams addObject:stream];
-            if ([key isEqualToString:defaultResolution]) {
-                defaultStream = stream;
-            }
-        }];
-        streamData.mainStream = streams;
-    } else if ([LiveSettingData rtmPullStreaming]) {
-        NSString *sdpUrl = [self changeToRTMUrl:originUrl];
-        self.currentRTMURLString = sdpUrl;
-        defaultStream = [self createStream:sdpUrl];
-        streamData.mainStream = @[defaultStream, [self createStream:originUrl]];
-    } else {
-        defaultStream = [self createStream:originUrl];
-        streamData.mainStream = @[defaultStream];
-    }
 
+    __block VeLivePlayerStream *defaultStream = nil;
+    NSMutableArray<VeLivePlayerStream *> *streams = [NSMutableArray arrayWithCapacity:_urlMap.count];
+    if (originUrl.length > 0) {
+        VeLivePlayerStream *stream = [self createStream:originUrl resolution:VeLivePlayerResolutionOrigin];
+        stream.url = [self checkAppendfor:originUrl suffix:[self getStreamSuffixFor:nil]];
+        stream.bitrate = (int)[self getStreamBitrateFor:nil];
+        [streams addObject:stream];
+    }
+    [_urlMap enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, NSString *_Nonnull obj, BOOL *_Nonnull stop) {
+        if ([obj isEqualToString:originUrl]) {
+            return;
+        }
+        VeLivePlayerStream *stream = [self createStream:obj
+                                             resolution:[self getResolutionByKey:key]];
+        stream.url = [self checkAppendfor:obj suffix:[self getStreamSuffixFor:key]];
+        stream.bitrate = (int)[self getStreamBitrateFor:key];
+        [streams addObject:stream];
+        if ([key isEqualToString:defaultResolution]) {
+            defaultStream = stream;
+        }
+    }];
+
+    VeLivePlayerStreamData *streamData = [[VeLivePlayerStreamData alloc] init];
+    streamData.mainStream = streams;
     streamData.defaultFormat = defaultStream.format;
     streamData.defaultResolution = defaultStream.resolution;
     streamData.defaultProtocol = defaultStream.protocol;
     return streamData;
 }
 
-- (TVLPlayerItem *)createPlayerItem:(NSString *)defaultResolution {
+- (VeLivePlayerStreamData *)createRTMStreamData:(NSString *)defaultResolution {
     NSString *originUrl = [self getOriginalUrl];
     NSString *url = _urlMap[defaultResolution] ?: originUrl;
-    TTLiveURLComposer *composer = [[TTLiveURLComposer alloc] init];
-    TVLPlayerItem *item = nil;
-    if ([LiveSettingData rtmPullStreaming]) {
-        NSString *sdpUrl = [self changeToRTMUrl:originUrl];
-        [composer addUrl:sdpUrl forFormat:TVLMediaFormatTypeLLS];
-        [composer addUrl:url
-            forResolution:TVLMediaResolutionTypeOrigin
-                 forCodec:TVLVideoCodecTypeH264
-                forSource:TVLMediaSourceTypeMain
-                forFormat:TVLMediaFormatTypeFLV];
-        item = [TVLPlayerItem playerItemWithComposer:composer];
-        for (TVLPlayerItemPreferences *preference in item.supportedPreferences) {
-            if ([preference.formatType isEqualToString:TVLMediaFormatTypeLLS]) {
-                item.preferences = preference;
-                break;
-            }
-        }
-    }
-    if (item.preferences == nil) {
-        for (TVLPlayerItemPreferences *preference in item.supportedPreferences) {
-            if ([preference.sourceType isEqualToString:TVLMediaSourceTypeMain]) {
-                item.preferences = preference;
-                break;
-            }
-        }
-    }
-    if (item.preferences == nil) {
-        item.preferences = item.supportedPreferences.firstObject;
-    }
-    return item;
+
+    VeLivePlayerStream *rtmStream = [[VeLivePlayerStream alloc] init];
+    rtmStream.url = [self changeToRTMUrl:originUrl];
+    rtmStream.format = VeLivePlayerFormatRTM;
+
+    VeLivePlayerStream *flvStream = [[VeLivePlayerStream alloc] init];
+    flvStream.url = url;
+    flvStream.format = VeLivePlayerFormatFLV;
+
+    VeLivePlayerStreamData *streamData = [[VeLivePlayerStreamData alloc] init];
+    streamData.mainStream = @[rtmStream, flvStream];
+
+    streamData.defaultFormat = VeLivePlayerFormatRTM;
+    streamData.defaultProtocol = [self getVeLivePlayerProtocol:url];
+
+    return streamData;
 }
 
-- (VeLivePlayerResolution)getResolutionFromResolution:(NSString *)key {
+- (VeLivePlayerStreamData *)createSingleStreamData:(NSString *)defaultResolution {
+    NSString *originUrl = [self getOriginalUrl];
+    NSString *url = _urlMap[defaultResolution] ?: originUrl;
+
+    VeLivePlayerStream *flvStream = [[VeLivePlayerStream alloc] init];
+    flvStream.url = url;
+    flvStream.format = VeLivePlayerFormatFLV;
+
+    VeLivePlayerStreamData *streamData = [[VeLivePlayerStreamData alloc] init];
+    streamData.mainStream = @[flvStream];
+
+    return streamData;
+}
+
+- (VeLivePlayerResolution)getResolutionByKey:(NSString *)key {
     if (key != nil) {
         if ([key containsString:@"1080"]) {
             return VeLivePlayerResolutionUHD;
@@ -326,6 +315,16 @@
     return @"UnKnown";
 }
 
+- (VeLivePlayerProtocol)getVeLivePlayerProtocol:(NSString *)url {
+    NSURLComponents *componts = [[NSURLComponents alloc] initWithString:url];
+    NSString *scheme = [componts.scheme lowercaseString];
+    if ([@"https" isEqualToString:scheme]) {
+        return VeLivePlayerProtocolTLS;
+    } else {
+        return VeLivePlayerProtocolTCP;
+    }
+}
+
 - (NSString *)getFormatDes:(VeLivePlayerFormat)format {
     switch (format) {
         case VeLivePlayerFormatFLV:
@@ -391,8 +390,12 @@
 }
 
 - (void)onStatistics:(TVLManager *)player statistics:(VeLivePlayerStatistics *)statistics {
+    NSLog(@"BytePlayer: onStatistics: url:%@;", statistics.url);
+    NSLog(@"BytePlayer: onStatistics: fps:%.1f; protocal: %@; format:%@;",
+          statistics.fps,
+          [self getFormatDes:statistics.format],
+          [self getProtocolDes:statistics.protocol]);
     NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
-    NSMutableString *str = [[NSMutableString alloc] initWithString:@"\n"];
     info[@"url"] = statistics.url;
     info[@"width"] = @(statistics.width);
     info[@"height"] = @(statistics.height);

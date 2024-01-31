@@ -11,12 +11,17 @@ import static com.ss.ttvideoengine.TTVideoEngineInterface.SEGMENT_FORMAT_MP4;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.source.MediaSource;
 import com.bytedance.playerkit.player.source.Track;
 import com.bytedance.playerkit.utils.L;
+import com.ss.ttvideoengine.SubInfoSimpleCallBack;
 import com.ss.ttvideoengine.TTVideoEngine;
+import com.ss.ttvideoengine.utils.Error;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +99,14 @@ public class TTVideoEngineFactoryDefault implements TTVideoEngineFactory {
         if (!TextUtils.isEmpty(playerConfig.subTag)) {
             player.setSubTag(playerConfig.subTag);
         }
+
+        if (!TextUtils.isEmpty(mediaSource.getSubtitleAuthToken()) || !mediaSource.getSubtitles().isEmpty()) {
+            // Enable or disable subtitle
+            player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_OPEN_SUB, 1);
+            player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_OPEN_SUB_THREAD, 1);
+            player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_OPT_SUB_LOAD_TIME, 1);
+        }
+
         return player;
     }
 

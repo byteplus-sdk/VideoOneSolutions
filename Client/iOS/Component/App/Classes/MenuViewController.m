@@ -2,20 +2,25 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-#import <ToolKit/ToolKit.h>
-#import <ToolKit/LoginComponent.h>
-#import <Masonry/Masonry.h>
 #import "MenuViewController.h"
+#import "FunctionsViewController.h"
 #import "MenuItemButton.h"
 #import "ScenesViewController.h"
+#import "UserEntry.h"
 #import "UserViewController.h"
+#import <Masonry/Masonry.h>
+#import <ToolKit/BaseEntrance.h>
+#import <ToolKit/LoginComponent.h>
+#import <ToolKit/ToolKit.h>
 
 @interface MenuViewController ()
 
+@property (nonatomic, strong) UserEntry *userEntry;
 @property (nonatomic, strong) MenuItemButton *scenesButton;
-@property (nonatomic, strong) MenuItemButton *userButton;
+@property (nonatomic, strong) MenuItemButton *functionButton;
 
-@property (nonatomic, strong) UserViewController *userViewController;
+@property (nonatomic, weak) UIViewController *currentVC;
+@property (nonatomic, strong) FunctionsViewController *functionsViewController;
 @property (nonatomic, strong) ScenesViewController *scenesViewController;
 
 @property (nonatomic, strong) UIView *bottomView;
@@ -27,56 +32,73 @@
     [super viewDidLoad];
     self.view.backgroundColor = UIColor.whiteColor;
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(loginExpiredNotificate:)
-                                                 name:NotificationLoginExpired
+                                             selector:@selector(logoutNotificate:)
+                                                 name:NotificationLogout
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(prepareEnvironment)
+                                                 name:NotificationLoginSucceed
                                                object:nil];
 
     [self.view addSubview:self.bottomView];
     [self.bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.bottom.equalTo(self.view);
-        make.height.mas_equalTo([DeviceInforTool getTabBarHight]);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideBottom).offset(-52);
     }];
     [self.bottomView addSubview:self.scenesButton];
-    [self.bottomView addSubview:self.userButton];
-    NSArray *bottomBtns = @[self.scenesButton, self.userButton];
+    [self.bottomView addSubview:self.functionButton];
+    NSArray *bottomBtns = @[self.scenesButton, self.functionButton];
     [bottomBtns mas_distributeViewsAlongAxis:(MASAxisTypeHorizontal)
                             withFixedSpacing:0
                                  leadSpacing:0
                                  tailSpacing:0];
     [bottomBtns mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.bottomView).mas_offset(5);
-        make.bottom.mas_equalTo(-[DeviceInforTool getVirtualHomeHeight] + 5);
+        make.top.equalTo(self.bottomView);
+        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideBottom);
     }];
-    
-    [LoginComponent showLoginVCIfNeed:NO];
+
+    [self.view addSubview:self.userEntry];
+    [self.userEntry mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(44);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(8);
+        make.right.equalTo(self.view).offset(-9);
+    }];
+
+    if (![LoginComponent showLoginVCIfNeed:NO]) {
+        [self prepareEnvironment];
+    }
     [self scenesButtonAction];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
 
-- (void)loginExpiredNotificate:(NSNotification *)sender {
-    [LocalUserComponent userModel].loginToken = @"";
-    [LocalUserComponent updateLocalUserModel:nil];
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    if (!self.currentVC) {
+        return UIStatusBarStyleDefault;
+    }
+    return [self.currentVC preferredStatusBarStyle];
+}
 
+- (void)logoutNotificate:(NSNotification *)sender {
+    [LocalUserComponent logout];
     [DeviceInforTool backToRootViewController];
 
-    NSString *key = (NSString *)sender.object;
-    if ([key isKindOfClass:[NSString class]] &&
-        [key isEqualToString:@"logout"]) {
+    NSString *reason = (NSString *)sender.userInfo[NotificationLogoutReasonKey];
+    if ([reason isKindOfClass:[NSString class]] &&
+        [reason isEqualToString:@"logout"]) {
         [[AlertActionManager shareAlertActionManager] dismiss:^{
             [LoginComponent showLoginVCAnimated:YES];
         }];
         [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"same_logged_in", @"App") delay:2];
-    } else if ([key isEqualToString:@"manual_logout"]) {
+    } else if ([reason isEqualToString:@"manual_logout"]) {
         [[AlertActionManager shareAlertActionManager] dismiss:^{
             [LoginComponent showLoginVCAnimated:YES];
         }];
@@ -85,16 +107,26 @@
     }
 }
 
+- (void)prepareEnvironment {
+    [self.userEntry reloadData];
+    Class impClass = NSClassFromString(@"VideoPlaybackEdit");
+    if (impClass && [impClass conformsToProtocol:@protocol(EntranceProtocol)]) {
+        [(Class<EntranceProtocol>)impClass prepareEnvironment];
+    }
+}
+
 #pragma mark - Touch Action
 - (void)showViewController:(UIViewController *)vc {
     [vc willMoveToParentViewController:self];
     [self addChildViewController:vc];
-    [self.view addSubview:vc.view];
+    [self.view insertSubview:vc.view atIndex:0];
     [vc.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.equalTo(self.view);
         make.bottom.equalTo(self.bottomView.mas_top);
     }];
     [vc didMoveToParentViewController:self];
+    self.currentVC = vc;
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)hideViewController:(UIViewController *)vc {
@@ -105,21 +137,22 @@
 }
 
 - (void)scenesButtonAction {
-    [self hideViewController:self.userViewController];
+    [self hideViewController:self.functionsViewController];
     [self showViewController:self.scenesViewController];
     self.scenesButton.status = ButtonStatusActive;
-    self.userButton.status = ButtonStatusNone;
-    self.scenesButton.isAction = YES;
-    self.userButton.isAction = NO;
+    self.functionButton.status = ButtonStatusNone;
 }
 
-- (void)userButtonAction {
+- (void)functionButtonAction {
     [self hideViewController:self.scenesViewController];
-    [self showViewController:self.userViewController];
-    self.userButton.status = ButtonStatusActive;
+    [self showViewController:self.functionsViewController];
+    self.functionButton.status = ButtonStatusActive;
     self.scenesButton.status = ButtonStatusNone;
-    self.scenesButton.isAction = NO;
-    self.userButton.isAction = YES;
+}
+
+- (void)entryUserViewContorller {
+    UserViewController *userVC = [[UserViewController alloc] init];
+    [self.navigationController pushViewController:userVC animated:YES];
 }
 
 #pragma mark - Getter
@@ -131,11 +164,11 @@
     return _scenesViewController;
 }
 
-- (UserViewController *)userViewController {
-    if (!_userViewController) {
-        _userViewController = [[UserViewController alloc] init];
+- (FunctionsViewController *)functionsViewController {
+    if (!_functionsViewController) {
+        _functionsViewController = [[FunctionsViewController alloc] init];
     }
-    return _userViewController;
+    return _functionsViewController;
 }
 
 - (UIView *)bottomView {
@@ -154,41 +187,37 @@
 - (MenuItemButton *)scenesButton {
     if (!_scenesButton) {
         _scenesButton = [[MenuItemButton alloc] init];
-        _scenesButton.titleLabel.font = [UIFont systemFontOfSize:14];
         _scenesButton.backgroundColor = [UIColor clearColor];
         [_scenesButton addTarget:self action:@selector(scenesButtonAction) forControlEvents:UIControlEventTouchUpInside];
-
-        _scenesButton.imageEdgeInsets = UIEdgeInsetsMake(4, 0, 20, 0);
-        _scenesButton.desTitle = LocalizedStringFromBundle(@"home", @"App");
-        _scenesButton.isAction = NO;
-
+        [_scenesButton setTitle:LocalizedStringFromBundle(@"menu_scene", @"App") forState:UIControlStateNormal];
         [_scenesButton bingImage:[UIImage imageNamed:@"menu_list" bundleName:@"App"] status:ButtonStatusNone];
         [_scenesButton bingImage:[UIImage imageNamed:@"menu_list_s" bundleName:@"App"] status:ButtonStatusActive];
-
         [_scenesButton bingFont:[UIFont systemFontOfSize:14] status:ButtonStatusNone];
-        [_scenesButton bingFont:[UIFont boldSystemFontOfSize:14] status:ButtonStatusActive];
+        [_scenesButton bingFont:[UIFont systemFontOfSize:14 weight:UIFontWeightMedium] status:ButtonStatusActive];
     }
     return _scenesButton;
 }
 
-- (MenuItemButton *)userButton {
-    if (!_userButton) {
-        _userButton = [[MenuItemButton alloc] init];
-        _userButton.titleLabel.font = [UIFont systemFontOfSize:14];
-        _userButton.backgroundColor = [UIColor clearColor];
-        [_userButton addTarget:self action:@selector(userButtonAction) forControlEvents:UIControlEventTouchUpInside];
-
-        _userButton.imageEdgeInsets = UIEdgeInsetsMake(4, 0, 20, 0);
-        _userButton.desTitle = LocalizedStringFromBundle(@"me", @"App");
-        _userButton.isAction = NO;
-
-        [_userButton bingImage:[UIImage imageNamed:@"menu_user" bundleName:@"App"] status:ButtonStatusNone];
-        [_userButton bingImage:[UIImage imageNamed:@"menu_user_s" bundleName:@"App"] status:ButtonStatusActive];
-
-        [_userButton bingFont:[UIFont systemFontOfSize:14] status:ButtonStatusNone];
-        [_userButton bingFont:[UIFont boldSystemFontOfSize:14] status:ButtonStatusActive];
+- (MenuItemButton *)functionButton {
+    if (!_functionButton) {
+        _functionButton = [[MenuItemButton alloc] init];
+        _functionButton.backgroundColor = [UIColor clearColor];
+        [_functionButton addTarget:self action:@selector(functionButtonAction) forControlEvents:UIControlEventTouchUpInside];
+        [_functionButton setTitle:LocalizedStringFromBundle(@"menu_function", @"App") forState:UIControlStateNormal];
+        [_functionButton bingImage:[UIImage imageNamed:@"menu_funtction" bundleName:@"App"] status:ButtonStatusNone];
+        [_functionButton bingImage:[UIImage imageNamed:@"menu_funtction_s" bundleName:@"App"] status:ButtonStatusActive];
+        [_functionButton bingFont:[UIFont systemFontOfSize:14] status:ButtonStatusNone];
+        [_functionButton bingFont:[UIFont systemFontOfSize:14 weight:UIFontWeightMedium] status:ButtonStatusActive];
     }
-    return _userButton;
+    return _functionButton;
+}
+
+- (UserEntry *)userEntry {
+    if (!_userEntry) {
+        _userEntry = [[UserEntry alloc] init];
+        [_userEntry addTarget:self action:@selector(entryUserViewContorller) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _userEntry;
 }
 
 @end

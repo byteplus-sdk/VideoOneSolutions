@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.PlayerException;
 import com.bytedance.playerkit.player.source.MediaSource;
+import com.bytedance.playerkit.player.source.Subtitle;
+import com.bytedance.playerkit.player.source.SubtitleText;
 import com.bytedance.playerkit.player.source.Track;
 
 import java.io.Closeable;
@@ -193,9 +195,16 @@ public interface PlayerAdapter {
 
     boolean isSuperResolutionEnabled();
 
+    void setSubtitleEnabled(boolean enabled);
+    boolean isSubtitleEnabled();
+    void selectSubtitle(Subtitle subtitle);
+
+    Subtitle getSelectedSubtitle();
+    List<Subtitle> getSupportSubtitles();
+
     String dump();
 
-    interface Listener extends SourceInfoListener, TrackListener {
+    interface Listener extends SourceInfoListener, TrackListener, SubtitleListener {
 
         void onPrepared(@NonNull PlayerAdapter mp);
 
@@ -233,5 +242,17 @@ public interface PlayerAdapter {
         void onTrackWillChange(@NonNull PlayerAdapter mp, @Track.TrackType int trackType, @Nullable Track current, @NonNull Track target);
 
         void onTrackChanged(@NonNull PlayerAdapter mp, @Track.TrackType int trackType, @NonNull Track pre, @NonNull Track current);
+    }
+
+    interface SubtitleListener {
+        void onSubtitleStateChanged(@NonNull PlayerAdapter pm, boolean enabled);
+
+        void onSubtitleInfoReady(@NonNull PlayerAdapter pm, List<Subtitle> subtitles);
+
+        void onSubtitleFileLoadFinish(@NonNull PlayerAdapter pm, int success, String info);
+
+        void onSubtitleChanged(@NonNull PlayerAdapter pm, Subtitle subtitle);
+
+        void onSubtitleTextUpdate(@NonNull PlayerAdapter pm, @NonNull SubtitleText subtitleText);
     }
 }

@@ -37,9 +37,13 @@
     [self loadDataWithCreateLive];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
 }
 
 - (void)startButtonAction:(UIButton *)sender {
@@ -49,7 +53,6 @@
     self.tipView.hidden = YES;
     self.navView.hidden = YES;
     [PublicParameterComponent share].roomId = self.roomInfoModel.roomID;
-    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     __weak __typeof(self) wself = self;
     [self.countdownView start:^{
         __strong __typeof(wself) sself = wself;
@@ -76,11 +79,12 @@
 }
 
 #pragma mark - Private Action
-//- (void)leftButtonOtherAction {
-//    if(self.hangUpBlock) {
-//        self.hangUpBlock();
-//    }
-//}
+- (void)leftButtonOtherAction {
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    if (self.hangUpBlock) {
+        self.hangUpBlock();
+    }
+}
 
 - (void)addSubviewAndConstraints {
     [self.view addSubview:self.renderView];
@@ -105,7 +109,7 @@
     [self.startButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(170, 50));
         make.centerX.equalTo(self.view);
-        make.bottom.equalTo(self.view).offset(-20 - [DeviceInforTool getVirtualHomeHeight]);
+        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideBottom).offset(-20);
     }];
 
     [self.view addSubview:self.controlView];

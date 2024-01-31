@@ -11,9 +11,10 @@ import com.bytedance.vod.scenekit.data.page.Page;
 import com.bytedance.voddemo.data.remote.RemoteApi;
 import com.bytedance.voddemo.data.remote.RemoteApi.Callback;
 import com.bytedance.voddemo.data.remote.RemoteApi.HandlerCallback;
-import com.bytedance.voddemo.data.remote.api2.model.GetSimilarVideoRequest;
 import com.bytedance.voddemo.data.remote.api2.model.GetFeedStreamRequest;
 import com.bytedance.voddemo.data.remote.api2.model.GetFeedStreamResponse;
+import com.bytedance.voddemo.data.remote.api2.model.GetPlaylistResponse;
+import com.bytedance.voddemo.data.remote.api2.model.GetSimilarVideoRequest;
 import com.bytedance.voddemo.data.remote.api2.model.VideoDetail;
 
 import java.io.IOException;
@@ -27,13 +28,66 @@ public class GetFeedStreamApi extends CallManager implements RemoteApi.GetFeedSt
 
     @Override
     public void getFeedStream(@RemoteApi.VideoType int videoType, String account, int pageIndex, int pageSize, Callback<Page<VideoItem>> callback) {
-        final HandlerCallback<Page<VideoItem>> mainCallback = new HandlerCallback<>(callback);
         final GetFeedStreamRequest request = createRequest(
                 videoType,
                 account,
                 pageIndex,
                 pageSize
         );
+        getFeedStream(request, pageIndex, callback);
+    }
+
+    public void getFeedStream(@NonNull GetFeedStreamRequest request, Callback<Page<VideoItem>> callback) {
+        getFeedStream(request, 0, callback);
+    }
+
+    public void getPlaylistStream(Callback<Page<VideoItem>> callback) {
+        final HandlerCallback<Page<VideoItem>> mainCallback = new HandlerCallback<>(callback);
+
+        Call<GetPlaylistResponse> call = remember(ApiManager.api2().getPlaylistDetail());
+        call.enqueue(new retrofit2.Callback<GetPlaylistResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<GetPlaylistResponse> call, @NonNull Response<GetPlaylistResponse> response) {
+                forget(call);
+                if (response.isSuccessful()) {
+                    GetPlaylistResponse result = response.body();
+                    if (result == null || result.playlistDetail == null
+                            || result.playlistDetail.videoList == null
+                            || result.playlistDetail.videoList.isEmpty()) {
+                        mainCallback.onError(new IOException("GetPlaylistStreamResponse is null"));
+                        return;
+                    }
+                    if (result.hasError()) {
+                        mainCallback.onError(new IOException("GetPlaylistStreamResponse has error: " + result.getError()));
+                        return;
+                    }
+                    List<VideoDetail> details = result.playlistDetail.videoList;
+                    List<VideoItem> items = new ArrayList<>();
+                    if (details != null) {
+                        for (VideoDetail detail : details) {
+                            VideoItem item = VideoDetail.toVideoItem(detail);
+                            if (item != null) {
+                                items.add(item);
+                            }
+                        }
+                    }
+                    mainCallback.onSuccess(new Page<>(items, result.playlistDetail.playMode));
+                } else {
+                    mainCallback.onError(new IOException("Response is not Successful: " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GetPlaylistResponse> call, @NonNull Throwable t) {
+                forget(call);
+                mainCallback.onError(new IOException("GetPlaylistStream on failure", t));
+            }
+        });
+    }
+
+    public void getFeedStream(@NonNull GetFeedStreamRequest request, int pageIndex, Callback<Page<VideoItem>> callback) {
+        final HandlerCallback<Page<VideoItem>> mainCallback = new HandlerCallback<>(callback);
+
         Call<GetFeedStreamResponse> call = remember(createGetFeedStreamCall(request));
         call.enqueue(new retrofit2.Callback<GetFeedStreamResponse>() {
             @Override

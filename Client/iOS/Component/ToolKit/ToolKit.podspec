@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
   spec.license      = { :type => 'Apache License 2.0', :file => 'LICENSE' }
   spec.author       = { 'author' => 'byteplus' }
   spec.source       = { :path => './'}
-  spec.ios.deployment_target = '9.0'
+  spec.ios.deployment_target = '11.0'
   
   spec.prefix_header_contents = '#import "Constants.h"'
   spec.pod_target_xcconfig = {'CODE_SIGN_IDENTITY' => ''}

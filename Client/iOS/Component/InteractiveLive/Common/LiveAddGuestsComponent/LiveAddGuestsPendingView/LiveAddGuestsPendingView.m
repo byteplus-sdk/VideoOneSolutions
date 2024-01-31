@@ -26,7 +26,7 @@
         [self addSubview:self.contentView];
         [self.contentView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.right.bottom.equalTo(self);
-            make.height.mas_equalTo(219 + [DeviceInforTool getVirtualHomeHeight]);
+            make.top.equalTo(self.mas_safeAreaLayoutGuideBottom).offset(-219);
         }];
 
         [self.contentView addSubview:self.imageView];

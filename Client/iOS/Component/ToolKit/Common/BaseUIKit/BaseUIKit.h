@@ -7,7 +7,7 @@
 
 #import "BaseButton.h"
 #import "BaseCollectionLayout.h"
-#import "BaseSceneEntrance.h"
+#import "BaseEntrance.h"
 #import "BaseIMComponent.h"
 #import "BaseInputView.h"
 

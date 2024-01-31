@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B3000000">
+
+    <TextView
+        android:id="@+id/brightness_adj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="68dp"
+        android:drawablePadding="14dp"
+        android:gravity="center_horizontal"
+        android:minWidth="142dp"
+        android:text="@string/vevod_fs_tips_brightness_title"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/vevod_ic_tips_brightness_adj"
+        app:layout_constraintEnd_toStartOf="@id/progress_adj"
+        app:layout_constraintTop_toTopOf="@id/progress_adj"
+        tools:drawableTop="@drawable/vevod_ic_tips_brightness_adj" />
+
+    <TextView
+        android:id="@+id/brightness_adj_desc"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center_horizontal"
+        android:text="@string/vevod_fs_tips_brightness_desc"
+        android:textColor="#9DA3AF"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/brightness_adj"
+        app:layout_constraintStart_toStartOf="@id/brightness_adj"
+        app:layout_constraintTop_toBottomOf="@id/brightness_adj" />
+
+    <TextView
+        android:id="@+id/progress_adj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="68dp"
+        android:drawablePadding="14dp"
+        android:gravity="center_horizontal"
+        android:minWidth="142dp"
+        android:text="@string/vevod_fs_tips_progress_title"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/vevod_ic_tips_progress_adj"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:drawableTop="@drawable/vevod_ic_tips_progress_adj" />
+
+    <TextView
+        android:id="@+id/progress_adj_desc"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center_horizontal"
+        android:text="@string/vevod_fs_tips_progress_desc"
+        android:textColor="#9DA3AF"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/progress_adj"
+        app:layout_constraintStart_toStartOf="@id/progress_adj"
+        app:layout_constraintTop_toBottomOf="@id/progress_adj" />
+
+    <TextView
+        android:id="@+id/volume_adj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:drawablePadding="14dp"
+        android:gravity="center_horizontal"
+        android:minWidth="142dp"
+        android:text="@string/vevod_fs_tips_volume_title"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/vevod_ic_tips_volume_adj"
+        app:layout_constraintStart_toEndOf="@id/progress_adj"
+        app:layout_constraintTop_toTopOf="@id/progress_adj"
+        tools:drawableTop="@drawable/vevod_ic_tips_volume_adj" />
+
+    <TextView
+        android:id="@+id/volume_adj_desc"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center_horizontal"
+        android:text="@string/vevod_fs_tips_volume_desc"
+        android:textColor="#9DA3AF"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/volume_adj"
+        app:layout_constraintStart_toStartOf="@id/volume_adj"
+        app:layout_constraintTop_toBottomOf="@id/volume_adj" />
+</androidx.constraintlayout.widget.ConstraintLayout>

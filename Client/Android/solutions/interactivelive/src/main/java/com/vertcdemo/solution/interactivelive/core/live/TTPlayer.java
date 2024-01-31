@@ -3,23 +3,19 @@
 
 package com.vertcdemo.solution.interactivelive.core.live;
 
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_ENCODE_TYPE_H264;
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_FORMAT_FLV;
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_FORMAT_LLS;
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_RESOLUTION_HD;
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_RESOLUTION_LD;
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_RESOLUTION_ORIGIN;
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_RESOLUTION_SD;
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_RESOLUTION_UHD;
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_SOURCE_TYPE_BACKUP;
-import static com.pandora.live.player.been.TTLiveURLComposer.MEDIA_SOURCE_TYPE_MAIN;
-import static com.ss.ttm.player.MediaPlayer.IMAGE_LAYOUT_ASPECT_FILL;
-import static com.ss.ttm.player.MediaPlayer.IMAGE_LAYOUT_ASPECT_FIT;
-import static com.ss.ttm.player.MediaPlayer.IMAGE_LAYOUT_TO_FILL;
-import static com.ss.videoarch.liveplayer.ILivePlayer.ENABLE;
-import static com.ss.videoarch.liveplayer.ILivePlayer.LIVE_OPTION_IMAGE_LAYOUT;
-import static com.ss.videoarch.liveplayer.ILivePlayer.LIVE_PLAYER_OPTION_H264_HARDWARE_DECODE;
-import static com.ss.videoarch.liveplayer.ILivePlayer.LIVE_PLAYER_OPTION_RESOLUTION;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerFillMode.VeLivePlayerFillModeAspectFill;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerFillMode.VeLivePlayerFillModeAspectFit;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerFillMode.VeLivePlayerFillModeFullFill;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerFormat.VeLivePlayerFormatFLV;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerFormat.VeLivePlayerFormatRTM;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerProtocol.VeLivePlayerProtocolTCP;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerProtocol.VeLivePlayerProtocolTLS;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionHD;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionLD;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionOrigin;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionSD;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionUHD;
+import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeMain;
 import static com.vertcdemo.solution.interactivelive.core.live.StreamUrls.get1080Url;
 import static com.vertcdemo.solution.interactivelive.core.live.StreamUrls.get480Url;
 import static com.vertcdemo.solution.interactivelive.core.live.StreamUrls.get540Url;
@@ -28,7 +24,7 @@ import static com.vertcdemo.solution.interactivelive.core.live.StreamUrls.getOri
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
-import android.util.Log;
+import android.net.Uri;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -39,40 +35,29 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Consumer;
 
-import com.pandora.live.player.LivePlayerBuilder;
-import com.pandora.live.player.been.TTLiveURLABRParams;
-import com.pandora.live.player.been.TTLiveURLComponent;
-import com.pandora.live.player.been.TTLiveURLComposer;
-import com.ss.videoarch.liveplayer.ILiveListener;
-import com.ss.videoarch.liveplayer.ILivePlayer;
-import com.ss.videoarch.liveplayer.INetworkClient;
+import com.pandora.common.env.Env;
+import com.ss.videoarch.liveplayer.VeLivePlayer;
+import com.ss.videoarch.liveplayer.VeLivePlayerConfiguration;
+import com.ss.videoarch.liveplayer.VeLivePlayerDef;
+import com.ss.videoarch.liveplayer.VeLivePlayerStreamData;
 import com.ss.videoarch.liveplayer.VideoLiveManager;
-import com.ss.videoarch.liveplayer.log.LiveError;
-import com.ss.videoarch.liveplayer.model.LiveURL;
-import com.vertcdemo.solution.interactivelive.util.LiveCoreConfig;
 import com.vertcdemo.core.protocol.IVideoPlayer;
 import com.vertcdemo.core.protocol.ScalingMode;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.core.utils.Utils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.vertcdemo.solution.interactivelive.core.live.adapter.VeLivePlayerObserverAdapter;
+import com.vertcdemo.solution.interactivelive.util.LiveCoreConfig;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class TTPlayer implements IVideoPlayer {
 
     private static final String TAG = "TTPlayer";
 
-    private static final int RETRY_TIME_LIMIT = 5;
-    private ILivePlayer mLivePlayer;
+    private VeLivePlayer mLivePlayer;
 
     private TextureView mTextureView;
 
@@ -80,13 +65,11 @@ public class TTPlayer implements IVideoPlayer {
     private String mSourcePath;
     private Map<String, String> mSourcePaths;
 
-    private int mScaleMode = ScalingMode.NONE;
-
     Consumer<String> mSEICallback;
 
     @Override
     public void startWithConfiguration(Context context, Consumer<String> seiCallback) {
-        Log.d(TAG, "startWithConfiguration");
+        LLog.d(TAG, "startWithConfiguration");
         TTSdkHelper.initTTVodSdk();
         createLivePlayer();
         createTextureView(context);
@@ -104,7 +87,7 @@ public class TTPlayer implements IVideoPlayer {
 
     @Override
     public void setPlayerUrl(String url, View container) {
-        Log.d(TAG, String.format("setPlayerUrl: %s", url));
+        LLog.d(TAG, String.format("setPlayerUrl: %s", url));
         mSourcePath = url;
         mSourcePaths = null;
 
@@ -113,14 +96,13 @@ public class TTPlayer implements IVideoPlayer {
         if (mLivePlayer != null) {
             mLivePlayer.setSurface(mSurface);
 
-            LiveURL liveURL = new LiveURL(url, null, "{\"VCodec\":\"h264\"}");
-            LiveURL[] urls = {liveURL};
-            mLivePlayer.setPlayURLs(urls);
+            VeLivePlayerStreamData streamData = singleUrlStreaming(url);
+            mLivePlayer.setPlayStreamData(streamData);
         }
     }
 
     public void setPlayerUrls(Map<String, String> urls, View container) {
-        Log.d(TAG, "setPlayerUrls: " + urls);
+        LLog.d(TAG, "setPlayerUrls: " + urls);
         mSourcePaths = urls;
         mSourcePath = null;
 
@@ -132,164 +114,178 @@ public class TTPlayer implements IVideoPlayer {
 
         boolean rtmPullStreaming = LiveCoreConfig.getRtmPullStreaming();
         if (rtmPullStreaming) { // RTM Pull Streaming
-            TTLiveURLComposer urlComposer = createRTMPullStreamingComposer(urls);
-            mLivePlayer.setStreamInfo(urlComposer.getStreamInfo());
+            VeLivePlayerStreamData streamData = createRTMPullStreaming(urls);
+            mLivePlayer.setPlayStreamData(streamData);
             return;
         }
 
         boolean abr = LiveCoreConfig.getABR();
         if (abr) { // ABR
-            TTLiveURLComposer urlComposer = createABRComposer(urls);
-            mLivePlayer.setStringOption(LIVE_PLAYER_OPTION_RESOLUTION, "auto");
-            mLivePlayer.setStreamInfo(urlComposer.getStreamInfo());
+            VeLivePlayerStreamData streamData = createABRStreaming(urls);
+            mLivePlayer.setPlayStreamData(streamData);
             return;
         }
 
         // Play origin stream
         {
-            Log.d(TAG, "setPlayerUrls: RTM Pull Streaming/ABR: BOTH OFF");
+            LLog.d(TAG, "setPlayerUrls: RTM Pull Streaming/ABR: BOTH OFF");
             final String url = getOriginUrl(urls);
             assert url != null;
-            Log.d(TAG, "setPlayerUrls: origin=" + url);
-            LiveURL liveURL = new LiveURL(url, null, "{\"VCodec\":\"h264\"}");
-            mLivePlayer.setPlayURLs(new LiveURL[]{liveURL});
+            LLog.d(TAG, "setPlayerUrls: origin=" + url);
+            VeLivePlayerStreamData streamData = singleUrlStreaming(url);
+            mLivePlayer.setPlayStreamData(streamData);
         }
     }
 
-    private static TTLiveURLComposer createRTMPullStreamingComposer(Map<String, String> urls) {
-        Log.d(TAG, "setPlayerUrls: RTM Pull Streaming: ON");
+    private static VeLivePlayerStreamData singleUrlStreaming(String url) {
+        VeLivePlayerStreamData.VeLivePlayerStream flvStream = new VeLivePlayerStreamData.VeLivePlayerStream();
+        flvStream.url = url;
+
+        VeLivePlayerStreamData streamData = new VeLivePlayerStreamData();
+        streamData.mainStreamList = Collections.singletonList(flvStream);
+
+        return streamData;
+    }
+
+    private static VeLivePlayerStreamData createRTMPullStreaming(Map<String, String> urls) {
+        LLog.d(TAG, "setPlayerUrls: RTM Pull Streaming: ON");
         final String url = getOriginUrl(urls);
         assert url != null;
 
         final String sdpUrl = url.replaceFirst("\\.flv$", ".sdp");
-        Log.d(TAG, "setPlayerUrls: origin=" + url);
-        Log.d(TAG, "setPlayerUrls: sdp=" + sdpUrl);
+        LLog.d(TAG, "setPlayerUrls: origin=" + url);
+        LLog.d(TAG, "setPlayerUrls: sdp=" + sdpUrl);
 
-        TTLiveURLComposer urlComposer = new TTLiveURLComposer();
-        urlComposer.addUrl(sdpUrl,
-                MEDIA_ENCODE_TYPE_H264,
-                MEDIA_SOURCE_TYPE_MAIN,
-                MEDIA_FORMAT_LLS);
-        urlComposer.addUrl(url,
-                MEDIA_ENCODE_TYPE_H264,
-                MEDIA_SOURCE_TYPE_BACKUP,
-                MEDIA_FORMAT_FLV);
+        VeLivePlayerStreamData.VeLivePlayerStream rtmStream = new VeLivePlayerStreamData.VeLivePlayerStream();
+        rtmStream.url = sdpUrl;
+        rtmStream.format = VeLivePlayerFormatRTM;
+        rtmStream.resolution = VeLivePlayerResolutionOrigin;
+        rtmStream.streamType = VeLivePlayerStreamTypeMain;
 
-        return urlComposer;
+        VeLivePlayerStreamData.VeLivePlayerStream flvStream = new VeLivePlayerStreamData.VeLivePlayerStream();
+        flvStream.url = url;
+        flvStream.format = VeLivePlayerFormatFLV;
+        flvStream.resolution = VeLivePlayerResolutionOrigin;
+        flvStream.streamType = VeLivePlayerStreamTypeMain;
+
+        VeLivePlayerStreamData streamData = new VeLivePlayerStreamData();
+        streamData.mainStreamList = Arrays.asList(rtmStream, flvStream);
+
+        streamData.defaultFormat = VeLivePlayerFormatRTM;
+        streamData.defaultProtocol = getProtocol(sdpUrl);
+
+        return streamData;
     }
 
-    private static TTLiveURLComposer createABRComposer(Map<String, String> urls) {
-        Log.d(TAG, "setPlayerUrls: ABR: ON");
-        final TTLiveURLComposer urlComposer = new TTLiveURLComposer();
-        final ArrayList<String> resolutions = new ArrayList<>();
+    private static VeLivePlayerStreamData createABRStreaming(Map<String, String> urls) {
+        LLog.d(TAG, "setPlayerUrls: ABR: ON");
+        final ArrayList<VeLivePlayerStreamData.VeLivePlayerStream> streams = new ArrayList<>();
 
         { // 480p
             final String url = get480Url(urls);
-            Log.d(TAG, "setPlayerUrls: 480p=" + url);
+            LLog.d(TAG, "setPlayerUrls: 480p=" + url);
             if (url != null) {
-                TTLiveURLComponent component = new TTLiveURLComponent();
-                component.setURL(url);
-                component.setResolution(MEDIA_RESOLUTION_LD);
-                TTLiveURLABRParams abrParams = new TTLiveURLABRParams();
-                abrParams.setVbitrate(1024_000);
-                component.setTTLiveURLABRParams(abrParams);
+                VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
+                stream.url = url;
+                stream.format = VeLivePlayerFormatFLV;
+                stream.resolution = VeLivePlayerResolutionLD;
+                stream.streamType = VeLivePlayerStreamTypeMain;
+                stream.bitrate = 1024;
 
-                urlComposer.addUrl(component);
-                resolutions.add(MEDIA_RESOLUTION_LD);
+                streams.add(stream);
             }
         }
 
         { // 540p
             final String url = get540Url(urls);
-            Log.d(TAG, "setPlayerUrls: 540p=" + url);
+            LLog.d(TAG, "setPlayerUrls: 540p=" + url);
             if (url != null) {
-                TTLiveURLComponent component = new TTLiveURLComponent();
-                component.setURL(url);
-                component.setResolution(MEDIA_RESOLUTION_SD);
-                TTLiveURLABRParams abrParams = new TTLiveURLABRParams();
-                abrParams.setVbitrate(1638_000);
-                component.setTTLiveURLABRParams(abrParams);
+                VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
+                stream.url = url;
+                stream.format = VeLivePlayerFormatFLV;
+                stream.resolution = VeLivePlayerResolutionSD;
+                stream.streamType = VeLivePlayerStreamTypeMain;
+                stream.bitrate = 1638;
 
-                urlComposer.addUrl(component);
-                resolutions.add(MEDIA_RESOLUTION_SD);
+                streams.add(stream);
             }
         }
 
         { // 720p
             final String url = get720Url(urls);
-            Log.d(TAG, "setPlayerUrls: 720p=" + url);
+            LLog.d(TAG, "setPlayerUrls: 720p=" + url);
             if (url != null) {
-                TTLiveURLComponent component = new TTLiveURLComponent();
-                component.setURL(url);
-                component.setResolution(MEDIA_RESOLUTION_HD);
-                TTLiveURLABRParams abrParams = new TTLiveURLABRParams();
-                abrParams.setVbitrate(2048_000);
-                component.setTTLiveURLABRParams(abrParams);
+                VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
+                stream.url = url;
+                stream.format = VeLivePlayerFormatFLV;
+                stream.resolution = VeLivePlayerResolutionHD;
+                stream.streamType = VeLivePlayerStreamTypeMain;
+                stream.bitrate = 2048;
 
-                urlComposer.addUrl(component);
-                resolutions.add(MEDIA_RESOLUTION_HD);
+                streams.add(stream);
             }
         }
 
         { // 1080p
             final String url = get1080Url(urls);
-            Log.d(TAG, "setPlayerUrls: 1080p=" + url);
+            LLog.d(TAG, "setPlayerUrls: 1080p=" + url);
             if (url != null) {
-                TTLiveURLComponent component = new TTLiveURLComponent();
-                component.setURL(url);
-                component.setResolution(MEDIA_RESOLUTION_UHD);
-                TTLiveURLABRParams abrParams = new TTLiveURLABRParams();
-                abrParams.setVbitrate(3200_000);
-                component.setTTLiveURLABRParams(abrParams);
+                VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
+                stream.url = url;
+                stream.format = VeLivePlayerFormatFLV;
+                stream.resolution = VeLivePlayerResolutionUHD;
+                stream.streamType = VeLivePlayerStreamTypeMain;
+                stream.bitrate = 3200;
 
-                urlComposer.addUrl(component);
-                resolutions.add(MEDIA_RESOLUTION_UHD);
+                streams.add(stream);
             }
         }
 
         { // origin
             final String url = getOriginUrl(urls);
-            Log.d(TAG, "setPlayerUrls: origin=" + url);
+            LLog.d(TAG, "setPlayerUrls: origin=" + url);
             if (url != null) {
-                TTLiveURLComponent component = new TTLiveURLComponent();
-                component.setURL(url);
-                component.setResolution(MEDIA_RESOLUTION_ORIGIN);
-                TTLiveURLABRParams abrParams = new TTLiveURLABRParams();
-                abrParams.setVbitrate(5000_000);
-                component.setTTLiveURLABRParams(abrParams);
+                VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
+                stream.url = url;
+                stream.format = VeLivePlayerFormatFLV;
+                stream.resolution = VeLivePlayerResolutionOrigin;
+                stream.streamType = VeLivePlayerStreamTypeMain;
+                stream.bitrate = 5000;
 
-                urlComposer.addUrl(component);
-                resolutions.add(MEDIA_RESOLUTION_ORIGIN);
+                streams.add(stream);
             }
         }
 
-        urlComposer.enableABR(true, MEDIA_RESOLUTION_HD, resolutions);
-        return urlComposer;
+        VeLivePlayerStreamData streamData = new VeLivePlayerStreamData();
+        streamData.mainStreamList = streams;
+        streamData.defaultResolution = VeLivePlayerResolutionHD;
+        streamData.enableABR = true;
+        return streamData;
     }
 
     @Override
     public void updatePlayScaleModel(int scalingMode) {
-        Log.d(TAG, String.format("updatePlayScaleModel: %d", scalingMode));
-        mScaleMode = scalingMode;
+        LLog.d(TAG, "updatePlayScaleModel: " + scalingMode);
         if (scalingMode == ScalingMode.NONE) {
             return;
         }
-        int op;
+        VeLivePlayerDef.VeLivePlayerFillMode mode;
         if (scalingMode == ScalingMode.ASPECT_FIT) {
-            op = IMAGE_LAYOUT_ASPECT_FIT;
+            mode = VeLivePlayerFillModeAspectFit;
         } else if (scalingMode == ScalingMode.ASPECT_FILL) {
-            op = IMAGE_LAYOUT_ASPECT_FILL;
+            mode = VeLivePlayerFillModeAspectFill;
         } else {
-            op = IMAGE_LAYOUT_TO_FILL;
+            mode = VeLivePlayerFillModeFullFill;
         }
+
         if (mLivePlayer != null) {
-            mLivePlayer.setIntOption(LIVE_OPTION_IMAGE_LAYOUT, op);
+            mLivePlayer.setRenderFillMode(mode);
         }
     }
 
     @Override
     public void play() {
-        Log.d(TAG, "play");
+        LLog.d(TAG, "play");
         if (mLivePlayer != null) {
             mLivePlayer.play();
         }
@@ -297,7 +293,7 @@ public class TTPlayer implements IVideoPlayer {
 
     @Override
     public void replacePlayWithUrl(String url) {
-        Log.d(TAG, String.format("replacePlayWithUrl: %s", url));
+        LLog.d(TAG, String.format("replacePlayWithUrl: %s", url));
         if (mTextureView != null && mTextureView.getParent() instanceof ViewGroup) {
             setPlayerUrl(url, (ViewGroup) mTextureView.getParent());
             play();
@@ -305,7 +301,7 @@ public class TTPlayer implements IVideoPlayer {
     }
 
     public void replacePlayWithUrls(Map<String, String> urls) {
-        Log.d(TAG, String.format("replacePlayWithUrls: %s", urls));
+        LLog.d(TAG, String.format("replacePlayWithUrls: %s", urls));
         if (mTextureView != null && mTextureView.getParent() instanceof ViewGroup) {
             setPlayerUrls(urls, (ViewGroup) mTextureView.getParent());
             play();
@@ -314,7 +310,7 @@ public class TTPlayer implements IVideoPlayer {
 
     @Override
     public void stop() {
-        Log.d(TAG, "stop");
+        LLog.d(TAG, "stop");
         if (mLivePlayer != null) {
             mLivePlayer.stop();
         }
@@ -327,15 +323,14 @@ public class TTPlayer implements IVideoPlayer {
 
     @Override
     public void destroy() {
-        Log.d(TAG, "destroy");
+        LLog.d(TAG, "destroy");
         if (mLivePlayer != null) {
-            mLivePlayer.release();
+            mLivePlayer.destroy();
             mLivePlayer = null;
         }
         mSourcePath = null;
         removeFromParent(mTextureView);
         mTextureView = null;
-        mScaleMode = ScalingMode.NONE;
     }
 
     private void createTextureView(Context context) {
@@ -386,101 +381,36 @@ public class TTPlayer implements IVideoPlayer {
     }
 
     private void createLivePlayer() {
-        ILiveListener liveListener = new ILiveListener.Stub() {
-            @Override
-            public void onError(LiveError liveError) {
-                Log.d(TAG, String.format("onError(): %s", liveError));
-            }
+        if (mLivePlayer != null) {
+            mLivePlayer.destroy();
+        }
 
-            @Override
-            public void onFirstFrame(boolean retry) {
-                Log.d(TAG, String.format("onFirstFrame(): %b", retry));
-            }
+        LLog.d(TAG, "VideoLiveManager Version=" + VideoLiveManager.getVersion() + "/" + Env.getVersion());
+        mLivePlayer = new VideoLiveManager(AppUtil.getApplicationContext());
+        VeLivePlayerConfiguration config = new VeLivePlayerConfiguration();
+        config.enableSei = true; // UI need sei info to update layout
+        config.statisticsCallbackInterval = 5; // per seconds
+        config.enableStatisticsCallback = true;
 
-            @Override
-            public void onPrepared() {
-                Log.d(TAG, "onPrepared()");
-            }
+        mLivePlayer.setConfig(config);
 
+        mLivePlayer.setObserver(new VeLivePlayerObserverAdapter() {
             @Override
-            public void onCompletion() {
-                Log.d(TAG, "onCompletion()");
-            }
-
-            @Override
-            public void onVideoSizeChanged(int width, int height) {
-                Log.d(TAG, String.format("onVideoSizeChanged() %d %d: ", width, height));
-            }
-
-            @Override
-            public void onMonitorLog(JSONObject jsonObject, String s) {
-                Log.d(TAG, "onMonitorLog jsonObject:");
-            }
-
-            @Override
-            public void onSeiUpdate(String message) {
-                Log.d(TAG, "onSeiUpdate: ");
+            public void onReceiveSeiMessage(VeLivePlayer player, String message) {
+                super.onReceiveSeiMessage(player, message);
                 if (mSEICallback != null) {
                     mSEICallback.accept(message);
                 }
-
-                final JSONObject log = mLivePlayer.getStaticLog();
-                Log.d(TAG, "onSeiUpdate: StaticLog: push_fps=" + log.optInt("push_client_fps:") + "; render_fps=" + log.optInt("render_fps:"));
             }
-        };
-        if (mLivePlayer != null) {
-            mLivePlayer.release();
-        }
-
-        mLivePlayer = LivePlayerBuilder.newBuilder(AppUtil.getApplicationContext())
-                .setRetryTimeout(RETRY_TIME_LIMIT)
-                .setNetworkClient(new LiveTTSDKHttpClient())
-                .setForceHttpDns(false)
-                .setForceTTNetHttpDns(false)
-                .setPlayerType(VideoLiveManager.PLAYER_OWN)
-                .setListener(liveListener)
-                .build();
+        });
     }
 
-    private static class LiveTTSDKHttpClient implements INetworkClient {
-        private final OkHttpClient mClient;
-
-        public LiveTTSDKHttpClient() {
-            mClient = new OkHttpClient().newBuilder()
-                    .connectTimeout(10, TimeUnit.SECONDS)
-                    .readTimeout(10, TimeUnit.SECONDS)
-                    .writeTimeout(10, TimeUnit.SECONDS)
-                    .build();
-        }
-
-        @Override
-        public Result doRequest(String url, String host) {
-            String body = null;
-            JSONObject response = null;
-            String header = null;
-            Request request = new Request.Builder().url(url).addHeader("host", host).build();
-            try (Response rsp = mClient.newCall(request).execute()) {
-                if (rsp.isSuccessful()) {
-                    ResponseBody responseBody = rsp.body();
-                    if (responseBody != null) {
-                        body = responseBody.string();
-                    }
-                    header = rsp.headers().toString();
-                    if (body != null) {
-                        response = new JSONObject(body);
-                    }
-                }
-            } catch (JSONException e) {
-                return Result.newBuilder().setBody(body).setHeader(header).setException(e).build();
-            } catch (Exception e) {
-                return Result.newBuilder().setException(e).build();
-            }
-            return Result.newBuilder().setResponse(response).setBody(body).build();
-        }
-
-        @Override
-        public Result doPost(String s, String s1) {
-            return null;
+    private static VeLivePlayerDef.VeLivePlayerProtocol getProtocol(@NonNull String url) {
+        String scheme = Uri.parse(url).getScheme();
+        if ("https".equalsIgnoreCase(scheme)) {
+            return VeLivePlayerProtocolTCP;
+        } else {
+            return VeLivePlayerProtocolTLS;
         }
     }
 }

@@ -115,7 +115,9 @@
         block(response);
     }
     if (response.code == RTSStatusCodeTokenExpired) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLoginExpired object:@"token_expired"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLogout
+                                                            object:self
+                                                          userInfo:@{NotificationLogoutReasonKey: @"token_expired"}];
     }
 }
 

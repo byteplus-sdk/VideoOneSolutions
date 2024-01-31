@@ -4,14 +4,14 @@
 //
 
 #import "LiveNormalPushStreaming.h"
+#import "LiveRTCManager.h"
 #import <Foundation/Foundation.h>
-#import <TTSDK/LiveCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol LiveNormalPushStreamingNetworkChangeDelegate <NSObject>
 
-- (void)updateOnNetworkStatusChange:(LiveCoreNetworkQuality)status;
+- (void)updateOnNetworkStatusChange:(LiveNetworkQualityStatus)status;
 
 @end
 

@@ -96,19 +96,26 @@ public class L {
     public static String obj2String(Object o) {
         if (o == null) {
             return "null";
-        } else if (o instanceof String) {
+        }
+        if (o instanceof String) {
             return (String) o;
-        } else if (o instanceof Boolean) {
+        }
+        if (o instanceof Boolean) {
             return String.valueOf(o);
-        } else if (o instanceof Number) {
+        }
+        if (o instanceof Number) {
             return String.valueOf(o);
-        } else if (o.getClass().isAnonymousClass()) {
+        }
+        if (o instanceof Enum<?>) {
+            return o.getClass().getSimpleName() + '.' + o;
+        }
+        if (o.getClass().isAnonymousClass()) {
             String s = o.toString();
             return s.substring(s.lastIndexOf('.'));
-        } else if(o instanceof Class<?>) {
-            return ((Class<?>)o).getSimpleName();
-        } else {
-            return o.getClass().getSimpleName() + '@' + Integer.toHexString(o.hashCode());
         }
+        if (o instanceof Class<?>) {
+            return ((Class<?>) o).getSimpleName();
+        }
+        return o.getClass().getSimpleName() + '@' + Integer.toHexString(o.hashCode());
     }
 }

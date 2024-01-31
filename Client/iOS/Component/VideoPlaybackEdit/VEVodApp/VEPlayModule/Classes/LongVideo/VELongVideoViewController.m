@@ -56,15 +56,17 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     [super tabViewDidAppear];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
 #pragma mark----- Base
 
 - (void)initialUI {
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
-    if (@available(iOS 11.0, *)) {
-        self.collectionView.insetsLayoutMarginsFromSafeArea = NO;
-        self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
+    self.collectionView.insetsLayoutMarginsFromSafeArea = NO;
+    self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     NSBundle *currentBundle = [NSBundle bundleForClass:NSClassFromString(@"VELongVideoViewTopCell")];
     [self.collectionView registerNib:[UINib nibWithNibName:@"VELongVideoViewTopCell" bundle:currentBundle] forCellWithReuseIdentifier:VELongVideoTopCellReuseID];
     NSBundle *currentBundle2 = [NSBundle bundleForClass:NSClassFromString(@"VELongVideoViewNormalCell")];
@@ -88,9 +90,9 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     [button addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];
     [button mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(16, 16));
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(14);
         make.left.mas_equalTo(15);
-        make.top.mas_equalTo(44 + [DeviceInforTool getStatusBarHight] - 30);
+        make.size.equalTo(@(CGSizeMake(16, 16)));
     }];
 
     self.collectionView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{

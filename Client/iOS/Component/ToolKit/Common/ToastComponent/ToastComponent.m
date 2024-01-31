@@ -100,10 +100,18 @@
 }
 
 - (void)showLoading {
-    [self showLoadingAtView:nil];
+    [self showLoadingAtView:nil message:@""];
+}
+
+- (void)showLoadingWithMessage:(NSString *)message {
+    [self showLoadingAtView:nil message:message];
 }
 
 - (void)showLoadingAtView:(UIView *)view {
+    [self showLoadingAtView:view message:@""];
+}
+
+- (void)showLoadingAtView:(UIView *)view message:(NSString *)message {
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
         if (self.keepToastView) {
             [self dismiss];
@@ -113,7 +121,7 @@
         if (!windowView) {
             windowView = [DeviceInforTool topViewController].view;
         }
-        ToastView *toastView = [[ToastView alloc] initWithFrame:windowView.bounds];
+        ToastView *toastView = [[ToastView alloc] initWithMessage:message];
         [toastView startLoading];
         [windowView addSubview:toastView];
         [toastView mas_makeConstraints:^(MASConstraintMaker *make) {

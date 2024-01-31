@@ -2,17 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.byteplus.vodupload">
 
-    <application>
-        <activity
-            android:name=".ui.VodUploadActivity"
-            android:exported="false"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.Vod.Upload">
-            <intent-filter>
-                <action android:name="${applicationId}.action.CREATIVE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-    </application>
+    <application />
 
 </manifest>

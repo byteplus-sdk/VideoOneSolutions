@@ -3,10 +3,15 @@
 
 package com.bytedance.vod.scenekit.ui.video.layer;
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,11 +22,14 @@ import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.player.source.MediaSource;
 import com.bytedance.vod.scenekit.R;
+import com.bytedance.vod.scenekit.VideoSettings;
 import com.bytedance.vod.scenekit.data.model.VideoItem;
 import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.MoreDialogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.helper.MiniPlayerHelper;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.utils.UIUtils;
+import com.bytedance.vod.settingskit.CenteredToast;
 
 
 public class TitleBarLayer extends AnimateLayer {
@@ -29,6 +37,8 @@ public class TitleBarLayer extends AnimateLayer {
     private View mTitleBar;
 
     private View mMore;
+
+    private ImageView mMiniPlayer;
 
     private final int[] showInScenes;
 
@@ -38,7 +48,7 @@ public class TitleBarLayer extends AnimateLayer {
     }
 
     public TitleBarLayer() {
-        this(PlayScene.SCENE_UNKNOWN, PlayScene.SCENE_DETAIL, PlayScene.SCENE_FULLSCREEN);
+        this(PlayScene.SCENE_NONE, PlayScene.SCENE_DETAIL, PlayScene.SCENE_FULLSCREEN, PlayScene.SCENE_SINGLE_FUNCTION);
     }
 
     public TitleBarLayer(int... scenes) {
@@ -62,7 +72,7 @@ public class TitleBarLayer extends AnimateLayer {
 
         mMore = view.findViewById(R.id.more);
         mMore.setOnClickListener(v -> {
-            if (playScene() != PlayScene.SCENE_FULLSCREEN) {
+            if (!isFullScreenMode(playScene())) {
                 Toast.makeText(context(), "More is only supported in fullscreen for now!",
                         Toast.LENGTH_SHORT).show();
                 return;
@@ -70,6 +80,24 @@ public class TitleBarLayer extends AnimateLayer {
             MoreDialogLayer layer = findLayer(MoreDialogLayer.class);
             if (layer != null) {
                 layer.animateShow(false);
+            }
+        });
+
+        mMiniPlayer = view.findViewById(R.id.miniplayer);
+        mMiniPlayer.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                CenteredToast.show(v.getContext(), "OS's version is low, does not support PIP");
+                return;
+            }
+            boolean newValue = !v.isSelected();
+            if (newValue && !MiniPlayerHelper.get().hasMiniPlayerPermission(v.getContext())) {
+                CenteredToast.show(v.getContext(), R.string.vevod_miniplayer_permission_denied);
+                return;
+            }
+            mMiniPlayer.setSelected(newValue);
+            VideoSettings.option(VideoSettings.COMMON_IS_MINIPLAYER_ON).saveUserValue(newValue);
+            if (newValue) {
+                CenteredToast.show(v.getContext(), R.string.vevod_miniplayer_open_success);
             }
         });
         return view;
@@ -91,6 +119,16 @@ public class TitleBarLayer extends AnimateLayer {
             dismiss();
         } else {
             applyTheme();
+        }
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        if (isInPictureInPictureMode) {
+            dismiss();
+        } else {
+            show();
         }
     }
 
@@ -128,7 +166,7 @@ public class TitleBarLayer extends AnimateLayer {
     }
 
     private void applyTheme() {
-        if (playScene() == PlayScene.SCENE_FULLSCREEN) {
+        if (isFullScreenMode(playScene())) {
             applyFullScreenTheme();
         } else if (playScene() == PlayScene.SCENE_DETAIL) {
             applyHalfScreenTheme();
@@ -146,15 +184,27 @@ public class TitleBarLayer extends AnimateLayer {
         if (mMore != null) {
             mMore.setVisibility(View.VISIBLE);
         }
+        if (mMiniPlayer != null) {
+            mMiniPlayer.setVisibility(View.GONE);
+        }
     }
 
     private void applyHalfScreenTheme() {
         setTitleBarHorizontalMargin(0);
         if (mTitle != null) {
-            mTitle.setVisibility(View.GONE);
+            mTitle.setVisibility(View.INVISIBLE);
         }
         if (mMore != null) {
             mMore.setVisibility(View.GONE);
+        }
+        if (mMiniPlayer != null) {
+            MiniPlayerLayer miniPlayerLayer = findLayer(MiniPlayerLayer.class);
+            if (miniPlayerLayer == null) {
+                mMiniPlayer.setVisibility(View.GONE);
+            } else {
+                mMiniPlayer.setVisibility(View.VISIBLE);
+                mMiniPlayer.setSelected(MiniPlayerHelper.get().isMiniPlayerOn());
+            }
         }
     }
 

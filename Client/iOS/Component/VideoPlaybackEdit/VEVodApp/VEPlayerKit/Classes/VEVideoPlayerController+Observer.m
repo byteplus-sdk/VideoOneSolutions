@@ -24,6 +24,9 @@
 }
 
 - (void)applicationEnterBackground {
+    if (self.closeResumePlay) {
+        return;
+    }
     if ([self isPlaying]) {
         self.needResumePlay = YES;
     }
@@ -31,6 +34,9 @@
 }
 
 - (void)willResignActiveNotification {
+    if (self.closeResumePlay) {
+        return;
+    }
     if ([self isPlaying]) {
         self.needResumePlay = YES;
     }
@@ -38,6 +44,9 @@
 }
 
 - (void)didBecomeActiveNotification {
+    if (self.closeResumePlay) {
+        return;
+    }
     if (self.needResumePlay) {
         [self.videoEngine play];
     }
@@ -52,6 +61,14 @@
 
 - (void)setNeedResumePlay:(BOOL)needResumePlay {
     objc_setAssociatedObject(self, @selector(needResumePlay), @(needResumePlay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)closeResumePlay {
+    return [objc_getAssociatedObject(self, @selector(closeResumePlay)) boolValue];
+}
+
+- (void)setCloseResumePlay:(BOOL)closeResumePlay {
+    objc_setAssociatedObject(self, @selector(closeResumePlay), @(closeResumePlay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) NSString *playAuthToken;
 
+@property (nonatomic, copy) NSString *subtitleAuthToken;
+
 @property (nonatomic, copy) NSString *title;
 
 @property (nonatomic, copy) NSString *subTitle;

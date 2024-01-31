@@ -3,6 +3,7 @@
 
 package com.bytedance.vod.scenekit.ui.video.layer;
 
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +16,12 @@ import com.bytedance.playerkit.player.PlayerEvent;
 import com.bytedance.playerkit.player.event.InfoBufferingUpdate;
 import com.bytedance.playerkit.player.event.InfoProgressUpdate;
 import com.bytedance.playerkit.player.playback.PlaybackController;
-
-import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
-import com.bytedance.vod.scenekit.ui.widgets.MediaSeekBar;
+import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.utils.event.Dispatcher;
 import com.bytedance.playerkit.utils.event.Event;
 import com.bytedance.vod.scenekit.R;
+import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
+import com.bytedance.vod.scenekit.ui.widgets.MediaSeekBar;
 
 public class SimpleProgressBarLayer extends AnimateLayer {
 
@@ -169,5 +170,23 @@ public class SimpleProgressBarLayer extends AnimateLayer {
     public void show() {
         super.show();
         syncProgress();
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        VideoView videoView = videoView();
+        PlaybackController playbackController =videoView == null ? null : videoView.controller();
+        if (isInPictureInPictureMode) {
+            if (playbackController != null) {
+                playbackController.removePlaybackListener(mPlaybackListener);
+            }
+            dismiss();
+        } else {
+            if (playbackController != null) {
+                playbackController.addPlaybackListener(mPlaybackListener);
+            }
+            show();
+        }
     }
 }

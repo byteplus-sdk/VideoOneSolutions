@@ -52,7 +52,6 @@
             [self.avatarIconView sd_setImageWithURL:[NSURL URLWithString:iconUrl] placeholderImage:nil];
         } else {
             self.avatarIconView.image = [UIImage imageNamed:iconUrl bundleName:ToolKitBundleName subBundleName:AvatarBundleName];
-            ;
         }
     }
 }

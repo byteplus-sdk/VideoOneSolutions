@@ -3,32 +3,55 @@
 
 package com.vertcdemo.solution.interactivelive.event;
 
+import com.ss.avframework.live.VeLivePusherDef;
 import com.ss.avframework.livestreamv2.Constants;
 
 public class LiveCoreNetworkQualityEvent {
+    public enum Quality {
+        UNKNOWN, GOOD, POOR, BAD
+    }
+
+    public Quality quality;
 
     /**
-     * @see Constants#STATUS_STREAM_NORMAL_PUBLISH
-     * @see Constants#STATUS_INTERACT_CLIENT_MIXER
-     * @see Constants#STATUS_INTERACT_SERVER_MIXER
-     */
-    public final int status;
-
-    /**
-     * @see Constants#NETWORK_QUALITY_UNKNOWN
-     * @see Constants#NETWORK_QUALITY_GOOD
-     * @see Constants#NETWOKR_QUALITY_POOR
-     * @see Constants#NETWORK_QUALITY_BAD
-     */
-    public final int networkQuality;
-
-    /**
-     * @param status         status
      * @param networkQuality Network quality
      * @see Constants#MSG_REPORT_NETWORK_QUALITY
      */
-    public LiveCoreNetworkQualityEvent(int status, int networkQuality) {
-        this.status = status;
-        this.networkQuality = networkQuality;
+    public LiveCoreNetworkQualityEvent(int networkQuality) {
+        Quality quality;
+        switch (networkQuality) {
+            case Constants.NETWORK_QUALITY_GOOD:
+                quality = Quality.GOOD;
+                break;
+            case Constants.NETWOKR_QUALITY_POOR:
+                quality = Quality.POOR;
+                break;
+            case Constants.NETWORK_QUALITY_BAD:
+                quality = Quality.BAD;
+                break;
+            case Constants.NETWORK_QUALITY_UNKNOWN:
+            default:
+                quality = Quality.UNKNOWN;
+        }
+        this.quality = quality;
+    }
+
+    public LiveCoreNetworkQualityEvent(VeLivePusherDef.VeLiveNetworkQuality networkQuality) {
+        Quality quality;
+        switch (networkQuality) {
+            case VeLiveNetworkQualityGood:
+                quality = Quality.GOOD;
+                break;
+            case VeLiveNetworkQualityPoor:
+                quality = Quality.POOR;
+                break;
+            case VeLiveNetworkQualityBad:
+                quality = Quality.BAD;
+                break;
+            case VeLiveNetworkQualityUnknown:
+            default:
+                quality = Quality.UNKNOWN;
+        }
+        this.quality = quality;
     }
 }

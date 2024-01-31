@@ -305,11 +305,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
         _scrollView.pagingEnabled = YES;
         _scrollView.directionalLockEnabled = YES;
         _scrollView.delegate = self;
-        if (@available(iOS 11.0, *)) {
-            self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        } else {
-            self.automaticallyAdjustsScrollViewInsets = NO;
-        }
+        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
     return _scrollView;
 }

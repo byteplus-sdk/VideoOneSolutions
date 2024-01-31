@@ -58,6 +58,10 @@ static NSInteger VEShortVideoPreloadVideoCount = 3;
     [VEVideoPlayerController cancelPreloadVideoSources];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
 #pragma mark---- ATPageViewControllerDataSource & Delegate
 - (NSInteger)numberOfItemInPageViewController:(VEPageViewController *)pageViewController {
     return self.videoModels.count;
@@ -92,7 +96,6 @@ static NSInteger VEShortVideoPreloadVideoCount = 3;
 - (void)pageViewControllerWillBeginDragging:(VEPageViewController *)pageViewController {
     [VEVideoPlayerController cancelPreloadVideoSources];
 }
-
 - (void)pageViewController:(VEPageViewController *)pageViewController didDisplayItem:(id<VEPageItem>)viewController atIndex:(NSUInteger)index {
     if (!self.preloadOpen || !self.videoModels.count || index == self.videoModels.count - 1) {
         return;
@@ -181,13 +184,11 @@ static NSInteger VEShortVideoPreloadVideoCount = 3;
     [self addChildViewController:self.pageContainer];
     [self.view addSubview:self.pageContainer.view];
     [self.pageContainer.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        NSInteger height = SCREEN_HEIGHT - ([DeviceInforTool getVirtualHomeHeight] + 48);
-        make.left.right.top.equalTo(self.view);
-        make.height.mas_equalTo(ceil(height));
+        make.edges.equalTo(self.view);
     }];
     [self.view addSubview:self.backButton];
     [self.backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo([DeviceInforTool getStatusBarHight] + 14);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(14);
         make.left.mas_equalTo(15);
         make.size.equalTo(@(CGSizeMake(16, 16)));
     }];

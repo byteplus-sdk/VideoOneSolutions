@@ -10,8 +10,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -47,6 +49,8 @@ public class VideoSettings {
     public static final String CATEGORY_COMMON_VIDEO = "category-video-commons";
     public static final String CATEGORY_DEBUG = "category-debug";
 
+    public static final String CATEGORY_NO_UI = "category-no-ui";
+
     public static final String SHORT_VIDEO_SCENE_ACCOUNT_ID = "short_video_scene_account_id";
     public static final String SHORT_VIDEO_ENABLE_STRATEGY = "short_video_enable_strategy";
     public static final String SHORT_VIDEO_ENABLE_IMAGE_COVER = "short_video_enable_image_cover";
@@ -70,6 +74,9 @@ public class VideoSettings {
     public static final String COMMON_SOURCE_ENCODE_TYPE_H265 = "common_source_encode_type_h265";
     public static final String COMMON_SOURCE_VIDEO_FORMAT_TYPE = "common_source_video_format_type";
     public static final String COMMON_SOURCE_VIDEO_ENABLE_PRIVATE_DRM = "common_source_video_enable_private_drm";
+    public static final String COMMON_IS_MINIPLAYER_ON = "common_is_miniplayer_on";
+
+    public static final String COMMON_SHOW_FULL_SCREEN_TIPS = "show_full_screen_tips";
 
     private static Options sOptions;
 
@@ -118,7 +125,8 @@ public class VideoSettings {
                 if (item.option == null) {
                     continue;
                 }
-                if (FILTER_OUT_ABLE_KEYS.contains(item.option.key)) {
+                if (CATEGORY_NO_UI.equals(item.category) ||
+                        FILTER_OUT_ABLE_KEYS.contains(item.option.key)) {
                     iterator.remove();
                 }
             }
@@ -133,7 +141,27 @@ public class VideoSettings {
                 options.add(item.option);
             }
         }
+        appendOptions(options);
         return options;
+    }
+
+    private static void appendOptions(@NonNull List<Option> options) {
+        options.add(new Option(
+                Option.TYPE_RATIO_BUTTON,
+                CATEGORY_NO_UI,
+                COMMON_SHOW_FULL_SCREEN_TIPS,
+                ResourcesCompat.ID_NULL,
+                Boolean.class,
+                Boolean.TRUE,
+                null));
+        options.add(new Option(
+                Option.TYPE_RATIO_BUTTON,
+                CATEGORY_NO_UI,
+                COMMON_IS_MINIPLAYER_ON,
+                ResourcesCompat.ID_NULL,
+                Boolean.class,
+                Boolean.FALSE,
+                null));
     }
 
     public static Option option(String key) {

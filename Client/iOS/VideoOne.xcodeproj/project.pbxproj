@@ -102,13 +102,11 @@
 			buildConfigurationList = 2B69FD0A29FA4F8C00E475C1 /* Build configuration list for PBXNativeTarget "VideoOne" */;
 			buildPhases = (
 				FD4F6F83C17F94DDF2C8E0AA /* [CP] Check Pods Manifest.lock */,
-				83C3E8EE8263D08BA4AAB96B /* [CP-User] Hummer-before-hooks */,
 				2B69FCED29FA4F8A00E475C1 /* Sources */,
 				2B69FCEE29FA4F8A00E475C1 /* Frameworks */,
 				2B69FCEF29FA4F8A00E475C1 /* Resources */,
 				69C140736EA59B6E751ED71E /* [CP] Copy Pods Resources */,
-				B02DE7F7EBB014AACE9CF886 /* [CP-User] Hummer-after-hooks */,
-				2C100A27DC969A07B28E32CF /* [CP] Embed Pods Frameworks */,
+				5BC32FDA22ADCBC00C0A9054 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -166,7 +164,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2C100A27DC969A07B28E32CF /* [CP] Embed Pods Frameworks */ = {
+		5BC32FDA22ADCBC00C0A9054 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -195,26 +193,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VideoOne/Pods-VideoOne-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		83C3E8EE8263D08BA4AAB96B /* [CP-User] Hummer-before-hooks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "[CP-User] Hummer-before-hooks";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ -f \"${PODS_ROOT}/hummer_before_hooks.sh\" ];then\n  bash \"${PODS_ROOT}/hummer_before_hooks.sh\"\nfi\n";
-		};
-		B02DE7F7EBB014AACE9CF886 /* [CP-User] Hummer-after-hooks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "[CP-User] Hummer-after-hooks";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ -f \"${PODS_ROOT}/hummer_after_hooks.sh\" ];then\n  bash \"${PODS_ROOT}/hummer_after_hooks.sh\"\nfi\n";
 		};
 		FD4F6F83C17F94DDF2C8E0AA /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -346,7 +324,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.3.0;
+				MARKETING_VERSION = 2.4.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.inhouse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -490,7 +468,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.3.0;
+				MARKETING_VERSION = 2.4.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -522,7 +500,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.3.0;
+				MARKETING_VERSION = 2.4.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";

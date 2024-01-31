@@ -42,6 +42,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation rootProject.ext.libs["app-compat"]
+    implementation rootProject.ext.libs["gson"]
 
     implementation project(rootProject.ext.projects[':Vod:vod-playerkit:vod-player-utils'])
 }

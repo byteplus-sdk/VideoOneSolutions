@@ -1,2 +1,0 @@
--keep class com.bytedance.vod.scenekit.**{*;}
--keep class com.bytedance.playerkit.player.ui.**{*;}

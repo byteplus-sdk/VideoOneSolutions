@@ -643,16 +643,16 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNetworkQualityEvent(LiveCoreNetworkQualityEvent event) {
-        final int networkQuality = event.networkQuality;
-        if (networkQuality == Constants.NETWORK_QUALITY_GOOD) {
+        final LiveCoreNetworkQualityEvent.Quality networkQuality = event.quality;
+        if (networkQuality == LiveCoreNetworkQualityEvent.Quality.GOOD) {
             // GOOD
             mBinding.networkState.setText(R.string.net_quality_good);
             mBinding.networkState.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_network_quality_good, 0, 0, 0);
-        } else if (networkQuality == Constants.NETWOKR_QUALITY_POOR) {
+        } else if (networkQuality == LiveCoreNetworkQualityEvent.Quality.POOR) {
             // POOR
             mBinding.networkState.setText(R.string.net_quality_poor);
             mBinding.networkState.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_network_quality_poor, 0, 0, 0);
-        } else if (networkQuality == Constants.NETWORK_QUALITY_BAD) {
+        } else if (networkQuality == LiveCoreNetworkQualityEvent.Quality.BAD) {
             // BAD
             mBinding.networkState.setText(R.string.net_quality_disconnect);
             mBinding.networkState.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_network_quality_disconnect, 0, 0, 0);

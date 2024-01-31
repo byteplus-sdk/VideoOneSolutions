@@ -12,10 +12,16 @@ public class Page<T> {
     public List<T> list;
     public int index;
     public int total;
+    public String playMode; // linear or loop
 
     public Page(List<T> list, int index, int total) {
         this.list = list;
         this.index = index;
         this.total = total;
+    }
+
+    public Page(List<T> list, String playMode) {
+        this.list = list;
+        this.playMode = playMode;
     }
 }

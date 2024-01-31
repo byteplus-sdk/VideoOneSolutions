@@ -279,12 +279,16 @@ public abstract class AnimateLayer extends BaseLayer {
         setState(State.IDLE);
     }
 
+    protected long animateDismissDelay() {
+        return DEFAULT_ANIMATE_DISMISS_DELAY;
+    }
+
     private void removeDismissRunnable() {
         mH.removeCallbacks(animateDismissRunnable);
     }
 
     private void postDismissRunnable() {
-        mH.postDelayed(animateDismissRunnable, DEFAULT_ANIMATE_DISMISS_DELAY);
+        mH.postDelayed(animateDismissRunnable, animateDismissDelay());
     }
 
     private void setState(State state) {

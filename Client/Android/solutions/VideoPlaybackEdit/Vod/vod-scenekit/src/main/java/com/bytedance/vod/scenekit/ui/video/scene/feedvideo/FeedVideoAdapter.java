@@ -6,11 +6,11 @@ package com.bytedance.vod.scenekit.ui.video.scene.feedvideo;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -31,10 +31,12 @@ import com.bytedance.vod.scenekit.databinding.VevodFeedVideoItemBinding;
 import com.bytedance.vod.scenekit.ui.base.VideoViewExtras;
 import com.bytedance.vod.scenekit.ui.video.layer.CoverLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.FullScreenTipsLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.GestureLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LoadingLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LockLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.MiniPlayerLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PlayCompleteLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PlayErrorLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PlayPauseLayer;
@@ -49,8 +51,8 @@ import com.bytedance.vod.scenekit.ui.video.layer.dialog.TimeProgressDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.ui.video.scene.feedvideo.layer.FeedVideoCoverShadowLayer;
-import com.bytedance.vod.scenekit.utils.UIUtils;
 import com.bytedance.vod.scenekit.utils.FormatHelper;
+import com.bytedance.vod.scenekit.utils.UIUtils;
 import com.bytedance.vod.scenekit.utils.ViewUtils;
 import com.videoone.avatars.Avatars;
 
@@ -166,10 +168,12 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
 
             VideoLayerHost layerHost = new VideoLayerHost(itemView.getContext());
             layerHost.addLayer(new GestureLayer());
-            layerHost.addLayer(new FullScreenLayer());
             layerHost.addLayer(new CoverLayer());
             layerHost.addLayer(new FeedVideoCoverShadowLayer());
             layerHost.addLayer(new TimeProgressBarLayer(TimeProgressBarLayer.CompletedPolicy.KEEP));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                layerHost.addLayer(new MiniPlayerLayer());
+            }
             layerHost.addLayer(new TitleBarLayer());
             layerHost.addLayer(new QualitySelectDialogLayer());
             layerHost.addLayer(new SpeedSelectDialogLayer());
@@ -185,6 +189,10 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
             layerHost.addLayer(new LoadingLayer());
             layerHost.addLayer(new PlayErrorLayer());
             layerHost.addLayer(new PlayCompleteLayer());
+            layerHost.addLayer(new FullScreenLayer());
+            if (VideoSettings.booleanValue(VideoSettings.COMMON_SHOW_FULL_SCREEN_TIPS)) {
+                layerHost.addLayer(new FullScreenTipsLayer());
+            }
             if (VideoSettings.booleanValue(VideoSettings.DEBUG_ENABLE_LOG_LAYER)) {
                 layerHost.addLayer(new LogLayer());
             }
@@ -232,6 +240,9 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
 
         void bindVideoView(int position, VideoItem videoItem, List<VideoItem> videoItems) {
             VideoView videoView = sharedVideoView;
+            if (videoView == null) {
+                return;
+            }
             MediaSource mediaSource = videoView.getDataSource();
             if (mediaSource == null) {
                 mediaSource = VideoItem.toMediaSource(videoItem, true);

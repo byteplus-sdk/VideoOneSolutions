@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL needResumePlay;
 
+@property (nonatomic, assign) BOOL closeResumePlay;
+
 - (void)addObserver;
 
 - (void)removeObserver;

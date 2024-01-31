@@ -3,6 +3,8 @@
 
 package com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer;
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +33,7 @@ public class ShortVideoProgressBarLayer extends SimpleProgressBarLayer {
 
     @Override
     public void show() {
-        if (playScene() == PlayScene.SCENE_FULLSCREEN) {
+        if (isFullScreenMode(playScene())) {
             return;
         }
         // PM: Only show progress bar when duration > 1 Min
@@ -44,10 +46,10 @@ public class ShortVideoProgressBarLayer extends SimpleProgressBarLayer {
     @Override
     public void onVideoViewPlaySceneChanged(int fromScene, int toScene) {
         super.onVideoViewPlaySceneChanged(fromScene, toScene);
-        if (fromScene == PlayScene.SCENE_FULLSCREEN && toScene != PlayScene.SCENE_FULLSCREEN) {
+        if (isFullScreenMode(fromScene) && !isFullScreenMode(toScene)) {
             // exit full screen
             show();
-        } else if (fromScene != PlayScene.SCENE_FULLSCREEN && toScene == PlayScene.SCENE_FULLSCREEN) {
+        } else if (!isFullScreenMode(fromScene) && isFullScreenMode(toScene)) {
             // enter full screen
             dismiss();
         }

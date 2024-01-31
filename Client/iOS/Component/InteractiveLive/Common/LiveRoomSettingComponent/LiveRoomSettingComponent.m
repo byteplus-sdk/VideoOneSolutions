@@ -59,25 +59,25 @@
 
 - (void)liveCreateRoomSettingView:(nonnull LiveCreateRoomSettingView *)settingView
                  didChangeBitrate:(NSInteger)bitrate {
-    LiveSettingVideoConfig *videoConfig = settingView.videoConfig;
-    [[LiveRTCManager shareRtc] updateLiveTranscodingBitRate:videoConfig.bitrate];
+    //    LiveSettingVideoConfig *videoConfig = settingView.videoConfig;
+    //    [[LiveRTCManager shareRtc] updateLiveTranscodingBitRate:videoConfig.bitrate];
 }
 
 - (void)didChangeResolution {
-    LiveSettingVideoConfig *videoConfig = [LiveSettingVideoConfig defultVideoConfig];
-    [[LiveRTCManager shareRtc] updateLiveTranscodingResolution:videoConfig.videoSize];
+    LiveSettingVideoConfig *videoConfig = [LiveSettingVideoConfig defaultVideoConfig];
+    [[LiveRTCManager shareRtc] updateVideoEncoderResolution:videoConfig.videoSize];
 }
 
 - (void)liveCreateRoomSettingView:(nonnull LiveCreateRoomSettingView *)settingView
                  didChangefpsType:(LiveSettingVideoFpsType)fps {
     LiveSettingVideoConfig *videoConfig = settingView.videoConfig;
-    [[LiveRTCManager shareRtc] updateLiveTranscodingFrameRate:videoConfig.fps];
+    [[LiveRTCManager shareRtc] updateVideoEncoderFrameRate:videoConfig.fps];
 }
 
 - (void)liveCreateRoomSettingView:(LiveCreateRoomSettingView *)settingView
                  didSelectQuality:(BOOL)isSelect {
-    LiveSettingVideoResolutionType resType = [LiveSettingVideoConfig defultVideoConfig].resolutionType;
-    NSDictionary *resolutionDic = [LiveSettingVideoConfig defultVideoConfig].resolutionDic;
+    LiveSettingVideoResolutionType resType = [LiveSettingVideoConfig defaultVideoConfig].resolutionType;
+    NSDictionary *resolutionDic = [LiveSettingVideoConfig defaultVideoConfig].resolutionDic;
     NSString *resKey = resolutionDic[@(resType)];
     __block LiveSettingQualityView *qualityView = [[LiveSettingQualityView alloc] initWithKey:resKey];
     CGFloat height = 300 + [DeviceInforTool getVirtualHomeHeight];
@@ -114,8 +114,8 @@
                 break;
             }
         }
-        [LiveSettingVideoConfig defultVideoConfig].resolutionType = typeNumber.integerValue;
-        wself.createRoomSettingView.videoConfig = [LiveSettingVideoConfig defultVideoConfig];
+        [LiveSettingVideoConfig defaultVideoConfig].resolutionType = typeNumber.integerValue;
+        wself.createRoomSettingView.videoConfig = [LiveSettingVideoConfig defaultVideoConfig];
         [wself didChangeResolution];
     };
 }
@@ -142,7 +142,7 @@
 - (LiveCreateRoomSettingView *)createRoomSettingView {
     if (!_createRoomSettingView) {
         _createRoomSettingView = [[LiveCreateRoomSettingView alloc] init];
-        _createRoomSettingView.videoConfig = [LiveSettingVideoConfig defultVideoConfig];
+        _createRoomSettingView.videoConfig = [LiveSettingVideoConfig defaultVideoConfig];
         _createRoomSettingView.delegate = self;
     }
     return _createRoomSettingView;

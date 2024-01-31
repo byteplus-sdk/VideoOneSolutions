@@ -1,12 +1,12 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
-#import "VEVideoPlayerController+VEPlayCoreAbility.h"
 #import "VEPlayerUIModule.h"
+#import "VEVideoPlayerController+VEPlayCoreAbility.h"
 #import <ToolKit/Localizator.h>
 
 @implementation VEVideoPlayerController (VEPlayCoreAbility)
 
-#pragma mark ----- origin class implementated
+#pragma mark----- origin class implementated
 /*
  @property (nonatomic, weak) id<VEPlayCoreCallBackAbilityProtocol> receiver;
  @property (nonatomic, assign) BOOL looping;
@@ -14,8 +14,7 @@
  - (void)pause;
  */
 
-
-#pragma mark ----- implementatation
+#pragma mark----- implementatation
 
 - (CGFloat)playbackSpeed {
     return [self playbackRate];
@@ -48,15 +47,13 @@
     if (destination < 0.00) {
         return;
     }
-    if (self.currentPlaybackState != VEPlaybackStatePause
-        && self.currentPlaybackState != VEPlaybackStatePlaying) {
+    if (self.currentPlaybackState != VEPlaybackStatePaused && self.currentPlaybackState != VEPlaybackStatePlaying) {
         [self setStartTime:destination];
         return;
     }
     [self seekToTime:destination complete:^(BOOL success) {
         NSLog(@"call seek succeed %lf", [self currentPlaybackTime]);
-        if (self.currentPlaybackState == VEPlaybackStatePause
-            && destination == self.duration) {
+        if (self.currentPlaybackState == VEPlaybackStatePaused && destination == self.duration) {
             [self.videoEngine stop];
         }
     } renderComplete:^{
@@ -65,32 +62,11 @@
 }
 
 - (VEPlaybackState)currentPlaybackState {
-    VEPlaybackState state = VEPlaybackStateError;
-    if (self.videoEngine) {
-        switch (self.videoEngine.playbackState) {
-            case TTVideoEnginePlaybackStateError: {
-                state = VEPlaybackStateError;
-            }
-                break;
-            case TTVideoEnginePlaybackStateStopped: {
-                state = VEPlaybackStateStopped;
-            }
-                break;
-            case TTVideoEnginePlaybackStatePlaying: {
-                state = VEPlaybackStatePlaying;
-            }
-                break;
-            case TTVideoEnginePlaybackStatePaused: {
-                state = VEPlaybackStatePause;
-            }
-                break;
-            default: {
-                state = VEPlaybackStateUnknown;
-            }
-                break;
-        }
-    }
-    return state;
+    return self.playbackState;
+}
+
+- (VEPlaybackLoadState)currentLoadState {
+    return self.loadState;
 }
 
 - (NSString *)title {
@@ -99,11 +75,11 @@
 
 - (NSArray *)playSpeedSet {
     return @[
-        @{@"0.5x" : @(0.5)},
-        @{@"1.0x" : @(1.0)},
-        @{@"1.5x" : @(1.5)},
-        @{@"2.0x" : @(2.0)},
-        @{@"3.0x" : @(3.0)}
+        @{@"0.5x": @(0.5)},
+        @{@"1.0x": @(1.0)},
+        @{@"1.5x": @(1.5)},
+        @{@"2.0x": @(2.0)},
+        @{@"3.0x": @(3.0)}
     ];
 }
 
@@ -111,7 +87,7 @@
     NSMutableArray *resolutionSet = [NSMutableArray array];
     for (NSNumber *originTypeNum in self.videoEngine.supportedResolutionTypes) {
         NSString *resolutionTitle = [self _transferResolutionTitleByType:originTypeNum.integerValue];
-        [resolutionSet addObject:@{resolutionTitle : originTypeNum}];
+        [resolutionSet addObject:@{resolutionTitle: originTypeNum}];
     }
     return resolutionSet;
 }

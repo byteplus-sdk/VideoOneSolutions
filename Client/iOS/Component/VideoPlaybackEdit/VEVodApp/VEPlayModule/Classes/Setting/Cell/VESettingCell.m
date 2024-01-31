@@ -6,8 +6,6 @@
 
 @interface VESettingCell ()
 
-
-
 @end
 
 @implementation VESettingCell
@@ -30,26 +28,20 @@
 
 - (void)setCornerStyle:(SettingCellCornerStyle)cornerStyle {
     _cornerStyle = cornerStyle;
-    self.bgView.layer.cornerRadius = 8;
-    if (@available(iOS 11.0, *)) {
-        switch (cornerStyle) {
-            case SettingCellCornerStyleUp:
-                self.bgView.layer.maskedCorners = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-                break;
-            case SettingCellCornerStyleBottom:
-                self.bgView.layer.maskedCorners = kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
-                break;
-            case SettingCellCornerStyleFull:
-                self.bgView.layer.cornerRadius = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner | kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
-                break;
-            default:
-                self.bgView.layer.cornerRadius = 0;
-                break;
-        }
+    switch (cornerStyle) {
+        case SettingCellCornerStyleUp:
+            self.bgView.layer.maskedCorners = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+            break;
+        case SettingCellCornerStyleBottom:
+            self.bgView.layer.maskedCorners = kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
+            break;
+        case SettingCellCornerStyleFull:
+            self.bgView.layer.cornerRadius = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner | kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
+            break;
+        default:
+            self.bgView.layer.cornerRadius = 0;
+            break;
     }
-    
-    
-    
 }
 
 @end

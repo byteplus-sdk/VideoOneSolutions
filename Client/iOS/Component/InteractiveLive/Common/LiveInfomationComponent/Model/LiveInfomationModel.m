@@ -20,7 +20,7 @@
     self.encodeFormat = [NSString stringWithFormat:@"%@/hardware = %ld", log[@"video_codec"] ?: @"unknown", [log[@"hardware"] integerValue]];
 
     self.captureFps = [log[@"preview_fps"] integerValue];
-    self.transFps = [log[@"encode_fps"] integerValue];
+    self.transFps = [log[@"transportFps"] integerValue];
     self.realTimeEncodeBitrate = MAX(0, [log[@"video_enc_bitrate"] integerValue]);
     self.realTimeTransBitrate = MAX(0, [log[@"real_bitrate"] integerValue]);
     self.adaptiveBitrateMode = extra[@"strategy"] ?: @"";

@@ -1,10 +1,5 @@
-//
-//  VEShortVideoDemoViewController.m
-//  VideoPlaybackEdit
-//
-//  Created by bytedance on 2023/11/3.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "VEShortVideoDemoViewController.h"
 #import "VEPageViewController.h"
 #import "VEPlayerKit.h"
@@ -20,7 +15,6 @@ static NSString *VEShortVideoCellReuseIDDemo = @"VEShortVideoCellReuseIDDemo";
 
 @property (nonatomic, strong) VEPageViewController *pageContainer;
 
-
 @end
 
 @implementation VEShortVideoDemoViewController
@@ -30,7 +24,6 @@ static NSString *VEShortVideoCellReuseIDDemo = @"VEShortVideoCellReuseIDDemo";
     [self initialUI];
     [self startVideoStategy];
 }
-
 
 - (void)dealloc {
     [VEVideoPlayerController clearAllEngineStrategy];
@@ -61,7 +54,6 @@ static NSString *VEShortVideoCellReuseIDDemo = @"VEShortVideoCellReuseIDDemo";
 - (void)pageViewController:(VEPageViewController *)pageViewController
     didScrollChangeDirection:(VEPageItemMoveDirection)direction
               offsetProgress:(CGFloat)progress {
-    
 }
 
 - (void)pageViewControllerWillBeginDragging:(VEPageViewController *)pageViewController {
@@ -72,7 +64,6 @@ static NSString *VEShortVideoCellReuseIDDemo = @"VEShortVideoCellReuseIDDemo";
     if (!self.videoModels.count || index == self.videoModels.count - 1) {
         return;
     }
-   
 }
 
 #pragma mark----- Lazy load
@@ -88,8 +79,6 @@ static NSString *VEShortVideoCellReuseIDDemo = @"VEShortVideoCellReuseIDDemo";
     }
     return _pageContainer;
 }
-
-
 
 - (void)startVideoStategy {
     VESettingModel *preRender = [[VESettingManager universalManager] settingForKey:VESettingKeyShortVideoPreRenderStrategy];
@@ -110,13 +99,13 @@ static NSString *VEShortVideoCellReuseIDDemo = @"VEShortVideoCellReuseIDDemo";
     [self.pageContainer.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
     }];
-    
+
     BaseButton *backButton = [BaseButton buttonWithType:UIButtonTypeCustom];
     [backButton setImage:[UIImage imageNamed:@"nav_left"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:backButton];
     [backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo([DeviceInforTool getStatusBarHight] + 14);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(14);
         make.left.mas_equalTo(15);
         make.size.equalTo(@(CGSizeMake(16, 16)));
     }];

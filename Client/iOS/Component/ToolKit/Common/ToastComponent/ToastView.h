@@ -23,6 +23,8 @@ typedef NS_ENUM(NSInteger, ToastViewContentType) {
 
 @property (nonatomic, assign) ToastViewContentType contentType;
 
+- (instancetype)initWithMessage:(NSString *)message;
+
 - (void)updateMessage:(NSString *)message
              describe:(NSString *)describe
                stauts:(ToastViewStatus)status;

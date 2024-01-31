@@ -1,10 +1,5 @@
-//
-//  VEFeedVideoDemoViewController.m
-//  VideoPlaybackEdit
-//
-//  Created by bytedance on 2023/11/3.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "VEFeedVideoDemoViewController.h"
 #import "VEFeedVideoNormalCell.h"
 #import "VEVideoDetailViewController.h"
@@ -17,12 +12,10 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
 
 @interface VEFeedVideoDemoViewController () <UITableViewDelegate, UITableViewDataSource, VEFeedVideoNormalCellDelegate, VEVideoDetailProtocol>
 
-
 @property (nonatomic, strong) UITableView *tableView;
 
 @property (nonatomic, strong) VEVideoPlayerController *playerController;
 @property (nonatomic, strong) UIView *navView;
-
 
 @end
 
@@ -31,7 +24,6 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initialUI];
-
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -52,7 +44,7 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
     [self.view addSubview:self.navView];
     [self.navView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.equalTo(self.view);
-        make.height.mas_equalTo(44 + [DeviceInforTool getStatusBarHight]);
+        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(44);
     }];
 
     [self.view addSubview:self.tableView];
@@ -114,17 +106,13 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
 - (void)feedVideoCellReport:(VEFeedVideoNormalCell *)cell {
 }
 
-- (void)feedVideoCellDidRotate:(VEFeedVideoNormalCell *)cell { 
-    
+- (void)feedVideoCellDidRotate:(VEFeedVideoNormalCell *)cell {
 }
 
-
-- (void)feedVideoDidEndPlay:(VEVideoModel *)videoModel playAt:(CFTimeInterval)time duration:(CFTimeInterval)duration { 
-    
+- (void)feedVideoDidEndPlay:(VEVideoModel *)videoModel playAt:(CFTimeInterval)time duration:(CFTimeInterval)duration {
 }
 
-
-- (CFTimeInterval)feedVideoWillStartPlay:(VEVideoModel *)videoModel { 
+- (CFTimeInterval)feedVideoWillStartPlay:(VEVideoModel *)videoModel {
     return 0;
 }
 
@@ -166,7 +154,7 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
     if (!_navView) {
         _navView = [[UIView alloc] init];
         _navView.backgroundColor = [UIColor colorFromHexString:@"#0C0D0F"];
-        
+
         BaseButton *button = [[BaseButton alloc] init];
         button.backgroundColor = [UIColor clearColor];
         UIImage *image = [UIImage imageNamed:@"nav_left"];
@@ -179,7 +167,7 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
             make.left.mas_equalTo(15);
             make.bottom.mas_equalTo(-14);
         }];
-        
+
         UILabel *label = [[UILabel alloc] init];
         label.text = LocalizedStringFromBundle(@"vod_entry_feed", @"VEVodApp");
         label.textColor = [UIColor whiteColor];
@@ -216,6 +204,5 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
         return NO;
     }
 }
-
 
 @end

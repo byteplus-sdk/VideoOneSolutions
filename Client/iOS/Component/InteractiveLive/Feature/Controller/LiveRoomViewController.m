@@ -88,10 +88,8 @@
     [self joinRoom];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    [self.navigationController setNavigationBarHidden:YES animated:NO];
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -282,18 +280,18 @@
 
 - (void)loadDataWithupdateRes:(LiveUserModel *)loginUserModel {
     BOOL isHost = (loginUserModel.role == 2);
-    CGSize videoSize = isHost ? [LiveSettingVideoConfig defultVideoConfig].videoSize : [LiveSettingVideoConfig defultVideoConfig].guestVideoSize;
+    CGSize videoSize = isHost ? [LiveSettingVideoConfig defaultVideoConfig].videoSize : [LiveSettingVideoConfig defaultVideoConfig].guestVideoSize;
     [LiveRTSManager liveUpdateResWithSize:videoSize
                                    roomID:self.liveRoomModel.roomID
                                     block:^(RTSACKModel *_Nonnull model) {
                                         if (model.result) {
                                             if (isHost) {
                                                 // Streamers update merge resolution and RTC encoding resolution
-                                                [[LiveRTCManager shareRtc] updateLiveTranscodingResolution:videoSize];
-                                                [[LiveRTCManager shareRtc] updateVideoEncoderResolution:videoSize];
+                                                [self.linkSession updatePushStreamResolution:videoSize];
+                                                [self.linkSession updateVideoEncoderResolution:videoSize];
                                             } else {
                                                 // Guests update RTC encoding resolution
-                                                [[LiveRTCManager shareRtc] updateVideoEncoderResolution:videoSize];
+                                                [self.linkSession updateVideoEncoderResolution:videoSize];
                                             }
                                         }
                                     }];
@@ -670,37 +668,13 @@
 }
 
 #pragma mark - LiveRtcLinkSessionNetworkChangeDelegate
-- (void)updateOnNetworkStatusChange:(LiveCoreNetworkQuality)status {
-    switch (status) {
-        case LiveCoreNetworkQualityExcellent:
-            [self.livePushStreamComponent updateNetworkQuality:LiveNetworkQualityStatusGood];
-            break;
-        case LiveCoreNetworkQualityPoor:
-        case LiveCoreNetworkQualityBad:
-            [self.livePushStreamComponent updateNetworkQuality:LiveNetworkQualityStatusBad];
-            break;
-        case LiveCoreNetworkQualityUnknown:
-            [self.livePushStreamComponent updateNetworkQuality:LiveNetworkQualityStatusBad];
-            break;
-        default:
-            [self.livePushStreamComponent updateNetworkQuality:LiveNetworkQualityStatusBad];
-            break;
-    }
+- (void)updateOnNetworkStatusChange:(LiveNetworkQualityStatus)status {
+    [self.livePushStreamComponent updateNetworkQuality:status];
 }
 
 #pragma mark - LiveRTCManagerReconnectDelegate
 - (void)LiveRTCManagerReconnectDelegate:(LiveRTCManager *)manager onRoomStateChanged:(RTCJoinModel *)joinModel uid:(NSString *)uid {
     if (joinModel.joinType == 0) {
-        // Entering the room for the first time
-        if ([self isHost]) {
-            // turn on the merge and retweet
-            [[LiveRTCManager shareRtc]
-                startMixStreamRetweetWithPushUrl:self.streamPushUrl
-                                        hostUser:self.liveRoomModel.hostUserModel
-                                       rtcRoomId:self.liveRoomModel.rtcRoomId];
-
-            //            [[LiveRTCManager shareRtc] stopNormalStreaming];
-        }
     } else {
         // Entering the room after reconnection
         [self reconnectLiveRoom];
@@ -752,7 +726,7 @@
     [self.hostAvatarView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(36);
         make.left.equalTo(self.view).offset(12);
-        make.top.equalTo(self.view).offset([DeviceInforTool getStatusBarHight] + 2);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(2);
     }];
 
     [self.view addSubview:self.closeLiveButton];
@@ -772,7 +746,7 @@
     [self.view addSubview:self.bottomView];
     [self.bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(self.view);
-        make.bottom.mas_equalTo(-[DeviceInforTool getVirtualHomeHeight]);
+        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideBottom);
         make.height.mas_equalTo(36);
     }];
 

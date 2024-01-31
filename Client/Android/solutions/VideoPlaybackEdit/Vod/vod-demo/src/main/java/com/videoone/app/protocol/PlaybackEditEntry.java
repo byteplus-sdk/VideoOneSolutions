@@ -3,7 +3,7 @@
 
 package com.videoone.app.protocol;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.DrawableRes;
@@ -13,36 +13,49 @@ import androidx.annotation.StringRes;
 
 import com.bytedance.voddemo.impl.R;
 import com.bytedance.voddemo.ui.main.MainTabActivity;
+import com.bytedance.voddemo.ui.settings.SettingsActivity;
 
 /**
  * Demo App Entry
  * used by reflection
  */
 @Keep
-public class PlaybackEditEntry {
+public class PlaybackEditEntry implements ISceneEntry {
 
-    @Keep
     @DrawableRes
-    public int icon() {
-        return R.drawable.vevod_playback_edit_icon;
+    @Override
+    public int getBackground() {
+        return R.drawable.vevod_bg_entry;
     }
 
-    @Keep
     @StringRes
-    public int title() {
+    @Override
+    public int getTitle() {
         return R.string.vevod_playback_edit_title;
     }
 
-    @Keep
     @StringRes
-    public int description() {
+    @Override
+    public int getDescription() {
         return R.string.vevod_playback_edit_description;
     }
 
-    @Keep
-    public void startup(@NonNull Activity activity) {
+    @Override
+    public boolean getShowGear() {
+        return false;
+    }
+
+    @Override
+    public void startup(@NonNull Context context) {
         Intent intent = new Intent();
-        intent.setClass(activity, MainTabActivity.class);
-        activity.startActivity(intent);
+        intent.setClass(context, MainTabActivity.class);
+        context.startActivity(intent);
+    }
+
+    @Override
+    public void startSettings(@NonNull Context context) {
+        Intent intent = new Intent();
+        intent.setClass(context, SettingsActivity.class);
+        context.startActivity(intent);
     }
 }

@@ -7,11 +7,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, VEMainItemStatus) {
+    VEMainItemStatusDark,
+    VEMainItemStatusLight,
+    VEMainItemStatusActive,
+};
+
+@class VEViewController;
+
 @interface VEMainItemButton : BaseButton
 
-@property (nonatomic, copy) NSString *desTitle;
-
-- (void)bingLabelColor:(UIColor *)color status:(ButtonStatus)status;
+@property (nonatomic, assign) NSUInteger index;
+@property (nonatomic, strong, nullable) VEViewController *bingedVC;
 
 @end
 

@@ -85,6 +85,7 @@
 - (UISlider *)slider {
     if (!_slider) {
         _slider = [[UISlider alloc] init];
+        _slider.continuous = NO;
         [_slider setTintColor:[UIColor colorFromHexString:@"#FF1764"]];
         [_slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
     }

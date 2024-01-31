@@ -36,7 +36,7 @@
         [self addSubview:self.roomTableView];
         [self.roomTableView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.right.equalTo(self);
-            make.bottom.equalTo(self).offset(-[DeviceInforTool getVirtualHomeHeight]);
+            make.bottom.equalTo(self.mas_safeAreaLayoutGuideBottom);
             make.top.equalTo(self.numberLabel.mas_bottom);
         }];
 

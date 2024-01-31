@@ -1,10 +1,5 @@
-//
-//  VEPlayUrlConfigViewController.m
-//  VideoPlaybackEdit
-//
-//  Created by bytedance on 2023/11/1.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "VEPlayUrlConfigViewController.h"
 #import <Masonry/Masonry.h>
 #import "VEVideoUrlParser.h"

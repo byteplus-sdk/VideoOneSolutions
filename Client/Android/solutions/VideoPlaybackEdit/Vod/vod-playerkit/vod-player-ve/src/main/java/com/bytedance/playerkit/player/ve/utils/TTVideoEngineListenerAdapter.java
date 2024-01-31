@@ -7,6 +7,7 @@ import com.ss.ttvideoengine.PlayerEventListener;
 import com.ss.ttvideoengine.PlayerEventSimpleListener;
 import com.ss.ttvideoengine.Resolution;
 import com.ss.ttvideoengine.SeekCompletionListener;
+import com.ss.ttvideoengine.SubInfoCallBack;
 import com.ss.ttvideoengine.TTVideoEngine;
 import com.ss.ttvideoengine.VideoEngineCallback;
 import com.ss.ttvideoengine.VideoEngineInfoListener;
@@ -21,7 +22,8 @@ public class TTVideoEngineListenerAdapter extends PlayerEventSimpleListener impl
         SeekCompletionListener,
         VideoInfoListener,
         VideoEngineInfoListener,
-        PlayerEventListener {
+        PlayerEventListener,
+        SubInfoCallBack {
 
     @Override
     public void onCompletion(boolean b) {
@@ -129,5 +131,52 @@ public class TTVideoEngineListenerAdapter extends PlayerEventSimpleListener impl
     @Override
     public String getEncryptedLocalTime() {
         return null;
+    }
+
+    /**
+     * subtitle
+     * @param subPathInfo sub apiString response info
+     * @param error error info
+     */
+    @Override
+    public void onSubPathInfo(String subPathInfo, Error error) {
+    }
+
+    /**
+     * subtitle
+     * @param info subtitle info json String
+     * @param code error code
+     * filed:
+     * duration: duration
+     * pts:      timestamp
+     * info:     subtitle
+     */
+    @Override
+    public void onSubInfoCallback(int code, String info) {
+    }
+
+    /**
+     * subtitle
+     * @param success is switch success
+     * @param subId current sub id
+     */
+    @Override
+    public void onSubSwitchCompleted(int success, int subId) {
+    }
+
+    @Override
+    public void onSubLoadFinished(int success) {
+    }
+
+    /**
+     * subtitle
+     * @param success is subtitle load success
+     * @param info subtitle info json String
+     * field:
+     * first_pts: first subtitle frame timestamp
+     * code：load state code
+     * */
+    @Override
+    public void onSubLoadFinished2(int success, String info) {
     }
 }

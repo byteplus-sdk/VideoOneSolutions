@@ -108,7 +108,7 @@ public class VideoItem implements Parcelable {
             @NonNull String vid,
             @NonNull String playAuthToken,
             @Nullable String cover) {
-        return createVidItem(vid, playAuthToken, 0, cover, null);
+        return createVidItem(vid, playAuthToken, 0, cover, null, null);
     }
 
     public static VideoItem createVidItem(
@@ -116,11 +116,13 @@ public class VideoItem implements Parcelable {
             @NonNull String playAuthToken,
             long duration,
             @Nullable String cover,
-            @Nullable String title) {
+            @Nullable String title,
+            @Nullable String subtitleAuthToken) {
         VideoItem videoItem = new VideoItem();
         videoItem.sourceType = SOURCE_TYPE_VID;
         videoItem.vid = vid;
         videoItem.playAuthToken = playAuthToken;
+        videoItem.subtitleAuthToken = subtitleAuthToken;
         videoItem.duration = duration;
         videoItem.cover = cover;
         videoItem.title = title;
@@ -362,7 +364,7 @@ public class VideoItem implements Parcelable {
             mediaSource = videoItem.mediaSource;
         } else {
             if (videoItem.sourceType == VideoItem.SOURCE_TYPE_VID) {
-                mediaSource = MediaSource.createIdSource(videoItem.vid, videoItem.playAuthToken);
+                mediaSource = MediaSource.createIdSource(videoItem.vid, videoItem.playAuthToken, videoItem.subtitleAuthToken);
             } else if (videoItem.sourceType == VideoItem.SOURCE_TYPE_URL) {
                 mediaSource = MediaSource.createUrlSource(videoItem.vid, videoItem.url, videoItem.urlCacheKey);
             } else if (videoItem.sourceType == VideoItem.SOURCE_TYPE_MODEL) {

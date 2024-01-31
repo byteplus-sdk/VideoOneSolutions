@@ -9,15 +9,17 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 
 import com.bytedance.voddemo.VodSDK;
 import com.bytedance.voddemo.impl.BuildConfig;
 
 @Keep
-public class PlaybackEditInitializer {
+public class PlaybackEditInitializer implements IInitializer {
     private static final String TAG = "VideoPlaybackEdit";
 
-    public void initialize(Application application) {
+    @Override
+    public void initialize(@NonNull Application application) {
         Log.d(TAG, "PlaybackEditInitializer.initialize(Application) called");
 
         PackageInfo info;

@@ -52,6 +52,8 @@
             android:name="com.vertcdemo.app.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
+
+        <service android:name=".PictureInPictureService"/>
     </application>
 
 </manifest>

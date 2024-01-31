@@ -29,11 +29,16 @@ import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.adapter.PlayerAdapter;
 import com.bytedance.playerkit.player.source.MediaSource;
 import com.bytedance.playerkit.player.source.Quality;
+import com.bytedance.playerkit.player.source.Subtitle;
+import com.bytedance.playerkit.player.source.SubtitlePathInfo;
+import com.bytedance.playerkit.player.source.SubtitleText;
 import com.bytedance.playerkit.player.source.Track;
 import com.bytedance.playerkit.player.source.TrackSelector;
 import com.bytedance.playerkit.player.ve.utils.TTVideoEngineListenerAdapter;
+import com.bytedance.playerkit.player.ve.utils.TTVideoEngineSubtitleCallbackAdapter;
 import com.bytedance.playerkit.utils.Asserts;
 import com.bytedance.playerkit.utils.L;
+import com.google.gson.Gson;
 import com.ss.ttm.player.PlaybackParams;
 import com.ss.ttvideoengine.Resolution;
 import com.ss.ttvideoengine.TTVideoEngine;
@@ -203,6 +208,7 @@ class VEPlayer implements PlayerAdapter {
         return TTVideoEngineFactory.Default.get().create(context, mediaSource);
     }
 
+
     private static void bind(TTVideoEngine player, MediaSource mediaSource) {
         if (mediaSource.getSourceType() == MediaSource.SOURCE_TYPE_ID) {
             player.setVideoInfoListener(new TTVideoEngineListenerAdapter() {
@@ -267,7 +273,18 @@ class VEPlayer implements PlayerAdapter {
         player.setVideoEngineInfoListener(mListenerAdapter);
         player.setVideoInfoListener(mListenerAdapter);
         player.setPlayerEventListener(mListenerAdapter);
+        player.setSubInfoCallBack(new TTVideoEngineSubtitleCallbackAdapter(mListenerAdapter));
         mPlayer = player;
+    }
+
+    protected void unbind() {
+        final TTVideoEngine player = mPlayer;
+        if (player == null) return;
+        player.setVideoEngineCallback(null);
+        player.setVideoEngineInfoListener(null);
+        player.setVideoInfoListener(null);
+        player.setPlayerEventListener(null);
+        player.setSubInfoCallBack(null);
     }
 
     @Override
@@ -634,6 +651,9 @@ class VEPlayer implements PlayerAdapter {
         StrategySource strategySource = Mapper.mediaSource2VidPlayAuthTokenSource(mediaSource, null);
         Map<String, String> headers = mediaSource.getHeaders();
         PlayerConfig playerConfig = PlayerConfig.get(mediaSource);
+        if (!TextUtils.isEmpty(mediaSource.getSubtitleAuthToken())) {
+            mPlayer.setSubAuthToken(mediaSource.getSubtitleAuthToken());
+        }
         preparePlayer(strategySource, headers, playerConfig);
     }
 
@@ -665,6 +685,9 @@ class VEPlayer implements PlayerAdapter {
                 track,
                 VEPlayerInit.getCacheKeyFactory()
         );
+        if (!TextUtils.isEmpty(mediaSource.getSubtitleAuthToken())) {
+            mPlayer.setSubAuthToken(mediaSource.getSubtitleAuthToken());
+        }
         preparePlayer(strategySource, headers, playerConfig);
     }
 
@@ -803,6 +826,7 @@ class VEPlayer implements PlayerAdapter {
         mPlayer.setIsMute(true);
         resetInner();
         mPlayer.releaseAsync();
+        unbind();
         setState(Player.STATE_RELEASED);
     }
 
@@ -991,6 +1015,52 @@ class VEPlayer implements PlayerAdapter {
     }
 
     @Override
+    public void setSubtitleEnabled(boolean enabled) {
+        if (enabled == isSubtitleEnabled()) {
+            return;
+        }
+        TTVideoEngine player = mPlayer;
+        if (player != null) {
+            player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_OPEN_SUB, enabled ? 1 : 0);
+        }
+        Listener listener = mListener;
+        if (listener == null) return;
+        listener.onSubtitleStateChanged(this, enabled);
+    }
+
+    @Override
+    public boolean isSubtitleEnabled() {
+        TTVideoEngine player = mPlayer;
+        return player != null && player.getIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_OPEN_SUB) == 1;
+    }
+
+    @Override
+    public void selectSubtitle(Subtitle subtitle) {
+        MediaSource mediaSource = mMediaSource;
+        TTVideoEngine player = mPlayer;
+        if (mediaSource == null || player == null || subtitle == null) {
+            return;
+        }
+        mediaSource.setSubtitle(subtitle);
+        player.setIntOption(TTVideoEngine.PLAYER_OPTION_SWITCH_SUB_ID, subtitle.subtitleId);
+        Listener listener = mListener;
+        if (listener == null) return;
+        listener.onSubtitleChanged(this, subtitle);
+    }
+
+    @Override
+    public Subtitle getSelectedSubtitle() {
+        MediaSource mediaSource = mMediaSource;
+        return mediaSource == null ? null : mediaSource.getSubtitle();
+    }
+
+    @Override
+    public List<Subtitle> getSupportSubtitles() {
+        MediaSource mediaSource = mMediaSource;
+        return mediaSource == null ? null : mediaSource.getSubtitles();
+    }
+
+    @Override
     public String dump() {
         return L.obj2String(this)
                 + " " + resolvePlayerDecoderType(mPlayer)
@@ -1042,6 +1112,7 @@ class VEPlayer implements PlayerAdapter {
     private static class ListenerAdapter extends TTVideoEngineListenerAdapter {
 
         private final WeakReference<VEPlayer> mPlayerRef;
+        private final Gson mGson = new Gson();
 
         ListenerAdapter(VEPlayer player) {
             this.mPlayerRef = new WeakReference<>(player);
@@ -1269,6 +1340,60 @@ class VEPlayer implements PlayerAdapter {
             if (listener == null) return;
 
             listener.onProgressUpdate(player, currentPlaybackTime);
+        }
+
+        @Override
+        public void onSubPathInfo(String subPathInfo, Error error) {
+            super.onSubPathInfo(subPathInfo, error);
+            VEPlayer player = mPlayerRef.get();
+            if (player == null) return;
+            Listener listener = player.mListener;
+            if (listener == null) return;
+            SubtitlePathInfo subtitlePathInfo = mGson.fromJson(subPathInfo, SubtitlePathInfo.class);
+            L.d(this, "onSubPathInfo Error :  " + error + " ,info : " + subPathInfo);
+            if (subtitlePathInfo == null || subtitlePathInfo.list == null || subtitlePathInfo.list.isEmpty()) {
+                listener.onSubtitleInfoReady(player, null);
+                return;
+            }
+            Subtitle lastSubtitle = null;
+            if (player.mMediaSource != null) {
+                lastSubtitle = player.mMediaSource.getSubtitle();
+                player.mMediaSource.setSubtitles(subtitlePathInfo.list);
+            }
+            listener.onSubtitleInfoReady(player, subtitlePathInfo.list);
+            Subtitle selectSubtitle = null;
+            for (Subtitle subtitle : subtitlePathInfo.list) {
+                if (lastSubtitle != null && lastSubtitle.subtitleId == subtitle.subtitleId) {
+                    selectSubtitle = subtitle;
+                    break;
+                }
+                if ("ASR".equals(subtitle.source) && selectSubtitle == null) {
+                    selectSubtitle = subtitle;
+                }
+            }
+            player.selectSubtitle(selectSubtitle);
+        }
+
+        @Override
+        public void onSubInfoCallback(int code, String info) {
+            super.onSubInfoCallback(code, info);
+            // info {"duration":1980,"info":"can i help you","pts":10120}
+            VEPlayer player = mPlayerRef.get();
+            if (player == null) return;
+            Listener listener = player.mListener;
+            if (listener == null) return;
+            SubtitleText subtitleText = mGson.fromJson(info, SubtitleText.class);
+            listener.onSubtitleTextUpdate(player, subtitleText);
+        }
+
+        @Override
+        public void onSubLoadFinished2(int success, String info) {
+            super.onSubLoadFinished2(success, info);
+            VEPlayer player = mPlayerRef.get();
+            if (player == null) return;
+            Listener listener = player.mListener;
+            if (listener == null) return;
+            listener.onSubtitleFileLoadFinish(player, success, info);
         }
     }
 

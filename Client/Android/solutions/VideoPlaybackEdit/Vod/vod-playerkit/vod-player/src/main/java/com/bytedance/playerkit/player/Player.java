@@ -23,6 +23,7 @@ import com.bytedance.playerkit.player.event.StateStarted;
 import com.bytedance.playerkit.player.event.StateStopped;
 import com.bytedance.playerkit.player.legacy.PlayerLegacy;
 import com.bytedance.playerkit.player.source.MediaSource;
+import com.bytedance.playerkit.player.source.Subtitle;
 import com.bytedance.playerkit.player.source.Track;
 import com.bytedance.playerkit.player.source.Track.TrackType;
 import com.bytedance.playerkit.utils.event.Dispatcher;
@@ -725,6 +726,16 @@ public interface Player {
      */
     @Nullable
     PlayerException getPlayerException();
+
+    List<Subtitle> getSubtitles();
+
+    void selectSubtitle(@Nullable Subtitle subtitle);
+
+    Subtitle getSelectedSubtitle();
+
+    void setSubtitleEnabled(boolean enabled);
+
+    boolean isSubtitleEnabled();
 
     String dump();
 }

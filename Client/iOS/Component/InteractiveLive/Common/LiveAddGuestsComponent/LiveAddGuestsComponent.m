@@ -365,7 +365,7 @@ NSTimeInterval const LiveApplyOvertimeInterval = 4.0;
                                         }];
 }
 - (void)loadDataWithupdateRes:(BOOL)isOnMic {
-    CGSize videoSize = isOnMic ? [LiveSettingVideoConfig defultVideoConfig].guestVideoSize : CGSizeZero;
+    CGSize videoSize = isOnMic ? [LiveSettingVideoConfig defaultVideoConfig].guestVideoSize : CGSizeZero;
     [LiveRTSManager liveUpdateResWithSize:videoSize
                                    roomID:self.roomInfoModel.roomID
                                     block:^(RTSACKModel *_Nonnull model) {

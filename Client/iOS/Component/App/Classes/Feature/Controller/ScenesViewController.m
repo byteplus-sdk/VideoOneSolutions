@@ -9,6 +9,7 @@
 #import <ToolKit/ToolKit.h>
 
 @interface ScenesViewController () <UITableViewDelegate, UITableViewDataSource>
+
 @property (nonatomic, strong) UIImageView *backgroundImgView;
 @property (nonatomic, strong) UIImageView *iconImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
@@ -30,10 +31,8 @@
 
     [self.view addSubview:self.iconImageView];
     [self.iconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(self.view.mas_left).offset(16);
-        make.top.mas_equalTo(45 + [DeviceInforTool getStatusBarHight]);
-        make.width.mas_equalTo(72);
-        make.height.mas_equalTo(13);
+        make.left.equalTo(self.view.mas_left).offset(16);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(15);
     }];
 
     [self.view addSubview:self.titleLabel];
@@ -53,15 +52,13 @@
     // TableView
     [self.view addSubview:self.tableView];
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.desLabel.mas_bottom).mas_offset(30);
-        make.bottom.equalTo(self.view);
-        make.left.right.equalTo(self.view);
+        make.top.equalTo(self.desLabel.mas_bottom).mas_offset(12);
+        make.left.right.bottom.equalTo(self.view);
     }];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
 }
 
 #pragma mark - TableView Delegate && Datasource
@@ -73,29 +70,30 @@
     return self.dataArray.count;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return (self.view.bounds.size.width - 32.0) / 343.0 * 250.0 + 16.0;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    BaseSceneEntrance *model = self.dataArray[indexPath.row];
+    [self sceneCellAction:model];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     SceneTableCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SceneTableCell" forIndexPath:indexPath];
     cell.model = self.dataArray[indexPath.row];
-    __weak __typeof__(self) weakSelf = self;
-    [cell setGoAction:^(SceneTableCell *cell, BaseSceneEntrance *_Nonnull model) {
-        __strong __typeof__(weakSelf) self = weakSelf;
-        [self sceneCell:cell action:model];
-    }];
     return cell;
 }
 
 #pragma mark - Touch Action
 
-- (void)sceneCell:(SceneTableCell *)cell action:(BaseSceneEntrance *)model {
+- (void)sceneCellAction:(BaseSceneEntrance *)model {
     // Open the corresponding scene home page
     self.tableView.userInteractionEnabled = NO;
 
     __weak __typeof__(self) weakSelf = self;
-    [model enterSceneWithCallback:^(BOOL result) {
+    [model enterWithCallback:^(BOOL result) {
         __strong __typeof__(weakSelf) self = weakSelf;
         self.tableView.userInteractionEnabled = YES;
     }];
@@ -106,23 +104,10 @@
 #pragma mark - Getter
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:(UITableViewStyleGrouped)];
-        _tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
-        _tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
-        _tableView.sectionFooterHeight = 0.01;
-        _tableView.estimatedSectionFooterHeight = 0.01;
-        _tableView.sectionHeaderHeight = 0.01;
-        _tableView.estimatedSectionHeaderHeight = 0.01;
+        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
         _tableView.backgroundColor = [UIColor clearColor];
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        if (@available(iOS 15.0, *)) {
-            _tableView.sectionHeaderTopPadding = 0.01;
-        }
-        if (@available(iOS 11.0, *)) {
-            _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        } else {
-            self.automaticallyAdjustsScrollViewInsets = NO;
-        }
+        _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         _tableView.showsVerticalScrollIndicator = NO;
         _tableView.delegate = self;
         _tableView.dataSource = self;
@@ -142,12 +127,11 @@
 }
 
 - (NSMutableArray *)dataArray {
-    if (_dataArray == nil) {
+    if (!_dataArray) {
         _dataArray = [NSMutableArray array];
         for (NSDictionary *scene in [ScenesViewController scenesList]) {
             BaseSceneEntrance *entrance = [[NSClassFromString(scene[@"className"]) alloc] init];
             if (entrance) {
-                entrance.isNew = [scene[@"isNew"] boolValue];
                 [_dataArray addObject:entrance];
             }
         }
@@ -168,7 +152,7 @@
         _titleLabel = [[UILabel alloc] init];
         _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         _titleLabel.textColor = [UIColor whiteColor];
-        _titleLabel.font = [UIFont fontWithName:@"Roboto" size:28] ?: [UIFont boldSystemFontOfSize:28];
+        _titleLabel.font = [UIFont fontWithName:@"Roboto-Bold" size:28] ?: [UIFont boldSystemFontOfSize:28];
         _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         if (@available(iOS 14.0, *)) {
             _titleLabel.lineBreakStrategy = NSLineBreakStrategyNone;
@@ -201,10 +185,9 @@
     static NSArray *_scenes;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _scenes = @[@{@"className": @"InteractiveLive",
-                      @"isNew": @(NO)},
-                    @{@"className": @"VideoPlaybackEdit",
-                      @"isNew": @(YES)},
+        _scenes = @[
+            @{@"className": @"VideoPlaybackEdit"},
+            @{@"className": @"InteractiveLive"},
         ];
     });
     return _scenes;

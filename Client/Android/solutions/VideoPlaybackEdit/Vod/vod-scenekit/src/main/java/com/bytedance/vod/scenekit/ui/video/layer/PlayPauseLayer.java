@@ -25,6 +25,9 @@ import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.utils.UIUtils;
 
 public class PlayPauseLayer extends AnimateLayer {
+    private ImageView mPreviousIv;
+    private ImageView mPlayIv;
+    private ImageView mNextIv;
 
     @Override
     public String tag() {
@@ -34,11 +37,13 @@ public class PlayPauseLayer extends AnimateLayer {
     @Nullable
     @Override
     protected View createView(@NonNull ViewGroup parent) {
-        final View ivPlayPause = (ImageView) LayoutInflater.from(parent.getContext())
+        final View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.vevod_play_pause_layer, parent, false);
-
-        ivPlayPause.setOnClickListener(v -> togglePlayPause());
-        return ivPlayPause;
+        mPreviousIv = view.findViewById(R.id.previous);
+        mPlayIv = view.findViewById(R.id.play);
+        mNextIv = view.findViewById(R.id.next);
+        mPlayIv.setOnClickListener(v -> togglePlayPause());
+        return view;
     }
 
     @Override
@@ -59,6 +64,17 @@ public class PlayPauseLayer extends AnimateLayer {
         return player != null && player.isPaused();
     }
 
+    @Override
+    public void animateShow(boolean autoDismiss) {
+        PlayCompleteLayer layer = findLayer(PlayCompleteLayer.class);
+        if (layer != null && layer.isShowing()) {
+            // Exclusive with PlayCompleteLayer
+            return;
+        }
+
+        super.animateShow(autoDismiss);
+    }
+
     protected void togglePlayPause() {
         final Player player = player();
         if (player != null) {
@@ -75,7 +91,7 @@ public class PlayPauseLayer extends AnimateLayer {
     }
 
     protected void setPlayPause(boolean isPlay) {
-        final ImageView playButton = getView();
+        final ImageView playButton = mPlayIv;
         if (playButton == null) return;
 
         playButton.setSelected(isPlay);
@@ -96,54 +112,64 @@ public class PlayPauseLayer extends AnimateLayer {
     }
 
     private void syncTheme() {
-        final ImageView playButton = getView();
+        final ImageView playButton = mPlayIv;
         if (playButton == null) return;
         VideoView videoView = videoView();
         if (videoView == null) return;
-        if (videoView.getPlayScene() == PlayScene.SCENE_FULLSCREEN) {
+        int size;
+        if (PlayScene.isFullScreenMode(playScene())) {
             playButton.setImageDrawable(ResourcesCompat.getDrawable(playButton.getResources(),
                     R.drawable.vevod_play_pause_layer_fullscreen_ic_selector, null));
-            final int size = (int) UIUtils.dip2Px(context(), 48);
-            playButton.getLayoutParams().width = size;
-            playButton.getLayoutParams().height = size;
-            playButton.requestLayout();
+            size = (int) UIUtils.dip2Px(context(), 48);
         } else {
             playButton.setImageDrawable(ResourcesCompat.getDrawable(playButton.getResources(),
                     R.drawable.vevod_play_pause_layer_halfscreen_ic_selector, null));
-            final int size = (int) UIUtils.dip2Px(context(), 40);
-            playButton.getLayoutParams().width = size;
-            playButton.getLayoutParams().height = size;
-            playButton.requestLayout();
+            size = (int) UIUtils.dip2Px(context(), 40);
+        }
+        playButton.getLayoutParams().width = size;
+        playButton.getLayoutParams().height = size;
+        playButton.requestLayout();
+        if (mPreviousIv.getVisibility() == View.VISIBLE) {
+            mPreviousIv.getLayoutParams().width = size;
+            mPreviousIv.getLayoutParams().height = size;
+            mPreviousIv.requestLayout();
+        }
+        if (mNextIv.getVisibility() == View.VISIBLE) {
+            mNextIv.getLayoutParams().width = size;
+            mNextIv.getLayoutParams().height = size;
+            mNextIv.requestLayout();
         }
     }
 
     private final Dispatcher.EventListener mPlaybackListener = event -> {
         switch (event.code()) {
-            case PlaybackEvent.Action.START_PLAYBACK:
+            case PlaybackEvent.Action.START_PLAYBACK: {
                 if (player() == null) {
                     dismiss();
                 }
                 break;
-        }
-
-        switch (event.code()) {
+            }
             case PlayerEvent.State.STARTED:
-            case PlayerEvent.State.PAUSED:
+            case PlayerEvent.State.PAUSED: {
                 syncState();
                 break;
-            case PlayerEvent.State.COMPLETED:
+            }
+            case PlayerEvent.State.COMPLETED: {
                 syncState();
                 dismiss();
                 break;
+            }
             case PlayerEvent.State.STOPPED:
-            case PlayerEvent.State.RELEASED:
+            case PlayerEvent.State.RELEASED: {
                 show();
                 break;
+            }
             case PlayerEvent.State.ERROR:
             case PlayerEvent.Info.BUFFERING_END:
-            case PlayerEvent.Info.BUFFERING_START:
+            case PlayerEvent.Info.BUFFERING_START: {
                 dismiss();
                 break;
+            }
         }
     };
 
@@ -165,6 +191,22 @@ public class PlayPauseLayer extends AnimateLayer {
         } else {
             dismiss();
         }
+    }
+
+    public void showPreviousBtn(boolean show) {
+        mPreviousIv.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void showNextBtn(boolean show) {
+        mNextIv.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void setPreviousBtnOnClickListener(View.OnClickListener listener) {
+        mPreviousIv.setOnClickListener(listener);
+    }
+
+    public void setNextBtnOnClickListener(View.OnClickListener listener) {
+        mNextIv.setOnClickListener(listener);
     }
 
     protected boolean checkShow() {

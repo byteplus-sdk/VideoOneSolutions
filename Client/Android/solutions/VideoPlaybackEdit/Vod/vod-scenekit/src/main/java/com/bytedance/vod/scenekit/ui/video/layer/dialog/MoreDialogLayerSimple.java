@@ -4,10 +4,13 @@
 
 package com.bytedance.vod.scenekit.ui.video.layer.dialog;
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +23,16 @@ import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.PlayerEvent;
 import com.bytedance.playerkit.player.event.ActionSetLooping;
 import com.bytedance.playerkit.player.playback.PlaybackController;
-import com.bytedance.playerkit.player.playback.VideoLayerHost;
 import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.utils.event.Dispatcher;
-import com.bytedance.vod.scenekit.ui.video.layer.Layers;
+import com.bytedance.vod.scenekit.R;
+import com.bytedance.vod.scenekit.VideoSettings;
 import com.bytedance.vod.scenekit.databinding.VevodMoreDialogLayerSimpleBinding;
 import com.bytedance.vod.scenekit.ui.video.layer.GestureLayer;
-import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
+import com.bytedance.vod.scenekit.ui.video.layer.Layers;
+import com.bytedance.vod.scenekit.ui.video.layer.MiniPlayerLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.helper.MiniPlayerHelper;
+import com.bytedance.vod.settingskit.CenteredToast;
 import com.vertcdemo.base.ReportDialog;
 
 
@@ -38,7 +44,7 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
 
     private final boolean mShowLoopMode;
 
-    MoreDialogLayerSimple(boolean showLoopMode) {
+    MoreDialogLayerSimple(boolean showLoopMode, boolean showMiniPlayer) {
         this.mShowLoopMode = showLoopMode;
     }
 
@@ -79,6 +85,24 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
             }
         });
 
+
+        binding.miniplayer.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                CenteredToast.show(v.getContext(), "OS's version is low, does not support PIP");
+                return;
+            }
+            boolean newValue = !v.isSelected();
+            if (newValue && !MiniPlayerHelper.get().hasMiniPlayerPermission(v.getContext())) {
+                CenteredToast.show(v.getContext(), R.string.vevod_miniplayer_permission_denied);
+                return;
+            }
+            v.setSelected(newValue);
+            VideoSettings.option(VideoSettings.COMMON_IS_MINIPLAYER_ON).saveUserValue(newValue);
+            if (newValue) {
+                CenteredToast.show(v.getContext(), R.string.vevod_miniplayer_open_success);
+            }
+        });
+
         binding.report.setOnClickListener(v -> ReportDialog.show(context));
 
         binding.getRoot().setOnClickListener(v -> animateDismiss());
@@ -99,8 +123,8 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
     private VolumeReceiver mVolumeReceiver;
 
     @Override
-    protected void onBindLayerHost(@NonNull VideoLayerHost layerHost) {
-        super.onBindLayerHost(layerHost);
+    public void onVideoViewAttachedToWindow(@NonNull VideoView videoView) {
+        super.onVideoViewAttachedToWindow(videoView);
         if (mVolumeReceiver == null) {
             mVolumeReceiver = new VolumeReceiver(this);
         }
@@ -108,13 +132,8 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
     }
 
     @Override
-    protected void onBindVideoView(@NonNull VideoView videoView) {
-        super.onBindVideoView(videoView);
-    }
-
-    @Override
-    protected void onUnbindLayerHost(@NonNull VideoLayerHost layerHost) {
-        super.onUnbindLayerHost(layerHost);
+    public void onVideoViewDetachedFromWindow(@NonNull VideoView videoView) {
+        super.onVideoViewDetachedFromWindow(videoView);
         if (mVolumeReceiver != null) {
             mVolumeReceiver.unregister(activity());
         }
@@ -146,7 +165,7 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
 
     @Override
     public void syncVolume() {
-        if (binding == null) return;
+        if (!isShowing()) return;
         final Player player = player();
         if (player == null) {
             binding.volume.setProgress(50);
@@ -163,11 +182,17 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
         syncViewLoopState();
         syncBrightness();
         syncVolume();
+        syncMiniPlayerState();
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
     }
 
     @Override
     public void onVideoViewPlaySceneChanged(int fromScene, int toScene) {
-        if (playScene() != PlayScene.SCENE_FULLSCREEN) {
+        if (!isFullScreenMode(toScene)) {
             dismiss();
         }
     }
@@ -193,6 +218,16 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
             return;
         }
         setViewLoop(player.isLooping());
+    }
+
+    private void syncMiniPlayerState() {
+        MiniPlayerLayer miniPlayerLayer = findLayer(MiniPlayerLayer.class);
+        if (miniPlayerLayer == null) {
+            binding.miniplayer.setVisibility(View.GONE);
+        } else {
+            binding.miniplayer.setVisibility(View.VISIBLE);
+            binding.miniplayer.setSelected(MiniPlayerHelper.get().isMiniPlayerOn());
+        }
     }
 
     @Override

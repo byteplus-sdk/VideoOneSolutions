@@ -21,7 +21,7 @@
         [superView addSubview:self.baseIMView];
         [self.baseIMView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(12);
-            make.bottom.mas_equalTo(-([DeviceInforTool getVirtualHomeHeight] + 44));
+            make.bottom.equalTo(superView.mas_safeAreaLayoutGuideBottom).offset(-44);
             make.height.mas_equalTo(184);
             make.right.mas_equalTo(-56);
         }];

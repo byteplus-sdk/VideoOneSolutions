@@ -25,6 +25,7 @@ import com.ss.bytertc.engine.data.ForwardStreamEventInfo;
 import com.ss.bytertc.engine.data.ForwardStreamInfo;
 import com.ss.bytertc.engine.data.ForwardStreamStateInfo;
 import com.ss.bytertc.engine.data.MirrorType;
+import com.ss.bytertc.engine.data.RemoteStreamKey;
 import com.ss.bytertc.engine.data.StreamIndex;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.MediaStreamType;
@@ -151,7 +152,7 @@ public class LiveRTCManager extends VideoTranscoding {
     };
 
     private LiveRTCManager(){
-        Log.d(TAG, "RTCVideo sdkVersion: " + RTCVideo.getSdkVersion());
+        Log.d(TAG, "RTCVideo sdkVersion: " + RTCVideo.getSDKVersion());
     }
 
     public static LiveRTCManager ins() {
@@ -447,9 +448,8 @@ public class LiveRTCManager extends VideoTranscoding {
         canvas.renderView = view;
         canvas.renderMode = RENDER_MODE_HIDDEN;
 
-        canvas.roomId = mRTCRoomId;
-        canvas.uid = userId;
-        mRTCVideo.setRemoteVideoCanvas(userId, StreamIndex.STREAM_INDEX_MAIN, canvas);
+        final RemoteStreamKey streamKey = new RemoteStreamKey(mRTCRoomId, userId, StreamIndex.STREAM_INDEX_MAIN);
+        mRTCVideo.setRemoteVideoCanvas(streamKey, canvas);
     }
 
     /**
@@ -576,9 +576,12 @@ public class LiveRTCManager extends VideoTranscoding {
      * Initialize video beauty
      */
     private void initVideoEffect() {
+        if (mRTCVideo == null) {
+            return;
+        }
         IEffect effect = ProtocolUtil.getIEffect();
         if (effect != null) {
-            effect.initWithRTCVideo(mRTCVideo);
+            effect.init(mRTCVideo.getVideoEffectInterface());
         }
     }
 

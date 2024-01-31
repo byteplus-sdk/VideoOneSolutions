@@ -28,7 +28,7 @@ import com.bytedance.voddemo.ui.video.scene.detail.bean.RecommendInfo;
 
 import java.util.List;
 
-public class RecommendVideoFragment extends Fragment {
+public class RecommendVideoFragment extends Fragment implements RecommendVideoAdapter.OnItemClickListener {
 
     private DetailViewModel mDetailModel;
 
@@ -56,7 +56,7 @@ public class RecommendVideoFragment extends Fragment {
         VevodRecommendVideoFragmentBinding binding = VevodRecommendVideoFragmentBinding.bind(view);
 
         binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-        mAdapter = new RecommendVideoAdapter(this);
+        mAdapter = new RecommendVideoAdapter(requireContext(), this);
         binding.recycler.setAdapter(mAdapter);
 
         mLoadMoreHelper = new RecycleViewLoadMoreHelper(binding.recycler);
@@ -77,7 +77,7 @@ public class RecommendVideoFragment extends Fragment {
         });
     }
 
-    public void onItemClicked(@NonNull VideoItem item) {
+    public void onItemClick(@NonNull VideoItem item) {
         mDetailModel.recommendVideoItem.setValue(item);
     }
 

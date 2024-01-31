@@ -28,14 +28,14 @@ import com.bytedance.playerkit.player.playback.PlaybackController;
 import com.bytedance.playerkit.player.playback.PlaybackEvent;
 import com.bytedance.playerkit.player.playback.VideoLayerHost;
 import com.bytedance.playerkit.player.playback.VideoView;
+import com.bytedance.playerkit.utils.L;
+import com.bytedance.playerkit.utils.event.Dispatcher;
+import com.bytedance.playerkit.utils.event.Event;
 import com.bytedance.vod.scenekit.ui.video.layer.base.BaseLayer;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.ui.video.scene.PlaySceneNavigator;
 import com.bytedance.vod.scenekit.utils.OrientationHelper;
 import com.bytedance.vod.scenekit.utils.UIUtils;
-import com.bytedance.playerkit.utils.L;
-import com.bytedance.playerkit.utils.event.Dispatcher;
-import com.bytedance.playerkit.utils.event.Event;
 
 public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPressedHandler {
 
@@ -182,6 +182,7 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
     protected void onUnBindVideoView(@NonNull VideoView videoView) {
         mOrientationHelper.disable();
         unBindLifeCycle();
+        mBackPressedCallback.remove();
     }
 
     private void bindLifeCycle(@NonNull Lifecycle lifecycle) {
@@ -225,6 +226,7 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
     @Override
     protected void onUnbindLayerHost(@NonNull VideoLayerHost layerHost) {
         layerHost.unregisterBackPressedHandler(this);
+
     }
 
     @Override
@@ -307,8 +309,7 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
         if (parent == null) return false;
 
         return parent.getId() == android.R.id.content &&
-                mFullScreen &&
-                playScene() == PlayScene.SCENE_FULLSCREEN;
+                mFullScreen && PlayScene.isFullScreenMode(playScene());
     }
 
     protected void afterExitFullScreen() {
@@ -402,7 +403,7 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
 
     private void setRequestOrientation(int targetOrientation) {
         final Activity activity = activity();
-        if (activity == null) return;
+        if (activity == null || activity.isFinishing()) return;
 
         if (activity.getRequestedOrientation() != targetOrientation) {
             L.v(this, "setRequestOrientation", targetOrientation);
@@ -423,38 +424,5 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
             }
         }
         return ratio;
-    }
-
-
-    public static void enableAutoOrientation(@Nullable VideoView videoView) {
-        if (videoView == null) {
-            return;
-        }
-
-        VideoLayerHost layerHost = videoView.layerHost();
-        if (layerHost == null) {
-            return;
-        }
-
-        FullScreenLayer layer = layerHost.findLayer(FullScreenLayer.class);
-        if (layer != null) {
-            layer.enableOrientation();
-        }
-    }
-
-    public static void disableAutoOrientation(@Nullable VideoView videoView) {
-        if (videoView == null) {
-            return;
-        }
-
-        VideoLayerHost layerHost = videoView.layerHost();
-        if (layerHost == null) {
-            return;
-        }
-
-        FullScreenLayer layer = layerHost.findLayer(FullScreenLayer.class);
-        if (layer != null) {
-            layer.disableOrientation();
-        }
     }
 }

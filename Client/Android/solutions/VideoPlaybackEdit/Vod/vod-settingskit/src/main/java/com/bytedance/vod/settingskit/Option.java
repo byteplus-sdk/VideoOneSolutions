@@ -79,6 +79,12 @@ public class Option {
         return null;
     }
 
+    public void saveUserValue(@Nullable Object value) {
+        if (mUserValues != null) {
+            mUserValues.saveValue(this, value);
+        }
+    }
+
     public Object remoteValue() {
         if (mRemoteValues != null) {
             return mRemoteValues.getValue(this);

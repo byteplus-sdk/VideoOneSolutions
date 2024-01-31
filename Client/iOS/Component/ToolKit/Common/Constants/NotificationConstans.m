@@ -5,7 +5,10 @@
 
 #import "NotificationConstans.h"
 
-NSNotificationName const NotificationLoginExpired = @"NotificationLoginExpired";
+NSNotificationName const NotificationLogout = @"NotificationLogout";
+NSString *const NotificationLogoutReasonKey = @"NotificationLogoutReasonKey";
+
+NSNotificationName const NotificationLoginSucceed = @"NotificationLoginSucceed";
 
 NSNotificationName const SetInterfaceOrientationNotification = @"SetInterfaceOrientationNotification";
 NSString *const InterfaceOrientationUserInfoKey = @"InterfaceOrientationUserInfoKey";

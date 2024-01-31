@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_fs_tips_brightness_title">亮度调节</string>
+    <string name="vevod_fs_tips_brightness_desc">左侧上下滑动</string>
+
+    <string name="vevod_fs_tips_volume_title">音量调节</string>
+    <string name="vevod_fs_tips_volume_desc">右侧上下滑动</string>
+
+    <string name="vevod_fs_tips_progress_title">播放进度</string>
+    <string name="vevod_fs_tips_progress_desc">左右滑动</string>
+</resources>

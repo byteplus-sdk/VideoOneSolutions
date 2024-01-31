@@ -22,12 +22,10 @@
 @property (nonatomic, strong) id<TTVideoEngineMediaSource> mediaSource;
 
 @property (nonatomic, strong) UIImageView *posterImageView;
-
 @property (nonatomic, strong) UIView *playerPanelContainerView;
-@property (nonatomic, strong) UIViewController<VEVideoPlaybackPanelPotocol> *playerPanelViewController;
 
-@property (nonatomic, assign) VEVideoPlaybackState playbackState;
-@property (nonatomic, assign) VEVideoLoadState loadState;
+@property (nonatomic, assign) VEPlaybackState playbackState;
+@property (nonatomic, assign) VEPlaybackLoadState loadState;
 @property (nonatomic, assign) VEVideoPlayerType videoPlayerType;
 
 @end
@@ -170,11 +168,6 @@
 - (void)__addPeriodicTimeObserver {
     @weakify(self);
     [self.videoEngine addPeriodicTimeObserverForInterval:0.3f queue:dispatch_get_main_queue() usingBlock:^{
-        if (weak_self.playerPanelViewController) {
-            [weak_self.playerPanelViewController videoPlayerTimeTrigger:weak_self.videoEngine.duration
-                                                    currentPlaybackTime:weak_self.videoEngine.currentPlaybackTime
-                                                       playableDuration:weak_self.videoEngine.playableDuration];
-        }
         if ([weak_self.receiver respondsToSelector:@selector(playerCore:playTimeDidChanged:info:)]) {
             [weak_self.receiver playerCore:weak_self playTimeDidChanged:weak_self.currentPlaybackTime info:@{}];
         }
@@ -225,6 +218,8 @@
     if (self.startTime > 0) {
         [self.videoEngine setOptionForKey:VEKKeyPlayerStartTime_CGFloat value:@(self.startTime)];
         self.startTime = 0;
+    } else {
+        [self.videoEngine setOptionForKey:VEKKeyPlayerStartTime_CGFloat value:@(0)];
     }
     [self.videoEngine play];
     [self reLayoutVideoPlayerView];
@@ -244,7 +239,6 @@
 - (void)stop {
     [self.videoEngine stop];
     [self __closeVideoPlayer];
-    [self.playerPanelViewController videoPlayerPlaybackStateChanged:self.playbackState newState:VEVideoPlaybackStateStopped];
 }
 
 - (void)close {
@@ -252,11 +246,11 @@
 }
 
 - (BOOL)isPlaying {
-    return (self.playbackState == VEVideoPlaybackStatePlaying);
+    return (self.playbackState == VEPlaybackStatePlaying);
 }
 
 - (BOOL)isPause {
-    return (self.playbackState == VEVideoPlaybackStatePaused);
+    return (self.playbackState == VEPlaybackStatePaused);
 }
 
 - (NSTimeInterval)duration {
@@ -305,6 +299,10 @@
 
 #pragma mark - TTVideoEngineDelegate
 
+- (void)videoEngine:(TTVideoEngine *)videoEngine retryForError:(NSError *)error {
+    NSLog(@"retryForError %@", error);
+}
+
 - (void)videoEnginePrepared:(TTVideoEngine *)videoEngine {
     if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayerPrepared:)]) {
         [self.delegate videoPlayerPrepared:self];
@@ -322,14 +320,17 @@
     }
 }
 
+- (void)videoEngineReadyToPlay:(TTVideoEngine *)videoEngine {
+    if ([self.receiver respondsToSelector:@selector(playerCoreReadyToPlay:)]) {
+        [self.receiver playerCoreReadyToPlay:self];
+    }
+}
+
 - (void)videoEngine:(TTVideoEngine *)videoEngine playbackStateDidChanged:(TTVideoEnginePlaybackState)playbackState {
     if (playbackState == TTVideoEnginePlaybackStatePaused) {
         [[BaseLoadingView sharedInstance] stopLoading];
     }
     [self __handlePlaybackStateChanged:[self __getPlaybackState:playbackState]];
-    if ([self.receiver respondsToSelector:@selector(playerCore:playbackStateDidChanged:info:)]) {
-        [self.receiver playerCore:self playbackStateDidChanged:self.currentPlaybackState info:@{}];
-    }
 }
 
 - (void)videoEngine:(TTVideoEngine *)videoEngine loadStateDidChanged:(TTVideoEngineLoadState)loadState {
@@ -342,6 +343,10 @@
 
 - (void)videoEngine:(TTVideoEngine *)videoEngine fetchedVideoModel:(TTVideoEngineModel *)videoModel {
     [VEVideoPlayerController addStrategyVideoModel:videoModel forSource:self.mediaSource];
+
+    if ([self.delegate respondsToSelector:@selector(videoPlayer:fetchedVideoModel:)]) {
+        [self.delegate videoPlayer:self fetchedVideoModel:videoModel];
+    }
 }
 
 - (void)videoEngine:(TTVideoEngine *)videoEngine mdlKey:(NSString *)key hitCacheSze:(NSInteger)cacheSize {
@@ -352,25 +357,25 @@
 }
 
 - (void)videoEngineUserStopped:(TTVideoEngine *)videoEngine {
-    [self __handlePlaybackStateChanged:VEVideoPlaybackStateFinishedBecauseUser];
+    [self __handlePlaybackStateChanged:VEPlaybackStateFinishedBecauseUser];
 }
 
 - (void)videoEngineDidFinish:(TTVideoEngine *)videoEngine error:(nullable NSError *)error {
     if (error) {
         NSLog(@"videoEngineDidFinish with error : %@", [error description]);
-        [self __handlePlaybackStateChanged:VEVideoPlaybackStateError];
+        [self __handlePlaybackStateChanged:VEPlaybackStateError];
         return;
     }
-    [self __handlePlaybackStateChanged:VEVideoPlaybackStateFinished];
+    [self __handlePlaybackStateChanged:VEPlaybackStateFinished];
 }
 
 - (void)videoEngineDidFinish:(TTVideoEngine *)videoEngine videoStatusException:(NSInteger)status {
     NSLog(@"videoEngineDidFinish with exception : %lu", status);
-    [self __handlePlaybackStateChanged:VEVideoPlaybackStateError];
+    [self __handlePlaybackStateChanged:VEPlaybackStateError];
 }
 
 - (void)videoEngineCloseAysncFinish:(TTVideoEngine *)videoEngine {
-    [self __handlePlaybackStateChanged:VEVideoPlaybackStateFinished];
+    [self __handlePlaybackStateChanged:VEPlaybackStateFinished];
 }
 
 - (void)videoBitrateDidChange:(TTVideoEngine *)videoEngine resolution:(TTVideoEngineResolutionType)resolution bitrate:(NSInteger)bitrate {
@@ -391,83 +396,84 @@
 
 #pragma mark - Private
 
-- (void)__handlePlaybackStateChanged:(VEVideoPlaybackState)state {
-    VEVideoPlaybackState oldPlaybackState = self.playbackState;
+- (void)__handlePlaybackStateChanged:(VEPlaybackState)state {
     self.playbackState = state;
     switch (state) {
-        case VEVideoPlaybackStatePlaying: {
+        case VEPlaybackStatePlaying: {
             self.videoEngine.playerView.hidden = NO;
         } break;
-        case VEVideoPlaybackStatePaused: {
+        case VEPlaybackStatePaused: {
         } break;
-        case VEVideoPlaybackStateStopped: {
+        case VEPlaybackStateStopped: {
         } break;
-        case VEVideoPlaybackStateError: {
+        case VEPlaybackStateError: {
         } break;
-        case VEVideoPlaybackStateFinished: {
+        case VEPlaybackStateFinished: {
         } break;
-        case VEVideoPlaybackStateFinishedBecauseUser: {
+        case VEPlaybackStateFinishedBecauseUser: {
         } break;
         default:
             break;
     }
-    if (self.playerPanelViewController) {
-        [self.playerPanelViewController videoPlayerPlaybackStateChanged:oldPlaybackState newState:state];
+    if ([self.receiver respondsToSelector:@selector(playerCore:playbackStateDidChanged:info:)]) {
+        [self.receiver playerCore:self playbackStateDidChanged:self.playbackState info:@{}];
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayer:playbackStateDidChange:uniqueId:)]) {
         [self.delegate videoPlayer:self playbackStateDidChange:self.playbackState uniqueId:self.mediaSource.uniqueId];
     }
 }
 
-- (void)__handleLoadStateChanged:(VEVideoLoadState)state {
-    VEVideoLoadState oldState = state;
+- (void)__handleLoadStateChanged:(VEPlaybackLoadState)state {
     self.loadState = state;
     switch (state) {
-        case VEVideoLoadStateStalled: {
+        case VEPlaybackLoadStateStalled: {
+            [[BaseLoadingView sharedInstance] startLoadingIn:self.playerPanelContainerView];
         } break;
-        case VEVideoLoadStatePlayable: {
+        case VEPlaybackLoadStatePlayable: {
+            [[BaseLoadingView sharedInstance] stopLoading];
         } break;
-        case VEVideoLoadStateError: {
+        case VEPlaybackLoadStateError: {
+            [[BaseLoadingView sharedInstance] stopLoading];
         } break;
         default:
+            [[BaseLoadingView sharedInstance] stopLoading];
             break;
     }
-
-    if (self.playerPanelViewController) {
-        [self.playerPanelViewController videoPlayerLoadStateChanged:oldState newState:state];
+    if ([self.receiver respondsToSelector:@selector(playerCore:loadStateDidChange:)]) {
+        [self.receiver playerCore:self loadStateDidChange:self.loadState];
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayer:loadStateDidChange:)]) {
         [self.delegate videoPlayer:self loadStateDidChange:self.loadState];
     }
 }
 
-- (VEVideoPlaybackState)__getPlaybackState:(TTVideoEnginePlaybackState)state {
+- (VEPlaybackState)__getPlaybackState:(TTVideoEnginePlaybackState)state {
     switch (state) {
         case TTVideoEnginePlaybackStatePlaying:
-            return VEVideoPlaybackStatePlaying;
+            return VEPlaybackStatePlaying;
         case TTVideoEnginePlaybackStatePaused:
-            return VEVideoPlaybackStatePaused;
+            return VEPlaybackStatePaused;
         case TTVideoEnginePlaybackStateStopped:
-            return VEVideoPlaybackStateStopped;
+            return VEPlaybackStateStopped;
         case TTVideoEnginePlaybackStateError:
-            return VEVideoPlaybackStateError;
+            return VEPlaybackStateError;
         default:
-            return VEVideoPlaybackStateUnkown;
+            return VEPlaybackStateUnknown;
     }
 }
 
-- (VEVideoLoadState)__getLoadState:(TTVideoEngineLoadState)state {
+- (VEPlaybackLoadState)__getLoadState:(TTVideoEngineLoadState)state {
     switch (state) {
         case TTVideoEngineLoadStateUnknown:
-            return VEVideoLoadStateUnkown;
+            return VEPlaybackLoadStateUnkown;
         case TTVideoEngineLoadStateStalled:
-            return VEVideoLoadStateStalled;
+            return VEPlaybackLoadStateStalled;
         case TTVideoEngineLoadStatePlayable:
-            return VEVideoLoadStatePlayable;
+            return VEPlaybackLoadStatePlayable;
         case TTVideoEngineLoadStateError:
-            return VEVideoLoadStateError;
+            return VEPlaybackLoadStateError;
         default:
-            return VEVideoLoadStateUnkown;
+            return VEPlaybackLoadStateUnkown;
     }
 }
 

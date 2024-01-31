@@ -6,7 +6,7 @@
 
 @interface VEVideoCache ()
 
-@property (nonatomic, strong) YYMemoryCache *yyCache;
+@property (nonatomic, strong) NSMutableDictionary *videoCacheDic;
 
 @end
 
@@ -21,34 +21,41 @@
     return _instance;
 }
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        self.yyCache = [YYMemoryCache new];
-        self.yyCache.name = @"com.byteplus.videoone.vod";
-    }
-    return self;
-}
-
 - (TTVideoEngineModel *)videoForKey:(NSString *)key {
-    TTVideoEngineModel *videoMode = [self.yyCache objectForKey:key];
+    if (!key || key.length <= 0) {
+        return nil;
+    }
+    TTVideoEngineModel *videoMode = [self.videoCacheDic objectForKey:key];
     if (videoMode != nil && [videoMode hasExpired]) {
-        [self.yyCache removeObjectForKey:key];
+        [self.videoCacheDic removeObjectForKey:key];
         return nil;
     }
     return videoMode;
 }
 
 - (void)setVideo:(TTVideoEngineModel *)object forKey:(NSString *)key {
-    [self.yyCache setObject:object forKey:key];
+    if (!object || !key || key.length <= 0) {
+        return;
+    }
+    [self.videoCacheDic setObject:object forKey:key];
 }
 
 - (void)removeVideoForKey:(NSString *)key {
-    [self.yyCache removeObjectForKey:key];
+    if (!key || key.length <= 0) {
+        return;
+    }
+    [self.videoCacheDic removeObjectForKey:key];
 }
 
 - (void)removeAllVideos {
-    [self.yyCache removeAllObjects];
+    [self.videoCacheDic removeAllObjects];
+}
+
+- (NSMutableDictionary *)videoCacheDic {
+    if (!_videoCacheDic) {
+        _videoCacheDic = [[NSMutableDictionary alloc] init];
+    }
+    return _videoCacheDic;
 }
 
 @end

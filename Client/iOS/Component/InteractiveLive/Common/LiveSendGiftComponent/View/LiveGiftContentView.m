@@ -47,6 +47,7 @@
         [mutableArray addObject:giftItem];
         [self.giftTableView addSubview:giftItem];
         [giftItem mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(self.giftTableView);
             make.size.mas_equalTo(CGSizeMake(75 * self.rate, 94));
             make.left.mas_equalTo(self.giftTableView).offset(i * 89 * self.rate);
         }];

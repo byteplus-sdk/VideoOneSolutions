@@ -8,8 +8,6 @@
 
 @interface MenuItemButton ()
 
-@property (nonatomic, strong) UILabel *desLabel;
-
 @end
 
 @implementation MenuItemButton
@@ -18,45 +16,23 @@
     self = [super init];
     if (self) {
         self.clipsToBounds = NO;
-
-        [self addSubview:self.desLabel];
-        [self.desLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.bottom.equalTo(self).offset(-4);
-            make.centerX.equalTo(self);
-        }];
+        self.titleLabel.textAlignment = NSTextAlignmentCenter;
+        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        [self bingTitleColor:[UIColor colorFromHexString:@"#86909C"] status:ButtonStatusNone];
+        [self bingTitleColor:[UIColor colorFromHexString:@"#4080FF"] status:ButtonStatusActive];
     }
     return self;
 }
 
-- (void)setDesTitle:(NSString *)desTitle {
-    _desTitle = desTitle;
-
-    self.desLabel.text = desTitle;
+- (CGRect)imageRectForContentRect:(CGRect)contentRect {
+    return CGRectMake((contentRect.size.width - 25) * 0.5, 12, 25, 25);
 }
 
-- (void)setIsAction:(BOOL)isAction {
-    _isAction = isAction;
-
-    if (isAction) {
-        self.desLabel.textColor = [UIColor colorFromHexString:@"#4080FF"];
-    } else {
-        self.desLabel.textColor = [UIColor colorFromHexString:@"#86909C"];
-    }
-}
-
-- (void)setStatus:(ButtonStatus)status {
-    [super setStatus:status];
-    self.desLabel.font = self.titleLabel.font;
-}
-#pragma mark - Getter
-
-- (UILabel *)desLabel {
-    if (!_desLabel) {
-        _desLabel = [[UILabel alloc] init];
-        _desLabel.textColor = [UIColor colorFromHexString:@"#86909C"];
-        _desLabel.font = [UIFont systemFontOfSize:12];
-    }
-    return _desLabel;
+- (CGRect)titleRectForContentRect:(CGRect)contentRect {
+    CGRect rect = [super titleRectForContentRect:contentRect];
+    CGFloat width = ceil(rect.size.width);
+    CGFloat height = ceil(rect.size.height);
+    return CGRectMake((contentRect.size.width - width) * 0.5, 37, width, height);
 }
 
 @end

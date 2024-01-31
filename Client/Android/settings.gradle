@@ -22,4 +22,5 @@ include ext.projects[':Vod:vod-settingskit']
 include ext.projects[':Vod:vod-scenekit']
 include ext.projects[':Vod:vod-demo']
 
+include ext.projects[':Vod:vod-upload']
 

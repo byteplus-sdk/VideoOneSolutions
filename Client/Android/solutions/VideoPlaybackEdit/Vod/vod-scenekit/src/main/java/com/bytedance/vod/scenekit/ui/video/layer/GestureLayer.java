@@ -3,6 +3,8 @@
 
 package com.bytedance.vod.scenekit.ui.video.layer;
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -24,7 +26,7 @@ import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 public class GestureLayer extends PlaybackEventLayer {
 
     boolean isActive(int scene) {
-        return scene == PlayScene.SCENE_DETAIL || scene == PlayScene.SCENE_FULLSCREEN;
+        return scene == PlayScene.SCENE_DETAIL || isFullScreenMode(scene);
     }
 
     @Override
@@ -127,14 +129,10 @@ public class GestureLayer extends PlaybackEventLayer {
 
         AnimateLayer lockLayer = host.findLayer(LockLayer.class);
 
-        AnimateLayer completeLayer = host.findLayer(PlayCompleteLayer.class);
-
-        boolean completeLayerShowing = completeLayer != null && completeLayer.isShowing();
-
         if (timeProgressLayer != null) {
             timeProgressLayer.animateShow(autoDismiss);
         }
-        if (!completeLayerShowing && playPauseLayer != null) {
+        if (playPauseLayer != null) {
             playPauseLayer.animateShow(autoDismiss);
         }
         if (titleBarLayer != null) {

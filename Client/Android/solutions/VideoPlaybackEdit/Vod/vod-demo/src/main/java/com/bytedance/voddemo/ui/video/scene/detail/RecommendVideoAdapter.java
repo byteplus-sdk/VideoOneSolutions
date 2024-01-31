@@ -15,25 +15,30 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bytedance.vod.scenekit.data.model.VideoItem;
-import com.bytedance.vod.scenekit.utils.UIUtils;
 import com.bytedance.vod.scenekit.utils.FormatHelper;
+import com.bytedance.vod.scenekit.utils.UIUtils;
 import com.bytedance.voddemo.impl.databinding.VevodRecommendVideoItemBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RecommendVideoAdapter extends RecyclerView.Adapter<RecommendVideoAdapter.ViewHolder> {
+
+    public interface OnItemClickListener {
+        void onItemClick(VideoItem videoItem);
+    }
+
     @NonNull
     private final List<VideoItem> mItems = new ArrayList<>();
 
-    RecommendVideoFragment mParent;
+    private final OnItemClickListener mItemClickListener;
     private final Context mContext;
 
     private final int mCoverCorner;
 
-    RecommendVideoAdapter(@NonNull RecommendVideoFragment parent) {
-        mParent = parent;
-        mContext = parent.requireContext();
+    public RecommendVideoAdapter(@NonNull Context context, OnItemClickListener itemClickListener) {
+        mContext = context;
+        mItemClickListener = itemClickListener;
         mCoverCorner = (int) UIUtils.dip2Px(mContext, 4);
     }
 
@@ -62,7 +67,11 @@ public class RecommendVideoAdapter extends RecyclerView.Adapter<RecommendVideoAd
         holder.binding.videoDescription.setText(FormatHelper.formatCountAndCreateTime(mContext, videoItem));
         holder.binding.duration.setText(FormatHelper.formatDuration(mContext, videoItem));
 
-        holder.binding.getRoot().setOnClickListener(v -> mParent.onItemClicked(videoItem));
+        holder.binding.getRoot().setOnClickListener(v -> {
+            if (mItemClickListener != null) {
+                mItemClickListener.onItemClick(videoItem);
+            }
+        });
     }
 
     @Override

@@ -30,19 +30,10 @@ android {
 }
 
 dependencies {
-    implementation rootProject.ext.libs["kotlin-stdlib"]
     implementation rootProject.ext.libs["app-compat"]
-    implementation rootProject.ext.libs["material"]
-    implementation rootProject.ext.libs["constraint-layout"]
     implementation rootProject.ext.libs["retrofit2"]
     implementation rootProject.ext.libs["converter-gson"]
     implementation rootProject.ext.libs["okhttp"]
 
     implementation rootProject.ext.libs["ttsdk-ttuploader"]
-    implementation rootProject.ext.libs["ck-base"]
-
-
-    implementation project(rootProject.ext.projects[':Vod:vod-scenekit'])
-    implementation project(rootProject.ext.projects[':CK:ckone-home'])
-    implementation project(rootProject.ext.projects[":CK:editor-main"])
 }

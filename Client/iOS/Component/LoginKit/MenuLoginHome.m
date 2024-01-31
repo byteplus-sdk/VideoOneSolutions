@@ -23,9 +23,7 @@
     UIViewController *topVC = [DeviceInforTool topViewController];
     MenuLoginViewController *loginVC = [[MenuLoginViewController alloc] init];
     loginVC.modalPresentationStyle = UIModalPresentationFullScreen;
-    [topVC presentViewController:loginVC animated:isAnimation completion:^{
-
-    }];
+    [topVC presentViewController:loginVC animated:isAnimation completion:nil];
 }
 
 + (void)closeAccount:(void (^)(BOOL result))block {

@@ -8,6 +8,10 @@ public class ShortVideoFullScreenLayer extends FullScreenLayer {
     @Nullable
     private Runnable mAfterExitFullScreenListener;
 
+    public ShortVideoFullScreenLayer(){
+        setEnableToggleFullScreenBySensor(false);
+    }
+
     public void setAfterExitFullScreenListener(@Nullable Runnable runnable) {
         mAfterExitFullScreenListener = runnable;
     }

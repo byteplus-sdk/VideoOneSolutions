@@ -1,10 +1,5 @@
-//
-//  VESettingEntranceCell.h
-//  VideoPlaybackEdit
-//
-//  Created by bytedance on 2023/11/2.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "VESettingCell.h"
 
 @class VESettingModel;

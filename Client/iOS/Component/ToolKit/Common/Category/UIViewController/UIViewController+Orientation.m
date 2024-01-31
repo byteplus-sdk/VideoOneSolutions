@@ -29,25 +29,25 @@
 }
 
 - (BOOL)isLandscape {
-    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    switch (interfaceOrientation) {
-        case UIInterfaceOrientationLandscapeLeft:
-        case UIInterfaceOrientationLandscapeRight:
-            return YES;
-        default:
-            return NO;
+    UIInterfaceOrientation interfaceOrientation = UIInterfaceOrientationUnknown;
+    if (@available(iOS 13.0, *)) {
+        UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.allObjects.firstObject;
+        interfaceOrientation = windowScene.interfaceOrientation;
+    } else {
+        interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
     }
+    return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
 
-- (void)setDeviceInterfaceOrientation:(UIDeviceOrientation)orientation {
-    [self postInterfaceOrientation:(UIInterfaceOrientation)orientation];
+- (void)setDeviceInterfaceOrientation:(UIInterfaceOrientation)orientation {
+    [self postInterfaceOrientation:orientation];
     if (@available(iOS 16.0, *)) {
         [self setNeedsUpdateOfSupportedInterfaceOrientations];
         UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.allObjects.firstObject;
         if (![windowScene isKindOfClass:[UIWindowScene class]]) {
             return;
         }
-        UIInterfaceOrientationMask mask = [self getOrientationMaskWithDeviceOrientation:orientation];
+        UIInterfaceOrientationMask mask = (1 << orientation);
         UIWindowSceneGeometryPreferencesIOS *preferences = [[UIWindowSceneGeometryPreferencesIOS alloc] initWithInterfaceOrientations:mask];
         [windowScene requestGeometryUpdateWithPreferences:preferences errorHandler:^(NSError *_Nonnull error){
 
@@ -60,29 +60,6 @@
             [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger:orientation] forKey:@"orientation"];
         }
     }
-}
-
-- (UIInterfaceOrientationMask)getOrientationMaskWithDeviceOrientation:(UIDeviceOrientation)orientation {
-    UIInterfaceOrientationMask orientationMask = UIInterfaceOrientationMaskPortrait;
-    switch (orientation) {
-        case UIDeviceOrientationPortrait:
-            orientationMask = UIInterfaceOrientationMaskPortrait;
-            break;
-        case UIDeviceOrientationPortraitUpsideDown:
-            orientationMask = UIInterfaceOrientationMaskPortraitUpsideDown;
-            break;
-        case UIDeviceOrientationLandscapeLeft:
-            orientationMask = UIInterfaceOrientationMaskLandscapeRight;
-            break;
-        case UIDeviceOrientationLandscapeRight:
-            orientationMask = UIInterfaceOrientationMaskLandscapeLeft;
-            break;
-
-        default:
-
-            break;
-    }
-    return orientationMask;
 }
 
 @end

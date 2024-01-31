@@ -89,9 +89,9 @@
     if ([uid isEqualToString:self.hostID]) {
         self.micView.hidden = mic;
 
-        CGFloat top = self.micView.hidden ? 75 + [DeviceInforTool getStatusBarHight] : 100 + [DeviceInforTool getStatusBarHight];
+        CGFloat top = self.micView.hidden ? 75 : 100;
         [self.cameraView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(top);
+            make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(top);
         }];
 
         if ([uid isEqualToString:[LocalUserComponent userModel].uid]) {
@@ -181,8 +181,8 @@
 
     [self addSubview:self.multiRenderView];
     [self.multiRenderView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(76 + [DeviceInforTool getStatusBarHight]);
-        make.bottom.mas_equalTo(-(46 + [DeviceInforTool getVirtualHomeHeight]));
+        make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(76);
+        make.bottom.equalTo(self.mas_safeAreaLayoutGuideBottom).offset(-46);
         make.left.right.equalTo(self);
     }];
 
@@ -190,7 +190,7 @@
     [self.timeView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(20);
         make.left.mas_equalTo(12);
-        make.top.mas_equalTo(50 + [DeviceInforTool getStatusBarHight]);
+        make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(50);
     }];
 
     [self addSubview:self.netQualityView];
@@ -203,13 +203,13 @@
     [self addSubview:self.micView];
     [self.micView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.left.equalTo(self.netQualityView);
-        make.top.mas_equalTo(75 + [DeviceInforTool getStatusBarHight]);
+        make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(75);
     }];
 
     [self addSubview:self.cameraView];
     [self.cameraView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.left.equalTo(self.netQualityView);
-        make.top.mas_equalTo(100 + [DeviceInforTool getStatusBarHight]);
+        make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(100);
     }];
 }
 

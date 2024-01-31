@@ -6,7 +6,7 @@
 
 @implementation LiveSettingVideoConfig
 
-+ (instancetype)defultVideoConfig {
++ (instancetype)defaultVideoConfig {
     static LiveSettingVideoConfig *_instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -92,7 +92,7 @@
 
     self.minBitrate = minKbps;
     self.maxBitrate = maxKbps;
-    self.defultBitrate = defultKbps;
+    self.defaultBitrate = defultKbps;
     self.videoSize = videoSize;
 }
 

@@ -10,10 +10,10 @@ import com.bytedance.vod.scenekit.ui.video.layer.base.DialogLayer;
 
 public abstract class MoreDialogLayer extends DialogLayer {
     public static VideoLayer create() {
-        return new MoreDialogLayerSimple(true);
+        return new MoreDialogLayerSimple(true, true);
     }
 
     public static VideoLayer createWithoutLoopMode() {
-        return new MoreDialogLayerSimple(false);
+        return new MoreDialogLayerSimple(false, false);
     }
 }

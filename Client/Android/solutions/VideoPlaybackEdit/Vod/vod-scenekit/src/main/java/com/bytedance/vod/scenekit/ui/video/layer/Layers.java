@@ -14,6 +14,7 @@ public class Layers {
         public static final int VOLUME_BRIGHTNESS_DIALOG_BACK_PRIORITY = DIALOG_LAYER_BACK_PRIORITY + (sIndex++);
         public static final int TIME_PROGRESS_DIALOG_LAYER_PRIORITY = DIALOG_LAYER_BACK_PRIORITY + (sIndex++);
         public static final int MORE_DIALOG_LAYER_BACK_PRIORITY = DIALOG_LAYER_BACK_PRIORITY + (sIndex++);
+        public static final int PLAYLIST_DIALOG_BACK_PRIORITY = DIALOG_LAYER_BACK_PRIORITY + (sIndex++);
     }
 
     public static final class VisibilityRequestReason {

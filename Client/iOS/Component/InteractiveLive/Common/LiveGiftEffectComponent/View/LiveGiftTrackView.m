@@ -35,11 +35,7 @@
         self.userNameView.text = model.userName;
         self.giftMessageView.text = model.sendMessage;
         self.giftIconView.image = [UIImage imageNamed:model.giftIcon bundleName:HomeBundleName];
-        if (model.count > 0) {
-            self.sendNumView.text = [NSString stringWithFormat:@"%ld", model.count];
-        } else {
-            self.sendNumView.text = @"";
-        }
+        self.sendNumView.text = [NSString stringWithFormat:@"%ld", MAX(model.count, 1)];
     }
     return self;
 }
@@ -82,16 +78,18 @@
 
     [self addSubview:self.giftSendCountView];
     [self.giftSendCountView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(44, 28));
-        make.right.mas_equalTo(self);
-        make.bottom.mas_equalTo(self);
+        make.height.mas_equalTo(28);
+        make.left.equalTo(self.trackContentView.mas_right).offset(4);
+        make.bottom.equalTo(self);
     }];
 
     [self.giftSendCountView addSubview:self.sendNumView];
     [self.sendNumView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(32, 28));
-        make.left.mas_equalTo(self.giftSendCountView).offset(12);
-        make.bottom.mas_equalTo(self.giftSendCountView).offset(-2);
+        make.height.mas_equalTo(28);
+        make.width.mas_greaterThanOrEqualTo(32);
+        make.left.equalTo(self.giftSendCountView).offset(12);
+        make.right.equalTo(self.giftSendCountView);
+        make.bottom.equalTo(self.giftSendCountView).offset(-2);
     }];
 }
 

@@ -1,5 +1,7 @@
 package com.bytedance.vod.scenekit.ui.video.scene.shortvideo.layer;
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
 import com.bytedance.playerkit.utils.event.Event;
 import com.bytedance.vod.scenekit.VideoSettings;
 import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
@@ -28,7 +30,7 @@ public class ShortVideoPlayCompleteLayer extends PlayCompleteLayer {
 
     @Override
     public void onVideoViewPlaySceneChanged(int fromScene, int toScene) {
-        if (toScene != PlayScene.SCENE_FULLSCREEN) {
+        if (!isFullScreenMode(toScene)) {
             dismiss();
         }
     }

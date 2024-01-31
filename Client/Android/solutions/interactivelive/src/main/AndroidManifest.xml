@@ -6,7 +6,6 @@
         <activity
             android:name=".feature.InteractiveLiveEntryActivity"
             android:exported="false"
-            android:icon="@drawable/interactive_live_icon0"
             android:label="@string/interactive_live_title"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.Live.Transparent">

@@ -50,7 +50,7 @@
             make.left.mas_equalTo(16);
             make.right.mas_equalTo(-16);
             make.height.mas_equalTo(48);
-            make.bottom.equalTo(self).offset(-(4 + [DeviceInforTool getVirtualHomeHeight]));
+            make.bottom.equalTo(self.mas_safeAreaLayoutGuideBottom).offset(-4);
         }];
 
         [self addSubview:self.roomTableView];

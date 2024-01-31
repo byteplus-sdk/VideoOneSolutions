@@ -7,8 +7,11 @@
 #import "LiveRTCInteractUtils.h"
 #import "LiveRTCManager.h"
 #import "RTCJoinModel.h"
+#import "LiveRTCMixer.h"
+#import "LiveSettingVideoConfig.h"
 
-@interface LiveRTCInteract () <LiveRTCManagerDelegate>
+
+@interface LiveRTCInteract () <LiveRTCManagerDelegate, LiveRTCMixerDelegate>
 
 @property (nonatomic, strong) LivePushStreamParams *streamParams;
 
@@ -18,6 +21,9 @@
 @property (nonatomic, copy) NSArray<LiveUserModel *> *userList;
 @property (atomic, assign) BOOL hasForwardStreamToRooms;
 @property (atomic, assign) BOOL hasPublishStream;
+
+@property (nonatomic, strong) LiveRTCMixer *rtcMixer;
+
 
 @end
 
@@ -51,12 +57,21 @@
     return [self p_isHost] && [self p_isCurrentUser:uid];
 }
 
+
+#pragma mark -- LiveInteractivePushStreaming
+
 - (void)startInteractive {
     NSLog(@"aaa startInteractive rtc");
     if (![self p_isHost]) {
         [[LiveRTCManager shareRtc] switchVideoCapture:YES];
         [[LiveRTCManager shareRtc] switchAudioCapture:YES];
+    } else {
+        if (!_rtcMixer) {
+            self.rtcMixer = [[LiveRTCMixer alloc] initWithRTCEngine:[LiveRTCManager shareRtc].rtcEngineKit];
+        }
+        self.rtcMixer.delegate = self;
     }
+
     if (![self isInteractive]) {
         [self joinChannel];
     } else if ([self p_supportPublish]) {
@@ -70,12 +85,14 @@
     if ([self p_isHost]) {
         NSAssert(self.streamParams.host, @"host does not configured");
         if (self.streamParams.host) {
-            [[LiveRTCManager shareRtc] updateTranscodingLayout:@[self.streamParams.host]
-                                                     mixStatus:RTCMixStatusSingleLive
-                                                     rtcRoomId:self.streamParams.rtcRoomId];
+            [self.rtcMixer updatePushMixedStreamToCDN:@[self.streamParams.host]
+                                            mixStatus:RTCMixStatusSingleLive
+                                            rtcRoomId:self.streamParams.rtcRoomId];
+
         }
         // Stop span the room retweet stream
         [[LiveRTCManager shareRtc] stopForwardStreamToRooms];
+        [self.rtcMixer stopPushStreamToCDN];
         self.hasPublishStream = NO;
     } else {
         [[LiveRTCManager shareRtc] switchVideoCapture:NO];
@@ -83,6 +100,7 @@
     }
     [[LiveRTCManager shareRtc] leaveRTCRoom];
     self.interactState = RTCInteractStateLeave;
+    self.playMode = LiveInteractivePlayModeNormal;
 }
 
 - (void)joinChannel {
@@ -109,6 +127,16 @@
     }
 }
 
+- (void)updatePushStreamResolution:(CGSize)resolution {
+    self.streamParams.width = resolution.width;
+    self.streamParams.height = resolution.height;
+    [self updateTranscodingIfNeed];
+}
+
+- (void)updateVideoEncoderResolution:(CGSize)resolution {
+    [[LiveRTCManager shareRtc] updateVideoEncoderResolution:resolution];
+}
+
 - (BOOL)isInteracting {
     return self.playMode != LiveInteractivePlayModeNormal;
 }
@@ -129,11 +157,7 @@
 - (void)p_publishStream {
     NSLog(@"aaa p_publishStream");
     NSAssert(self.streamParams.pushUrl, @"rtc push url is nil");
-    NSString *rtmpUrl = [LiveRTCInteractUtils setPriorityForUrl:self.streamParams.pushUrl];
-    [[LiveRTCManager shareRtc]
-        startMixStreamRetweetWithPushUrl:rtmpUrl
-                                hostUser:self.streamParams.host
-                               rtcRoomId:self.streamParams.rtcRoomId];
+    [self.rtcMixer startPushMixStreamToCDN];
     self.hasPublishStream = YES;
 }
 
@@ -143,32 +167,55 @@
         WeakSelf;
         dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
             StrongSelf;
-            if (self.playMode == LiveInteractivePlayModePK) {
-                // Update confluence retweet
-                [[LiveRTCManager shareRtc] updateTranscodingLayout:self.userList
-                                                         mixStatus:RTCMixStatusPK
-                                                         rtcRoomId:sself.streamParams.rtcRoomId];
-            } else {
-                RTCMixStatus mixStatus = RTCMixStatusSingleLive;
-                switch (self.playMode) {
-                    case LiveInteractivePlayModeNormal:
-                        mixStatus = RTCMixStatusSingleLive;
-                        break;
-                    case LiveInteractivePlayModePK:
-                        mixStatus = RTCMixStatusPK;
-                        break;
-                    case LiveInteractivePlayModeMultiGuests:
-                        mixStatus = self.userList.count == 2 ? RTCMixStatusAddGuestsTwo : RTCMixStatusAddGuestsMulti;
-                        break;
-                }
-                NSLog(@"aaa updatetranscoding %ld type %ld", self.userList.count, mixStatus);
-                [[LiveRTCManager shareRtc] updateTranscodingLayout:sself.userList
-                                                         mixStatus:mixStatus
-                                                         rtcRoomId:sself.streamParams.rtcRoomId];
+            RTCMixStatus mixStatus = RTCMixStatusSingleLive;
+            switch (sself.playMode) {
+                case LiveInteractivePlayModeNormal:
+                    mixStatus = RTCMixStatusSingleLive;
+                    break;
+                case LiveInteractivePlayModePK:
+                    mixStatus = RTCMixStatusPK;
+                    break;
+                case LiveInteractivePlayModeMultiGuests:
+                    mixStatus = sself.userList.count == 2 ? RTCMixStatusAddGuestsTwo:RTCMixStatusAddGuestsMulti;
+                    break;
             }
+            [sself.rtcMixer updatePushMixedStreamToCDN:sself.userList mixStatus:mixStatus rtcRoomId:sself.streamParams.rtcRoomId];
+            [sself p_updateVideoEncodeSize:mixStatus];
         });
     }
 }
+
+- (void)p_updateVideoEncodeSize:(RTCMixStatus)mixStatus {
+    
+    // Servers merge, take half of the maximum resolution
+    CGSize pushRTCVideoSize = [LiveSettingVideoConfig defaultVideoConfig].videoSize;
+    if (mixStatus == RTCMixStatusPK) {
+        pushRTCVideoSize = [self p_getMaxUserVideSize:self.userList];
+    }
+    [[LiveRTCManager shareRtc] updateVideoEncoderResolution:pushRTCVideoSize];
+}
+
+- (CGSize)p_getMaxUserVideSize:(NSArray<LiveUserModel *> *)userList {
+    CGSize maxVideoSize = [LiveSettingVideoConfig defaultVideoConfig].videoSize;
+    if (userList.count < 2) {
+        return maxVideoSize;
+    }
+    LiveUserModel *firstUserModel = userList.firstObject;
+    LiveUserModel *lastUserModel = userList.lastObject;
+    if ((firstUserModel.videoSize.width * firstUserModel.videoSize.height) >
+        (lastUserModel.videoSize.width * lastUserModel.videoSize.height)) {
+        maxVideoSize = firstUserModel.videoSize;
+    } else {
+        maxVideoSize = lastUserModel.videoSize;
+    }
+    if (maxVideoSize.width == 0 || maxVideoSize.height == 0) {
+        maxVideoSize = [LiveSettingVideoConfig defaultVideoConfig].videoSize;
+    }
+    CGSize newSize = CGSizeMake(maxVideoSize.width / 2,
+                                maxVideoSize.height / 2);
+    return newSize;
+}
+
 
 #pragma mark--LiveRTCManagerDelegate
 
@@ -219,13 +266,19 @@
 - (void)liveRTCManager:(LiveRTCManager *)manager onUserLeave:(NSString *)uid reason:(ByteRTCUserOfflineReason)reason {
 }
 
-- (void)liveRTCManager:(nonnull LiveRTCManager *)manager onStreamMixingEvent:(ByteRTCStreamMixingEvent)event taskId:(nonnull NSString *)taskId error:(ByteRtcTranscoderErrorCode)Code mixType:(ByteRTCStreamMixingType)mixType {
-    NSLog(@"aaa mixing ev:%ld code %ld, type %ld", event, Code, mixType);
-    if (event == ByteRTCStreamMixingEventStartSuccess && Code == ByteRtcTranscoderErrorCodeOK) {
+
+#pragma mark - LiveRTCMixerDelegate
+- (LivePushStreamParams * _Nonnull)pushStreamConfigForMixer {
+    return self.streamParams;
+}
+
+- (void)mixingEvent:(ByteRTCStreamMixingEvent)event taskId:(NSString *_Nullable)taskId error:(ByteRTCStreamMixingErrorCode)Code mixType:(ByteRTCMixedStreamType)mixType {
+    if (event == ByteRTCStreamMixingEventStartSuccess && Code == ByteRTCStreamMixingErrorCodeOK) {
         if ([self.delegate respondsToSelector:@selector(rtcInteract:onMixingStreamSuccess:)]) {
             [self.delegate rtcInteract:self onMixingStreamSuccess:mixType];
         }
     }
 }
+
 
 @end
