@@ -7,6 +7,13 @@
     android:background="#f6f8fa"
     tools:ignore="ContentDescription">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="42dp" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/tab_content"
         android:layout_width="0dp"
@@ -14,7 +21,8 @@
         app:layout_constraintBottom_toTopOf="@id/tab_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="#33000000" />
 
     <View
         android:id="@+id/tab_layout"
@@ -30,29 +38,40 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/home"
+        android:text="@string/scene"
         android:textColor="@color/tab_text_color"
         android:textSize="14sp"
         app:drawableTopCompat="@drawable/ic_tab_scenes"
         app:layout_constraintBottom_toBottomOf="@id/tab_layout"
-        app:layout_constraintEnd_toStartOf="@id/tab_profile"
+        app:layout_constraintEnd_toStartOf="@id/tab_function"
         app:layout_constraintStart_toStartOf="@id/tab_layout"
         app:layout_constraintTop_toTopOf="@id/tab_layout"
         tools:drawableTop="@drawable/ic_tab_scenes" />
 
     <TextView
-        android:id="@+id/tab_profile"
+        android:id="@+id/tab_function"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="@string/account"
+        android:text="@string/function"
         android:textColor="@color/tab_text_color"
         android:textSize="14sp"
-        app:drawableTopCompat="@drawable/ic_tab_profile"
+        app:drawableTopCompat="@drawable/ic_tab_functions"
         app:layout_constraintBottom_toBottomOf="@id/tab_layout"
         app:layout_constraintEnd_toEndOf="@id/tab_layout"
         app:layout_constraintStart_toEndOf="@id/tab_scenes"
         app:layout_constraintTop_toTopOf="@id/tab_layout"
-        tools:drawableTopCompat="@drawable/ic_tab_profile" />
+        tools:drawableTopCompat="@drawable/ic_tab_functions" />
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginEnd="12dp"
+        android:padding="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top"
+        tools:src="@drawable/avatar00" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

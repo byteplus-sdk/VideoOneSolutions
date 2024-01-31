@@ -100,7 +100,7 @@
     [self.createButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(152, 52));
         make.centerX.equalTo(self.view);
-        make.bottom.equalTo(self.view).offset(-20 - [DeviceInforTool getVirtualHomeHeight]);
+        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideBottom).offset(-20);
     }];
 
     [[LivePlayerManager sharePlayer] startWithConfiguration];
@@ -108,11 +108,6 @@
 
 - (void)dealloc {
     [[LiveRTCManager shareRtc] disconnect];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleDefault;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -177,11 +172,7 @@
         if (@available(iOS 15.0, *)) {
             _tableView.sectionHeaderTopPadding = 0.01;
         }
-        if (@available(iOS 11.0, *)) {
-            _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        } else {
-            self.automaticallyAdjustsScrollViewInsets = NO;
-        }
+        _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         _tableView.showsVerticalScrollIndicator = NO;
         _tableView.delegate = self;
         _tableView.dataSource = self;

@@ -97,8 +97,9 @@
 - (UIImageView *)livingImageView {
     if (!_livingImageView) {
         _livingImageView = [[UIImageView alloc] init];
-        _livingImageView.image = [UIImage imageNamed:@"interact_live_cell_status_live" bundleName:@"App"];
+        _livingImageView.image = [UIImage imageNamed:@"live_cell_status_live" bundleName:HomeBundleName];
     }
     return _livingImageView;
 }
+
 @end

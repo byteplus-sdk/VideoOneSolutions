@@ -2,45 +2,45 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.videoone.app.protocol;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-
-import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.feature.InteractiveLiveEntryActivity;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import com.vertcdemo.solution.interactivelive.R;
+import com.vertcdemo.solution.interactivelive.feature.InteractiveLiveEntryActivity;
+
 /**
  * Demo App Entry
  * used by reflection
  */
 @Keep
-public class InteractiveLiveEntry {
-    @Keep
+public class InteractiveLiveEntry implements ISceneEntry {
     @DrawableRes
-    public int icon() {
-        return R.drawable.interactive_live_icon;
+    @Override
+    public int getBackground() {
+        return R.drawable.interactive_live_bg_entry;
     }
 
-    @Keep
     @StringRes
-    public int title() {
+    @Override
+    public int getTitle() {
         return R.string.interactive_live_title;
     }
 
-    @Keep
     @StringRes
-    public int description() {
+    @Override
+    public int getDescription() {
         return R.string.interactive_live_description;
     }
 
-    @Keep
-    public void startup(@NonNull Activity activity) {
+    @Override
+    public void startup(@NonNull Context context) {
         Intent intent = new Intent();
-        intent.setClass(activity, InteractiveLiveEntryActivity.class);
-        activity.startActivity(intent);
+        intent.setClass(context, InteractiveLiveEntryActivity.class);
+        context.startActivity(intent);
     }
 }

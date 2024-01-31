@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, RTCInteractState) {
 
 - (void)rtcInteract:(LiveRTCInteract *_Nullable)interact didJoinChannel:(NSString *_Nullable)channelId withUid:(NSString *_Nullable)uid elapsed:(NSInteger)elapsed;
 - (void)rtcInteract:(LiveRTCInteract *_Nullable)interact onUserPublishStream:(NSString *_Nullable)uid;
-- (void)rtcInteract:(LiveRTCInteract *_Nullable)interact onMixingStreamSuccess:(ByteRTCStreamMixingType)mixType;
+- (void)rtcInteract:(LiveRTCInteract *_Nullable)interact onMixingStreamSuccess:(ByteRTCMixedStreamType)mixType;
 
 @end
 

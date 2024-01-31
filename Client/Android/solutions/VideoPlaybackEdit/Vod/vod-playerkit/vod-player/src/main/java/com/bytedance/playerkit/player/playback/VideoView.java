@@ -68,6 +68,8 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
 
     private int mPlayScene;
 
+    private boolean mIsInPictureInPictureMode = false;
+
     private Boolean mHasWindowFocus;
 
     public interface ViewEventListener {
@@ -76,7 +78,19 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
         void onWindowFocusChanged(boolean hasWindowFocus);
     }
 
-    public interface VideoViewListener extends DisplayView.SurfaceListener, ViewEventListener {
+    public interface PictureInPictureModeChangedListener{
+        void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig);
+    }
+
+    public interface VideoViewListener extends DisplayView.SurfaceListener, ViewEventListener, PictureInPictureModeChangedListener {
+
+        default void onVideoViewAttachedToWindow(@NonNull VideoView videoView) {
+
+        }
+
+        default void onVideoViewDetachedFromWindow(@NonNull VideoView videoView) {
+
+        }
 
         void onVideoViewBindController(PlaybackController controller);
 
@@ -150,6 +164,10 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
             @Override
             public void onSurfaceDestroy(Surface surface) {
             }
+
+            @Override
+            public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+            }
         }
     }
 
@@ -209,6 +227,22 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        for (VideoViewListener listener : mListeners) {
+            listener.onVideoViewAttachedToWindow(this);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        for (VideoViewListener listener : mListeners) {
+            listener.onVideoViewDetachedFromWindow(this);
+        }
+        super.onDetachedFromWindow();
+    }
+
+    @Override
     public void requestLayout() {
         super.requestLayout();
     }
@@ -216,6 +250,9 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (isInPictureInPictureMode()) {
+            mDisplayView.getDisplayView().measure(widthMeasureSpec, heightMeasureSpec);
+        }
     }
 
     @Override
@@ -445,6 +482,20 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
 
     public int getPlayScene() {
         return mPlayScene;
+    }
+
+    public void setPictureInPictureModeChanged(boolean isInPictureInPictureMode,
+                                               @NonNull Configuration newConfig) {
+        if (mIsInPictureInPictureMode != isInPictureInPictureMode) {
+            mIsInPictureInPictureMode = isInPictureInPictureMode;
+            for (VideoViewListener listener : mListeners) {
+                listener.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+            }
+        }
+    }
+
+    public boolean isInPictureInPictureMode() {
+        return mIsInPictureInPictureMode;
     }
 
     /**

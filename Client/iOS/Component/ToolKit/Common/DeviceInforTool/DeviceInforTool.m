@@ -23,47 +23,43 @@
     return NO;
 }
 
-+ (CGFloat)getStatusBarHight {
-    float statusBarHeight = 0;
-    if (@available(iOS 13.0, *)) {
-        UIStatusBarManager *statusBarManager = [UIApplication sharedApplication].windows.firstObject.windowScene.statusBarManager;
-        statusBarHeight = statusBarManager.statusBarFrame.size.height;
-    } else {
-        statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-    }
-    return statusBarHeight;
-}
-
-+ (CGFloat)getTabBarHight {
-    return 52 + [self getVirtualHomeHeight];
-}
-
 + (CGFloat)getVirtualHomeHeight {
-    CGFloat virtualHomeHeight = 0;
-    if (@available(iOS 11.0, *)) {
-        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-        virtualHomeHeight = keyWindow.safeAreaInsets.bottom;
-    }
-    return virtualHomeHeight;
+    UIWindow *keyWindow = [UIApplication sharedApplication].delegate.window;
+    return keyWindow.safeAreaInsets.bottom;
 }
 
 + (UIEdgeInsets)getSafeAreaInsets {
-    UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
-    if (@available(iOS 11.0, *)) {
-        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-        safeAreaInsets = keyWindow.safeAreaInsets;
+    UIWindow *keyWindow = [UIApplication sharedApplication].delegate.window;
+    return keyWindow.safeAreaInsets;
+}
+
++ (UIViewController *)rootViewController {
+    if (@available(iOS 13.0, *)) {
+        NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(UIScene *evaluatedObject, NSDictionary<NSString *, id> *_Nullable bindings) {
+            return [evaluatedObject isKindOfClass:[UIWindowScene class]] && evaluatedObject.activationState == UISceneActivationStateForegroundActive;
+        }];
+        UIWindowScene *windowScene = (UIWindowScene *)[[[UIApplication sharedApplication].connectedScenes filteredSetUsingPredicate:predicate] anyObject];
+        if (!windowScene) {
+            return [UIApplication sharedApplication].delegate.window.rootViewController;
+        }
+        if (@available(iOS 15.0, *)) {
+            return windowScene.keyWindow.rootViewController;
+        } else {
+            return windowScene.windows.firstObject.rootViewController;
+        }
+    } else {
+        return [UIApplication sharedApplication].delegate.window.rootViewController;
     }
-    return safeAreaInsets;
 }
 
 + (UIViewController *)topViewController {
     UIViewController *resultVC;
-    resultVC = [self _topViewController:[[UIApplication sharedApplication].keyWindow rootViewController]];
+    resultVC = [self _topViewController:[self rootViewController]];
     while (resultVC.presentedViewController) {
         resultVC = [self _topViewController:resultVC.presentedViewController];
     }
     if ([resultVC isKindOfClass:[UIAlertController class]]) {
-        resultVC = [self _topViewController:[[UIApplication sharedApplication].keyWindow rootViewController]];
+        resultVC = [self _topViewController:[self rootViewController]];
     }
     return resultVC;
 }
@@ -76,11 +72,10 @@
     } else {
         return vc;
     }
-    return nil;
 }
 
 + (void)backToRootViewController {
-    UIViewController *rootViewController = [[UIApplication sharedApplication].keyWindow rootViewController];
+    UIViewController *rootViewController = [self rootViewController];
     UIViewController *presentedViewController = nil;
 
     if ([rootViewController isKindOfClass:[UITabBarController class]]) {

@@ -11,16 +11,16 @@ public class LiveConfigParams {
     public int minBitrate;
     public int maxBitrate;
 
-    void videoResolution(int width, int height) {
+    public void videoResolution(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
-    void videoFps(int fps) {
+    public void videoFps(int fps) {
         this.fps = fps;
     }
 
-    void videoBitrate(int defaultBitrate, int minBitrate, int maxBitrate) {
+    public void videoBitrate(int defaultBitrate, int minBitrate, int maxBitrate) {
         this.defaultBitrate = defaultBitrate;
         this.minBitrate = minBitrate;
         this.maxBitrate = maxBitrate;

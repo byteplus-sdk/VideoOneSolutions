@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSUInteger minBitrate;
 
 /**
- Video FPS, default 18
+ Video FPS, default 15
  */
 @property (nonatomic, assign) NSUInteger videoFPS;
 

@@ -29,7 +29,6 @@
 # TTSDK
 -keep class com.pandora.**{*;}
 -keep class com.ss.**{*;}
--keep class com.bytedance.**{*;}
 -keep class com.pandora.ttlicense2.**{*;}
 
 # Glide
@@ -45,25 +44,18 @@
   *** rewind();
 }
 
--keep,allowobfuscation class org.webrtc.CalledByNative
--keep,allowobfuscation class com.bytedance.bae.base.CalledByNative
+-keep,allowobfuscation class com.bytedance.realx.base.CalledByNative
 
 # Understand the @CalledByNative support annotation.
--keep @org.webrtc.CalledByNative class *
--keep @com.bytedance.bae.base.CalledByNative class *
+-keep @com.bytedance.realx.base.CalledByNative class *
 
 -keepclasseswithmembers class * {
-    @org.webrtc.CalledByNative *;
-}
--keepclasseswithmembers class * {
-    @com.bytedance.bae.base.CalledByNative *;
+    @com.bytedance.realx.base.CalledByNative *;
 }
 
-# Keep webrtc、RtcEngine
--keep class org.webrtc.**{*;}
+# Keep RtcEngine
 -keep class com.bytedance.realx.**{*;}
 -keep class com.bytedance.bae.**{*;}
--keep class com.ss.video.rtc.**{*;}
 
 ## region proguard configuration for Gson
 # Gson uses generic type information stored in a class file when working with fields. Proguard

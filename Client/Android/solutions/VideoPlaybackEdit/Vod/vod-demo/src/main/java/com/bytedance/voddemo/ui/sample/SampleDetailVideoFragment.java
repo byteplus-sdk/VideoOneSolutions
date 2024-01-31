@@ -33,6 +33,7 @@ import com.bytedance.vod.scenekit.data.model.VideoItem;
 import com.bytedance.vod.scenekit.ui.base.BaseFragment;
 import com.bytedance.vod.scenekit.ui.video.layer.CoverLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.FullScreenTipsLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.GestureLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LoadingLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LockLayer;
@@ -281,7 +282,6 @@ public class SampleDetailVideoFragment extends BaseFragment {
         VideoView videoView = new VideoView(context);
         VideoLayerHost layerHost = new VideoLayerHost(context);
         layerHost.addLayer(new GestureLayer());
-        layerHost.addLayer(new FullScreenLayer());
         layerHost.addLayer(new CoverLayer());
 
         layerHost.addLayer(new TimeProgressBarLayer());
@@ -299,6 +299,10 @@ public class SampleDetailVideoFragment extends BaseFragment {
         layerHost.addLayer(new LockLayer());
         layerHost.addLayer(new LoadingLayer());
         layerHost.addLayer(new PlayCompleteLayer());
+        layerHost.addLayer(new FullScreenLayer());
+        if (VideoSettings.booleanValue(VideoSettings.COMMON_SHOW_FULL_SCREEN_TIPS)) {
+            layerHost.addLayer(new FullScreenTipsLayer());
+        }
         if (VideoSettings.booleanValue(VideoSettings.DEBUG_ENABLE_LOG_LAYER)) {
             layerHost.addLayer(new LogLayer());
         }

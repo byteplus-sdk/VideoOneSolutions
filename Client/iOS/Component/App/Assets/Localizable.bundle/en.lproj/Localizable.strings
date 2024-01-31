@@ -1,5 +1,5 @@
-"home"="Home";
-"me"="Account";
+"menu_scene"="Scene";
+"menu_function"="Function";
 "user_name"="Account information";
 "language_info" = "Language";
 "language_name" = "English";
@@ -20,9 +20,8 @@
 "app_version"="App version";
 "sdk_version"="SDK version";
 "cancel_account"="Delete account";
-"alert_confirm" = "Confirm";
+"show_notice"="Notice";
 
 "home_title" = "VideoOne Center";
 "home_des" = "Welcome to the VideoOne! Please select the scene of interest.";
-"home_icon_new_tip" = "NEW";
-"home_cell_try" = "Try it now";
+"function_title" = "Single function";

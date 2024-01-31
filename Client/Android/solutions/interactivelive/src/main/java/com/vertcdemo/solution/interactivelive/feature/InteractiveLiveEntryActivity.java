@@ -14,7 +14,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.vertcdemo.core.joinrtsparams.bean.JoinRTSRequest;
 import com.vertcdemo.core.joinrtsparams.common.JoinRTSManager;
-import com.vertcdemo.core.common.ProgressDialogFragment;
 import com.vertcdemo.core.eventbus.AppTokenExpiredEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.ErrorTool;
@@ -24,6 +23,7 @@ import com.vertcdemo.core.net.rts.RTSInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveJoinRTSRequest;
 import com.vertcdemo.solution.interactivelive.util.CenteredToast;
 import com.vertcdemo.core.utils.AppUtil;
+import com.vertcdemo.ui.dialog.SolutionProgressDialog;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -34,7 +34,7 @@ public class InteractiveLiveEntryActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(new ProgressDialogFragment(), "dialog_loading");
+        ft.add(new SolutionProgressDialog(), "dialog_loading");
         ft.commit();
 
         SolutionEventBus.register(this);

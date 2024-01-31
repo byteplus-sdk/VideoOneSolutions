@@ -17,13 +17,19 @@ import java.util.Date;
 
 
 public class VideoDetail {
+    @SerializedName("vid")
     public String vid;
+    @SerializedName("caption")
     public String caption;
+    @SerializedName("duration")
     public double duration;
+    @SerializedName("coverUrl")
     public String coverUrl;
+    @SerializedName("videoModel")
     public String videoModel;
+    @SerializedName("playAuthToken")
     public String playAuthToken;
-
+    @SerializedName("subtitleAuthToken")
     public String subtitleAuthToken; // unused for now
 
     @SerializedName("subtitle")
@@ -58,7 +64,8 @@ public class VideoDetail {
                     detail.playAuthToken,
                     (long) (detail.duration * 1000),
                     detail.coverUrl,
-                    detail.caption);
+                    detail.caption,
+                    detail.subtitleAuthToken);
             fillVideoItem(item, detail);
             return item;
         } else if (detail.videoModel != null) {

@@ -45,6 +45,7 @@ dependencies {
 
     implementation rootProject.ext.libs["ttsdk_vod_premium"]
     implementation rootProject.ext.libs["ttsdk_vod_debugtool"]
+    implementation rootProject.ext.libs["gson"]
 
     implementation project(rootProject.ext.projects[':Vod:vod-playerkit:vod-player'])
     implementation project(rootProject.ext.projects[':Vod:vod-playerkit:vod-player-utils'])

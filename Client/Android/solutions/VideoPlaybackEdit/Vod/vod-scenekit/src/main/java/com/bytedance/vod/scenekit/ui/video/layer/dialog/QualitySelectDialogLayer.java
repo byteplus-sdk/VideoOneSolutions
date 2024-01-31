@@ -4,6 +4,8 @@
 
 package com.bytedance.vod.scenekit.ui.video.layer.dialog;
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -89,7 +91,7 @@ public class QualitySelectDialogLayer extends DialogListLayer<Track> {
 
     @Override
     public void onVideoViewPlaySceneChanged(int fromScene, int toScene) {
-        if (playScene() != PlayScene.SCENE_FULLSCREEN) {
+        if (!isFullScreenMode(toScene)) {
             dismiss();
         }
     }

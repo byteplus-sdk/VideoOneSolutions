@@ -52,6 +52,8 @@ public class VolumeReceiver extends BroadcastReceiver {
             SyncVolumeHandler layer = mRef.get();
             if (layer != null) {
                 layer.syncVolume();
+            } else {
+                context.getApplicationContext().unregisterReceiver(this);
             }
         }
     }

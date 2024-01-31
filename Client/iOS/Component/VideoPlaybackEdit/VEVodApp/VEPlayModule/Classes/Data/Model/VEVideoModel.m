@@ -18,6 +18,7 @@
         @"coverUrl": @"coverUrl",
         @"playTimes": @"playTimes",
         @"playAuthToken": @"playAuthToken",
+        @"subtitleAuthToken": @"subtitleAuthToken",
         @"duration": @"duration",
         @"userName": @"name",
         @"likeCount": @"like",

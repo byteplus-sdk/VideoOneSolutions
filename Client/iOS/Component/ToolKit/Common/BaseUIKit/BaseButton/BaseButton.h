@@ -15,11 +15,13 @@ typedef NS_ENUM(NSInteger, ButtonStatus) {
 
 @interface BaseButton : UIButton
 
-@property (nonatomic, assign) ButtonStatus status;
+@property (nonatomic, assign) NSInteger status;
 
-- (void)bingImage:(UIImage *)image status:(ButtonStatus)status;
+- (void)bingImage:(UIImage *)image status:(NSInteger)status;
 
-- (void)bingFont:(UIFont *)font status:(ButtonStatus)status;
+- (void)bingFont:(UIFont *)font status:(NSInteger)status;
+
+- (void)bingTitleColor:(UIColor *)color status:(NSInteger)status;
 
 @end
 

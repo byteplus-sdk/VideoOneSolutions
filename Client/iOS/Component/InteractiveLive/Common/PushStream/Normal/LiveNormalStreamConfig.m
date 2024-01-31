@@ -9,7 +9,7 @@
 
 + (instancetype)defaultConfig {
     LiveNormalStreamConfig *config = [[LiveNormalStreamConfig alloc] init];
-    LiveSettingVideoConfig *setting = [LiveSettingVideoConfig defultVideoConfig];
+    LiveSettingVideoConfig *setting = [LiveSettingVideoConfig defaultVideoConfig];
     config.videoFPS = setting.fps;
     config.outputSize = setting.videoSize;
     config.bitrate = setting.bitrate * 1000;

@@ -7,13 +7,17 @@
 #import "LiveRTCManager.h"
 #import "LiveSettingData.h"
 #import "LiveStreamConfiguration.h"
-#import "LiveDarkFrameProvider.h"
+#import <TTSDK/VeLivePusher.h>
 
-@interface LiveNormalPushStreamingImpl () <LiveDarkFrameProviderDelegate>
+@interface LiveNormalPushStreamingImpl () <ByteRTCVideoSinkDelegate,
+                                           ByteRTCAudioFrameObserver,
+                                           VeLivePusherObserver,
+                                           VeLivePusherStatisticsObserver>
 
-@property (nonatomic, strong) LiveCore *liveCore;
+@property (nonatomic, strong) VeLivePusher *livePusher;
+@property (nonatomic, strong) VeLiveVideoEncoderConfiguration *videoEncoderConfig;
 
-@property (nonatomic, strong) LiveDarkFrameProvider *darkFrameProvider;
+@property (nonatomic, assign) BOOL isRTCSinkReady;
 
 @end
 
@@ -24,12 +28,13 @@
 - (instancetype)init {
     if (self = [super init]) {
     }
+
     return self;
 }
 
 - (void)dealloc {
     [self stopNormalStreaming];
-    self.liveCore = nil;
+    [self destroyLivePusher];
 }
 
 - (void)setStreamConfig:(LiveNormalStreamConfig *)streamConfig {
@@ -39,174 +44,281 @@
 - (NSString *)generalRTMUrl:(NSString *)rtmpUrl {
     NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithString:rtmpUrl];
     NSString *urlPath = urlComponents.path;
+
     if (IsEmptyStr(urlPath.pathExtension)) {
         urlPath = [urlPath stringByAppendingPathExtension:@"sdp"];
     } else {
         urlPath = [urlPath stringByReplacingOccurrencesOfString:urlPath.pathExtension withString:@"sdp"];
     }
+
     urlComponents.path = urlPath;
+
     if (![urlComponents.scheme hasPrefix:@"http"]) {
         urlComponents.scheme = @"http";
     }
+
     NSString *rtmUrl = urlComponents.URL.absoluteString;
     return rtmUrl;
 }
 
 - (void)startNormalStreaming {
     [self setupLiveCoreIfNeed];
-    if (![self.liveCore isStreaming]) {
-        LiveStreamConfiguration *sessionConfig = [LiveStreamConfiguration defaultConfiguration];
+
+    if (![self.livePusher isPushing]) {
         NSString *rtmpUrl = self.streamConfig.rtmpUrl;
         rtmpUrl = [LiveRTCInteractUtils setPriorityForUrl:rtmpUrl];
         NSAssert(rtmpUrl, @"rtmp url is nil");
-        //        rtm push
+        NSArray *urls;
+
         if ([LiveSettingData rtmPushStreaming]) {
             NSString *rtmUrl = [self generalRTMUrl:rtmpUrl];
-            sessionConfig.URLs = @[rtmUrl, rtmpUrl];
-            /// We config this for oversea RTM, and it's needed.
-            sessionConfig.rtsHttpPort = 9922;
-            sessionConfig.rtsEnableDtls = YES;
+            urls = @[rtmUrl, rtmpUrl];
         } else {
-            sessionConfig.URLs = @[rtmpUrl];
-        }
-        sessionConfig.rtmpURL = rtmpUrl;
-        sessionConfig.outputSize = _streamConfig.outputSize;
-        //        sessionConfig.bitrateAdaptStrategy =
-        sessionConfig.bitrate = _streamConfig.bitrate;
-        sessionConfig.maxBitrate = _streamConfig.maxBitrate;
-        sessionConfig.minBitrate = _streamConfig.minBitrate;
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"16.4")) {
-            sessionConfig.maxBitrate = sessionConfig.bitrate;
-            sessionConfig.minBitrate = sessionConfig.bitrate;
-            sessionConfig.bitrateAdaptStrategy = -1;
+            urls = @[rtmpUrl];
         }
 
-        [self.liveCore setupLiveSessionWithConfig:sessionConfig];
-        [self.liveCore startStreaming];
+        [self.livePusher startPushWithUrls:urls];
     }
-    [[LiveRTCManager shareRtc].rtcEngineKit setLocalVideoSink:ByteRTCStreamIndexMain withSink:self withPixelFormat:ByteRTCVideoSinkPixelFormatI420];
-    ByteRTCAudioFormat *audioFormat = [[ByteRTCAudioFormat alloc] init];
-    audioFormat.channel = ByteRTCAudioChannelStereo;
-    audioFormat.sampleRate = ByteRTCAudioSampleRate44100;
-    [[LiveRTCManager shareRtc].rtcEngineKit enableAudioFrameCallback:(ByteRTCAudioFrameCallbackRecord) format:audioFormat];
-    [[LiveRTCManager shareRtc].rtcEngineKit setAudioFrameObserver:self];
-    WeakSelf;
-    self.liveCore.statusChangedBlock = ^(LiveStreamSessionState state, LiveStreamErrorCode errCode) {
-        StrongSelf;
-        if (state == LiveStreamSessionStateStarted) {
-            NSDictionary *dic = @{
-                @"liveMode": @(1),
-                @"LIVECore": @(1)
-            };
-            id obj = [dic yy_modelToJSONString];
-            [sself.liveCore sendSEIMsgWithKey:@"app_data" value:obj repeatTimes:2];
-        }
-    };
-    self.liveCore.networkQualityCallback = ^(LiveCoreNetworkQuality networkQuality) {
-        StrongSelf;
-        if ([sself.delegate respondsToSelector:@selector(updateOnNetworkStatusChange:)]) {
-            [sself.delegate updateOnNetworkStatusChange:networkQuality];
-        }
-    };
-    self.liveCore.networkQualityCallback(LiveCoreNetworkQualityBad);
+
+    [self addRTCVideoAndAudioSink];
 }
 
 - (void)stopNormalStreaming {
-    [self.liveCore stopStreaming];
-    [[LiveRTCManager shareRtc].rtcEngineKit setLocalVideoSink:ByteRTCStreamIndexMain withSink:nil withPixelFormat:ByteRTCVideoSinkPixelFormatI420];
-    [[LiveRTCManager shareRtc].rtcEngineKit setAudioFrameObserver:nil];
+    [self removeRTCVideoAndAudioSink];
+    [self.livePusher stopPush];
 }
 
 - (void)cameraStateChanged:(BOOL)cameraOn {
     if (cameraOn) {
         [self stopPushDarkFrame];
     } else {
-        if ([self.liveCore isStreaming]) {
+        if ([self.livePusher isPushing]) {
             [self startPushDarkFrame];
         }
     }
 }
 
 - (void)setupLiveCoreIfNeed {
-    if (self.liveCore) {
+    if (self.livePusher != nil) {
         return;
     }
-    self.liveCore = [[LiveCore alloc] initWithMode:(LiveCoreModuleLiveStreaming)];
-    [self.liveCore setStatusChangedBlock:^(LiveStreamSessionState state, LiveStreamErrorCode errCode) {
-        switch (state) {
-            case LiveStreamSessionStateError:
-                NSLog(@"normal push error");
-                break;
-            case LiveStreamSessionStateUrlerr:
-                NSLog(@"normal push url error");
-                break;
-            default:
-                break;
-        }
-    }];
-    WeakSelf;
-    [self.liveCore setStreamLogCallback:^(NSDictionary *log) {
-        StrongSelf;
-        dispatch_queue_async_safe(dispatch_get_main_queue(), (^{
-                                      NSNumber *bitrate = [sself.liveCore.liveSession getStreamInfoForKey:LiveStreamInfo_RealTransportBitrate];
-                                      LiveStreamConfiguration *configuration = sself.liveCore.liveSession.configuration;
-                                      NSString *strategy = @"None";
-                                      switch (configuration.bitrateAdaptStrategy) {
-                                          case LiveStreamBitrateAdaptationStrategy_NORMAL:
-                                              strategy = @"normal";
-                                              break;
-                                          case LiveStreamBitrateAdaptationStrategy_SENSITIVE:
-                                              strategy = @"sensitive";
-                                              break;
-                                          case LiveStreamBitrateAdaptationStrategy_MORE_SENSITIVE:
-                                              strategy = @"more_sensitive";
-                                              break;
-                                          case LiveStreamBitrateAdaptationStrategy_BASE_BWE:
-                                              strategy = @"base_bwe";
-                                              break;
-                                      }
-                                      NSDictionary *extra = @{@"defaultBitrate": @(configuration.bitrate),
-                                                              @"minBitrate": @(configuration.minBitrate),
-                                                              @"maxBitrate": @(configuration.maxBitrate),
-                                                              @"fps": @(configuration.videoFPS),
-                                                              @"strategy": strategy
-                                      };
-                                      if (sself.streamLogCallback) {
-                                          sself.streamLogCallback([bitrate integerValue], log, extra);
-                                      }
-                                  }));
-    }];
+
+    LiveNormalStreamConfig *streamConfig = self.streamConfig;
+
+    // Video Capture Config
+    VeLiveVideoCaptureConfiguration *videoCaptureConfig = [[VeLiveVideoCaptureConfiguration alloc] init];
+    videoCaptureConfig.width = streamConfig.outputSize.width;
+    videoCaptureConfig.height = streamConfig.outputSize.height;
+    videoCaptureConfig.fps = (int)streamConfig.videoFPS;
+
+    // Audio Capture Config
+    VeLiveAudioCaptureConfiguration *audioCaptureConfig = [[VeLiveAudioCaptureConfiguration alloc] init];
+    audioCaptureConfig.sampleRate = VeLiveAudioSampleRate44100;
+    audioCaptureConfig.channel = VeLiveAudioChannelStereo;
+
+    VeLivePusherConfiguration *config = [[VeLivePusherConfiguration alloc] init];
+    config.reconnectCount = 3;
+    config.reconnectIntervalSeconds = 5; // seconds
+    config.videoCaptureConfig = videoCaptureConfig;
+    config.audioCaptureConfig = audioCaptureConfig;
+
+    self.livePusher = [[VeLivePusher alloc] initWithConfig:config];
+
+    [self.livePusher setObserver:self];
+    [self.livePusher setStatisticsObserver:self interval:1];
+
+    // Video Encoder Config
+    VeLiveVideoResolution resolution = VeLiveVideoResolution720P;
+    CGFloat minValue = MIN(streamConfig.outputSize.width, streamConfig.outputSize.height);
+
+    if (minValue <= 360) {
+        resolution = VeLiveVideoResolution360P;
+    } else if (minValue <= 480) {
+        resolution = VeLiveVideoResolution480P;
+    } else if (minValue <= 720) {
+        resolution = VeLiveVideoResolution720P;
+    } else {
+        resolution = VeLiveVideoResolution1080P;
+    }
+
+    VeLiveVideoEncoderConfiguration *videoEncoderConfig = [[VeLiveVideoEncoderConfiguration alloc] initWithResolution:(resolution)];
+    videoEncoderConfig.minBitrate = streamConfig.minBitrate * 0.001;
+    videoEncoderConfig.maxBitrate = streamConfig.maxBitrate * 0.001;
+    videoEncoderConfig.bitrate = streamConfig.bitrate * 0.001;
+    videoEncoderConfig.fps = (int)streamConfig.videoFPS;
+
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"16.4") && SYSTEM_VERSION_LESS_THAN(@"16.5")) {
+        videoEncoderConfig.minBitrate = streamConfig.bitrate * 0.001;
+        videoEncoderConfig.maxBitrate = streamConfig.bitrate * 0.001;
+        videoEncoderConfig.bitrate = streamConfig.bitrate * 0.001;
+        [self.livePusher setProperty:@"VeLiveKeySetBitrateAdaptStrategy" value:@"CLOSE"];
+    }
+
+    self.videoEncoderConfig = videoEncoderConfig;
+
+    [self.livePusher setVideoEncoderConfiguration:videoEncoderConfig];
+
+    [self.livePusher startVideoCapture:VeLiveVideoCaptureExternal];
+    [self.livePusher startAudioCapture:VeLiveAudioCaptureExternal];
+}
+
+- (void)destroyLivePusher {
+    [self.livePusher stopAudioCapture];
+    [self.livePusher stopVideoCapture];
+    [self.livePusher destroy];
+    self.livePusher = nil;
 }
 
 - (void)startPushDarkFrame {
-    if (!self.darkFrameProvider) {
-        self.darkFrameProvider = [[LiveDarkFrameProvider alloc] init];
-        self.darkFrameProvider.delegate = self;
-    }
-    [self.darkFrameProvider startPushDarkFrame];
+    [self.livePusher switchVideoCapture:VeLiveVideoCaptureDummyFrame];
 }
 
 - (void)stopPushDarkFrame {
-    [self.darkFrameProvider stopPushDarkFrame];
-    self.darkFrameProvider = nil;
+    [self.livePusher switchVideoCapture:VeLiveVideoCaptureExternal];
 }
 
+- (void)toggleReconnectCapability:(BOOL)turnOn {
+    //    self.livePusher.reconnectCount =  turnOn ? 9 : 0;
+    //
+    //    self.livePusher.liveSession.maxReconnectCount = turnOn ? 9 : 0;
+}
 
-#pragma mark -- LiveDarkFrameProviderDelegate
-- (void)darkFrameProviderDidOutput:(CVPixelBufferRef)darkframe {
-    if (darkframe != NULL && [self.liveCore isStreaming]) {
-        int64_t value = (int64_t) (CACurrentMediaTime() * 1000000000);
-        CMTime pts_audio = CMTimeMake(value, 1000000000);
-        [self.liveCore pushVideoBuffer:darkframe andTimestamp:pts_audio];
+#pragma mark-- VeLivePusherObserver & VeLivePusherStatisticsObserver
+- (void)onStatusChange:(VeLivePushStatus)status {
+    NSLog(@"VeLivePusher: onStatusChange: %lu", status);
+
+    if (status == VeLivePushStatusConnectSuccess) {
+        NSDictionary *dic = @{
+            @"liveMode": @(1),
+            @"LIVECore": @(1)
+        };
+        id obj = [dic yy_modelToJSONString];
+        // Because liveMode=1 is default status, so 60 times is enough to tell client change layout
+        if (obj) {
+            [self.livePusher sendSeiMessage:@"app_data" value:obj repeat:60 isKeyFrame:YES allowsCovered:YES];
+        }
     }
 }
 
-#pragma mark -- ByteRTCVideoSinkDelegate
+- (void)onNetworkQuality:(VeLiveNetworkQuality)quality {
+    NSLog(@"VeLivePusher: onNetworkQuality: %lu", quality);
+    if ([self.delegate respondsToSelector:@selector(updateOnNetworkStatusChange:)]) {
+        LiveNetworkQualityStatus liveQuality = LiveNetworkQualityStatusBad;
+        switch (quality) {
+            case VeLiveNetworkQualityGood:
+                liveQuality = LiveNetworkQualityStatusGood;
+                break;
+            case VeLiveNetworkQualityPoor:
+            case VeLiveNetworkQualityBad:
+                liveQuality = LiveNetworkQualityStatusBad;
+                break;
+            case VeLiveNetworkQualityUnknown:
+                liveQuality = LiveNetworkQualityStatusNone;
+                break;
+            default:
+                liveQuality = LiveNetworkQualityStatusNone;
+                break;
+        }
+        [self.delegate updateOnNetworkStatusChange:liveQuality];
+    }
+}
+
+- (void)onStatistics:(VeLivePusherStatistics *)statistics {
+    if (self.streamLogCallback == nil) {
+        return;
+    }
+    NSDictionary *log = @{
+        @"event_key": @"push_stream",
+        @"defaultBitrate": @(statistics.videoBitrate * 1000),
+        @"minBitrate": @(statistics.minVideoBitrate * 1000),
+        @"maxBitrate": @(statistics.maxVideoBitrate * 1000),
+        @"width": @(self.streamConfig.outputSize.width),
+        @"height": @(self.streamConfig.outputSize.height),
+        @"fps": @(self.streamConfig.videoFPS),
+        @"video_codec": statistics.codec ?: @"unknown",
+        @"hardware": @(self.videoEncoderConfig.enableAccelerate),
+        @"preview_fps": @(self.streamConfig.videoFPS),
+        @"transportFps": @(statistics.transportFps),
+        @"video_enc_bitrate": @(statistics.encodeVideoBitrate),
+        @"real_bitrate": @(statistics.transportVideoBitrate),
+    };
+
+    NSDictionary *extra = @{
+        @"defaultBitrate": @(statistics.videoBitrate * 1000),
+        @"minBitrate": @(statistics.minVideoBitrate * 1000),
+        @"maxBitrate": @(statistics.maxVideoBitrate * 1000),
+        @"fps": @(statistics.fps),
+        @"strategy": @"normal",
+    };
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.streamLogCallback) {
+            self.streamLogCallback(statistics.videoBitrate * 1000, log, extra);
+        }
+    });
+}
+
+#pragma mark-- ByteRTC Video and Audio Sink
+- (void)addRTCVideoAndAudioSink {
+    if (self.isRTCSinkReady) {
+        return;
+    }
+
+    [[LiveRTCManager shareRtc].rtcEngineKit setLocalVideoSink:ByteRTCStreamIndexMain
+                                                     withSink:self
+                                              withPixelFormat:ByteRTCVideoSinkPixelFormatI420];
+
+    ByteRTCAudioFormat *audioFormat = [[ByteRTCAudioFormat alloc] init];
+    audioFormat.channel = ByteRTCAudioChannelStereo;
+    audioFormat.sampleRate = ByteRTCAudioSampleRate44100;
+    [[LiveRTCManager shareRtc].rtcEngineKit enableAudioFrameCallback:(ByteRTCAudioFrameCallbackRecord)
+                                                              format:audioFormat];
+    [[LiveRTCManager shareRtc].rtcEngineKit registerAudioFrameObserver:self];
+    self.isRTCSinkReady = YES;
+}
+
+- (void)removeRTCVideoAndAudioSink {
+    if (!self.isRTCSinkReady) {
+        return;
+    }
+
+    [[LiveRTCManager shareRtc].rtcEngineKit setLocalVideoSink:ByteRTCStreamIndexMain
+                                                     withSink:nil
+                                              withPixelFormat:ByteRTCVideoSinkPixelFormatI420];
+    [[LiveRTCManager shareRtc].rtcEngineKit registerAudioFrameObserver:nil];
+    self.isRTCSinkReady = NO;
+}
+
+#pragma mark-- ByteRTCVideoSinkDelegate
 - (void)renderPixelBuffer:(CVPixelBufferRef)pixelBuffer rotation:(ByteRTCVideoRotation)rotation contentType:(ByteRTCVideoContentType)contentType extendedData:(NSData *)extendedData {
-    int64_t value = (int64_t)(CACurrentMediaTime() * 1000000000);
-    int32_t timeScale = 1000000000;
-    CMTime pts = CMTimeMake(value, timeScale);
-    [self.liveCore.liveSession pushVideoBuffer:pixelBuffer andCMTime:pts rotation:(int)rotation];
+    CMTime pts = CMTimeMakeWithSeconds(CACurrentMediaTime(), 1000000000);
+    VeLiveVideoFrame *videoFrame = [[VeLiveVideoFrame alloc] init];
+
+    videoFrame.pts = pts;
+    videoFrame.pixelBuffer = pixelBuffer;
+    VeLiveVideoRotation videoRotation = VeLiveVideoRotation0;
+    switch (rotation) {
+        case ByteRTCVideoRotation0:
+            videoRotation = VeLiveVideoRotation0;
+            break;
+
+        case ByteRTCVideoRotation90:
+            videoRotation = VeLiveVideoRotation90;
+            break;
+
+        case ByteRTCVideoRotation180:
+            videoRotation = VeLiveVideoRotation180;
+            break;
+
+        case ByteRTCVideoRotation270:
+            videoRotation = VeLiveVideoRotation270;
+            break;
+
+        default:
+            break;
+    }
+    videoFrame.rotation = videoRotation;
+    videoFrame.bufferType = VeLiveVideoBufferTypePixelBuffer;
+    [self.livePusher pushExternalVideoFrame:videoFrame];
 }
 
 - (int)getRenderElapse {
@@ -214,26 +326,25 @@
 }
 
 #pragma mark--  ByteRTCAudioFrameObserver
-- (void)onRecordAudioFrame:(ByteRTCAudioFrame *_Nonnull)audioFrame;
-{
+- (void)onRecordAudioFrame:(ByteRTCAudioFrame *_Nonnull)audioFrame {
     int channel = 2;
+
     if (audioFrame.channel == ByteRTCAudioChannelMono) {
         channel = 1;
     } else if (audioFrame.channel == ByteRTCAudioChannelStereo) {
         channel = 2;
     }
 
-    int64_t value = (int64_t)(CACurrentMediaTime() * 1000000000);
-    int32_t timeScale = 1000000000;
-    CMTime pts = CMTimeMake(value, timeScale);
+    CMTime pts = CMTimeMakeWithSeconds(CACurrentMediaTime(), 1000000000);
 
-    int bytesPerFrame = 16 * channel / 8;
-    int numFrames = (int)(audioFrame.buffer.length / bytesPerFrame);
+    VeLiveAudioFrame *frame = [[VeLiveAudioFrame alloc] init];
+    frame.bufferType = VeLiveAudioBufferTypeNSData;
+    frame.data = audioFrame.buffer;
+    frame.pts = pts;
+    frame.channels = (VeLiveAudioChannel)channel;
+    frame.sampleRate = VeLiveAudioSampleRate44100;
 
-    [self.liveCore pushAudioBuffer:(uint8_t *)[audioFrame.buffer bytes]
-                        andDataLen:(size_t)audioFrame.buffer.length
-                 andInNumberFrames:numFrames
-                         andCMTime:pts];
+    [self.livePusher pushExternalAudioFrame:frame];
 }
 
 - (void)onMixedAudioFrame:(ByteRTCAudioFrame *_Nonnull)audioFrame {

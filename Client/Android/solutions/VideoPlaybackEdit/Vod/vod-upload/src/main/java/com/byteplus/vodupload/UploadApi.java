@@ -62,7 +62,6 @@ public class UploadApi {
                 .setAppVersion(appVersion)
                 .setAppChannel(appChannel)
                 .build());
-
     }
 
     public void startUpload(String filePath,

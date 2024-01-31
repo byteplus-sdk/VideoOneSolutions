@@ -5,12 +5,13 @@ package com.bytedance.vod.scenekit.ui.video.scene;
 
 
 public class PlayScene {
-    public static final int SCENE_UNKNOWN = 0;
+    public static final int SCENE_NONE = 0;
     public static final int SCENE_SHORT = 1;
     public static final int SCENE_FEED = 2;
     public static final int SCENE_LONG = 3;
     public static final int SCENE_DETAIL = 4;
-    public static final int SCENE_FULLSCREEN = 5;
+    public static final int SCENE_SINGLE_FUNCTION = 5;
+    public static final int SCENE_FULLSCREEN = 6;
 
     public static String map(int scene) {
         switch (scene) {
@@ -22,11 +23,15 @@ public class PlayScene {
                 return "long";
             case SCENE_DETAIL:
                 return "detail";
-            case SCENE_FULLSCREEN:
-                return "fullscreen";
-            case SCENE_UNKNOWN:
+            case SCENE_SINGLE_FUNCTION:
+                return "s-function";
+            case SCENE_NONE:
             default:
-                return "unknown";
+                return "none";
         }
+    }
+
+    public static boolean isFullScreenMode(int scene) {
+        return scene == SCENE_FULLSCREEN;
     }
 }

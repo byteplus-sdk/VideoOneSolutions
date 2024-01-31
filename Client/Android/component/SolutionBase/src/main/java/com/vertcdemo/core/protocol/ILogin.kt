@@ -8,5 +8,5 @@ import androidx.core.util.Consumer
 
 interface ILogin {
     fun showLoginView(launcher: ActivityResultLauncher<Intent?>)
-    fun closeAccount(action: Consumer<Boolean>?)
+    fun closeAccount()
 }

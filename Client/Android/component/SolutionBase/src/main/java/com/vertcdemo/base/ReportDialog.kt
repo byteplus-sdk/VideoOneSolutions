@@ -7,12 +7,16 @@ import android.content.Context
 import android.util.Log
 import android.widget.AdapterView
 import android.widget.Toast
-import com.vertcdemo.core.common.AppExecutors.mainHandler
-import com.vertcdemo.core.common.AppExecutors.mainThread
 import com.vertcdemo.core.utils.AppUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 object ReportDialog {
     private const val TAG = "ReportDialog"
+    private val uiScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     @JvmStatic
     fun show(context: Context) {
@@ -38,12 +42,13 @@ object ReportDialog {
     private fun doReportProcess(choice: String) {
         Log.d(TAG, "You report: $choice")
         // TODO Handle report to server
-        mainHandler.postDelayed({
+        uiScope.launch {
+            delay(250)
             Toast.makeText(
                 AppUtil.applicationContext,
                 R.string.report_success,
                 Toast.LENGTH_SHORT
             ).show()
-        }, 250)
+        }
     }
 }

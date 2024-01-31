@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) BOOL isLandscape;
 
-- (void)setDeviceInterfaceOrientation:(UIDeviceOrientation)orientation;
+- (void)setDeviceInterfaceOrientation:(UIInterfaceOrientation)orientation;
 
 - (void)addOrientationNotice;
 

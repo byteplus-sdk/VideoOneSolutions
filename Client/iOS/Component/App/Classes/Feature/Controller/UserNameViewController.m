@@ -29,13 +29,14 @@
     [self.view addSubview:self.navView];
     [self.navView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.right.equalTo(self.view);
-        make.height.mas_equalTo([DeviceInforTool getStatusBarHight] + 44);
+        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(44);
     }];
 
     [self.navView addSubview:self.navLabel];
     [self.navLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.navView);
-        make.centerY.equalTo(self.navView).offset([DeviceInforTool getStatusBarHight] / 2);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
+        make.bottom.equalTo(self.navView);
     }];
 
     [self.navView addSubview:self.leftButton];
@@ -60,11 +61,6 @@
     }];
 
     self.userNameTextFieldView.text = [LocalUserComponent userModel].name;
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleDefault;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -114,7 +110,6 @@
 - (BaseButton *)rightButton {
     if (!_rightButton) {
         _rightButton = [[BaseButton alloc] init];
-        ;
         [_rightButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         _rightButton.titleLabel.font = [UIFont systemFontOfSize:15];
         [_rightButton addTarget:self action:@selector(rightButtonAction:) forControlEvents:UIControlEventTouchUpInside];

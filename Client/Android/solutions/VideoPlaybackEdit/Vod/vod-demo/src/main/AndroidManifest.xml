@@ -4,6 +4,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.bytedance.voddemo.impl">
 
     <application>
@@ -15,12 +16,16 @@
 
         <activity
             android:name="com.bytedance.voddemo.ui.main.MainTabActivity"
+            android:supportsPictureInPicture="true"
+            android:launchMode="singleTask"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/VEVodAppTheme" />
 
         <activity
             android:name="com.bytedance.voddemo.ui.video.scene.VideoActivity"
+            android:supportsPictureInPicture="true"
+            android:launchMode="singleTask"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/VEVodAppTheme" />
@@ -51,6 +56,20 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/VEVodAppTheme" />
+
+        <activity
+            android:name="com.videoone.vod.function.VodFunctionDispatchActivity"
+            android:theme="@style/VEVodAppTheme.Transparent" />
+
+        <activity
+            android:name="com.videoone.vod.function.VodFunctionActivity"
+            android:supportsPictureInPicture="true"
+            android:launchMode="singleTask"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/VEVodAppTheme.Dark"
+            tools:targetApi="n" />
 
     </application>
 </manifest>

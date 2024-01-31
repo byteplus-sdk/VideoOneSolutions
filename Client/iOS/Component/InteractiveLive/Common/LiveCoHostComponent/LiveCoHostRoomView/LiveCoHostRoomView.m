@@ -114,7 +114,7 @@
     [self.liveTimeView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(20);
         make.left.mas_equalTo(12);
-        make.top.mas_equalTo(50 + [DeviceInforTool getStatusBarHight]);
+        make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(50);
     }];
 
     [self addSubview:self.netQualityView];

@@ -48,6 +48,15 @@
     self.navigationController.interactivePopGestureRecognizer.enabled = NO;
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
 - (void)setBackBlock:(void (^)(void))backBlock {
     _backBlock = backBlock;
     self.contentView.backToHomeBlock = backBlock;

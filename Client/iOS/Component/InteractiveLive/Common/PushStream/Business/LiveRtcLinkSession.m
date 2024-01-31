@@ -7,6 +7,7 @@
 #import "LiveRTCInteract.h"
 #import "LiveRTCManager.h"
 #import "LiveRoomInfoModel.h"
+#import "LiveSettingVideoConfig.h"
 
 @interface LiveRtcLinkSession () <LiveRTCInteractDelegate, LiveNormalPushStreamingNetworkChangeDelegate>
 
@@ -48,6 +49,7 @@
         self.normalPushStreaming = impl;
     }
     [self.normalPushStreaming startNormalStreaming];
+    [self.normalPushStreaming toggleReconnectCapability:YES];
 }
 
 - (void)stopNormalStreaming {
@@ -55,12 +57,23 @@
 }
 
 - (void)startInteractive:(LiveInteractivePlayMode)playMode {
+    [self.normalPushStreaming toggleReconnectCapability:NO];
     LivePushStreamParams *params = [[LivePushStreamParams alloc] init];
     params.rtcToken = self.roomModel.rtcToken;
     params.rtcRoomId = self.roomModel.rtcRoomId;
     params.pushUrl = self.streamConfig.rtmpUrl;
     params.currerntUserId = [LocalUserComponent userModel].uid;
     params.host = self.roomModel.hostUserModel;
+
+    LiveSettingVideoConfig *videoConfig = [LiveSettingVideoConfig defaultVideoConfig];
+    params.width = videoConfig.videoSize.width;
+    params.height = videoConfig.videoSize.height;
+    params.fps = videoConfig.fps;
+    params.gop = 2;
+    params.minBitrate = videoConfig.minBitrate;
+    params.maxBitrate = videoConfig.maxBitrate;
+    params.defaultBitrate = videoConfig.defaultBitrate;
+
     if (!self.interactivePushStreaming) {
         LiveRTCInteract *interact = [[LiveRTCInteract alloc] initWithPushStreamParams:params];
         interact.delegate = self;
@@ -73,6 +86,15 @@
     }
     [self.interactivePushStreaming startInteractive];
     [self switchPlayMode:playMode];
+
+    WeakSelf;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        StrongSelf;
+        // manually stop normal pushing in case we can receive mixstream success event while linking.
+        if ([sself.interactivePushStreaming isInteracting]) {
+            [sself stopNormalStreaming];
+        }
+    });
 }
 
 - (void)stopInteractive {
@@ -107,9 +129,31 @@
     [self.interactivePushStreaming startForwardStreamToRooms:rtcRoomId token:rtcToken];
 }
 
-#pragma mark - LiveNormalPushStreamingNetworkChangeDelegate
+- (void)updatePushStreamBitrate:(NSInteger)bitrate {
+    //    if ([self.interactivePushStreaming isInteracting]) {
+    //        [self.interactivePushStreaming updatePushStreamBitrate:bitrate];
+    //    } else {
+    //        [self.normalPushStreaming updatePushStreamBitrate:bitrate];
+    //    }
+}
 
-- (void)updateOnNetworkStatusChange:(LiveCoreNetworkQuality)status {
+- (void)updatePushStreamResolution:(CGSize)resolution {
+    if ([self.interactivePushStreaming isInteracting]) {
+        [self.interactivePushStreaming updatePushStreamResolution:resolution];
+    } else {
+        //        [self.normalPushStreaming updatePushStreamResolution:resolution];
+    }
+}
+
+- (void)updateVideoEncoderResolution:(CGSize)resolution {
+    if ([self.interactivePushStreaming isInteracting]) {
+        [self.interactivePushStreaming updatePushStreamResolution:resolution];
+    }
+}
+
+#pragma mark - LiveRtcLinkSessionNetworkChangeDelegate
+
+- (void)updateOnNetworkStatusChange:(LiveNetworkQualityStatus)status {
     if ([self.netwrokDelegate respondsToSelector:@selector(updateOnNetworkStatusChange:)]) {
         [self.netwrokDelegate updateOnNetworkStatusChange:status];
     }
@@ -127,8 +171,8 @@
     [self.interactiveDelegate liveInteractiveOnUserPublishStream:uid];
 }
 
-- (void)rtcInteract:(LiveRTCInteract *)interact onMixingStreamSuccess:(ByteRTCStreamMixingType)mixType {
-    if (mixType == ByteRTCStreamMixingTypeByServer) {
+- (void)rtcInteract:(LiveRTCInteract *)interact onMixingStreamSuccess:(ByteRTCMixedStreamType)mixType {
+    if (mixType == ByteRTCMixedStreamByServer) {
         [self.normalPushStreaming stopNormalStreaming];
     }
 }

@@ -3,13 +3,14 @@
 //
 
 #import "UserViewController.h"
+#import "NoticeViewController.h"
 #import "UserCell.h"
 #import "UserHeadView.h"
 #import "UserNameViewController.h"
 #import <AppConfig/BuildConfig.h>
 #import <Masonry/Masonry.h>
-#import <ToolKit/ToolKit.h>
 #import <ToolKit/LoginComponent.h>
+#import <ToolKit/ToolKit.h>
 
 @interface UserViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -20,19 +21,21 @@
 @property (nonatomic, strong) BaseButton *logoutButton;
 @property (nonatomic, strong) BaseButton *deletAccountButton;
 @property (nonatomic, strong) UIImageView *bgView;
+@property (nonatomic, strong) BaseButton *leftButton;
+
 @end
 
 @implementation UserViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor colorFromHexString:@"#F6F8FA"];
+    self.view.backgroundColor = [UIColor colorFromHexString:@"#F6FAFD"];
 
     self.bgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"account_bg" bundleName:@"App"]];
     self.bgView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:self.bgView];
     [self.bgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
+        make.top.left.right.equalTo(self.view);
     }];
 
     [self.view addSubview:self.roomTableView];
@@ -41,11 +44,18 @@
         make.bottom.equalTo(self.view);
         make.left.right.equalTo(self.view);
     }];
+
+    [self.view addSubview:self.leftButton];
+    [self.leftButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
+        make.left.equalTo(self.view);
+        make.height.mas_equalTo(44);
+        make.width.mas_equalTo(48);
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleDefault;
     self.headView.nameString = [LocalUserComponent userModel].name;
     self.headView.iconString = [LocalUserComponent userModel].avatarName;
     [self.roomTableView reloadData];
@@ -96,35 +106,32 @@
 
 - (void)jumpToWeb:(NSString *)url {
     if (url && [url isKindOfClass:[NSString class]] && url.length > 0) {
-        if (@available(iOS 10.0, *)) {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]
-                                               options:@{}
-                                     completionHandler:^(BOOL success){
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]
+                                           options:@{}
+                                 completionHandler:^(BOOL success){
 
-                                     }];
-        } else {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-        }
+                                 }];
     }
 }
 
 - (void)deleteAccountButtonClick {
     AlertActionModel *alertCancelModel = [[AlertActionModel alloc] init];
-    alertCancelModel.title = LocalizedStringFromBundle(@"cancel", @"App");
+    alertCancelModel.title = LocalizedStringFromBundle(@"cancel", ToolKitBundleName);
     alertCancelModel.alertModelClickBlock = ^(UIAlertAction *_Nonnull action) {
 
     };
 
     AlertActionModel *alertModel = [[AlertActionModel alloc] init];
-
-    alertModel.title = LocalizedStringFromBundle(@"alert_confirm", @"App");
+    alertModel.title = LocalizedStringFromBundle(@"confirm", ToolKitBundleName);
     alertModel.font = [UIFont fontWithName:@"Roboto" size:14] ?: [UIFont systemFontOfSize:14 weight:(UIFontWeightMedium)];
     alertModel.textColor = [UIColor colorFromHexString:@"#D7312A"];
     alertModel.alertModelClickBlock = ^(UIAlertAction *_Nonnull action) {
         [[ToastComponent shareToastComponent] showLoading];
         [LoginComponent closeAccount:^(BOOL result) {
             [[ToastComponent shareToastComponent] dismiss];
-            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLoginExpired object:@"close_account"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLogout
+                                                                object:self
+                                                              userInfo:@{NotificationLogoutReasonKey: @"close_account"}];
         }];
     };
     [[AlertActionManager shareAlertActionManager] showWithTitle:LocalizedStringFromBundle(@"cancel_account", @"App")
@@ -133,24 +140,35 @@
                                                       hideDelay:-1];
 }
 
+- (void)showNoticeClick {
+    NoticeViewController *vc = [[NoticeViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 #pragma mark - Private Action
 
 - (void)onClickLogoutRoom {
     AlertActionModel *alertCancelModel = [[AlertActionModel alloc] init];
-    alertCancelModel.title = LocalizedStringFromBundle(@"cancel", @"App");
+    alertCancelModel.title = LocalizedStringFromBundle(@"cancel", ToolKitBundleName);
     alertCancelModel.alertModelClickBlock = ^(UIAlertAction *_Nonnull action) {
 
     };
 
     AlertActionModel *alertModel = [[AlertActionModel alloc] init];
-    alertModel.title = LocalizedStringFromBundle(@"ok", @"App");
+    alertModel.title = LocalizedStringFromBundle(@"ok", ToolKitBundleName);
     alertModel.alertModelClickBlock = ^(UIAlertAction *_Nonnull action) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLoginExpired object:@"manual_logout"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLogout
+                                                            object:self
+                                                          userInfo:@{NotificationLogoutReasonKey: @"manual_logout"}];
     };
     [[AlertActionManager shareAlertActionManager] showWithTitle:LocalizedStringFromBundle(@"log_out", @"App")
                                                         message:LocalizedStringFromBundle(@"logout_confirm", @"App")
                                                         actions:@[alertCancelModel, alertModel]
                                                       hideDelay:-1];
+}
+
+- (void)navBackAction {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - Getter
@@ -177,10 +195,18 @@
         model8.isMore = YES;
         [lists addObject:model8];
 
+        MenuCellModel *model10 = [[MenuCellModel alloc] init];
+        model10.title = LocalizedStringFromBundle(@"show_notice", @"App");
+        model10.isMore = YES;
+        __weak __typeof__(self) weakSelf = self;
+        model10.block = ^{
+            [weakSelf showNoticeClick];
+        };
+        [lists addObject:model10];
+
         MenuCellModel *model9 = [[MenuCellModel alloc] init];
         model9.title = LocalizedStringFromBundle(@"cancel_account", @"App");
         model9.isMore = YES;
-        __weak __typeof__(self) weakSelf = self;
         model9.block = ^{
             [weakSelf deleteAccountButtonClick];
         };
@@ -200,7 +226,7 @@
 
 - (UITableView *)roomTableView {
     if (!_roomTableView) {
-        _roomTableView = [[UITableView alloc] initWithFrame:CGRectZero style:(UITableViewStyleGrouped)];
+        _roomTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:(UITableViewStyleGrouped)];
         _roomTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _roomTableView.delegate = self;
         _roomTableView.dataSource = self;
@@ -209,11 +235,7 @@
         _roomTableView.rowHeight = UITableViewAutomaticDimension;
         _roomTableView.tableHeaderView = self.headView;
         _roomTableView.tableFooterView = self.footerView;
-        if (@available(iOS 11.0, *)) {
-            _roomTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        } else {
-            self.automaticallyAdjustsScrollViewInsets = NO;
-        }
+        _roomTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         _roomTableView.sectionFooterHeight = 0.01;
         _roomTableView.estimatedSectionFooterHeight = 0.01;
         _roomTableView.sectionHeaderHeight = 0.01;
@@ -262,6 +284,7 @@
     }
     return _headView;
 }
+
 - (UIView *)footerView {
     if (!_footerView) {
         _footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 88)];
@@ -273,4 +296,15 @@
     }
     return _footerView;
 }
+
+- (BaseButton *)leftButton {
+    if (!_leftButton) {
+        _leftButton = [[BaseButton alloc] init];
+        [_leftButton setImage:[UIImage imageNamed:@"img_left_black" bundleName:@"App"] forState:UIControlStateNormal];
+        _leftButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        [_leftButton addTarget:self action:@selector(navBackAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _leftButton;
+}
+
 @end

@@ -64,7 +64,8 @@ public class SampleSourceParser {
         switch (type) {
             case VideoItem.SOURCE_TYPE_VID: {
                 String playAuthToken = object.optString("playAuthToken");
-                videoItem = VideoItem.createVidItem(vid, playAuthToken, duration, cover, title);
+                String subtitleAuthToken = object.optString("subtitleAuthToken");
+                videoItem = VideoItem.createVidItem(vid, playAuthToken, duration, cover, title, subtitleAuthToken);
                 break;
             }
             case VideoItem.SOURCE_TYPE_URL: {

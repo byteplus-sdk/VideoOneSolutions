@@ -9,6 +9,8 @@
 
 + (BaseUserModel *)userModel;
 
++ (void)logout;
+
 + (BOOL)isLogin;
 
 + (void)updateLocalUserModel:(BaseUserModel *)userModel;

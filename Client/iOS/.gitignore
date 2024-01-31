@@ -6,3 +6,5 @@ Gemfile.lock
 xcuserdata/
 VideoOne-InHouse-Private.xcconfig
 VideoOne-Debug-Private.xcconfig
+sensitive_info_result.txt
+podfile_config.yml

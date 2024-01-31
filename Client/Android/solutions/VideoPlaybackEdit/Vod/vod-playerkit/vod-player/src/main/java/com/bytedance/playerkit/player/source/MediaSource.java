@@ -264,6 +264,18 @@ public class MediaSource extends ExtraObject implements Serializable {
     private String playAuthToken;
 
     /**
+     * Subtitle auth token of {@link #mediaId}. Only works with {@link #SOURCE_TYPE_ID}
+     */
+    private String subtitleAuthToken;
+
+    /**
+     * A list of subtitle stream in different languages.
+     */
+    private final List<Subtitle> subtitles = new ArrayList<>();
+
+    private Subtitle subtitle;
+
+    /**
      * Json string of VideoModel. Only works with {@link #SOURCE_TYPE_MODEL}
      */
     private String modelJson;
@@ -320,11 +332,14 @@ public class MediaSource extends ExtraObject implements Serializable {
      *
      * @param mediaId       Media id of video/audio. Null is not allowed.
      * @param playAuthToken Auth token of {@link #mediaId}.
+     * @param subtitleAuthToken Subtitle auth token of {@link #mediaId}.
      * @return Instance of id MediaSource.
      */
-    public static MediaSource createIdSource(@NonNull String mediaId, @NonNull String playAuthToken) {
+    public static MediaSource createIdSource(@NonNull String mediaId, @NonNull String playAuthToken,
+                                             @Nullable String subtitleAuthToken) {
         MediaSource mediaSource = new MediaSource(mediaId, SOURCE_TYPE_ID);
         mediaSource.setPlayAuthToken(playAuthToken);
+        mediaSource.setSubtitleAuthToken(subtitleAuthToken);
         return mediaSource;
     }
 
@@ -508,6 +523,22 @@ public class MediaSource extends ExtraObject implements Serializable {
     }
 
     /**
+     * @return Subtitle auth token of {@link #mediaId}. Only works with {@link #SOURCE_TYPE_ID}
+     */
+    public String getSubtitleAuthToken() {
+        return subtitleAuthToken;
+    }
+
+    /**
+     * Set subtitle auth token of {@link #mediaId}. Only works with {@link #SOURCE_TYPE_ID}
+     *
+     * @param subtitleAuthToken Subtitle auth token of {@link #mediaId}
+     */
+    public void setSubtitleAuthToken(String subtitleAuthToken) {
+        this.subtitleAuthToken = subtitleAuthToken;
+    }
+
+    /**
      * Get VideoModel json string.
      *
      * @return VideoModel json string
@@ -668,6 +699,40 @@ public class MediaSource extends ExtraObject implements Serializable {
             }
         }
         return null;
+    }
+
+    public void setSubtitles(List<Subtitle> subtitles) {
+        synchronized (this.subtitles) {
+            this.subtitles.clear();
+            if (subtitles != null) {
+                this.subtitles.addAll(subtitles);
+            }
+        }
+    }
+
+    public List<Subtitle> getSubtitles() {
+        synchronized (this.subtitles) {
+            return subtitles;
+        }
+    }
+
+    public Subtitle getSubtitle(int subtitleId) {
+        synchronized (this.subtitles) {
+            for (Subtitle subtitle : subtitles) {
+                if (subtitle.subtitleId == subtitleId) {
+                    return subtitle;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Subtitle getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(Subtitle subtitle) {
+        this.subtitle = subtitle;
     }
 
     public static String dump(MediaSource source) {

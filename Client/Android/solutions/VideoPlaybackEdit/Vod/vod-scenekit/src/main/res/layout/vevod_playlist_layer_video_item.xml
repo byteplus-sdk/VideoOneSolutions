@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="98dp"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="7dp"
+    tools:background="#000">
+
+    <ImageView
+        android:id="@+id/cover"
+        android:layout_width="152dp"
+        android:layout_height="84dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="#abcdef"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4.5dp"
+        android:background="@drawable/vevod_bg_playlist_video_item_duration"
+        android:paddingHorizontal="4dp"
+        android:paddingBottom="1dp"
+        android:shadowColor="#8A000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="1"
+        android:textColor="#FFF"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintEnd_toEndOf="@id/cover"
+        tools:text="00:42" />
+
+    <ImageView
+        android:id="@+id/playing"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/vevod_playlist_playing_bg"
+        android:scaleType="center"
+        android:src="@drawable/vevod_playlist_playing"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintEnd_toEndOf="@id/cover"
+        app:layout_constraintStart_toStartOf="@id/cover"
+        app:layout_constraintTop_toTopOf="@id/cover" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cover"
+        app:layout_constraintTop_toTopOf="@id/cover">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="#FFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="I played the scariest game in the world" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#73767A"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="BytePlus" />
+
+        <TextView
+            android:id="@+id/video_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#73767A"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="3M views · 8 days ago" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

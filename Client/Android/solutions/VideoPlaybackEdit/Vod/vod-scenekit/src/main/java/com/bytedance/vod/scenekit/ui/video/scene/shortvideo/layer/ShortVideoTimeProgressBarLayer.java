@@ -9,6 +9,6 @@ import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 public class ShortVideoTimeProgressBarLayer extends TimeProgressBarLayer {
     @Override
     protected boolean checkShow() {
-        return playScene() == PlayScene.SCENE_FULLSCREEN;
+        return PlayScene.isFullScreenMode(playScene());
     }
 }

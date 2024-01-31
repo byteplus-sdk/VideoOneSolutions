@@ -9,6 +9,7 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:paddingRight="10dp"
     tools:background="#000">
 
     <RelativeLayout
@@ -87,6 +88,32 @@
         android:layout_weight="1" />
 
     <LinearLayout
+        android:id="@+id/subtitleContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/subtitle_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="4dp"
+            android:src="@drawable/vevod_fullscreen_subtitle_enable" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:gravity="center_vertical"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            tools:text="Subtitle" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/speedContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -115,7 +142,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="32dp"
-        android:layout_marginRight="10dp"
         android:gravity="center_vertical">
 
         <ImageView
@@ -132,5 +158,29 @@
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             tools:text="1080P" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/playlistContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="4dp"
+            android:src="@drawable/vevod_fullscreen_playlist" />
+
+        <TextView
+            android:id="@+id/playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:gravity="center_vertical"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            tools:text="128" />
     </LinearLayout>
 </LinearLayout>

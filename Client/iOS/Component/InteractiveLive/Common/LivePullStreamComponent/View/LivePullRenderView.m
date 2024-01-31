@@ -74,7 +74,7 @@
 
             case PullRenderStatusPK: {
                 [self.streamView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.top.mas_equalTo(56 + [DeviceInforTool getStatusBarHight]);
+                    make.top.equalTo(self.mas_safeAreaLayoutGuideTop).offset(56);
                     make.width.equalTo(self);
                     make.height.mas_equalTo(ceilf((SCREEN_WIDTH / 2) * 16 / 9));
                     make.centerX.equalTo(self);

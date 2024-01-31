@@ -46,10 +46,8 @@
     contentView.layer.masksToBounds = YES;
     [self.maskButton addSubview:contentView];
     [contentView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
-        make.right.mas_equalTo(0);
-        make.height.mas_offset(list.count * 48 + [DeviceInforTool getVirtualHomeHeight]);
-        make.bottom.mas_offset(0);
+        make.left.right.bottom.equalTo(self.maskButton);
+        make.top.equalTo(self.maskButton.mas_safeAreaLayoutGuideBottom).offset(-list.count * 48);
     }];
     _contentView = contentView;
 

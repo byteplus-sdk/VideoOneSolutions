@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_fs_tips_brightness_title">Brightness adjustment</string>
+    <string name="vevod_fs_tips_brightness_desc">Slide up and down on the left side.</string>
+
+    <string name="vevod_fs_tips_volume_title">Volume adjustment</string>
+    <string name="vevod_fs_tips_volume_desc">Slide up and down on the right side.</string>
+
+    <string name="vevod_fs_tips_progress_title">Playback progress</string>
+    <string name="vevod_fs_tips_progress_desc">Swipe left or right.</string>
+</resources>

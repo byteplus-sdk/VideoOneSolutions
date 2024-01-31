@@ -8,6 +8,7 @@
 #import <TTSDK/TTSDKManager.h>
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
+#import <TTSDK/TTVideoEngine.h>
 
 @implementation VideoPlaybackEdit
 
@@ -16,22 +17,21 @@
     if (self) {
         self.title = LocalizedStringFromBundle(@"vod_scenes", @"VEVodApp");
         self.des = LocalizedStringFromBundle(@"vod_scenes_des", @"VEVodApp");
-        self.iconNames = @[@"menu_live_vod"];
+        self.iconName = @"scene_vod_bg";
         self.scenesName = @"vod";
     }
     return self;
 }
 
-- (void)prepareEnvironment {
++ (void)prepareEnvironment {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [self setupTTSDK];
     });
 }
 
-- (void)enterSceneWithCallback:(void (^)(BOOL))block {
-    [super enterSceneWithCallback:block];
-    [self prepareEnvironment];
+- (void)enterWithCallback:(void (^)(BOOL))block {
+    [super enterWithCallback:block];
     VEMainViewController *vc = [[VEMainViewController alloc] init];
     __weak __typeof__(self) weakSelf = self;
     vc.clickTabCenterBolck = ^{
@@ -57,7 +57,11 @@
     }
 }
 
-- (void)setupTTSDK {
++ (void)setupTTSDK {
+    #ifdef DEBUG
+    // 建议开发的过程中打开 logcat 日志，获取更多播放信息
+    [TTVideoEngine setLogFlag:TTVideoEngineLogFlagAll];
+    #endif
     TTSDKConfiguration *cfg = [TTSDKConfiguration defaultConfigurationWithAppID:VODAPPID licenseName:VODLicenseName];
     cfg.channel = [NSBundle.mainBundle.infoDictionary objectForKey:@"CHANNEL_NAME"];
     cfg.appName = [NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleName"];

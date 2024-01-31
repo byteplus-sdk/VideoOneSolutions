@@ -12,7 +12,7 @@
 
 @implementation BaseButton
 
-- (void)setStatus:(ButtonStatus)status {
+- (void)setStatus:(NSInteger)status {
     _status = status;
     NSString *key = [NSString stringWithFormat:@"status_%ld", (long)status];
     UIImage *image = self.bingDic[key];
@@ -24,24 +24,39 @@
     if (font && [font isKindOfClass:[UIFont class]]) {
         self.titleLabel.font = font;
     }
+    NSString *titleColorKey = [NSString stringWithFormat:@"status_title_color_%ld", (long)status];
+    UIColor *color = self.bingDic[titleColorKey];
+    if (color && [color isKindOfClass:[UIColor class]]) {
+        [self setTitleColor:color forState:UIControlStateNormal];
+    }
 }
 
-- (void)bingImage:(UIImage *)image status:(ButtonStatus)status {
+- (void)bingImage:(UIImage *)image status:(NSInteger)status {
     if (image) {
         NSString *key = [NSString stringWithFormat:@"status_%ld", (long)status];
         [self.bingDic setValue:image forKey:key];
-        if (status == ButtonStatusNone) {
+        if (status == 0) {
             [self setImage:image forState:UIControlStateNormal];
         }
     }
 }
 
-- (void)bingFont:(UIFont *)font status:(ButtonStatus)status {
+- (void)bingFont:(UIFont *)font status:(NSInteger)status {
     if (font) {
         NSString *key = [NSString stringWithFormat:@"status_font_%ld", (long)status];
         [self.bingDic setValue:font forKey:key];
-        if (status == ButtonStatusNone) {
+        if (status == 0) {
             self.titleLabel.font = font;
+        }
+    }
+}
+
+- (void)bingTitleColor:(UIColor *)color status:(NSInteger)status {
+    if (color) {
+        NSString *key = [NSString stringWithFormat:@"status_title_color_%ld", (long)status];
+        [self.bingDic setValue:color forKey:key];
+        if (status == 0) {
+            [self setTitleColor:color forState:UIControlStateNormal];
         }
     }
 }

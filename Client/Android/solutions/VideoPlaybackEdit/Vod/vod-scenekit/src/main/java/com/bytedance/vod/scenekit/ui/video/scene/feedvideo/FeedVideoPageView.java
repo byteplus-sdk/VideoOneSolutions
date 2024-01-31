@@ -4,6 +4,8 @@
 package com.bytedance.vod.scenekit.ui.video.scene.feedvideo;
 
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -28,6 +30,7 @@ import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.utils.event.Event;
 import com.bytedance.vod.scenekit.data.model.VideoItem;
 import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.helper.MiniPlayerHelper;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.ui.video.scene.feedvideo.FeedVideoAdapter.OnItemViewListener;
 
@@ -254,7 +257,6 @@ public class FeedVideoPageView extends FrameLayout {
     public void play() {
         if (mCurrentVideoView != null) {
             mCurrentVideoView.startPlayback();
-            FullScreenLayer.enableAutoOrientation(mCurrentVideoView);
         }
     }
 
@@ -279,8 +281,10 @@ public class FeedVideoPageView extends FrameLayout {
                 mInterceptStartPlaybackOnResume = true;
             } else {
                 mInterceptStartPlaybackOnResume = false;
-                mCurrentVideoView.pausePlayback();
-                FullScreenLayer.disableAutoOrientation(mCurrentVideoView);
+                if (MiniPlayerHelper.get().isMiniPlayerOff() || (!(mCurrentVideoView.getPlayScene() == PlayScene.SCENE_DETAIL)
+                        && !PlayScene.isFullScreenMode(mCurrentVideoView.getPlayScene()))) {
+                    mCurrentVideoView.pausePlayback();
+                }
             }
         }
     }
@@ -293,8 +297,7 @@ public class FeedVideoPageView extends FrameLayout {
     }
 
     public boolean isFullScreen() {
-        return mCurrentVideoView != null &&
-                mCurrentVideoView.getPlayScene() == PlayScene.SCENE_FULLSCREEN;
+        return mCurrentVideoView != null && isFullScreenMode(mCurrentVideoView.getPlayScene());
     }
 
     public boolean onBackPressed() {
@@ -327,6 +330,5 @@ public class FeedVideoPageView extends FrameLayout {
         VideoView videoView = videoHolder.sharedVideoView;
         if (videoView == null) return;
         videoView.startPlayback();
-        FullScreenLayer.enableAutoOrientation(videoView);
     }
 }

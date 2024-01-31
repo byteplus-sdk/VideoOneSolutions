@@ -8,6 +8,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -37,10 +38,12 @@ import com.bytedance.vod.scenekit.ui.base.BaseFragment;
 import com.bytedance.vod.scenekit.ui.base.VideoViewExtras;
 import com.bytedance.vod.scenekit.ui.video.layer.CoverLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.FullScreenTipsLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.GestureLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LoadingLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LockLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.LogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.MiniPlayerLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PlayCompleteLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PlayErrorLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.PlayPauseLayer;
@@ -54,6 +57,7 @@ import com.bytedance.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.SpeedSelectDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.TimeProgressDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.helper.MiniPlayerHelper;
 import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
 import com.bytedance.vod.scenekit.ui.video.scene.feedvideo.FeedVideoPageView;
 import com.bytedance.vod.scenekit.utils.FormatHelper;
@@ -243,6 +247,7 @@ public class DetailVideoFragment extends BaseFragment {
         binding.videoViewContainer.addView(mVideoView,
                 new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER));
+
         mVideoView.setPlayScene(PlayScene.SCENE_DETAIL);
 
         renderVideoInfo(binding, mVideoItem);
@@ -294,6 +299,18 @@ public class DetailVideoFragment extends BaseFragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSharedVideoView != mVideoView) {
+            VideoView videoView = mVideoView;
+            VideoLayerHost videoLayerHost = videoView == null ? null : videoView.layerHost();
+            if (videoLayerHost != null) {
+                videoLayerHost.removeAllLayers();
+            }
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         resume();
@@ -334,7 +351,9 @@ public class DetailVideoFragment extends BaseFragment {
                 mInterceptStartPlaybackOnResume = true;
             } else {
                 mInterceptStartPlaybackOnResume = false;
-                mVideoView.pausePlayback();
+                if (MiniPlayerHelper.get().isMiniPlayerOff()) {
+                    mVideoView.pausePlayback();
+                }
             }
         }
     }
@@ -350,10 +369,12 @@ public class DetailVideoFragment extends BaseFragment {
         VideoView videoView = new VideoView(context);
         VideoLayerHost layerHost = new VideoLayerHost(context);
         layerHost.addLayer(new GestureLayer());
-        layerHost.addLayer(new FullScreenLayer());
         layerHost.addLayer(new CoverLayer());
         layerHost.addLayer(new TimeProgressBarLayer(TimeProgressBarLayer.CompletedPolicy.KEEP));
         layerHost.addLayer(new TitleBarLayer());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            layerHost.addLayer(new MiniPlayerLayer());
+        }
         layerHost.addLayer(new QualitySelectDialogLayer());
         layerHost.addLayer(new SpeedSelectDialogLayer());
         layerHost.addLayer(MoreDialogLayer.create());
@@ -367,6 +388,10 @@ public class DetailVideoFragment extends BaseFragment {
         layerHost.addLayer(new LockLayer());
         layerHost.addLayer(new LoadingLayer());
         layerHost.addLayer(new PlayCompleteLayer());
+        layerHost.addLayer(new FullScreenLayer());
+        if (VideoSettings.booleanValue(VideoSettings.COMMON_SHOW_FULL_SCREEN_TIPS)) {
+            layerHost.addLayer(new FullScreenTipsLayer());
+        }
         if (VideoSettings.booleanValue(VideoSettings.DEBUG_ENABLE_LOG_LAYER)) {
             layerHost.addLayer(new LogLayer());
         }

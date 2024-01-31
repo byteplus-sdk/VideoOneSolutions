@@ -9,24 +9,27 @@
 #pragma mark - Publish Action
 
 static BaseUserModel *_currentUser = nil;
+
 + (BaseUserModel *)userModel {
     if (_currentUser) {
         return _currentUser;
     }
     NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:@"KUserinfoDic"];
-    BaseUserModel *user;
-    if (@available(iOS 11.0, *)) {
+    BaseUserModel *user = nil;
+    if (data) {
         user = [NSKeyedUnarchiver unarchivedObjectOfClass:[BaseUserModel class]
                                                  fromData:data
                                                     error:nil];
-    } else {
-        user = [NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
     if (user == nil || ![user isKindOfClass:[BaseUserModel class]]) {
         user = [[BaseUserModel alloc] init];
     }
     _currentUser = user;
     return user;
+}
+
++ (void)logout {
+    [self updateLocalUserModel:nil];
 }
 
 + (BOOL)isLogin {
@@ -36,15 +39,9 @@ static BaseUserModel *_currentUser = nil;
 + (void)updateLocalUserModel:(BaseUserModel *)userModel {
     _currentUser = userModel;
     if (userModel && [userModel isKindOfClass:[BaseUserModel class]]) {
-        NSData *userData = nil;
-        if (@available(iOS 11.0, *)) {
-            userData = [NSKeyedArchiver archivedDataWithRootObject:userModel
-                                             requiringSecureCoding:NO
-                                                             error:nil];
-
-        } else {
-            userData = [NSKeyedArchiver archivedDataWithRootObject:userModel];
-        }
+        NSData *userData = [NSKeyedArchiver archivedDataWithRootObject:userModel
+                                                 requiringSecureCoding:NO
+                                                                 error:nil];
         [[NSUserDefaults standardUserDefaults] setObject:userData forKey:@"KUserinfoDic"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     } else if (userModel == nil) {

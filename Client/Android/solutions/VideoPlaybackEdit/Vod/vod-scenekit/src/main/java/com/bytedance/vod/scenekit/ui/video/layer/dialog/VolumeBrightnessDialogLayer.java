@@ -4,6 +4,8 @@
 
 package com.bytedance.vod.scenekit.ui.video.layer.dialog;
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -20,15 +22,14 @@ import androidx.core.math.MathUtils;
 import com.bytedance.playerkit.player.Player;
 import com.bytedance.playerkit.player.PlayerEvent;
 import com.bytedance.playerkit.player.playback.PlaybackController;
-import com.bytedance.playerkit.player.playback.VideoLayerHost;
+import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.utils.L;
 import com.bytedance.playerkit.utils.event.Dispatcher;
-import com.bytedance.vod.scenekit.ui.video.layer.Layers;
-import com.bytedance.vod.scenekit.utils.UIUtils;
 import com.bytedance.vod.scenekit.R;
 import com.bytedance.vod.scenekit.ui.video.layer.GestureLayer;
+import com.bytedance.vod.scenekit.ui.video.layer.Layers;
 import com.bytedance.vod.scenekit.ui.video.layer.base.DialogLayer;
-import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
+import com.bytedance.vod.scenekit.utils.UIUtils;
 
 
 public class VolumeBrightnessDialogLayer extends DialogLayer implements VolumeReceiver.SyncVolumeHandler {
@@ -74,17 +75,12 @@ public class VolumeBrightnessDialogLayer extends DialogLayer implements VolumeRe
             }
         });
         mSeekBar.setMax(100);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animateDismiss();
-            }
-        });
+        view.setOnClickListener(v -> animateDismiss());
 
         setAnimateDismissListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                GestureLayer layer = layerHost().findLayer(GestureLayer.class);
+                GestureLayer layer = findLayer(GestureLayer.class);
                 if (layer != null) {
                     layer.showController();
                 }
@@ -100,14 +96,14 @@ public class VolumeBrightnessDialogLayer extends DialogLayer implements VolumeRe
 
     @Override
     public void onVideoViewPlaySceneChanged(int fromScene, int toScene) {
-        if (playScene() != PlayScene.SCENE_FULLSCREEN) {
+        if (!isFullScreenMode(toScene)) {
             dismiss();
         }
     }
 
     @Override
-    protected void onBindLayerHost(@NonNull VideoLayerHost layerHost) {
-        super.onBindLayerHost(layerHost);
+    public void onVideoViewAttachedToWindow(@NonNull VideoView videoView) {
+        super.onVideoViewAttachedToWindow(videoView);
         if (mVolume == null) {
             mVolume = new VolumeReceiver(this);
         }
@@ -115,11 +111,11 @@ public class VolumeBrightnessDialogLayer extends DialogLayer implements VolumeRe
     }
 
     @Override
-    protected void onUnbindLayerHost(@NonNull VideoLayerHost layerHost) {
-        super.onUnbindLayerHost(layerHost);
+    public void onVideoViewDetachedFromWindow(@NonNull VideoView videoView) {
         if (mVolume != null) {
             mVolume.unregister(activity());
         }
+        super.onVideoViewDetachedFromWindow(videoView);
     }
 
     @Override
@@ -163,8 +159,14 @@ public class VolumeBrightnessDialogLayer extends DialogLayer implements VolumeRe
         return Math.max(mapBrightness2Progress(brightness), 0);
     }
 
+    private int mVolumeProgress = -1;
+
     public void setVolumeByProgress(int progress) {
         L.v(this, "setVolumeByProgress", progress);
+        if (mVolumeProgress == progress) {
+            return;
+        }
+        mVolumeProgress = progress;
         final Player player = player();
         if (player != null) {
             float volume = mapProgress2Volume(progress);
@@ -173,14 +175,22 @@ public class VolumeBrightnessDialogLayer extends DialogLayer implements VolumeRe
     }
 
     public int getVolumeByProgress() {
+        if (mVolumeProgress < 0) {
+            mVolumeProgress = Math.max(mapVolume2Progress(getPlayerVolume()), 0);
+        }
+
+        L.v(this, "getVolumeByProgress", mVolumeProgress);
+        return mVolumeProgress;
+    }
+
+    private float getPlayerVolume() {
         final Player player = player();
         if (player != null) {
             float[] volume = player.getVolume();
-            float left = volume[0];
-
-            return Math.max(mapVolume2Progress(left), 0);
+            return volume[0];
+        } else {
+            return 0.F;
         }
-        return 0;
     }
 
     public void setType(int type) {
@@ -198,17 +208,17 @@ public class VolumeBrightnessDialogLayer extends DialogLayer implements VolumeRe
     }
 
     @Override
-    public void syncVolume() {
-        createView();
+    public void dismiss() {
+        super.dismiss();
+        mVolumeProgress = -1;
+    }
 
-        final Player player = player();
-        if (player != null) {
-            float[] volume = player.getVolume();
-            float left = volume[0];
-            mSeekBar.setProgress(mapVolume2Progress(left));
-        } else {
-            mSeekBar.setProgress(50);
-        }
+    @Override
+    public void syncVolume() {
+        if (!isShowing()) return;
+
+        int volumeProgress = mapVolume2Progress(getPlayerVolume());
+        mSeekBar.setProgress(volumeProgress);
 
         if (mSeekBarContainer == null) return;
 
@@ -222,8 +232,6 @@ public class VolumeBrightnessDialogLayer extends DialogLayer implements VolumeRe
     }
 
     private void syncBrightness() {
-        createView();
-
         Activity activity = activity();
         if (activity == null) return;
 

@@ -4,7 +4,7 @@
 #import "UIViewController+Orientation.h"
 #import "VEEventMessageBus.h"
 #import "VEGradientView.h"
-#import "VEInterfaceSimpleMethodSceneConf.h"
+#import "VEInterfaceShortVideoSceneConf.h"
 #import "VEInterfaceSocialStackView.h"
 #import "VEPlayerKit.h"
 #import "VEPlayerUIModule.h"
@@ -174,7 +174,7 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 }
 
 - (void)setVisible:(BOOL)visible {
-    self.playerControlInterface.scene.deActive = !visible;
+    self.playerControlInterface.scene.deactive = !visible;
     if (visible) {
         [self playerCover];
         [self playerStart];
@@ -213,7 +213,7 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 
 - (void)createPlayerControl {
     if (!self.playerControlInterface) {
-        self.playerControlInterface = [[VEInterface alloc] initWithPlayerCore:self.playerController scene:[VEInterfaceSimpleMethodSceneConf new]];
+        self.playerControlInterface = [[VEInterface alloc] initWithPlayerCore:self.playerController scene:[VEInterfaceShortVideoSceneConf new]];
         self.socialView.eventMessageBus = self.playerControlInterface.eventMessageBus;
     }
     self.playerControlInterface.delegate = self;

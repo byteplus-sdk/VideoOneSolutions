@@ -35,12 +35,13 @@
 
     [self.navView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.right.equalTo(self.view);
-        make.height.mas_equalTo([DeviceInforTool getStatusBarHight] + 44);
+        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(44);
     }];
 
     [self.navTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.navView);
-        make.centerY.equalTo(self.navView).offset([DeviceInforTool getStatusBarHight] / 2);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
+        make.bottom.equalTo(self.navView);
     }];
 
     [self.leftButton mas_makeConstraints:^(MASConstraintMaker *make) {

@@ -47,7 +47,7 @@ object HttpRequestHelper {
     fun <T> sendPost(
         params: JSONObject,
         resultClass: Class<T>?,
-        callBack: IRequestCallback<ServerResponse<T>?>
+        callBack: IRequestCallback<ServerResponse<T>>
     ) {
         networkIO.execute { sendPost(LOGIN_URL, params, resultClass, callBack) }
     }
@@ -57,7 +57,7 @@ object HttpRequestHelper {
         url: String,
         params: JSONObject,
         resultClass: Class<T>?,
-        callBack: IRequestCallback<ServerResponse<T>?>
+        callBack: IRequestCallback<ServerResponse<T>>
     ) {
         val context: Context = applicationContext
         val language = context.getString(R.string.language_code)

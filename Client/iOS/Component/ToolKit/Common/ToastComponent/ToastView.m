@@ -11,6 +11,7 @@
 @property (nonatomic, strong) UIView *bgView;
 
 @property (nonatomic, copy) NSString *message;
+@property (nonatomic, copy) NSString *loadingMessage;
 @property (nonatomic, copy) NSString *describe;
 @property (nonatomic, assign) ToastViewStatus status;
 
@@ -19,6 +20,14 @@
 @end
 
 @implementation ToastView
+
+- (instancetype)initWithMessage:(NSString *)message {
+    self = [super init];
+    if (self) {
+        self.loadingMessage = message;
+    }
+    return self;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -154,6 +163,10 @@
 }
 
 - (void)configActivityIndicatorContent {
+    CGFloat minScreen = MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+    CGFloat scale = (minScreen / 375);
+    
+    // Loaing
     UIActivityIndicatorView *activityIndicatorView = nil;
     if (@available(iOS 13.0, *)) {
         activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
@@ -163,16 +176,40 @@
     }
     [self.bgView addSubview:activityIndicatorView];
     self.activityIndicatorView = activityIndicatorView;
-
     [activityIndicatorView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.equalTo(self.bgView);
+        make.top.equalTo(self.bgView).offset(20);
+        make.centerX.equalTo(self.bgView);
     }];
+    
+    // Message
+    UILabel *titleLabel = nil;
+    if (self.loadingMessage.length > 0) {
+        titleLabel = [[UILabel alloc] init];
+        titleLabel.text = self.loadingMessage;
+        titleLabel.numberOfLines = 0;
+        titleLabel.textColor = [UIColor whiteColor];
+        titleLabel.textAlignment = NSTextAlignmentCenter;
+        titleLabel.font = [UIFont systemFontOfSize:14 * scale weight:UIFontWeightRegular];
+        [self.bgView addSubview:titleLabel];
+        [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(activityIndicatorView.mas_bottom).offset(4);
+            make.centerX.equalTo(activityIndicatorView);
+            make.width.mas_lessThanOrEqualTo(minScreen - 32 * 4);
+            make.bottom.equalTo(self.bgView).offset(-20);
+        }];
+    } else {
+        [activityIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.bottom.equalTo(self.bgView).offset(-20);
+        }];
+    }
 
     [self.bgView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(activityIndicatorView).offset(-12);
-        make.right.equalTo(activityIndicatorView).offset(12);
-        make.top.equalTo(activityIndicatorView).offset(-12);
-        make.bottom.equalTo(activityIndicatorView).offset(12);
+        make.left.lessThanOrEqualTo(activityIndicatorView).offset(-32);
+        make.right.greaterThanOrEqualTo(activityIndicatorView).offset(32);
+        if (titleLabel) {
+            make.left.lessThanOrEqualTo(titleLabel).offset(-32);
+            make.right.greaterThanOrEqualTo(titleLabel).offset(32);
+        }
     }];
 }
 

@@ -33,7 +33,7 @@
             } else {
                 type = LiveSettingVideoFpsType_20;
             }
-            [LiveSettingVideoConfig defultVideoConfig].fpsType = type;
+            [LiveSettingVideoConfig defaultVideoConfig].fpsType = type;
             if ([wself.delegate respondsToSelector:@selector(liveCreateRoomSettingView:didChangefpsType:)]) {
                 [wself.delegate liveCreateRoomSettingView:wself didChangefpsType:type];
             }
@@ -157,7 +157,7 @@
 
 - (BaseSwitchView *)fpsSwitchView {
     if (!_fpsSwitchView) {
-        LiveSettingVideoFpsType type = [LiveSettingVideoConfig defultVideoConfig].fpsType;
+        LiveSettingVideoFpsType type = [LiveSettingVideoConfig defaultVideoConfig].fpsType;
         BOOL isOn = (type == LiveSettingVideoFpsType_15) ? NO : YES;
         _fpsSwitchView = [[BaseSwitchView alloc] initWithOn:isOn];
         _fpsSwitchView.layer.cornerRadius = 16;
@@ -172,8 +172,8 @@
 - (LiveSettingSingleSelectView *)resolutoinSelectView {
     if (!_resolutoinSelectView) {
         _resolutoinSelectView = [[LiveSettingSingleSelectView alloc] initWithTitle:LocalizedString(@"quality")];
-        LiveSettingVideoResolutionType resType = [LiveSettingVideoConfig defultVideoConfig].resolutionType;
-        NSDictionary *resolutionDic = [LiveSettingVideoConfig defultVideoConfig].resolutionDic;
+        LiveSettingVideoResolutionType resType = [LiveSettingVideoConfig defaultVideoConfig].resolutionType;
+        NSDictionary *resolutionDic = [LiveSettingVideoConfig defaultVideoConfig].resolutionDic;
         _resolutoinSelectView.valueString = resolutionDic[@(resType)];
     }
     return _resolutoinSelectView;

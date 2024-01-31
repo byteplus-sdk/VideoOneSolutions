@@ -14,6 +14,9 @@
     if (name == nil || name.length <= 0) {
         return nil;
     }
+    if (bundle == nil || bundle.length <= 0) {
+        return [UIImage imageNamed:name];
+    }
     NSString *bundlePath = [[NSBundle mainBundle] pathForResource:bundle ofType:@"bundle"];
     NSBundle *resourceBundle = [NSBundle bundleWithPath:bundlePath];
     UIImage *image = [UIImage imageNamed:name

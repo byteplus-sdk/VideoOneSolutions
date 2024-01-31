@@ -31,3 +31,4 @@ google-services.json
 
 # Android Profiling
 *.hprof
+sensitive_info_result.txt

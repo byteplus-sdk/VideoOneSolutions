@@ -3,9 +3,13 @@
 
 package com.bytedance.vod.scenekit.ui.video.layer;
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,7 +24,9 @@ import com.bytedance.playerkit.player.event.InfoTrackChanged;
 import com.bytedance.playerkit.player.event.InfoTrackWillChange;
 import com.bytedance.playerkit.player.playback.PlaybackController;
 import com.bytedance.playerkit.player.playback.VideoLayerHost;
+import com.bytedance.playerkit.player.playback.VideoView;
 import com.bytedance.playerkit.player.source.Quality;
+import com.bytedance.playerkit.player.source.Subtitle;
 import com.bytedance.playerkit.player.source.Track;
 import com.bytedance.playerkit.utils.L;
 import com.bytedance.playerkit.utils.event.Dispatcher;
@@ -32,10 +38,11 @@ import com.bytedance.vod.scenekit.ui.base.VideoViewExtras;
 import com.bytedance.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer;
 import com.bytedance.vod.scenekit.ui.video.layer.dialog.SpeedSelectDialogLayer;
-import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
+import com.bytedance.vod.scenekit.ui.video.layer.dialog.SubtitleSelectDialogLayer;
 import com.bytedance.vod.scenekit.ui.widgets.MediaSeekBar;
 import com.bytedance.vod.scenekit.utils.TimeUtils;
 import com.bytedance.vod.scenekit.utils.UIUtils;
+import com.bytedance.vod.settingskit.CenteredToast;
 
 import java.util.List;
 
@@ -166,6 +173,25 @@ public class TimeProgressBarLayer extends AnimateLayer {
             }
         });
 
+        mSubtitleContainer = mInteractLayout.findViewById(R.id.subtitleContainer);
+        mSubtitle = mInteractLayout.findViewById(R.id.subtitle);
+        mSubtitleIcon = mInteractLayout.findViewById(R.id.subtitle_icon);
+        mSubtitleContainer.setOnClickListener(v -> {
+            SubtitleSelectDialogLayer dialogLayer = findLayer(SubtitleSelectDialogLayer.class);
+            if (dialogLayer != null) {
+                dialogLayer.animateShow(false);
+            }
+        });
+
+        mPlaylistContainer = mInteractLayout.findViewById(R.id.playlistContainer);
+        mPlaylist = mInteractLayout.findViewById(R.id.playlist);
+        mPlaylistContainer.setOnClickListener(v -> {
+            PlaylistLayer playlistLayer = findLayer(PlaylistLayer.class);
+            if (playlistLayer != null) {
+                playlistLayer.animateShow(false);
+            }
+        });
+
         applyTheme(view);
         return view;
     }
@@ -179,7 +205,7 @@ public class TimeProgressBarLayer extends AnimateLayer {
 
     private void applyTheme(View view) {
         if (view == null) return;
-        if (playScene() == PlayScene.SCENE_FULLSCREEN) {
+        if (isFullScreenMode(playScene())) {
             applyFullScreen(view);
         } else {
             applyHalfScreen(view);
@@ -200,6 +226,9 @@ public class TimeProgressBarLayer extends AnimateLayer {
 
         mFullScreenIcon.setVisibility(isLocked ? View.GONE : View.VISIBLE);
 
+        mSubtitleContainer.setVisibility(View.GONE);
+
+        mPlaylistContainer.setVisibility(View.GONE);
 
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mSeekBar.getLayoutParams();
         lp.height = (int) UIUtils.dip2Px(context(), 44);
@@ -226,8 +255,15 @@ public class TimeProgressBarLayer extends AnimateLayer {
     private View mQualityContainer;
     private TextView mQuality;
 
+    private View mPlaylistContainer;
+    private TextView mPlaylist;
+
     private View mSpeedContainer;
     private TextView mSpeed;
+
+    private View mSubtitleContainer;
+    private TextView mSubtitle;
+    private ImageView mSubtitleIcon;
 
     private void applyFullScreen(View view) {
         mFullScreenIcon.setVisibility(View.GONE);
@@ -240,6 +276,12 @@ public class TimeProgressBarLayer extends AnimateLayer {
 
         mSeekBar.setTextVisibility(false);
         mSeekBar.setSeekEnabled(!isLocked);
+
+        SubtitleSelectDialogLayer subtitleDialogLayer = findLayer(SubtitleSelectDialogLayer.class);
+        mSubtitleContainer.setVisibility(subtitleDialogLayer == null ? View.GONE : View.VISIBLE);
+
+        PlaylistLayer playlistLayer = findLayer(PlaylistLayer.class);
+        mPlaylistContainer.setVisibility(playlistLayer == null ? View.GONE : View.VISIBLE);
 
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mSeekBar.getLayoutParams();
         lp.height = (int) UIUtils.dip2Px(context(), 40);
@@ -327,6 +369,39 @@ public class TimeProgressBarLayer extends AnimateLayer {
         }
     }
 
+    private void syncSubtitle() {
+        if (mSubtitle == null) return;
+        final Player player = player();
+
+        Subtitle selectedSubtitle = player == null ? null : player.getSelectedSubtitle();
+        if (selectedSubtitle != null && player.isSubtitleEnabled()) {
+            mSubtitleIcon.setImageResource(R.drawable.vevod_fullscreen_subtitle_enable);
+            mSubtitle.setText(SubtitleSelectDialogLayer.getLanguage(mSpeed.getContext(), selectedSubtitle.languageId));
+            SubtitleLayer layer = findLayer(SubtitleLayer.class);
+            if (layer != null && !layer.isShowing()) {
+                layer.applyVisible();
+            }
+        } else {
+            SubtitleLayer layer = findLayer(SubtitleLayer.class);
+            if (layer != null && layer.isShowing()) {
+                layer.dismiss();
+            }
+            mSubtitle.setText(R.string.vevod_time_progress_subtitle);
+            mSubtitleIcon.setImageResource(R.drawable.vevod_fullscreen_subtitle_disable);
+        }
+    }
+
+    private void syncPlaylist() {
+        if (mPlaylistContainer == null || mPlaylistContainer.getVisibility() == View.GONE) {
+            return;
+        }
+        PlaylistLayer playlistLayer = findLayer(PlaylistLayer.class);
+        if (playlistLayer == null) {
+            return;
+        }
+        mPlaylist.setText(String.valueOf(playlistLayer.getPlaylistSize()));
+    }
+
     @Override
     protected void onBindPlaybackController(@NonNull PlaybackController controller) {
         controller.addPlaybackListener(mPlaybackListener);
@@ -336,6 +411,24 @@ public class TimeProgressBarLayer extends AnimateLayer {
     protected void onUnbindPlaybackController(@NonNull PlaybackController controller) {
         controller.removePlaybackListener(mPlaybackListener);
         dismiss();
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        VideoView videoView = videoView();
+        PlaybackController playbackController =videoView == null ? null : videoView.controller();
+        if (isInPictureInPictureMode) {
+            if (playbackController != null) {
+                playbackController.removePlaybackListener(mPlaybackListener);
+            }
+            dismiss();
+        } else {
+            if (playbackController != null) {
+                playbackController.addPlaybackListener(mPlaybackListener);
+            }
+            show();
+        }
     }
 
     private final Dispatcher.EventListener mPlaybackListener = new Dispatcher.EventListener() {
@@ -408,6 +501,10 @@ public class TimeProgressBarLayer extends AnimateLayer {
                     }
                     break;
                 }
+                case PlayerEvent.Info.SUBTITLE_CHANGED: {
+                    syncSubtitle();
+                    break;
+                }
             }
         }
     };
@@ -424,6 +521,8 @@ public class TimeProgressBarLayer extends AnimateLayer {
         syncProgress();
         syncQuality();
         syncSpeed();
+        syncSubtitle();
+        syncPlaylist();
     }
 
     @Override

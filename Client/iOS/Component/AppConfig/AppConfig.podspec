@@ -18,10 +18,11 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'Apache License 2.0' }
   s.author       = { 'author' => 'byteplus' }
   s.source           = { :path => './'}
-  s.ios.deployment_target = '9.0'
+  s.ios.deployment_target = '11.0'
 
   s.source_files = 'BuildConfig.h'
   s.resources = [
-  'License/*.{lic,licbag}'
+  'License/*.{lic,licbag}',
+  'Notice/*.txt'
   ]
 end

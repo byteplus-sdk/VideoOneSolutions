@@ -5,6 +5,7 @@ package com.bytedance.voddemo.data.remote.api2;
 
 import com.bytedance.voddemo.data.remote.api2.model.GetFeedStreamRequest;
 import com.bytedance.voddemo.data.remote.api2.model.GetFeedStreamResponse;
+import com.bytedance.voddemo.data.remote.api2.model.GetPlaylistResponse;
 import com.bytedance.voddemo.data.remote.api2.model.GetSimilarVideoRequest;
 import com.bytedance.voddemo.data.remote.api2.model.GetVideoCommentResponse;
 import com.bytedance.voddemo.impl.BuildConfig;
@@ -55,6 +56,9 @@ public class ApiManager {
 
         @POST("getFeedSimilarVideos")
         Call<GetFeedStreamResponse> getSimilarVideoWithPlayAuthToken(@Body GetSimilarVideoRequest request);
+
+        @POST("getPlayListDetail")
+        Call<GetPlaylistResponse> getPlaylistDetail();
 
         @GET("getVideoComments")
         Call<GetVideoCommentResponse> getVideoComments(@Query("vid") String vid);

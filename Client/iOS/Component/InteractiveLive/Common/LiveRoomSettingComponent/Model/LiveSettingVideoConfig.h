@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, LiveSettingVideoResolutionType) {
 
 @interface LiveSettingVideoConfig : NSObject
 
-+ (instancetype)defultVideoConfig;
++ (instancetype)defaultVideoConfig;
 
 @property (nonatomic, assign) LiveSettingVideoFpsType fpsType;
 @property (nonatomic, assign) LiveSettingVideoResolutionType resolutionType;
@@ -33,11 +33,11 @@ typedef NS_ENUM(NSUInteger, LiveSettingVideoResolutionType) {
 // Guest resolution (unmodifiable)
 @property (nonatomic, assign) CGSize guestVideoSize;
 
-@property (nonatomic, assign) CGFloat fps;
+@property (nonatomic, assign) NSInteger fps;
 @property (nonatomic, assign) NSInteger bitrate;
 @property (nonatomic, assign) NSInteger minBitrate;
 @property (nonatomic, assign) NSInteger maxBitrate;
-@property (nonatomic, assign) NSInteger defultBitrate;
+@property (nonatomic, assign) NSInteger defaultBitrate;
 
 @end
 

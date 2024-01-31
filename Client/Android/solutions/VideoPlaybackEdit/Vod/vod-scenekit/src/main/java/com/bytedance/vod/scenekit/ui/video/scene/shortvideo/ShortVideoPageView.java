@@ -3,6 +3,8 @@
 
 package com.bytedance.vod.scenekit.ui.video.scene.shortvideo;
 
+import static com.bytedance.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMode;
+
 import android.view.View;
 
 import androidx.annotation.MainThread;
@@ -61,7 +63,7 @@ public class ShortVideoPageView {
                         VideoSettings.intValue(VideoSettings.SHORT_VIDEO_PLAYBACK_COMPLETE_ACTION) == 1 /* 1 means PlayNext */) {
                     VideoView videoView = mController.videoView();
                     assert videoView != null;
-                    if (videoView.getPlayScene() == PlayScene.SCENE_FULLSCREEN) {
+                    if (isFullScreenMode(videoView.getPlayScene())) {
                         // FullScreen mode, can't switch next
                         return;
                     }
@@ -165,7 +167,6 @@ public class ShortVideoPageView {
             }
             mController.startPlayback();
         }
-        FullScreenLayer.enableAutoOrientation(videoView);
     }
 
     public void play() {
@@ -189,7 +190,6 @@ public class ShortVideoPageView {
         } else {
             mInterceptStartPlaybackOnResume = false;
             mController.pausePlayback();
-            FullScreenLayer.disableAutoOrientation(mController.videoView());
         }
     }
 

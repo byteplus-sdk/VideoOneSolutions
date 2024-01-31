@@ -1,17 +1,16 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VESettingViewController.h"
+#import "UIColor+RGB.h"
 #import "VESettingDisplayCell.h"
-#import "VESettingSwitcherCell.h"
 #import "VESettingDisplayDetailCell.h"
-#import "VESettingTypeMutilSelectorCell.h"
 #import "VESettingEntranceCell.h"
 #import "VESettingManager.h"
+#import "VESettingSwitcherCell.h"
+#import "VESettingTypeMutilSelectorCell.h"
 #import <Masonry/Masonry.h>
-#import "UIColor+RGB.h"
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
-
 
 extern NSString *universalActionSectionKey;
 extern NSString *universalDidSectionKey;
@@ -45,7 +44,7 @@ extern NSString *universalVideoUrlSectionKey;
     [self.view addSubview:self.navView];
     [self.navView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.equalTo(self.view);
-        make.height.mas_equalTo(44 + [DeviceInforTool getStatusBarHight]);
+        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(44);
     }];
     [self.view addSubview:self.tableView];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -58,14 +57,13 @@ extern NSString *universalVideoUrlSectionKey;
         make.top.equalTo(self.navView.mas_bottom);
         make.left.bottom.right.equalTo(self.view);
     }];
-    
 }
 
 - (UIView *)navView {
     if (!_navView) {
         _navView = [[UIView alloc] init];
         _navView.backgroundColor = [UIColor veveod_colorWithRGB:0xF7F8FA alpha:1.0];
-        
+
         BaseButton *button = [[BaseButton alloc] init];
         button.backgroundColor = [UIColor clearColor];
         UIImage *image = [UIImage imageNamed:@"black_back"];
@@ -78,7 +76,7 @@ extern NSString *universalVideoUrlSectionKey;
             make.left.mas_equalTo(15);
             make.bottom.mas_equalTo(-14);
         }];
-        
+
         UILabel *label = [[UILabel alloc] init];
         label.text = LocalizedStringFromBundle(@"setting_title", @"VEVodApp");
         label.textColor = [UIColor blackColor];
@@ -92,8 +90,7 @@ extern NSString *universalVideoUrlSectionKey;
     return _navView;
 }
 
-
-#pragma mark ----- UITableViewDelegate & DataSource
+#pragma mark----- UITableViewDelegate & DataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return [[[VESettingManager universalManager] settingSections] count];
@@ -123,7 +120,7 @@ extern NSString *universalVideoUrlSectionKey;
         }
     }
     cell.cornerStyle = style;
-//    cell.showTopLine = !indexPath.row;
+    //    cell.showTopLine = !indexPath.row;
     [cell performSelector:@selector(setSettingModel:) withObject:model];
     return cell;
 }
@@ -153,7 +150,7 @@ extern NSString *universalVideoUrlSectionKey;
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     NSString *sectionKey = [[[VESettingManager universalManager] settingSections] objectAtIndex:section];
     if ([sectionKey isEqualToString:universalActionSectionKey] || [sectionKey isEqualToString:universalDidSectionKey] || [sectionKey isEqualToString:universalVideoUrlSectionKey]) {
-        return  0;
+        return 0;
     } else {
         return 50;
     }
@@ -163,8 +160,7 @@ extern NSString *universalVideoUrlSectionKey;
     return CGFLOAT_MIN;
 }
 
-
-#pragma mark ----- Lazy Load
+#pragma mark----- Lazy Load
 
 - (UITableView *)tableView {
     if (!_tableView) {
@@ -177,6 +173,5 @@ extern NSString *universalVideoUrlSectionKey;
     }
     return _tableView;
 }
-
 
 @end

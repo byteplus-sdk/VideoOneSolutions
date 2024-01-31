@@ -7,8 +7,8 @@
 #import "LiveNormalPushStreaming.h"
 #import "LiveNormalStreamConfig.h"
 #import "LivePushStreamParams.h"
+#import "LiveRTCManager.h"
 #import <Foundation/Foundation.h>
-#import <TTSDK/LiveCore.h>
 
 @class LiveRoomInfoModel, LiveRtcLinkSession;
 
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol LiveRtcLinkSessionNetworkChangeDelegate <NSObject>
 
-- (void)updateOnNetworkStatusChange:(LiveCoreNetworkQuality)status;
+- (void)updateOnNetworkStatusChange:(LiveNetworkQualityStatus)status;
 
 @end
 
@@ -98,6 +98,20 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 - (void)switchAudioCapture:(BOOL)isStart;
+
+/**
+ * @brief update push stream resolution, including normal stream and rtc transcoding stream.
+ * @param resolution: 540p/720p/1080p.
+ */
+
+- (void)updatePushStreamResolution:(CGSize)resolution;
+
+/**
+ * @brief Update the NormalPushing/RTC encoding resolution, used by anchors/hosted or guests.
+ * @param resolution resolution
+ */
+
+- (void)updateVideoEncoderResolution:(CGSize)resolution;
 
 @end
 

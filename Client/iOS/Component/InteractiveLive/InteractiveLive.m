@@ -15,23 +15,24 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        self.bundleName = HomeBundleName;
         self.title = LocalizedString(@"interactive_live_scenes");
         self.des = LocalizedString(@"interactive_live_scenes_des");
-        self.iconNames = @[@"menu_live", @"menu_live1"];
+        self.iconName = @"scene_interactive_live_bg";
         self.scenesName = @"live";
     }
     return self;
 }
 
-- (void)prepareEnvironment {
++ (void)prepareEnvironment {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [self setupTTSDK];
     });
 }
 
-- (void)enterSceneWithCallback:(void (^)(BOOL result))block {
-    [super enterSceneWithCallback:block];
+- (void)enterWithCallback:(void (^)(BOOL result))block {
+    [super enterWithCallback:block];
 
     NSDictionary *inputInfo = [LiveJoinRTSInputModel getLiveJoinRTSInputInfo:self.scenesName];
     [[ToastComponent shareToastComponent] showLoading];
@@ -50,7 +51,6 @@
         }
         return;
     }
-    __weak __typeof(self) wself = self;
     [[LiveRTCManager shareRtc] connect:model.appId
                               RTSToken:model.RTSToken
                              serverUrl:model.serverUrl
@@ -59,7 +59,7 @@
                                  block:^(BOOL result) {
                                      if (result) {
                                          [[ToastComponent shareToastComponent] dismiss];
-                                         [wself prepareEnvironment];
+                                         [InteractiveLive prepareEnvironment];
                                          LiveRoomListsViewController *next = [[LiveRoomListsViewController alloc] init];
                                          UIViewController *topVC = [DeviceInforTool topViewController];
                                          [topVC.navigationController pushViewController:next animated:YES];
@@ -72,7 +72,7 @@
                                  }];
 }
 
-- (void)setupTTSDK {
++ (void)setupTTSDK {
     TTSDKConfiguration *cfg = [TTSDKConfiguration defaultConfigurationWithAppID:LiveAPPID licenseName:LiveLicenseName];
     cfg.channel = [NSBundle.mainBundle.infoDictionary objectForKey:@"CHANNEL_NAME"];
     cfg.appName = [NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleName"];

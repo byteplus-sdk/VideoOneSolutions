@@ -11,17 +11,34 @@ public class GetFeedStreamRequest {
     @SerializedName("videoType")
     @RemoteApi.VideoType
     private final int videoType;
+    @SerializedName("userID")
     private final String userID;
+    @SerializedName("offset")
     private final Integer offset;
+    @SerializedName("pageSize")
     private final Integer pageSize;
+    @SerializedName("format")
     private final Integer format;
+    @SerializedName("codec")
     private final Integer codec;
+    @SerializedName("definition")
     private final Integer definition;
+    @SerializedName("fileType")
     private final String fileType;
+    @SerializedName("needThumbs")
     private final Boolean needThumbs;
+    @SerializedName("needBarrageMask")
     private final Boolean needBarrageMask;
+    @SerializedName("cdnType")
     private final Integer cdnType;
+    @SerializedName("UnionInfo")
     private final String UnionInfo;
+
+    @SerializedName("supportSmartSubtitle")
+    public Boolean supportSmartSubtitle = null;
+
+    @SerializedName("antiScreenshotAndRecord")
+    public Boolean antiScreenshotAndRecord = null;
 
     public GetFeedStreamRequest(@RemoteApi.VideoType int videoType,
                                 final String userID,

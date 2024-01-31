@@ -3,8 +3,36 @@
 // SPDX-License-Identifier: Apache-2.0
   -->
 
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="48dp"
-    android:layout_height="48dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="64dp"
     android:layout_gravity="center"
-    android:src="@drawable/vevod_play_pause_layer_fullscreen_ic_selector" />
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/previous"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="64dp"
+        android:src="@drawable/vevod_playback_previous"
+        android:visibility="gone"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/play"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/vevod_play_pause_layer_fullscreen_ic_selector"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/next"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="64dp"
+        android:src="@drawable/vevod_playback_next"
+        android:visibility="gone"
+        tools:ignore="ContentDescription" />
+</LinearLayout>

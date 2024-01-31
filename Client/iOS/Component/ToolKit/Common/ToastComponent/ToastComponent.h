@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showLoading;
 
+- (void)showLoadingWithMessage:(NSString *)message;
+
 - (void)showLoadingAtView:(UIView *_Nullable)view;
 
 - (void)dismiss;

@@ -8,13 +8,16 @@ import android.content.DialogInterface;
 
 import androidx.fragment.app.FragmentManager;
 
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.video.IVideoEffect;
+
 
 public interface IEffect {
 
-    void initWithRTCVideo(RTCVideo rtcVideo);
+    void init(IVideoEffect videoEffect);
 
-    void showEffectDialog(Context context, DialogInterface.OnDismissListener dismissListener, FragmentManager fragmentManager);
+    void showEffectDialog(Context context,
+                          DialogInterface.OnDismissListener dismissListener,
+                          FragmentManager fragmentManager);
 
     void destroyEffectDialog();
 

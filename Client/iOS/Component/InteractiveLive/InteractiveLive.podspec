@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
   spec.license      = { :type => 'Apache License 2.0', :file => 'LICENSE' }
   spec.author       = { 'author' => 'byteplus' }
   spec.source       = { :path => './'}
-  spec.ios.deployment_target = '9.0'
+  spec.ios.deployment_target = '11.0'
   
   spec.source_files = '**/*.{h,m,c,mm,a}'
   spec.resource_bundles = {

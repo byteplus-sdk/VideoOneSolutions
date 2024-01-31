@@ -18,6 +18,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) LiveUserModel *host;
 
+@property (nonatomic, assign) NSInteger width;
+@property (nonatomic, assign) NSInteger height;
+@property (nonatomic, assign) NSInteger fps;
+@property (nonatomic, assign) NSInteger gop;
+
+
+@property (nonatomic, assign) NSInteger minBitrate;
+@property (nonatomic, assign) NSInteger maxBitrate;
+@property (nonatomic, assign) NSInteger defaultBitrate;
+
 @end
 
 NS_ASSUME_NONNULL_END

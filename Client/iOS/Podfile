@@ -1,5 +1,5 @@
 source 'https://cdn.cocoapods.org/'
- source 'https://github.com/volcengine/volcengine-specs.git'
+source 'https://github.com/volcengine/volcengine-specs.git'
 
 platform :ios, '11.0'
 install! 'cocoapods',
@@ -8,7 +8,7 @@ install! 'cocoapods',
 
 
 # TTSDK version
-$TT_SDK_VERSION = '1.37.200.5-premium'
+$TT_SDK_VERSION = '1.40.200.5-premium'
 
 def common_pods
   # Depends on SDK
@@ -34,7 +34,6 @@ def scene_VideoPlaybackEdit_pods
   # Depends on SDK
   pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['Player', 'Uploader']
   pod 'VideoPlaybackEdit', :path => './Component/VideoPlaybackEdit'
-  pod 'lottie-ios', '2.5.3'
 end
 
 target 'VideoOne' do

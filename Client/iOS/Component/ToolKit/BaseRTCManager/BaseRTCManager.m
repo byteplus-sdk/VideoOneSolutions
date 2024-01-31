@@ -145,8 +145,8 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
     // Need to be overridden by subclasses
 }
 
-+ (NSString *_Nullable)getSdkVersion {
-    return [ByteRTCVideo getSdkVersion];
++ (NSString *_Nullable)getSDKVersion {
+    return [ByteRTCVideo getSDKVersion];
 }
 
 #pragma mark - ByteRTCVideoDelegate
@@ -185,7 +185,9 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
 
         if (error == ByteRTCUserMessageSendResultNotLogin) {
             dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLoginExpired object:@"logout"];
+                [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLogout
+                                                                    object:self
+                                                                  userInfo:@{NotificationLogoutReasonKey: @"logout"}];
             });
         }
     }
@@ -222,7 +224,9 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
              extraInfo:(NSString *)extraInfo {
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
         if (state == ByteRTCErrorCodeDuplicateLogin) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLoginExpired object:@"logout"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLogout
+                                                                object:self
+                                                              userInfo:@{NotificationLogoutReasonKey: @"logout"}];
         }
     });
 }

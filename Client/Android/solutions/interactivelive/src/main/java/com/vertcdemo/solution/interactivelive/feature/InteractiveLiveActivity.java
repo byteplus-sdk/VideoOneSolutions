@@ -18,6 +18,7 @@ import com.vertcdemo.core.eventbus.AppTokenExpiredEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.rts.RTSInfo;
 import com.vertcdemo.solution.interactivelive.R;
+import com.vertcdemo.solution.interactivelive.core.live.TTSdkHelper;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -55,6 +56,8 @@ public class InteractiveLiveActivity extends AppCompatActivity {
                 viewModel.loginRTS();
             }
         });
+
+        TTSdkHelper.initTTVodSdk();
     }
 
     @Override

@@ -155,10 +155,8 @@
 
     [self addSubview:self.contentView];
     [self.contentView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
-        make.right.mas_equalTo(0);
-        make.height.mas_offset(361 + [DeviceInforTool getVirtualHomeHeight]);
-        make.bottom.mas_offset(0);
+        make.left.right.bottom.equalTo(self);
+        make.top.equalTo(self.mas_safeAreaLayoutGuideBottom).offset(-361);
     }];
 
     [self.contentView addSubview:self.topImageView];

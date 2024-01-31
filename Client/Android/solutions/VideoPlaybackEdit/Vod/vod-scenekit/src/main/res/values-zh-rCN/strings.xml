@@ -44,4 +44,20 @@
     <string name="add_a_comment">请输入评论</string>
     <string name="say_something">说点什么</string>
     <string name="vevod_button_fullscreen">全屏播放</string>
+    <string name="vevod_time_progress_bar_subtitle">字幕</string>
+    <string name="vevod_subtitle_tips_on">视频字幕已开启</string>
+    <string name="vevod_subtitle_tips_off">视频字幕已关闭</string>
+    <string name="vevod_subtitle_dialog_off">关闭</string>
+    <string name="vevod_subtitle_dialog_ch">中文</string>
+    <string name="vevod_subtitle_dialog_en">英文</string>
+    <string name="vevod_subtitle_dialog_ko">韩文</string>
+    <string name="vevod_subtitle_dialog_jp">日文</string>
+    <string name="vevod_subtitle_obtain_failed">获取字幕失败，请退出视频重试。</string>
+    <string name="vevod_miniplayer">画中画</string>
+    <string name="vevod_miniplayer_open_success">画中画已成功开启，App退后台时会自动开启。</string>
+    <string name="vevod_miniplayer_permission_denied">没有画中画权限。不允许创建画中画窗口。</string>
+    <string name="vevod_miniplayer_play">播放</string>
+    <string name="vevod_miniplayer_pause">暂停</string>
+    <string name="vevod_miniplayer_forward">前进</string>
+    <string name="vevod_miniplayer_rewind">后退</string>
 </resources>

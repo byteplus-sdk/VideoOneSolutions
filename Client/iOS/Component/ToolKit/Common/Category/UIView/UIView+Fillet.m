@@ -6,7 +6,7 @@
 
 @implementation UIView (Fillet)
 
-- (void)filletWithRadius:(CGFloat)radius corner:(FilletStatus)corner {
+- (void)filletWithRadius:(CGFloat)radius corner:(UIRectCorner)corner {
     UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:self.bounds byRoundingCorners:corner cornerRadii:CGSizeMake(radius, radius)];
     CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
     maskLayer.frame = self.bounds;

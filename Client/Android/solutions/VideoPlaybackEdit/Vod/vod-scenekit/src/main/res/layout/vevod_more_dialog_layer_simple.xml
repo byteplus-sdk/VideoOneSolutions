@@ -129,6 +129,24 @@
             app:layout_constraintTop_toTopOf="@id/loop_on" />
 
         <TextView
+            android:id="@+id/miniplayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:drawablePadding="6dp"
+            android:gravity="center"
+            android:padding="6dp"
+            android:text="@string/vevod_miniplayer"
+            android:textColor="@color/vevod_more_dialog_layer_item_miniplayer"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:drawableTopCompat="@drawable/vevod_ic_miniplayer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loop_on"
+            tools:drawableTop="@drawable/vevod_ic_miniplayer"
+            tools:visibility="visible" />
+
+        <TextView
             android:id="@+id/report"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -140,7 +158,7 @@
             android:textColor="#FFFFFF"
             android:textSize="12sp"
             app:drawableTopCompat="@drawable/vevod_ic_report"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/miniplayer"
             app:layout_constraintTop_toBottomOf="@id/loop_on"
             tools:drawableTop="@drawable/vevod_ic_report" />
 

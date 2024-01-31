@@ -6,4 +6,13 @@
         <item name="android:windowMinWidthMinor">83%</item>
         <item name="android:windowCloseOnTouchOutside">false</item>
     </style>
+
+    <style name="SolutionProgressDialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">#4D000000</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
 </resources>

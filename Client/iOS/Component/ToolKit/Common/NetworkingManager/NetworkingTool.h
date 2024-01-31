@@ -49,6 +49,8 @@ typedef NS_ENUM(NSInteger, RTSStatusCode) {
     RTSStatusCodeBIDFaild = 806,
 };
 
+#define BadServerResponseMsg [NetworkingTool messageFromResponseCode:RTSStatusCodeBadServerResponse]
+
 @interface NetworkingTool : NSObject
 
 + (NSString *)messageFromResponseCode:(RTSStatusCode)code;

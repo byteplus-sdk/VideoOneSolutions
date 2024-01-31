@@ -44,4 +44,20 @@
     <string name="add_a_comment">Add a Comment</string>
     <string name="say_something">Add comment</string>
     <string name="vevod_button_fullscreen">Full screen</string>
+    <string name="vevod_time_progress_bar_subtitle">Subtitle</string>
+    <string name="vevod_subtitle_tips_on">Subtitle On</string>
+    <string name="vevod_subtitle_tips_off">Subtitle Off</string>
+    <string name="vevod_subtitle_dialog_off">Off</string>
+    <string name="vevod_subtitle_dialog_ch">Chinese</string>
+    <string name="vevod_subtitle_dialog_en">English</string>
+    <string name="vevod_subtitle_dialog_ko">Korean</string>
+    <string name="vevod_subtitle_dialog_jp">Japanese</string>
+    <string name="vevod_subtitle_obtain_failed">Failed to obtain subtitles, please reopen the video and try again.</string>
+    <string name="vevod_miniplayer">MiniPlayer</string>
+    <string name="vevod_miniplayer_open_success">Picture-in-picture has been successfully enabled, and it will be automatically enabled when the app back to the background.</string>
+    <string name="vevod_miniplayer_permission_denied">Permission denied.Not allow this app to create picture-in-picture window.</string>
+    <string name="vevod_miniplayer_play">Play</string>
+    <string name="vevod_miniplayer_pause">Pause</string>
+    <string name="vevod_miniplayer_forward">Fast forward</string>
+    <string name="vevod_miniplayer_rewind">Fast rewind</string>
 </resources>

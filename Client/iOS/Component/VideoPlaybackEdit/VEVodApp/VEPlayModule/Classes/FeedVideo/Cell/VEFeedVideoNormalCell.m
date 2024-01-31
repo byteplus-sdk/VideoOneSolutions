@@ -3,7 +3,7 @@
 #import "VEFeedVideoNormalCell.h"
 #import "ToolKit.h"
 #import "UIColor+RGB.h"
-#import "VEInterfaceFeedBlockSceneConf.h"
+#import "VEInterfaceFeedVideoSceneConf.h"
 #import "VEPlayerKit.h"
 #import "VEPlayerUIModule.h"
 #import "VESettingManager.h"
@@ -141,7 +141,7 @@
 
 - (void)createPlayerControl {
     [self playerControlInterfaceDestory];
-    self.playerControlInterface = [[VEInterface alloc] initWithPlayerCore:self.playerController scene:[VEInterfaceFeedBlockSceneConf new]];
+    self.playerControlInterface = [[VEInterface alloc] initWithPlayerCore:self.playerController scene:[VEInterfaceFeedVideoSceneConf new]];
     self.playerControlInterface.delegate = self;
     [self.centerContainerView addSubview:self.playerControlInterface];
     [self.playerControlInterface mas_makeConstraints:^(MASConstraintMaker *make) {

@@ -6,7 +6,7 @@ ext {
     kotlin_version = "1.8.22"
     kotlin_corcoutine_version = "1.5.2"
 
-    def ttsdk_version = '1.37.200.6.onekit'
+    def ttsdk_version = '1.39.100.9.onekit'
     def service_manager_version = '1.0.9.3'
     def immersionbar_version = '3.2.2'
 
@@ -25,9 +25,9 @@ ext {
 
             "material"                  : "com.google.android.material:material:1.4.0",
 
-            "kotlin-stdlib-jdk7"        : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}",
             "kotlin-stdlib"             : "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}",
             "kotlinx-coroutines-android": "org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlin_corcoutine_version}",
+            "core-ktx"                  : 'androidx.core:core-ktx:1.10.1',
 
             "service-manager"           : "com.bytedance.news.common:service-manager:$service_manager_version",
             "service-manager-ext"       : "com.bytedance.news.common:service-manager-ext:$service_manager_version",
@@ -55,6 +55,6 @@ ext {
             "rangersapplog_lite_global" : 'com.bytedance.applog:RangersAppLog-Lite-global:6.14.3',
 
 
-            'eventbus'                  : 'org.greenrobot:eventbus:3.2.0',
+            'eventbus'                  : 'org.greenrobot:eventbus:3.3.1',
     ]
 }

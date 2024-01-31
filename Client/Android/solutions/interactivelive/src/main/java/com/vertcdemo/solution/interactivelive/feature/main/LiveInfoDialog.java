@@ -15,14 +15,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ss.avframework.livestreamv2.LiveStreamReport;
-import com.ss.avframework.livestreamv2.core.LiveCore;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.core.live.LiveConfigParams;
 import com.vertcdemo.solution.interactivelive.core.live.LiveCoreHolder;
+import com.vertcdemo.solution.interactivelive.core.live.StatisticsInfo;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveInformationBinding;
+import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
 
 public class LiveInfoDialog extends BottomDialogFragmentX {
     private DialogLiveInformationBinding mBinding;
@@ -41,22 +40,20 @@ public class LiveInfoDialog extends BottomDialogFragmentX {
     public static final int MSG_UPDATE_INFO = 1;
     public static final int INTERVAL_UPDATE_INFO = 2000;
 
-    LiveStreamReport mReport = new LiveStreamReport();
-
     @SuppressLint("HandlerLeak")
     Handler mHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             if (MSG_UPDATE_INFO == msg.what) {
                 removeMessages(MSG_UPDATE_INFO);
-                final LiveCore liveCore = LiveRTCManager.ins().getLiveCore();
+                final LiveCoreHolder liveCore = LiveRTCManager.ins().getLiveCore();
                 if (liveCore != null) {
-                    liveCore.getLiveStreamInfo(mReport);
+                    StatisticsInfo info = liveCore.getStatisticsInfo();
 
-                    final int transportRealFps = (int) mReport.getVideoTransportRealFps();
-                    final int transportRealBps = (int) mReport.getVideoTransportRealBps();
-                    final int videoEncodeRealFps = (int) mReport.getVideoEncodeRealFps();
-                    final int videoEncodeRealBps = (int) mReport.getVideoEncodeRealBps();
+                    final int transportRealFps = (int) info.getVideoTransportRealFps();
+                    final int transportRealBps = (int) info.getVideoTransportRealBps();
+                    final int videoEncodeRealFps = (int) info.getVideoEncodeRealFps();
+                    final int videoEncodeRealBps = (int) info.getVideoEncodeRealBps();
 
                     mBinding.realtimeCaptureFps.setText(getString(R.string.format_fps, videoEncodeRealFps));
                     mBinding.realtimeTransmissionFps.setText(getString(R.string.format_fps, transportRealFps));
@@ -84,10 +81,10 @@ public class LiveInfoDialog extends BottomDialogFragmentX {
     }
 
     void renderBasicInfo() {
-        final LiveConfigParams params = LiveCoreHolder.sLiveParams;
-        mBinding.initialVideoBitrate.setText(getString(R.string.format_bitrate_kbps, params.defaultBitrate / 1000));
-        mBinding.maximumVideoBitrate.setText(getString(R.string.format_bitrate_kbps, params.maxBitrate / 1000));
-        mBinding.minimumVideoBitrate.setText(getString(R.string.format_bitrate_kbps, params.minBitrate / 1000));
+        final LiveConfigParams params = LiveCoreHolder.getConfigParams();
+        mBinding.initialVideoBitrate.setText(getString(R.string.format_bitrate_kbps, params.defaultBitrate));
+        mBinding.maximumVideoBitrate.setText(getString(R.string.format_bitrate_kbps, params.maxBitrate));
+        mBinding.minimumVideoBitrate.setText(getString(R.string.format_bitrate_kbps, params.minBitrate));
 
         mBinding.captureResolution.setText(getString(R.string.format_resolution, params.width, params.height));
         mBinding.pushVideoResolution.setText(getString(R.string.format_resolution, params.width, params.height));

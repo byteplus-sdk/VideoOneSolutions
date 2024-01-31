@@ -57,6 +57,7 @@
                                        block:^(BOOL result, NSString *_Nullable errorStr) {
                                            [[ToastComponent shareToastComponent] dismiss];
                                            if (result) {
+                                               [[NSNotificationCenter defaultCenter] postNotificationName:NotificationLoginSucceed object:self userInfo:nil];
                                                [wself dismissViewControllerAnimated:YES completion:^{
 
                                                }];
@@ -123,7 +124,7 @@
     [self.view addSubview:self.iconImageView];
     [self.iconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.view.mas_left).offset(16);
-        make.top.mas_equalTo(78 + [DeviceInforTool getStatusBarHight]);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(78);
         make.width.mas_equalTo(120);
         make.height.mas_equalTo(24);
     }];

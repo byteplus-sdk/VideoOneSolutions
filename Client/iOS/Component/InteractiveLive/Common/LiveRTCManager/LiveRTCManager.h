@@ -4,6 +4,7 @@
 //
 
 #import "LivePlayerManager.h"
+#import "LiveStreamMixingEvent.h"
 #import "LiveUserModel.h"
 #import <Foundation/Foundation.h>
 #import <ToolKit/BaseRTCManager.h>
@@ -42,7 +43,6 @@ typedef NS_ENUM(NSUInteger, RTCMixStatus) {
 - (void)liveRTCManager:(LiveRTCManager *)manager onJoinRoomResult:(NSString *)roomId withUid:(NSString *)uid joinType:(NSInteger)joinType elapsed:(NSInteger)elapsed;
 - (void)liveRTCManager:(LiveRTCManager *)manager onUserPublishStream:(NSString *)uid;
 - (void)liveRTCManager:(LiveRTCManager *)manager onUserLeave:(NSString *)uid reason:(ByteRTCUserOfflineReason)reason;
-- (void)liveRTCManager:(LiveRTCManager *)manager onStreamMixingEvent:(ByteRTCStreamMixingEvent)event taskId:(NSString *)taskId error:(ByteRtcTranscoderErrorCode)Code mixType:(ByteRTCStreamMixingType)mixType;
 
 @end
 
@@ -55,8 +55,6 @@ typedef NS_ENUM(NSUInteger, RTCMixStatus) {
 @end
 
 @interface LiveRTCManager : BaseRTCManager
-
-@property (nonatomic, copy, nullable) void (^onUserPublishStreamBlock)(NSString *uid);
 
 @property (nonatomic, weak) id<LiveRTCManagerDelegate> delegate;
 @property (nonatomic, weak) id<LiveRTCManagerReconnectDelegate> businessDelegate;
@@ -98,30 +96,6 @@ typedef NS_ENUM(NSUInteger, RTCMixStatus) {
  */
 
 - (void)leaveRTCRoom;
-
-#pragma mark - Mix Stream & Forward Stream
-
-/**
- * @brief Start mix stream retweet
- * @param pushUrl Retweeted CDN address
- * @param hostUser Anchor User model
- * @param roomId RTC room id
- */
-
-- (void)startMixStreamRetweetWithPushUrl:(NSString *)pushUrl
-                                hostUser:(LiveUserModel *)hostUser
-                               rtcRoomId:(NSString *)rtcRoomId;
-
-/**
- * @brief update confluence layout
- * @param userList Confluence user array
- * @param mixStatus The business type of the mix. The layout of anchor PK merge and anchor audience merge is different
- * @param rtcRoomId RTC room ID
- */
-
-- (void)updateTranscodingLayout:(NSArray<LiveUserModel *> *)userList
-                      mixStatus:(RTCMixStatus)mixStatus
-                      rtcRoomId:(NSString *)rtcRoomId;
 
 /**
  * @brief start forward stream rooms
@@ -174,25 +148,11 @@ typedef NS_ENUM(NSUInteger, RTCMixStatus) {
 - (void)updateVideoEncoderResolution:(CGSize)size;
 
 /**
- * @brief Update the confluence resolution, used by the anchor.
- * @param size resolution
+ * @brief Update the RTC encoding video frame rate in fps, used by anchors/hosted guests.
+ * @param frameRate video frame rate in fps
  */
 
-- (void)updateLiveTranscodingResolution:(CGSize)size;
-
-/**
- * @brief update merge frame rate, used by anchor.
- * @param fps frame rate
- */
-
-- (void)updateLiveTranscodingFrameRate:(CGFloat)fps;
-
-/**
- * @brief Update merge bit rate, used by anchors.
- * @param kbitrate code rate
- */
-
-- (void)updateLiveTranscodingBitRate:(NSInteger)bitRate;
+- (void)updateVideoEncoderFrameRate:(NSInteger)frameRate;
 
 #pragma mark - NetworkQuality
 

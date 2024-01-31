@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIImage (Bundle)
 
 + (nullable UIImage *)imageNamed:(NSString *)name
-                      bundleName:(NSString *)bundle;
+                      bundleName:(NSString *_Nullable)bundle;
 
 + (nullable UIImage *)imageNamed:(NSString *)name
                       bundleName:(NSString *)bundle

@@ -1,10 +1,5 @@
-//
-//  VEFeedVideoDemoViewController.h
-//  VideoPlaybackEdit
-//
-//  Created by bytedance on 2023/11/3.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "VEViewController.h"
 
 

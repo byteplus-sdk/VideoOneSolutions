@@ -5,6 +5,7 @@
 package com.bytedance.playerkit.player.playback;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -55,8 +56,8 @@ public abstract class VideoLayer extends VideoViewListener.Adapter
             unbindVideoView(videoView);
             layerHost.removeVideoLayerHostListener(this);
             L.v(this, "onUnbindLayerHost", layerHost);
-            mLayerHost = null;
             onUnbindLayerHost(layerHost);
+            mLayerHost = null;
         }
     }
 
@@ -257,9 +258,11 @@ public abstract class VideoLayer extends VideoViewListener.Adapter
      */
     @Nullable
     public final Context context() {
-        if (mLayerView != null) return mLayerView.getContext();
-        if (mLayerHost != null) return mLayerHost.hostView().getContext();
-        return null;
+        Context context = mLayerView == null ? null : mLayerView.getContext();
+        if (context == null) {
+            context = mLayerHost == null ? null : mLayerHost.hostView().getContext();
+        }
+        return context;
     }
 
     /**
@@ -366,6 +369,12 @@ public abstract class VideoLayer extends VideoViewListener.Adapter
         if (isShowing()) return;
         L.d(this, "show");
 
+        VideoView videoView = videoView();
+        if (videoView != null && videoView.isInPictureInPictureMode()) {
+            mPictureInPicturePaddingShow = true;
+            return;
+        }
+
         final VideoLayerHost layerHost = mLayerHost;
         if (layerHost == null) return;
 
@@ -423,6 +432,11 @@ public abstract class VideoLayer extends VideoViewListener.Adapter
     public void dismiss() {
         if (!isShowing()) return;
         L.d(this, "dismiss");
+
+        VideoView videoView = videoView();
+        if (videoView != null && videoView.isInPictureInPictureMode()) {
+            mPictureInPicturePaddingShow = false;
+        }
 
         final VideoLayerHost layerHost = mLayerHost;
         if (layerHost == null) return;
@@ -530,5 +544,22 @@ public abstract class VideoLayer extends VideoViewListener.Adapter
         VideoLayerHost layerHost = layerHost();
         if (layerHost == null) return Collections.emptyList();
         return layerHost.findLayers(clazz);
+    }
+
+    private boolean mPictureInPicturePaddingShow = false;
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        if (isInPictureInPictureMode) {
+            if (isShowing()) {
+                dismiss();
+                mPictureInPicturePaddingShow = true;
+            } else {
+                mPictureInPicturePaddingShow = false;
+            }
+        } else if (mPictureInPicturePaddingShow) {
+            show();
+            mPictureInPicturePaddingShow = false;
+        }
     }
 }

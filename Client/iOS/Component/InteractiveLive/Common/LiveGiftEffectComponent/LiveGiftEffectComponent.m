@@ -30,8 +30,8 @@
         [_superView addSubview:self.LiveGiftEffectContentView];
         [self.LiveGiftEffectContentView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(222, 96));
-            make.left.mas_equalTo(_superView).offset(12);
-            make.bottom.mas_equalTo(_superView).offset(-([DeviceInforTool getVirtualHomeHeight] + 249));
+            make.left.equalTo(_superView).offset(12);
+            make.bottom.equalTo(_superView.mas_safeAreaLayoutGuideBottom).offset(-249);
         }];
     }
     return self;
