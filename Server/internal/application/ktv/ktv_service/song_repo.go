@@ -14,23 +14,4 @@
  * limitations under the License.
  */
 
-package handler
-
-import (
-	"context"
-
-	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_handler"
-	"github.com/byteplus/VideoOneServer/internal/application/live/live_handler"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-)
-
-func disconnectHandler(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-
-	liveHandler := live_handler.NewEventHandler()
-	liveHandler.Disconnect(ctx, param)
-
-	ktvHandler := ktv_handler.NewEventHandler()
-	ktvHandler.Disconnect(ctx, param)
-
-	return nil, nil
-}
+package ktv_service

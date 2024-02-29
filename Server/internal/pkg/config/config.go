@@ -31,6 +31,8 @@ type Configuration struct {
 	Port               string `yaml:"port"`
 	LiveTimerEnable    bool   `yaml:"live_timer_enable"`
 	LiveExperienceTime int    `yaml:"live_experience_time"`
+	KtvTimerEnable     bool   `yaml:"ktv_timer_enable"`
+	KtvExperienceTime  int    `yaml:"ktv_experience_time"`
 	AppID              string `yaml:"app_id"`
 	VodPlayListID      string `yaml:"vod_play_list_id"`
 }

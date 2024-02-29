@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-package handler
+package ktv_entity
 
-import (
-	"context"
-
-	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_handler"
-	"github.com/byteplus/VideoOneServer/internal/application/live/live_handler"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-)
-
-func disconnectHandler(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-
-	liveHandler := live_handler.NewEventHandler()
-	liveHandler.Disconnect(ctx, param)
-
-	ktvHandler := ktv_handler.NewEventHandler()
-	ktvHandler.Disconnect(ctx, param)
-
-	return nil, nil
+type KtvSeat struct {
+	RoomID      string `gorm:"column:room_id" json:"room_id"`
+	SeatID      int    `gorm:"column:seat_id" json:"seat_id"`
+	OwnerUserID string `gorm:"column:user_id" json:"user_id"`
+	Status      int    `gorm:"column:status" json:"status"`
 }

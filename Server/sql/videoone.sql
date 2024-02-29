@@ -146,3 +146,17 @@ VALUES ('Tom', 'This is a fantastic video.'),
        ('Robert', 'very empty magic.'),
        ('Isabella', 'This is too pretty! 😍'),
        ('Emma Emma', 'My perfect getaway ❤️❤️❤️');
+
+CREATE TABLE `song`
+(
+    `id`            bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `name`          varchar(512) NOT NULL DEFAULT '' COMMENT 'song name',
+    `artist`        varchar(100) NOT NULL DEFAULT '' COMMENT 'artist',
+    `duration`      int(11) NOT NULL DEFAULT '0' COMMENT 'duration, unit: ms',
+    `cover_url`     varchar(512) NOT NULL DEFAULT '' COMMENT 'song cover download url ',
+    `song_lrc_url`  varchar(512) NOT NULL DEFAULT '' COMMENT 'song lrc file download url ',
+    `song_file_url` varchar(512) NOT NULL DEFAULT '' COMMENT 'song file download url ',
+    `create_time`   timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time`   timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='song info';

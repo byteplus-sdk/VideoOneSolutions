@@ -18,6 +18,7 @@ package public
 
 const (
 	BizIDLive = "live"
+	BizIDKtv  = "ktv"
 )
 
 const (

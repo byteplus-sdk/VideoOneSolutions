@@ -7,3 +7,5 @@ live_timer_enable: true
 live_experience_time: 20
 app_id: "{your_vod_appid}"
 vod_play_list_id: "{your_vod_play_list_id}"
+ktv_timer_enable: true
+ktv_experience_time: 20

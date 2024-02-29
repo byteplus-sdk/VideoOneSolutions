@@ -21,6 +21,7 @@ import "errors"
 var (
 	ErrInput                           = NewCustomError(400, errors.New("input format error"))
 	ErrUserIsInactive                  = NewCustomError(404, errors.New("user is inactive"))
+	ErrUserInUse                       = NewCustomError(413, errors.New("user is in use"))
 	ErrUserIsNotHost                   = NewCustomError(416, errors.New("user is not host"))
 	ErrUserIsNotOwner                  = NewCustomError(417, errors.New("user is not room owner"))
 	ErrUserNotExist                    = NewCustomError(419, errors.New("user not exist"))
@@ -32,7 +33,12 @@ var (
 	ErrorReachMicOnLimit               = NewCustomError(472, errors.New("reach mic on limit user count"))
 	ErrorUserCantInviteForInviting     = NewCustomError(481, errors.New("user can't be invited because who is inviting"))
 	ErrLockRedis                       = NewCustomError(500, errors.New("lock redis room error"))
+	ErrUserOnMicExceedLimit            = NewCustomError(506, errors.New("user on mic exceed limit"))
+	ErrUserInRoomExceedLimit           = NewCustomError(507, errors.New("user in room exceed limit"))
 	ErrRoomAlreadyExist                = NewCustomError(530, errors.New("room already exist"))
+	ErrRequestSongRepeat               = NewCustomError(540, errors.New("request song repeat"))
+	ErrRequestSongUserRoleNotMatch     = NewCustomError(541, errors.New("user role don't match current song"))
+	ErrSongIsNotExist                  = NewCustomError(542, errors.New("song is not exist"))
 	ErrRoomStatusNotMatchAction        = NewCustomError(550, errors.New("room status not match current action"))
 	ErrRecordNotFound                  = NewCustomError(560, errors.New("record not found"))
 	ErrLinkerParamError                = NewCustomError(610, errors.New("linker param error"))
@@ -52,6 +58,7 @@ var (
 	ErrCheckTrafficAppID               = NewCustomError(802, errors.New("check traffic appID error"))
 	ErrCheckTrafficUpLimit             = NewCustomError(803, errors.New("check traffic up limit"))
 	ErrGetBID                          = NewCustomError(806, errors.New("get bid error"))
+	ErrLockRoom                        = NewCustomError(809, errors.New("lock room error"))
 )
 
 type CustomError struct {
