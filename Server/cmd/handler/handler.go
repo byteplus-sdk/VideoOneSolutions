@@ -23,6 +23,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_handler"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_handler"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_handler"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
@@ -102,6 +103,32 @@ func (ehd *EventHandlerDispatch) initHandlers() {
 	ehd.register("liveManageGuestMedia", liveHandler.ManageGuestMedia)
 	ehd.register("liveClearUser", liveHandler.ClearUser)
 	ehd.register("liveSendMessage", liveHandler.SendMessage)
+
+	//ktv
+	ktvHandler := ktv_handler.NewEventHandler()
+	ehd.register("ktvAgreeApply", ktvHandler.AgreeApply)
+	ehd.register("ktvApplyInteract", ktvHandler.ApplyInteract)
+	ehd.register("ktvFinishInteract", ktvHandler.FinishInteract)
+	ehd.register("ktvFinishLive", ktvHandler.FinishLive)
+	ehd.register("ktvGetActiveLiveRoomList", ktvHandler.GetActiveLiveRoomList)
+	ehd.register("ktvGetApplyAudienceList", ktvHandler.GetApplyAudienceList)
+	ehd.register("ktvGetAudienceList", ktvHandler.GetAudienceList)
+	ehd.register("ktvInviteInteract", ktvHandler.InviteInteract)
+	ehd.register("ktvJoinLiveRoom", ktvHandler.JoinLiveRoom)
+	ehd.register("ktvLeaveLiveRoom", ktvHandler.LeaveLiveRoom)
+	ehd.register("ktvManageInteractApply", ktvHandler.ManageInteractApply)
+	ehd.register("ktvManageSeat", ktvHandler.ManageSeat)
+	ehd.register("ktvReplyInvite", ktvHandler.ReplyInvite)
+	ehd.register("ktvSendMessage", ktvHandler.SendMessage)
+	ehd.register("ktvStartLive", ktvHandler.StartLive)
+	ehd.register("ktvUpdateMediaStatus", ktvHandler.UpdateMediaStatus)
+	ehd.register("ktvRequestSong", ktvHandler.RequestSong)
+	ehd.register("ktvCutOffSong", ktvHandler.CutOffSong)
+	ehd.register("ktvFinishSing", ktvHandler.FinishSing)
+	ehd.register("ktvGetRequestSongList", ktvHandler.GetRequestSongList)
+	ehd.register("ktvReconnect", ktvHandler.Reconnect)
+	ehd.register("ktvClearUser", ktvHandler.ClearUser)
+	ehd.register("ktvGetPresetSongList", ktvHandler.GetPreSetSongList)
 }
 
 func (ehd *EventHandlerDispatch) register(eventName string, handlerFunc endpoint.Endpoint) {

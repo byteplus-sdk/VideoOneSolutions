@@ -33,7 +33,9 @@ const (
 )
 
 const (
-	csLocalUserIDAssignKey = "cs:rtc_demo:local:userid:assign"
+	csLocalUserIDAssignKey   = "cs:rtc_demo:local:userid:assign"
+	ktvRoomLockKeyPrefix     = "twv:rtc_demo:room_song:lock:"
+	ktvRoomSongLockKeyPrefix = "ktv:rtc_demo:room_song:lock:"
 )
 
 func getDistributedLockKey(roomID string) string {
@@ -99,4 +101,20 @@ func freeLock(ctx context.Context, key string, lt int64) error {
 		return redis_cli.Client.Del(ctx, key).Err()
 	}
 	return nil
+}
+
+func LockKtvRoom(ctx context.Context, roomID string) (bool, int64) {
+	return mustGetLock(ctx, ktvRoomLockKeyPrefix+roomID, 2*time.Second)
+}
+
+func UnLockKtvRoom(ctx context.Context, roomID string, lt int64) error {
+	return freeLock(ctx, ktvRoomLockKeyPrefix+roomID, lt)
+}
+
+func LockKtvRoomSong(ctx context.Context, roomID string) (bool, int64) {
+	return mustGetLock(ctx, ktvRoomSongLockKeyPrefix+roomID, lockExpiration)
+}
+
+func UnlockKtvRoomSong(ctx context.Context, roomID string, lt int64) error {
+	return freeLock(ctx, ktvRoomSongLockKeyPrefix+roomID, lt)
 }

@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package handler
+package ktv_db
 
 import (
 	"context"
 
-	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_handler"
-	"github.com/byteplus/VideoOneServer/internal/application/live/live_handler"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
+	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_entity"
+	"github.com/byteplus/VideoOneServer/internal/pkg/db"
+	"github.com/byteplus/VideoOneServer/internal/pkg/util"
 )
 
-func disconnectHandler(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
+const PresetSong = "song"
 
-	liveHandler := live_handler.NewEventHandler()
-	liveHandler.Disconnect(ctx, param)
+type DbPresetSongRepo struct{}
 
-	ktvHandler := ktv_handler.NewEventHandler()
-	ktvHandler.Disconnect(ctx, param)
-
-	return nil, nil
+func (repo *DbPresetSongRepo) GetPresetSong(ctx context.Context) ([]ktv_entity.PresetSong, error) {
+	defer util.CheckPanic()
+	var s []ktv_entity.PresetSong
+	err := db.Client.WithContext(ctx).Debug().Table(PresetSong).Find(&s).Error
+	if err != nil {
+		return nil, err
+	}
+	return s, nil
 }
