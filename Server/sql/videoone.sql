@@ -160,3 +160,43 @@ CREATE TABLE `song`
     `update_time`   timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='song info';
+
+CREATE TABLE `ktv_room`
+(
+    `id`                             bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `app_id`                         varchar(100) DEFAULT '' COMMENT 'live app id',
+    `room_id`                        varchar(100) DEFAULT '' COMMENT 'room id',
+    `room_name`                      varchar(200) DEFAULT '' COMMENT 'name of live room',
+    `host_user_id`                   varchar(100) DEFAULT '' COMMENT 'host id',
+    `host_user_name`                 varchar(200) DEFAULT '' COMMENT 'host name',
+    `status`                         int(11) DEFAULT 0 COMMENT 'live room status',
+    `enable_audience_interact_apply` int(11) DEFAULT 0 COMMENT 'enable audience interact apply',
+    `create_time`                    timestamp    DEFAULT CURRENT_TIMESTAMP COMMENT 'create_ ime',
+    `update_time`                    timestamp    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    `start_time`                     bigint(20) DEFAULT NULL COMMENT 'start unix time',
+    `finish_time`                    bigint(20) DEFAULT NULL COMMENT 'finish unix time',
+    `ext`                            varchar(200) DEFAULT NULL COMMENT 'extra info',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_room_id` (`room_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='info of KTV live room';
+
+CREATE TABLE `ktv_user`
+(
+    `id`              bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `app_id`          varchar(100) DEFAULT '' COMMENT 'live app id',
+    `room_id`         varchar(100) DEFAULT '' COMMENT 'room id',
+    `user_id`         varchar(255) DEFAULT '' COMMENT 'user id',
+    `user_name`       varchar(255) DEFAULT '' COMMENT 'user name',
+    `user_role`       int(11) DEFAULT 0 COMMENT 'user role 1: host 2:audience',
+    `net_status`      int(11) DEFAULT 0 COMMENT 'user net status',
+    `interact_status` int(11) DEFAULT 0 COMMENT 'user interact status',
+    `seat_id`         int(11) DEFAULT '0' COMMENT 'seat id',
+    `mic`             tinyint(4) DEFAULT '0' COMMENT 'mic status',
+    `create_time`     timestamp    DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time`     timestamp    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    `join_time`       bigint(20) DEFAULT NULL COMMENT 'join time',
+    `leave_time`      bigint(20) DEFAULT NULL COMMENT 'leave time',
+    `device_id`       varchar(128) DEFAULT '' COMMENT 'device id',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_room_id_user_id` (`room_id`,`user_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='info of KTV live user';
