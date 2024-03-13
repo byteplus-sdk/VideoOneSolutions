@@ -62,8 +62,10 @@ func (h *EventHandler) JoinRts(ctx context.Context, param *public.EventParam) (r
 		return nil, custom_error.ErrInput
 	}
 
-	if p.LiveAppName == "" || p.LivePushKey == "" || p.LivePushDomain == "" || p.LivePullDomain == "" {
-		return nil, custom_error.ErrInput
+	if p.ScenesName == public.BizIDLive {
+		if p.LiveAppName == "" || p.LivePushKey == "" || p.LivePushDomain == "" || p.LivePullDomain == "" {
+			return nil, custom_error.ErrInput
+		}
 	}
 
 	appInfo := &login_entity.AppInfo{
