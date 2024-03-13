@@ -23,6 +23,7 @@ const (
 
 const (
 	BidLive = "BytePlusRTC_bid_live"
+	BidKTV  = "BytePlusRTC_bid_ktv"
 )
 
 const (
@@ -31,6 +32,7 @@ const (
 
 var BidMap = map[string]string{
 	BizIDLive: BidLive,
+	BizIDKtv:  BidKTV,
 }
 
 const VideoCommentNum = 10
