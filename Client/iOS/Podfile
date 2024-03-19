@@ -25,14 +25,14 @@ end
 def scene_InteractiveLive_pods
   # Interactive Live
   # Depends on SDK
-  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTC-Framework']
+  pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git', :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTC-Framework']
   pod 'InteractiveLive', :path => './Component/InteractiveLive'
 end
 
 def scene_VideoPlaybackEdit_pods
   # One-Stop Video
   # Depends on SDK
-  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['Player', 'Uploader']
+  pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git', :subspecs => ['Player', 'Uploader']
   pod 'VideoPlaybackEdit', :path => './Component/VideoPlaybackEdit'
 end
 
