@@ -21,7 +21,7 @@ import com.vertcdemo.core.net.IRequestCallback;
 import com.vertcdemo.core.net.ServerResponse;
 import com.vertcdemo.core.net.rts.RTSInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveJoinRTSRequest;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.ui.dialog.SolutionProgressDialog;
 

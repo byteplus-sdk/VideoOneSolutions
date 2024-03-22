@@ -165,7 +165,7 @@
 
     <include
         android:id="@+id/host_avatar"
-        layout="@layout/user_avatar_view"
+        layout="@layout/layout_live_user_avatar_view"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
         android:layout_marginStart="12dp"
@@ -218,7 +218,7 @@
 
         <include
             android:id="@+id/gift_slot_2"
-            layout="@layout/layout_gift_show_item"
+            layout="@layout/layout_live_gift_show_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
@@ -227,7 +227,7 @@
 
         <include
             android:id="@+id/gift_slot_1"
-            layout="@layout/layout_gift_show_item"
+            layout="@layout/layout_live_gift_show_item"
             android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -251,7 +251,7 @@
         app:barrierDirection="start"
         app:constraint_referenced_ids="message_panel_guideline, link_single_small_card, position1" />
 
-    <com.vertcdemo.solution.interactivelive.view.TopFadeRecyclerView
+    <com.vertcdemo.core.widget.TopFadeRecyclerView
         android:id="@+id/message_panel"
         android:layout_width="0dp"
         android:layout_height="@dimen/message_panel_height"

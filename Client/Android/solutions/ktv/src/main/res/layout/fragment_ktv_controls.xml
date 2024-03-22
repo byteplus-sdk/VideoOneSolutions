@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="56dp"
+    tools:background="#F00">
+
+    <ImageView
+        android:id="@+id/origin"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_control_track" />
+
+    <ImageView
+        android:id="@+id/pause_play"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_control_pause_play" />
+
+    <ImageView
+        android:id="@+id/next"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_control_next" />
+
+    <ImageView
+        android:id="@+id/tuning"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_control_setting" />
+
+    <ImageView
+        android:id="@+id/songs"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_control_music" />
+</LinearLayout>

@@ -9,7 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.vertcdemo.solution.interactivelive.util.ViewUtils;
+import com.vertcdemo.core.utils.ViewUtils;
 
 public class LiveRoomItemDecoration extends RecyclerView.ItemDecoration {
     private final int spacing;

@@ -39,6 +39,17 @@
     }
 }
 
+- (void)remakeTopConstraintValue:(NSInteger)top {
+    if (self.baseIMView.superview) {
+        [self.baseIMView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(12);
+            make.bottom.equalTo(self.baseIMView.superview.mas_safeAreaLayoutGuideBottom).offset(-44);
+            make.top.mas_equalTo(top);
+            make.right.mas_equalTo(-56);
+        }];
+    }
+}
+
 - (void)hidden:(BOOL)isHidden {
     self.baseIMView.hidden = isHidden;
 }

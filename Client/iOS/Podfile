@@ -25,15 +25,22 @@ end
 def scene_InteractiveLive_pods
   # Interactive Live
   # Depends on SDK
-  pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git', :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTC-Framework']
+   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git', :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTC-Framework']
   pod 'InteractiveLive', :path => './Component/InteractiveLive'
 end
 
 def scene_VideoPlaybackEdit_pods
   # One-Stop Video
   # Depends on SDK
-  pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git', :subspecs => ['Player', 'Uploader']
+   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['Player', 'Uploader']
   pod 'VideoPlaybackEdit', :path => './Component/VideoPlaybackEdit'
+end
+
+def scene_KTV_pods
+  # One-Stop Video
+  # Depends on SDK
+   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['RTC-Framework', 'ByteAudio']
+  pod 'KTV', :path => './Component/KTV'
 end
 
 target 'VideoOne' do
@@ -41,6 +48,7 @@ target 'VideoOne' do
   # Scenes
   scene_InteractiveLive_pods
   scene_VideoPlaybackEdit_pods
+  scene_KTV_pods
 end
 
 post_install do |installer|

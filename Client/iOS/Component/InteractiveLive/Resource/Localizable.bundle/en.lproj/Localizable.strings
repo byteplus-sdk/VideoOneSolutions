@@ -175,3 +175,4 @@
 "adaptive_bitrate_normal" = "Normal";
 "h264/hardware = 1" = "Hardcoding";
 "h264/hardware = 0" = "Softcoding";
+"send_message_exceeded_limit" = "The maximum number of messages you can send is 10, you have exceeded this limit.";

@@ -49,15 +49,13 @@
 
 - (void)setDataLists:(NSArray *)dataLists {
     _dataLists = dataLists;
-    if (dataLists.count < 6) {
-        float maxHeight = 149 - (dataLists.count - 1) * 30;
-        self.tableHeaderOffset.frame = CGRectMake(0, 0, 0, maxHeight);
-        self.roomTableView.tableHeaderView = self.tableHeaderOffset;
-    } else {
-        self.roomTableView.tableHeaderView = nil;
-    }
+    
+    CGFloat viewHieght = self.bounds.size.height <= 0 ? 148 : self.bounds.size.height;
+    CGFloat maxHeight = (viewHieght) - (dataLists.count - 1) * 30;
+    self.tableHeaderOffset.frame = CGRectMake(0, 0, 0, maxHeight);
+    self.roomTableView.tableHeaderView = self.tableHeaderOffset;
     [self.roomTableView reloadData];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self scrollToBottom:YES tableView:self.roomTableView];
     });
 }

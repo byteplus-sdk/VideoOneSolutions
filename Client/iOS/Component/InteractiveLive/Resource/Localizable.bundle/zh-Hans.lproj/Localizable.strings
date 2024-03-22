@@ -175,3 +175,4 @@
 "adaptive_bitrate_normal" = "正常";
 "h264/hardware = 1" = "硬编";
 "h264/hardware = 0" = "软编";
+"send_message_exceeded_limit" = "最多发送 10 次消息，您已超过上限";

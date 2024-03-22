@@ -34,13 +34,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profile_user_avatar"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="40dp"
                 android:scaleType="fitStart"
+                app:shapeAppearanceOverlay="@style/circleStyle"
                 tools:src="@drawable/avatar00" />
 
             <TextView

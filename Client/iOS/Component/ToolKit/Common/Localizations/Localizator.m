@@ -32,6 +32,9 @@ static NSString *const LocalizedFalse = @"Localized_Parsing_Failed_Key";
         lprojPath = [[NSBundle bundleWithPath:bundlePath] pathForResource:Chinese_Simple ofType:@"lproj"];
     }
     NSBundle *resourceBundle = [NSBundle bundleWithPath:lprojPath];
+    if (!resourceBundle) {
+        return key;
+    }
     // Get the value based on a given key
     NSString *valueString = NSLocalizedStringWithDefaultValue(key, @"Localizable", resourceBundle, LocalizedFalse, @"");
     // If parsing fails, search again in the ToolKit component.

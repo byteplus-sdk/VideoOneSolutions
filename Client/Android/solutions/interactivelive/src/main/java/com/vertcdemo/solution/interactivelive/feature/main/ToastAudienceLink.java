@@ -13,7 +13,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.vertcdemo.solution.interactivelive.databinding.ToastAudienceLinkBinding;
+import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveToastAudienceLinkBinding;
 
 public class ToastAudienceLink {
     @MainThread
@@ -22,7 +22,7 @@ public class ToastAudienceLink {
                             @StringRes int title,
                             @StringRes int message) {
         final LayoutInflater layoutInflater = LayoutInflater.from(context);
-        ToastAudienceLinkBinding binding = ToastAudienceLinkBinding.inflate(layoutInflater);
+        LayoutLiveToastAudienceLinkBinding binding = LayoutLiveToastAudienceLinkBinding.inflate(layoutInflater);
 
         binding.icon.setImageResource(icon);
         binding.title.setText(title);

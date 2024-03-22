@@ -72,24 +72,21 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:${project.kotlin_version}"))
 
     implementation project.libs['app-compat']
     implementation project.libs['recyclerview']
     implementation project.libs['constraint-layout']
     implementation project.libs['material']
 
-    def nav_version = '2.6.0'
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation project.libs['navigation-fragment-ktx']
+    implementation project.libs['navigation-ui-ktx']
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    implementation rootProject.ext.libs["lifecycle-runtime-ktx"]
+    implementation project.libs["lifecycle-runtime-ktx"]
 
     implementation project.libs["service-manager"]
     implementation project.libs["service-manager-ext"]
@@ -106,6 +103,7 @@ dependencies {
 
     // region Solutions
     implementation project(":solutions:interactivelive")
-    implementation project(rootProject.ext.projects[':Vod:vod-demo'])
+    implementation project(":solutions:ktv")
+    implementation project(rootProject.projects[':Vod:vod-demo'])
     // endregion
 }

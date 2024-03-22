@@ -59,6 +59,7 @@
 "network_message_500"="系统繁忙，请稍后重试";
 "network_message_506"="当前麦位已满";
 "network_message_504"="移交主持人失败";
+"network_message_541"="用户角色与当前歌曲不匹配";
 "network_message_702"="服务端Token生成失败，请重试";
 "network_message_472"="连麦人数到达上限";
 "network_message_611"="连麦已过期";

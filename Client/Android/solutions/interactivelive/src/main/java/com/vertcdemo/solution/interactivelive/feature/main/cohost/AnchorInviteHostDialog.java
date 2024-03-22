@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
+import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.videoone.avatars.Avatars;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.solution.interactivelive.R;
@@ -152,7 +152,9 @@ public class AnchorInviteHostDialog extends BottomDialogFragmentX {
             final LayoutLiveCoHostItemBinding binding = holder.binding;
             binding.position.setText(Integer.toString(position + 1));
 
-            Glide.with(binding.avatar).load(Avatars.byUserId(info.userId)).circleCrop().into(binding.avatar);
+            Glide.with(binding.avatar)
+                    .load(Avatars.byUserId(info.userId))
+                    .into(binding.avatar);
 
             binding.name.setText(info.userName);
 

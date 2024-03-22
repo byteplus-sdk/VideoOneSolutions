@@ -18,10 +18,10 @@ import com.vertcdemo.core.eventbus.SolutionEventBus
 import com.vertcdemo.core.net.IRequestCallback
 import com.vertcdemo.core.net.ServerResponse
 import com.vertcdemo.core.utils.AppUtil.applicationContext
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -63,7 +63,7 @@ object HttpRequestHelper {
         val language = context.getString(R.string.language_code)
         params.put("language", language)
 
-        val body = RequestBody.create(MediaType.get("application/json; charset=utf-8"), "$params")
+        val body = "$params".toRequestBody("application/json; charset=utf-8".toMediaType())
         val request = Request.Builder()
             .url(url)
             .post(body)
@@ -73,9 +73,9 @@ object HttpRequestHelper {
             call.execute().use { response ->
                 Log.d(TAG, "Request: $params")
                 if (!response.isSuccessful) {
-                    throw IOException("http code = " + response.code())
+                    throw IOException("http code = " + response.code)
                 }
-                val responseBody = response.body() ?: throw IOException("ResponseBody is null")
+                val responseBody = response.body ?: throw IOException("ResponseBody is null")
                 val type = TypeToken.getParameterized(
                     ServerResponse::class.java, resultClass
                 ).type
@@ -91,7 +91,7 @@ object HttpRequestHelper {
                 }
                 mainThread.execute { callBack.onSuccess(serverResponse) }
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             Log.d(TAG, "post fail url:$url", e)
             mainThread.execute { callBack.onError(ERROR_CODE_UNKNOWN, e.message) }
         }

@@ -21,9 +21,9 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveVideoSettingsBinding;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
 
 public class LiveSettingDialog extends BottomDialogFragmentX {
     @Override

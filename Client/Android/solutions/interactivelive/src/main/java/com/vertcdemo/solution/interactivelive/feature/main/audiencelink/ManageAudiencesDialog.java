@@ -35,13 +35,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.core.annotation.LivePermitType;
-import com.vertcdemo.solution.interactivelive.core.annotation.MediaStatus;
+import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.solution.interactivelive.databinding.DialogManageAudiencesBinding;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkApplyEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkCancelEvent;
@@ -49,9 +50,8 @@ import com.vertcdemo.solution.interactivelive.event.AudienceLinkFinishEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkStatusEvent;
 import com.vertcdemo.solution.interactivelive.event.LiveRTSUserEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.feature.main.HostViewModel;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
 import org.greenrobot.eventbus.Subscribe;

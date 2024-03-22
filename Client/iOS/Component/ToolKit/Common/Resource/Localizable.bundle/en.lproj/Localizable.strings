@@ -59,6 +59,7 @@
 "network_message_500"="System busy. Please try again later";
 "network_message_506"="All host seats have been filled up";
 "network_message_504"="Pass host control failed";
+"network_message_541"="User role don't match current song";
 "network_message_702"="Generating token failed. Please try again";
 "network_message_472"="Number of co-hosts exceeded the limit";
 "network_message_611"="Co-hosting has ended";

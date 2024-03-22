@@ -16,7 +16,7 @@ import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.core.annotation.InviteReply;
 import com.vertcdemo.solution.interactivelive.event.InviteAudienceEvent;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 
 public class AudienceViewModel extends ViewModel {
     public final MutableLiveData<Integer> requestLinkStatus = new MutableLiveData<>(InviteReply.REJECT);

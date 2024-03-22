@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/interactive_live_graph.xml"
+    app:startDestination="@id/ktv_room_list">
+    <fragment
+        android:id="@+id/ktv_room_list"
+        android:name="com.vertcdemo.solution.ktv.feature.list.KTVRoomListFragment"
+        tools:layout="@layout/fragment_ktv_rooms">
+        <action
+            android:id="@+id/action_create_ktv_room"
+            app:destination="@id/create_ktv_room" />
+        <action
+            android:id="@+id/action_ktv_room"
+            app:destination="@id/ktv_room_graph" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/create_ktv_room"
+        android:name="com.vertcdemo.solution.ktv.feature.create.CreateKTVRoomFragment"
+        tools:layout="@layout/fragment_ktv_create">
+
+        <action
+            android:id="@+id/action_ktv_room"
+            app:destination="@id/ktv_room_graph" />
+    </fragment>
+
+    <navigation
+        android:id="@+id/ktv_room_graph"
+        app:startDestination="@id/ktv_room">
+        <fragment
+            android:id="@+id/ktv_room"
+            android:name="com.vertcdemo.solution.ktv.feature.main.room.KTVRoomFragment"
+            tools:layout="@layout/fragment_ktv_room">
+            <action
+                android:id="@+id/action_music_library"
+                app:destination="@id/dialog_music_library" />
+
+            <action
+                android:id="@+id/action_tuning"
+                app:destination="@id/dialog_tuning" />
+
+            <action
+                android:id="@+id/action_manage_audience"
+                app:destination="@id/dialog_manage_audience" />
+
+            <action
+                android:id="@+id/action_manage_seat"
+                app:destination="@id/dialog_manage_seat" />
+
+            <action
+                android:id="@+id/action_confirm_invite"
+                app:destination="@id/dialog_confirm_invite" />
+        </fragment>
+
+        <dialog
+            android:id="@+id/dialog_music_library"
+            android:name="com.vertcdemo.solution.ktv.feature.main.song.MusicLibraryDialog"
+            tools:layout="@layout/dialog_ktv_music_library" />
+
+        <dialog
+            android:id="@+id/dialog_tuning"
+            android:name="com.vertcdemo.solution.ktv.feature.main.settings.KTVTuningDialog"
+            tools:layout="@layout/dialog_ktv_tuning" />
+
+        <dialog
+            android:id="@+id/dialog_manage_audience"
+            android:name="com.vertcdemo.solution.ktv.feature.main.audience.ManageAudiencesDialog"
+            tools:layout="@layout/dialog_ktv_manage_audiences" />
+
+        <dialog
+            android:id="@+id/dialog_manage_seat"
+            android:name="com.vertcdemo.solution.ktv.feature.main.seat.SeatOptionDialog"
+            tools:layout="@layout/dialog_ktv_seat_option">
+            <action
+                android:id="@+id/action_manage_seat"
+                app:destination="@id/dialog_manage_seat" />
+            <action
+                android:id="@+id/action_manage_audience"
+                app:destination="@id/dialog_manage_audience" />
+            <action
+                android:id="@+id/action_confirm_invite"
+                app:destination="@id/dialog_confirm_invite" />
+        </dialog>
+
+        <dialog
+            android:id="@+id/dialog_confirm_invite"
+            android:name="com.vertcdemo.solution.ktv.feature.main.audience.ConfirmInviteDialog"
+            tools:layout="@layout/dialog_solution_common" />
+    </navigation>
+</navigation>

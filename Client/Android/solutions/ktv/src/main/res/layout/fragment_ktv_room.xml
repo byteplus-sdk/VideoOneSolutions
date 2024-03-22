@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/ktv_background_0"
+    android:keepScreenOn="true">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp"
+        tools:layout_constraintGuide_begin="25dp" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/room_header"
+        android:name="com.vertcdemo.solution.ktv.feature.main.room.KTVRoomHeaderFragment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top"
+        tools:layout="@layout/fragment_ktv_room_header" />
+
+    <ImageView
+        android:id="@+id/stage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_ktv_stage"
+        app:layout_constraintBottom_toBottomOf="@id/stage_line"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
+        android:gravity="center_horizontal"
+        android:textColor="#C7CCD6"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/ic_ktv_ring"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_header"
+        tools:drawableTop="@drawable/ic_ktv_ring"
+        tools:text="Request a song now and start experiencing it" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_tips"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:constraint_referenced_ids="tips, stage"
+        tools:visibility="visible" />
+
+    <include
+        android:id="@+id/music_info"
+        layout="@layout/layout_ktv_music_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_header" />
+
+    <com.bosphere.fadingedgelayout.FadingEdgeLayout
+        android:id="@+id/lrc_view_parent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="6dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="20dp"
+        app:fel_edge="bottom"
+        app:fel_size_bottom="26dp"
+        app:layout_constraintBottom_toTopOf="@id/music_controls"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/music_info">
+
+        <com.vertcdemo.solution.ktv.lrc.LrcView
+            android:id="@+id/lrc_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:lrcCurrentTextColor="#FF4E75"
+            app:lrcCurrentTextSize="17sp"
+            app:lrcDividerHeight="1dp"
+            app:lrcLabel="@string/label_no_lrc"
+            app:lrcNormalTextColor="#FFFFFF"
+            app:lrcNormalTextSize="18sp" />
+    </com.bosphere.fadingedgelayout.FadingEdgeLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/music_controls"
+        android:name="com.vertcdemo.solution.ktv.feature.main.room.KTVRoomControlsFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toBottomOf="@id/stage_line"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout="@layout/fragment_ktv_controls" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_singing"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="music_info, lrc_view_parent, music_controls"
+        tools:visibility="gone" />
+
+    <View
+        android:id="@+id/stage_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="276dp"
+        android:background="#26DDE2E9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_header" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/seats"
+        android:name="com.vertcdemo.solution.ktv.feature.main.room.KTVSeatsFragment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stage_line"
+        tools:layout="@layout/fragment_ktv_seat_group" />
+
+    <com.vertcdemo.core.widget.TopFadeRecyclerView
+        android:id="@+id/message_panel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="86dp"
+        android:fadingEdge="vertical"
+        android:fadingEdgeLength="24dp"
+        android:requiresFadingEdge="vertical"
+        app:layout_constraintBottom_toTopOf="@id/bottom_options"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seats"
+        tools:listitem="@layout/layout_chat_item" />
+
+    <include
+        android:id="@+id/bottom_options"
+        layout="@layout/layout_ktv_bottom_options"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp"
+        tools:layout_constraintGuide_end="48dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

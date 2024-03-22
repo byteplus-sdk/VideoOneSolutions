@@ -73,7 +73,6 @@ public class ApplicationAdapter extends RecyclerView.Adapter<BVH<LayoutLiveCoHos
 
         Glide.with(binding.avatar)
                 .load(Avatars.byUserId(info.userId))
-                .circleCrop()
                 .into(binding.avatar);
 
         binding.name.setText(info.userName);

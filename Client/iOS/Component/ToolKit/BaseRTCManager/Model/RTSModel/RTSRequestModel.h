@@ -21,6 +21,8 @@ typedef void (^RTCSendServerMessageBlock)(RTSACKModel *ackModel);
 @property (nonatomic, copy) NSString *deviceID;
 @property (nonatomic, copy) RTCSendServerMessageBlock requestBlock;
 
+@property (nonatomic, strong) NSDate *requestStartDate;
+
 @end
 
 NS_ASSUME_NONNULL_END

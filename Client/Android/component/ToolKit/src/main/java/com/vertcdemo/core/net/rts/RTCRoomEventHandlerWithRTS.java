@@ -7,15 +7,15 @@ import android.text.TextUtils;
 
 import androidx.annotation.CallSuper;
 
+import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
 import com.ss.bytertc.engine.type.ErrorCode;
-import com.vertcdemo.core.RTCRoomEventHandlerAdapter;
 import com.vertcdemo.core.eventbus.RTCReconnectToRoomEvent;
 import com.vertcdemo.core.eventbus.RTSLogoutEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 
 import org.json.JSONObject;
 
-public class RTCRoomEventHandlerWithRTS extends RTCRoomEventHandlerAdapter {
+public class RTCRoomEventHandlerWithRTS extends IRTCRoomEventHandler {
 
     public static final String UID_BIZ_SERVER = "server";
 

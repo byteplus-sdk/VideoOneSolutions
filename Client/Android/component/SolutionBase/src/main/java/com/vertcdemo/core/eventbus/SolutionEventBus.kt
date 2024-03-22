@@ -11,7 +11,9 @@ object SolutionEventBus {
 
     @JvmStatic
     fun post(event: Any) {
-        Log.d(TAG, "event=${event.javaClass}")
+        if (event.javaClass.getAnnotation(SkipLogging::class.java) == null) {
+            Log.d(TAG, "event=${event.javaClass}")
+        }
         eventBus.post(event)
     }
 

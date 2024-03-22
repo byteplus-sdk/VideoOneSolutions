@@ -12,7 +12,7 @@
     tools:layout_marginTop="16dp"
     tools:showIn="@layout/fragment_function_entry">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/icon"
         android:layout_width="116dp"
         android:layout_height="65dp"

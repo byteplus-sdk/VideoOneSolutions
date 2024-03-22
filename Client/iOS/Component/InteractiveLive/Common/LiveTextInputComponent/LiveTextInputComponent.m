@@ -11,6 +11,8 @@
 @property (nonatomic, weak) UIView *contentView;
 @property (nonatomic, weak) TextInputView *textInputView;
 @property (nonatomic, copy) NSString *textMessage;
+@property (nonatomic, assign) NSInteger maximumSendingLimit;
+@property (nonatomic, assign) NSInteger currentSendingTimes;
 
 @end
 
@@ -19,6 +21,8 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        self.maximumSendingLimit = 10;
+        self.currentSendingTimes = 0;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardDidShow:) name:UIKeyboardWillShowNotification object:nil];
     }
     return self;
@@ -55,10 +59,15 @@
         [wself.textInputView dismiss:^(NSString *_Nonnull text) {
             [wself close];
         }];
+        if (wself.currentSendingTimes >= wself.maximumSendingLimit) {
+            [[ToastComponent shareToastComponent] showWithMessage:LocalizedString(@"send_message_exceeded_limit") delay:0.1];
+            return;
+        }
         [wself loadDataWithSendeMessage:text];
         if (wself.clickSenderBlock) {
             wself.clickSenderBlock(text);
         }
+        wself.currentSendingTimes++;
     };
 }
 

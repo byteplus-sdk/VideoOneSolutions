@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
-import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.core.annotation.MediaStatus;
-import com.vertcdemo.solution.interactivelive.databinding.DialogMoreActionBinding;
+import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.core.utils.DebounceClickListener;
+import com.vertcdemo.solution.interactivelive.R;
+import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
+import com.vertcdemo.core.annotation.MediaStatus;
+import com.vertcdemo.solution.interactivelive.databinding.DialogLiveMoreActionBinding;
 
 public class HostMoreActionDialog extends BottomDialogFragmentX {
 
@@ -32,14 +32,14 @@ public class HostMoreActionDialog extends BottomDialogFragmentX {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_more_action, container, false);
+        return inflater.inflate(R.layout.dialog_live_more_action, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         final Bundle arguments = requireArguments();
         mRoomId = arguments.getString("roomId");
-        DialogMoreActionBinding binding = DialogMoreActionBinding.bind(view);
+        DialogLiveMoreActionBinding binding = DialogLiveMoreActionBinding.bind(view);
         final LiveRTCManager manager = LiveRTCManager.ins();
 
         {

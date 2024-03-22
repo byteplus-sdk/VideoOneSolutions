@@ -23,7 +23,7 @@ import com.bumptech.glide.Glide;
 import com.videoone.avatars.Avatars;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
-import com.vertcdemo.solution.interactivelive.databinding.DialogAnchorLinkConfirmInviteBinding;
+import com.vertcdemo.solution.interactivelive.databinding.DialogLiveAnchorLinkConfirmInviteBinding;
 
 public final class AnchorLinkConfirmInviteDialog extends DialogFragment {
     public static final int TIMEOUT = 10_000;
@@ -38,7 +38,7 @@ public final class AnchorLinkConfirmInviteDialog extends DialogFragment {
         if (dialog != null) {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
-        return inflater.inflate(R.layout.dialog_anchor_link_confirm_invite, container, false);
+        return inflater.inflate(R.layout.dialog_live_anchor_link_confirm_invite, container, false);
     }
 
     private static final int MSG_TIMEOUT = 1;
@@ -58,7 +58,7 @@ public final class AnchorLinkConfirmInviteDialog extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setCancelable(false);
 
-        DialogAnchorLinkConfirmInviteBinding binding = DialogAnchorLinkConfirmInviteBinding.bind(view);
+        DialogLiveAnchorLinkConfirmInviteBinding binding = DialogLiveAnchorLinkConfirmInviteBinding.bind(view);
 
         final Bundle arguments = requireArguments();
         final LiveUserInfo userInfo = (LiveUserInfo) arguments.getSerializable("userInfo");
@@ -67,7 +67,6 @@ public final class AnchorLinkConfirmInviteDialog extends DialogFragment {
 
         Glide.with(binding.userAvatar)
                 .load(Avatars.byUserId(userId))
-                .circleCrop()
                 .into(binding.userAvatar);
 
         binding.userName.setText(getString(R.string.anchor_link_from, userInfo.userName));

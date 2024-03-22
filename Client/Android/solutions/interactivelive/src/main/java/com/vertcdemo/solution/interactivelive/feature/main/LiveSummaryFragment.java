@@ -18,13 +18,11 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveSummary;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveSummaryBinding;
 import com.videoone.avatars.Avatars;
-import com.vertcdemo.solution.interactivelive.util.ViewUtils;
 
 import java.text.DecimalFormat;
 
@@ -55,7 +53,6 @@ public class LiveSummaryFragment extends Fragment {
 
         Glide.with(binding.userAvatar)
                 .load(Avatars.byUserId(SolutionDataManager.ins().getUserId()))
-                .transform(new RoundedCorners(ViewUtils.dp2px(8)))
                 .into(binding.userAvatar);
 
         binding.title.setText(getString(R.string.live_show_suffix, SolutionDataManager.ins().getUserName()));

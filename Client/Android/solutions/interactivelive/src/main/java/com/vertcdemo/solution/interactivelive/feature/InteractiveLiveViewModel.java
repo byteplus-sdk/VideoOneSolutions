@@ -6,6 +6,7 @@ package com.vertcdemo.solution.interactivelive.feature;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.vertcdemo.core.net.rts.IRTSCallback;
 import com.vertcdemo.core.net.rts.RTSBaseClient;
 import com.vertcdemo.core.net.rts.RTSInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
@@ -29,7 +30,7 @@ public class InteractiveLiveViewModel extends ViewModel {
     public void loginRTS() {
         rtsStatus.postValue(RTS_STATUS_LOGGING);
         LiveRTCManager.ins().getRTSClient().login(rtsInfo.rtsToken, (resultCode, message) -> {
-            if (resultCode == RTSBaseClient.LoginCallBack.SUCCESS) {
+            if (resultCode == IRTSCallback.CODE_SUCCESS) {
                 rtsStatus.postValue(RTS_STATUS_LOGGED);
             } else {
                 rtsStatus.postValue(RTS_STATUS_FAILED);

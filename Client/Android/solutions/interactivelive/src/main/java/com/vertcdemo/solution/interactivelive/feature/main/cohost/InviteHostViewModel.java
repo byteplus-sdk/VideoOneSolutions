@@ -16,7 +16,7 @@ import com.vertcdemo.solution.interactivelive.bean.LiveInviteResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 
 import java.util.Collections;
 import java.util.List;

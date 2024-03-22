@@ -15,13 +15,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.core.live.LiveConfigParams;
 import com.vertcdemo.solution.interactivelive.core.live.LiveCoreHolder;
 import com.vertcdemo.solution.interactivelive.core.live.StatisticsInfo;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveInformationBinding;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
 
 public class LiveInfoDialog extends BottomDialogFragmentX {
     private DialogLiveInformationBinding mBinding;

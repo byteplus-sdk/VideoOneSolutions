@@ -3,8 +3,10 @@ ext {
     targetSdkVersion = 33
     compileSdkVersion = 33
 
-    kotlin_version = "1.8.22"
-    kotlin_corcoutine_version = "1.5.2"
+    kotlin_version = "1.9.22"
+    kotlin_corcoutine_version = "1.7.3"
+
+    nav_version = "2.6.0"
 
     def ttsdk_version = '1.39.100.9.onekit'
     def service_manager_version = '1.0.9.3'
@@ -22,6 +24,11 @@ ext {
             "lifecycle-livedata-ktx"    : "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1",
             "lifecycle-viewmodel-ktx"   : "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1",
             "lifecycle-runtime-ktx"     : "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1",
+
+            "navigation-fragment"       : "androidx.navigation:navigation-fragment:$nav_version",
+            "navigation-ui"             : "androidx.navigation:navigation-ui:$nav_version",
+            "navigation-fragment-ktx"   : "androidx.navigation:navigation-fragment-ktx:$nav_version",
+            "navigation-ui-ktx"         : "androidx.navigation:navigation-ui-ktx:$nav_version",
 
             "material"                  : "com.google.android.material:material:1.4.0",
 
@@ -43,8 +50,8 @@ ext {
             "retrofit2"                 : "com.squareup.retrofit2:retrofit:2.9.0",
 
             "videocache"                : "com.danikula:videocache:2.7.1",
-            "okhttp"                    : "com.squareup.okhttp3:okhttp:3.14.9",
-            "okhttp-logging"            : "com.squareup.okhttp3:logging-interceptor:3.14.9",
+            "okhttp"                    : "com.squareup.okhttp3:okhttp:4.12.0",
+            "okhttp-logging"            : "com.squareup.okhttp3:logging-interceptor:4.12.0",
 
             // TTSDK Libs
             "ttsdk_vod_premium"         : "com.bytedanceapi:ttsdk-player_premium:$ttsdk_version",

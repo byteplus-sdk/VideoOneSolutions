@@ -66,6 +66,9 @@
         case RTSStatusCodeTransferHostFailed:
             message = LocalizedStringFromBundle(@"network_message_504", bundleName);
             break;
+        case RTSStatusCodeRoleDontMatchFailed:
+            message = LocalizedStringFromBundle(@"network_message_541", bundleName);
+            break;
         case RTSStatusCodeBuildTokenFaild:
             message = LocalizedStringFromBundle(@"network_message_702", bundleName);
             break;

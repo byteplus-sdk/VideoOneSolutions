@@ -60,6 +60,8 @@
     }
     if ([resultVC isKindOfClass:[UIAlertController class]]) {
         resultVC = [self _topViewController:[self rootViewController]];
+    } else if ([resultVC isKindOfClass:[NSClassFromString(@"AlertActionViewController") class]]) {
+        resultVC = [self _topViewController:[self rootViewController]];
     }
     return resultVC;
 }

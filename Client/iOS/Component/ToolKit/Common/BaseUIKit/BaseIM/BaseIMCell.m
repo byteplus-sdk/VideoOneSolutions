@@ -87,7 +87,12 @@
     } else {
         name = [name stringByAppendingString:@"："];
     }
-    NSString *cellMessage = [NSString stringWithFormat:@"%@%@", name, message];
+    NSString *cellMessage = @"";
+    if (NOEmptyStr(name)) {
+        cellMessage = [NSString stringWithFormat:@"%@%@", name, message];
+    } else {
+        cellMessage = message;
+    }
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:cellMessage];
 
     if (label) {

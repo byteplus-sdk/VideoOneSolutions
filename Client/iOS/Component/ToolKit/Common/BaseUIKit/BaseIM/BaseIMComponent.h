@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateRightConstraintValue:(NSInteger)right;
 
+- (void)remakeTopConstraintValue:(NSInteger)top;
+
 - (void)hidden:(BOOL)isHidden;
 
 @end

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_ktv_bottom_dialog"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="20dp"
+    android:paddingBottom="12dp"
+    tools:layout_gravity="bottom">
+
+    <TextView
+        android:id="@+id/option_interact"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_ktv_seat_interact"
+        android:drawablePadding="8dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        tools:text="邀请上麦" />
+
+    <TextView
+        android:id="@+id/option_mic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_ktv_seat_mic"
+        android:drawablePadding="8dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        tools:text="静音麦位" />
+
+    <TextView
+        android:id="@+id/option_seat_lock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_ktv_seat_lock"
+        android:drawablePadding="8dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        tools:text="封锁麦位" />
+</LinearLayout>

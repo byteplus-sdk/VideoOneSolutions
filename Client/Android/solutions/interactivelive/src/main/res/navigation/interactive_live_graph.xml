@@ -25,7 +25,7 @@
     <fragment
         android:id="@+id/create_live_room"
         android:name="com.vertcdemo.solution.interactivelive.feature.list.CreateLiveRoomFragment"
-        tools:layout="@layout/fragment_create_live_room">
+        tools:layout="@layout/fragment_live_create_room">
         <action
             android:id="@+id/host_view"
             app:destination="@id/host_view" />

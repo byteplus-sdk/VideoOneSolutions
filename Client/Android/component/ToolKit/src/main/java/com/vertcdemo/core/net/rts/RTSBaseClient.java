@@ -31,8 +31,6 @@ import java.util.UUID;
 
 public class RTSBaseClient {
     private static final String TAG = "RTSBaseClient";
-    public static final int ERROR_CODE_USERNAME_SAME = 414;
-    public static final int ERROR_CODE_ROOM_FULL = 507;
     public static final int ERROR_CODE_DEFAULT = -1;
 
     public static final String MESSAGE_TYPE_RETURN = "return";
@@ -40,10 +38,11 @@ public class RTSBaseClient {
 
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
+    private static final String REQ_ID_RTS_LOGIN = "8be4df61-93ca-11d2-aa0d-00e098032b8c-rts-login";
+
     @NonNull
     private final RTCVideo mRTCVideo;
     private boolean mInitBizServerCompleted;
-    private LoginCallBack mLoginCallback;
 
     @NonNull
     protected final RTSInfo mRTSInfo;
@@ -79,12 +78,12 @@ public class RTSBaseClient {
     }
 
     public void login(@NonNull String token, @NonNull LoginCallBack callback) {
-        mLoginCallback = callback;
         final String userId = SolutionDataManager.ins().getUserId();
         if (TextUtils.isEmpty(token) || TextUtils.isEmpty(userId)) {
-            notifyLoginResult(LoginCallBack.DEFAULT_FAIL_CODE, "login failed: uid='" + userId + "'");
+            callback.onError(-1, "login failed: uid='" + userId + "'");
             return;
         }
+        mRequestIdCallbackMap.put(REQ_ID_RTS_LOGIN, callback);
         Log.d(TAG, "login: uid=" + userId);
         mRTCVideo.login(token, userId);
     }
@@ -92,8 +91,7 @@ public class RTSBaseClient {
     public void onLoginResult(String uid, int code, int elapsed) {
         Log.d(TAG, "onLoginResult: uid=" + uid);
         if (TextUtils.isEmpty(mRTSInfo.serverUrl) || TextUtils.isEmpty(mRTSInfo.serverSignature)) {
-            notifyLoginResult(LoginCallBack.DEFAULT_FAIL_CODE,
-                    "onLoginResult failed: Info=" + mRTSInfo);
+            notifyLoginResult(-1, "onLoginResult failed: Info=" + mRTSInfo);
             return;
         }
         if (code == LoginErrorCode.LOGIN_ERROR_CODE_SUCCESS) {
@@ -112,7 +110,7 @@ public class RTSBaseClient {
     public void setServerParams(String signature, String url) {
         Log.d(TAG, "setServerParams: url=" + url);
         if (TextUtils.isEmpty(signature) || TextUtils.isEmpty(url)) {
-            notifyLoginResult(LoginCallBack.DEFAULT_FAIL_CODE,
+            notifyLoginResult(-1,
                     "setServerParams failed:\n signature=" + signature + ",\n url=" + url);
             return;
         }
@@ -126,7 +124,7 @@ public class RTSBaseClient {
             return;
         }
         mInitBizServerCompleted = true;
-        notifyLoginResult(LoginCallBack.SUCCESS, "");
+        notifyLoginResult(IRTSCallback.CODE_SUCCESS, "");
     }
 
     private long sendServerMessage(String requestId, String message, IRTSCallback callBack) {
@@ -158,16 +156,12 @@ public class RTSBaseClient {
     }
 
 
-    public void sendServerMessage(String eventName, String roomId, JsonObject content, IRTSCallback callback) {
-        Log.e(TAG, "sendServerMessage eventName:" + eventName + ",content:" + content);
+    public void sendServerMessage(String eventName, String roomId, @NonNull JsonObject content, IRTSCallback callback) {
         if (!mInitBizServerCompleted) {
             String msg = "sendServerMessage failed mInitBizServerCompleted: false";
             notifyRequestFail(ERROR_CODE_DEFAULT, msg, callback);
             Log.e(TAG, msg);
             return;
-        }
-        if (content == null) {
-            content = new JsonObject();
         }
         content.addProperty("login_token", SolutionDataManager.ins().getToken());
         String requestId = String.valueOf(UUID.randomUUID());
@@ -199,7 +193,6 @@ public class RTSBaseClient {
                     Log.e(TAG, "onMessageReceived callback is null");
                     return;
                 }
-                Log.e(TAG, String.format("onMessageReceived (%s): %s", requestId, message));
 
                 final int code = messageJson.optInt("code");
                 if (code == 200) {
@@ -215,8 +208,9 @@ public class RTSBaseClient {
                     Consumer<String> eventListener = mEventListeners.get(event);
                     if (eventListener != null) {
                         String dataStr = messageJson.optString("data");
-                        Log.e(TAG, String.format("onMessageReceived broadcast: event: %s \n message: %s", event, dataStr));
                         eventListener.accept(dataStr);
+                    } else {
+                        Log.w(TAG, "onMessageReceived DISCARD broadcast: event: " + event);
                     }
                 }
             }
@@ -231,18 +225,15 @@ public class RTSBaseClient {
     }
 
     private void notifyLoginResult(int code, String msg) {
-        mainHandler.post(() -> {
-            if (mLoginCallback == null) return;
-            mLoginCallback.notifyLoginResult(code, msg);
-            mLoginCallback = null;
-        });
+        final IRTSCallback callback = mRequestIdCallbackMap.remove(REQ_ID_RTS_LOGIN);
+        notifyRequestFail(code, msg, callback);
     }
 
-    public interface LoginCallBack {
-        int SUCCESS = 200;
-        int DEFAULT_FAIL_CODE = -1;
-
-        void notifyLoginResult(int resultCode, String message);
+    public interface LoginCallBack extends IRTSCallback {
+        @Override
+        default void onSuccess(@Nullable String data) {
+            onError(CODE_SUCCESS, data);
+        }
     }
 }
 

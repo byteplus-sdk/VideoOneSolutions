@@ -18,13 +18,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
+import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.core.annotation.InviteReply;
-import com.vertcdemo.solution.interactivelive.databinding.DialogRequestAudienceLinkBinding;
+import com.vertcdemo.solution.interactivelive.databinding.DialogLiveRequestAudienceLinkBinding;
 import com.vertcdemo.solution.interactivelive.event.InviteAudienceEvent;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.feature.main.AudienceViewModel;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.core.utils.DebounceClickListener;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -50,14 +50,14 @@ public class RequestAudienceLinkDialog extends BottomDialogFragmentX {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_request_audience_link, container, false);
+        return inflater.inflate(R.layout.dialog_live_request_audience_link, container, false);
     }
 
-    DialogRequestAudienceLinkBinding mBinding;
+    DialogLiveRequestAudienceLinkBinding mBinding;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mBinding = DialogRequestAudienceLinkBinding.bind(view);
+        mBinding = DialogLiveRequestAudienceLinkBinding.bind(view);
 
         mBinding.application.setOnClickListener(DebounceClickListener.create(this::onCoHostApplicationClicked));
         mBinding.cancel.setOnClickListener(v -> {

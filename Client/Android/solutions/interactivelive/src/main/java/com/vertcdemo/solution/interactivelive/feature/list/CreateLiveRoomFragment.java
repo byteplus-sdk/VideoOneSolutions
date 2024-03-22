@@ -32,17 +32,15 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.vertcdemo.solution.interactivelive.feature.main.settings.LiveSettingDialog;
-import com.videoone.avatars.Avatars;
 import com.vertcdemo.core.SolutionDataManager;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.CreateLiveRoomResponse;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.databinding.FragmentCreateLiveRoomBinding;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
-import com.vertcdemo.solution.interactivelive.util.ViewUtils;
-import com.vertcdemo.core.utils.DebounceClickListener;
+import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveCreateRoomBinding;
+import com.vertcdemo.solution.interactivelive.feature.main.settings.LiveSettingDialog;
+import com.vertcdemo.ui.CenteredToast;
+import com.videoone.avatars.Avatars;
 
 public class CreateLiveRoomFragment extends Fragment {
     private boolean mRequestStartLive = false;
@@ -85,7 +83,7 @@ public class CreateLiveRoomFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_create_live_room, container, false);
+        return inflater.inflate(R.layout.fragment_live_create_room, container, false);
     }
 
     @Override
@@ -93,7 +91,7 @@ public class CreateLiveRoomFragment extends Fragment {
         LiveRTCManager.ins().switchToHostConfig();
         LiveRTCManager.ins().startCaptureVideo(true);
 
-        FragmentCreateLiveRoomBinding binding = FragmentCreateLiveRoomBinding.bind(view);
+        FragmentLiveCreateRoomBinding binding = FragmentLiveCreateRoomBinding.bind(view);
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
             final Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -106,7 +104,6 @@ public class CreateLiveRoomFragment extends Fragment {
 
         Glide.with(binding.userAvatar)
                 .load(Avatars.byUserId(SolutionDataManager.ins().getUserId()))
-                .transform(new RoundedCorners(ViewUtils.dp2px(8)))
                 .into(binding.userAvatar);
 
         binding.title.setText(getString(R.string.live_show_suffix, SolutionDataManager.ins().getUserName()));
