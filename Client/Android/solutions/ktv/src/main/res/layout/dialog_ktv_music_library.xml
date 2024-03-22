@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_ktv_bottom_dialog"
+    tools:layout_gravity="bottom">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="408dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_top"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="44dp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="#1E1C30"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideline_top"
+            tools:background="#F00" />
+
+        <TextView
+            android:id="@+id/song_library_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:gravity="center"
+            android:text="@string/button_music_list_title"
+            android:textColor="@color/color_ktv_bottom_dialog_tab"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:textColor="@color/white"
+            tools:textStyle="bold" />
+
+        <View
+            android:id="@+id/song_library_indicator"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:background="#FFF"
+            app:layout_constraintBottom_toBottomOf="@id/song_library_tab"
+            app:layout_constraintEnd_toEndOf="@id/song_library_tab"
+            app:layout_constraintStart_toStartOf="@id/song_library_tab" />
+
+        <TextView
+            android:id="@+id/picked_song_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="24dp"
+            android:gravity="center"
+            android:text="@string/button_karaoke_station_pick_song"
+            android:textColor="@color/color_ktv_bottom_dialog_tab"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_top"
+            app:layout_constraintStart_toEndOf="@id/song_library_tab"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/selected_song_indicator"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:background="#FFF"
+            app:layout_constraintBottom_toBottomOf="@id/picked_song_tab"
+            app:layout_constraintEnd_toEndOf="@id/picked_song_tab"
+            app:layout_constraintStart_toStartOf="@id/picked_song_tab" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/song_library"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideline_top"
+            tools:listitem="@layout/item_ktv_songs" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/selected_songs"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideline_top"
+            tools:listitem="@layout/item_ktv_songs" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_song_library"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:constraint_referenced_ids="song_library, song_library_indicator"
+            tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_selected"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:constraint_referenced_ids="selected_songs, selected_song_indicator" />
+
+        <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:text="@string/label_music_library_empty"
+            android:textColor="#FFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:drawableTopCompat="@drawable/ic_ktv_song_list_empty"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideline_top"
+            tools:drawableTop="@drawable/ic_ktv_song_list_empty" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

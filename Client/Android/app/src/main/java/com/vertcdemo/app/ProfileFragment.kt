@@ -79,7 +79,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun updateUserInfo(binding: FragmentProfileBinding) {
         Glide.with(binding.profileUserAvatar)
             .load(byUserId(SolutionDataManager.ins().userId))
-            .circleCrop()
             .into(binding.profileUserAvatar)
 
         binding.profileUserName.text = SolutionDataManager.ins().userName

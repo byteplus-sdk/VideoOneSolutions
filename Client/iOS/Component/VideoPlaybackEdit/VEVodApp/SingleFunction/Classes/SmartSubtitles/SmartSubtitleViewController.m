@@ -50,7 +50,7 @@
     }
 }
 
-#pragma mark -Getter
+#pragma mark - Getter
 - (VEInterfaceBaseVideoDetailSceneConf *)interfaceScene {
     VEInterfaceSmartSubtitleConf *scene = [VEInterfaceSmartSubtitleConf new];
     scene.manager = self.manager;

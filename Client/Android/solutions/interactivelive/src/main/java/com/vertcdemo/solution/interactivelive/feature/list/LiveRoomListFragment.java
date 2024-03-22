@@ -33,7 +33,7 @@ import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveRoomsBinding;
 import com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.core.utils.DebounceClickListener;
 
 import java.util.Collections;

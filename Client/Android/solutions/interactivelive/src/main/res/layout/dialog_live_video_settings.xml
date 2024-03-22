@@ -70,7 +70,7 @@
                     android:background="@drawable/bg_fps_item"
                     android:gravity="center"
                     android:text="@string/fps_15"
-                    android:textColor="@color/fps_item_text_color"
+                    android:textColor="@color/color_live_item_text_fps"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -81,7 +81,7 @@
                     android:background="@drawable/bg_fps_item"
                     android:gravity="center"
                     android:text="@string/fps_20"
-                    android:textColor="@color/fps_item_text_color"
+                    android:textColor="@color/color_live_item_text_fps"
                     android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -215,7 +215,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/quality_1080"
-                android:textColor="@color/quality_item_text_color"
+                android:textColor="@color/color_live_item_text_quality"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/quality_hd_label"
@@ -242,7 +242,7 @@
             android:background="@drawable/bg_quality_item"
             android:gravity="center"
             android:text="@string/quality_720"
-            android:textColor="@color/quality_item_text_color"
+            android:textColor="@color/color_live_item_text_quality"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -256,7 +256,7 @@
             android:background="@drawable/bg_quality_item"
             android:gravity="center"
             android:text="@string/quality_540"
-            android:textColor="@color/quality_item_text_color"
+            android:textColor="@color/color_live_item_text_quality"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_chainStyle="packed"

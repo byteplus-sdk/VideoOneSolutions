@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.vertcdemo.solution.ktv.feature.main.seat.SeatLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:layout_width="60dp"
+    tools:showIn="@layout/fragment_ktv_seat_group">
+
+    <ImageView
+        android:id="@+id/singer_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:src="@drawable/ic_ktv_singer_label"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/seat_icon"
+        app:layout_constraintEnd_toEndOf="@id/seat_icon"
+        app:layout_constraintStart_toStartOf="@id/seat_icon"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/seat_speaking_indicator"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:src="@drawable/bg_seat_speaking"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/seat_icon"
+        app:layout_constraintEnd_toEndOf="@id/seat_icon"
+        app:layout_constraintStart_toStartOf="@id/seat_icon"
+        app:layout_constraintTop_toTopOf="@id/seat_icon"
+        tools:visibility="visible" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/seat_icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_ktv_seat_empty"
+        app:layout_constraintBottom_toTopOf="@id/seat_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/circleStyle" />
+
+    <ImageView
+        android:id="@+id/seat_muted"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/bg_seat_muted"
+        android:padding="9dp"
+        android:src="@drawable/ic_ktv_mic_20_off"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/seat_icon"
+        app:layout_constraintEnd_toEndOf="@id/seat_icon"
+        app:layout_constraintStart_toStartOf="@id/seat_icon"
+        app:layout_constraintTop_toTopOf="@id/seat_icon"
+        tools:visibility="gone" />
+
+    <TextView
+        android:id="@+id/seat_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="#C7CCD6"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seat_icon"
+        tools:text="9" />
+</com.vertcdemo.solution.ktv.feature.main.seat.SeatLayout>

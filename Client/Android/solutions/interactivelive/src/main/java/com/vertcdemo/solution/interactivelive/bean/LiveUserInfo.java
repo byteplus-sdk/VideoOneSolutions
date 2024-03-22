@@ -10,7 +10,7 @@ import com.vertcdemo.core.net.rts.RTSResponse;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveLinkMicStatus;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveRoleType;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveUserStatus;
-import com.vertcdemo.solution.interactivelive.core.annotation.MediaStatus;
+import com.vertcdemo.core.annotation.MediaStatus;
 
 import java.io.Serializable;
 

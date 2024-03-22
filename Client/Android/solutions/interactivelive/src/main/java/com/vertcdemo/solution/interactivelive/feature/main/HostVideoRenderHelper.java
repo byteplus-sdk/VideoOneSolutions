@@ -18,7 +18,7 @@ import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.core.annotation.MediaStatus;
+import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveHostBinding;
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveCoHostVideoBinding;
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveHostAudience2Binding;
@@ -309,7 +309,6 @@ public class HostVideoRenderHelper extends MediaStatusObservable {
 
         Glide.with(position.userAvatarSmall)
                 .load(userAvatar)
-                .circleCrop()
                 .into(position.userAvatarSmall);
         position.userName.setText(info.userName);
 

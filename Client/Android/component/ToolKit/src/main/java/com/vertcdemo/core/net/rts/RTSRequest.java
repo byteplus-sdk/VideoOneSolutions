@@ -3,16 +3,28 @@
 
 package com.vertcdemo.core.net.rts;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
+import com.google.gson.JsonSyntaxException;
 import com.vertcdemo.core.common.GsonUtils;
 import com.vertcdemo.core.net.IRequestCallback;
 
+import java.lang.reflect.Type;
+
 public final class RTSRequest<T> implements IRTSCallback {
+    private static final String TAG = "RTSRequest";
     @Nullable
     public final IRequestCallback<T> callback;
 
-    public Class<T> resultClass;
+    @Nullable
+    public Type resultClass;
+
+    public RTSRequest(@Nullable IRequestCallback<T> callback, Type resultClass) {
+        this.callback = callback;
+        this.resultClass = resultClass;
+    }
 
     public RTSRequest(@Nullable IRequestCallback<T> callback, Class<T> resultClass) {
         this.callback = callback;
@@ -20,15 +32,20 @@ public final class RTSRequest<T> implements IRTSCallback {
     }
 
     public void onSuccess(@Nullable String data) {
-        if (data == null || callback == null) {
+        if (callback == null) {
             return;
         }
-        if (resultClass == null) {
+        if (resultClass == null || resultClass == Void.class) {
             callback.onSuccess(null);
             return;
         }
-        T result = GsonUtils.gson().fromJson(data, resultClass);
-        callback.onSuccess(result);
+        try {
+            T result = GsonUtils.gson().fromJson(data, resultClass);
+            callback.onSuccess(result);
+        } catch (JsonSyntaxException e) {
+            Log.d(TAG, "Parse Error: " + resultClass, e);
+            onError(-1, "JsonSyntaxException");
+        }
     }
 
     public void onError(int errorCode, @Nullable String message) {

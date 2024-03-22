@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ktv_stats_package_lost_rate" translatable="false">PLR</string>
+    <string name="ktv_plr_value_percent" translatable="false">%1$.0f%%</string>
+
+    <string name="ktv_living" translatable="false">Live</string>
+</resources>

@@ -11,7 +11,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.vertcdemo.app.databinding.FragmentMainBinding
 import com.vertcdemo.core.SolutionDataManager
@@ -43,24 +42,29 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             it.findNavController().navigate(R.id.profile)
         }
 
-        binding.tabContent.adapter = TabAdapter(this)
-        binding.tabContent.isUserInputEnabled = false
         binding.tabScenes.setOnClickListener { mViewModel.currentTab.setValue(0) }
         binding.tabFunction.setOnClickListener { mViewModel.currentTab.setValue(1) }
-        mViewModel.currentTab.observe(getViewLifecycleOwner()) { position: Int ->
-            binding.tabContent.setCurrentItem(position, false)
-            binding.tabScenes.setSelected(position == 0)
-            binding.tabFunction.setSelected(position == 1)
+        mViewModel.currentTab.observe(viewLifecycleOwner) { position: Int ->
             WindowCompat.getInsetsController(
                 requireActivity().window, requireView()
             ).isAppearanceLightStatusBars = position == 1
 
             if (position == 0) {
-                binding.tabScenes.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD))
-                binding.tabFunction.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL))
+                binding.tabScenesContent.visibility = View.VISIBLE
+                binding.tabScenes.isSelected = true
+                binding.tabScenes.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+
+                binding.tabFunctionContent.visibility = View.GONE
+                binding.tabFunction.isSelected = false
+                binding.tabFunction.typeface = Typeface.defaultFromStyle(Typeface.NORMAL)
             } else {
-                binding.tabFunction.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD))
-                binding.tabScenes.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL))
+                binding.tabFunctionContent.visibility = View.VISIBLE
+                binding.tabFunction.isSelected = true
+                binding.tabFunction.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+
+                binding.tabScenesContent.visibility = View.GONE
+                binding.tabScenes.isSelected = false
+                binding.tabScenes.typeface = Typeface.defaultFromStyle(Typeface.NORMAL)
             }
         }
 
@@ -76,7 +80,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             binding.avatar.visibility = View.VISIBLE
             Glide.with(binding.avatar)
                 .load(Avatars.byUserId(SolutionDataManager.userId))
-                .circleCrop().into(binding.avatar)
+                .into(binding.avatar)
         }
     }
 
@@ -93,15 +97,5 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onRefreshUserNameEvent(event: RefreshUserNameEvent) {
         mBinding?.let { updateUserInfo(it) }
-    }
-
-    private class TabAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun createFragment(position: Int) = when (position) {
-            0 -> SceneEntryFragment()
-            1 -> FunctionEntryFragment()
-            else -> throw IndexOutOfBoundsException("Index out of range: $position")
-        }
-
-        override fun getItemCount(): Int = 2
     }
 }

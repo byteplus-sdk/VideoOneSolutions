@@ -26,16 +26,16 @@ import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.ErrorTool;
 import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.core.annotation.MediaStatus;
-import com.vertcdemo.solution.interactivelive.databinding.DialogAudienceSettingsBinding;
+import com.vertcdemo.core.annotation.MediaStatus;
+import com.vertcdemo.solution.interactivelive.databinding.DialogLiveAudienceSettingsBinding;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkFinishEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkStatusEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -62,14 +62,14 @@ public class AudienceSettingsDialog extends BottomDialogFragmentX {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_audience_settings, container, false);
+        return inflater.inflate(R.layout.dialog_live_audience_settings, container, false);
     }
 
-    DialogAudienceSettingsBinding mBinding;
+    DialogLiveAudienceSettingsBinding mBinding;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mBinding = DialogAudienceSettingsBinding.bind(view);
+        mBinding = DialogLiveAudienceSettingsBinding.bind(view);
         mBinding.flip.setOnClickListener(v -> LiveRTCManager.ins().switchCamera());
 
         mBinding.microphone.setOnClickListener(v -> {

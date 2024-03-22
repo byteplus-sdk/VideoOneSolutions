@@ -81,7 +81,9 @@
 
 - (void)showSocketIsDisconnect:(BOOL)isDisconnect {
     if (isDisconnect) {
-        [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"network_link_down", ToolKitBundleName)];
+        [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"network_link_down", ToolKitBundleName) keep:YES];
+    } else {
+        [[ToastComponent shareToastComponent] dismissKeep];
     }
 }
 

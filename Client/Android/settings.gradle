@@ -13,6 +13,9 @@ include ':component:StoreResources'
 
 include ':solutions:interactivelive'
 
+// KTV
+include ':solutions:ktv'
+
 // vod demo
 include ext.projects[':Vod:vod-playerkit']
 include ext.projects[':Vod:vod-playerkit:vod-player-utils']

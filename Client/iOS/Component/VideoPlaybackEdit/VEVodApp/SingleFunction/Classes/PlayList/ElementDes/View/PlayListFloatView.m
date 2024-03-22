@@ -108,7 +108,7 @@
 }
 
 
-#pragma mark -Getter
+#pragma mark - Getter
 
 - (UIView *)maskView {
     if (!_maskView) {

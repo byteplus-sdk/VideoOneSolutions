@@ -16,7 +16,7 @@ import com.vertcdemo.core.net.rts.RTSBaseClient;
 import com.vertcdemo.core.net.rts.RTSInfo;
 import com.vertcdemo.core.net.rts.RTSRequest;
 import com.vertcdemo.solution.interactivelive.bean.LiveInviteResponse;
-import com.vertcdemo.solution.interactivelive.core.annotation.MediaStatus;
+import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkFinishEvent;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkInviteEvent;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkReplyEvent;

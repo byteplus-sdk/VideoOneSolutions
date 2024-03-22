@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
                   delay:(NSTimeInterval)delay;
 
 - (void)showWithMessage:(NSString *)message
+                   keep:(BOOL)isKeep;
+
+- (void)showWithMessage:(NSString *)message
                describe:(NSString *)describe
                  status:(ToastViewStatus)status;
 
@@ -35,10 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
                   delay:(NSTimeInterval)delay
                   block:(void (^)(BOOL result))block;
 
-#pragma mark - Keep Toast
+- (void)dismissKeep;
 
-- (void)showKeepMessage:(NSString *)message
-                   view:(UIView *_Nullable)view;
+#pragma mark - Loading Taost
 
 - (void)showLoading;
 

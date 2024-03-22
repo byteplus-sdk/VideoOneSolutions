@@ -17,14 +17,12 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.videoone.avatars.Avatars;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveRoomItemBinding;
 import com.vertcdemo.solution.interactivelive.util.BVH;
-import com.vertcdemo.solution.interactivelive.util.ViewUtils;
-import com.vertcdemo.core.utils.DebounceClickListener;
+import com.videoone.avatars.Avatars;
 
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +52,6 @@ public class LiveRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutLiveRoom
         holder.binding.userName.setText(mContext.getString(R.string.live_show_suffix, info.anchorUserName));
         Glide.with(holder.binding.userAvatar)
                 .load(Avatars.byUserId(info.anchorUserId))
-                .transform(new RoundedCorners(ViewUtils.dp2px(8)))
                 .into(holder.binding.userAvatar);
 
         holder.itemView.setOnClickListener(DebounceClickListener.create(v -> {

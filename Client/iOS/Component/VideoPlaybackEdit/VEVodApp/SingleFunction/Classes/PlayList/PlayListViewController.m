@@ -47,7 +47,7 @@
     [scene refresh];
 }
 
-#pragma mark -Getter
+#pragma mark - Getter
 - (VEInterfaceBaseVideoDetailSceneConf *)interfaceScene {
     VEInterfacePlayListConf *scene = [VEInterfacePlayListConf new];
     scene.skipPlayMode = YES;

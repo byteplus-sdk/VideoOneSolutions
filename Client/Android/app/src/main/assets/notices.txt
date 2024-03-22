@@ -13,7 +13,6 @@ Android ConstraintLayout Core : Apache License 2.0
 Android Emoji2 Compat : Apache License 2.0
 Android Emoji2 Compat view helpers : Apache License 2.0
 Android KTX Core : Apache License 2.0
-Android Lifecycle Extensions : Apache License 2.0
 Android Lifecycle Kotlin Extensions : Apache License 2.0
 Android Lifecycle LiveData : Apache License 2.0
 Android Lifecycle LiveData Core : Apache License 2.0
@@ -58,6 +57,7 @@ Android Support RecyclerView v7 : Apache License 2.0
 Android Support VectorDrawable : Apache License 2.0
 Android Tracing : Apache License 2.0
 Android Transition Support Library : Apache License 2.0
+Android-FadingEdgeLayout : Apache License 2.0
 AndroidX Futures : Apache License 2.0
 AndroidX Widget ViewPager2 : Apache License 2.0
 androidx.profileinstaller:profileinstaller : Apache License 2.0
@@ -69,7 +69,6 @@ EventBus : Apache License 2.0
 Experimental annotation : Apache License 2.0
 Fragment Kotlin Extensions : Apache License 2.0
 Glide : Apache License 2.0
-Glide Annotation processor : Apache License 2.0
 Glide Annotations : Apache License 2.0
 Glide Disk LRU Cache Library : Apache License 2.0
 Glide GIF Decoder Library : Apache License 2.0
@@ -87,11 +86,11 @@ kotlinx-coroutines-android : Apache License 2.0
 kotlinx-coroutines-bom : Apache License 2.0
 kotlinx-coroutines-core : Apache License 2.0
 LiveData Core Kotlin Extensions : Apache License 2.0
-LiveData Kotlin Extensions : Apache License 2.0
 lottie-android : Apache License 2.0
 Material Components for Android - com.google.android.material:material : Apache License 2.0
 OkHttp : Apache License 2.0
 OkHttp Logging Interceptor : Apache License 2.0
+OkIO : Apache License 2.0
 org.jetbrains.kotlin:kotlin-annotation-processing-gradle : Apache License 2.0
 org.jetbrains.kotlin:kotlin-daemon-embeddable : Apache License 2.0
 org.jetbrains.kotlin:kotlin-klib-commonizer-embeddable : Apache License 2.0
@@ -100,13 +99,12 @@ org.jetbrains.kotlin:kotlin-stdlib-jdk8 : Apache License 2.0
 SavedState Kotlin Extensions : Apache License 2.0
 square-retrofit : Apache License 2.0
 VersionedParcelable and friends : Apache License 2.0
-videocache : Apache License 2.0
 viewbinding : Apache License 2.0
 
 License:
 
 Apache License 2.0
-(Activity, Activity Kotlin Extensions, Android App Startup Runtime, Android AppCompat Library, Android Arch-Common, Android Arch-Runtime, Android ConstraintLayout, Android ConstraintLayout Core, Android Emoji2 Compat, Android Emoji2 Compat view helpers, Android KTX Core, Android Lifecycle Extensions, Android Lifecycle Kotlin Extensions, Android Lifecycle LiveData, Android Lifecycle LiveData Core, Android Lifecycle Process, Android Lifecycle Runtime, Android Lifecycle ViewModel, Android Lifecycle ViewModel Kotlin Extensions, Android Lifecycle ViewModel with SavedState, Android Lifecycle-Common, Android Navigation Common, Android Navigation Common Kotlin Extensions, Android Navigation Fragment, Android Navigation Fragment Kotlin Extensions, Android Navigation Runtime, Android Navigation Runtime Kotlin Extensions, Android Navigation UI, Android Navigation UI Kotlin Extensions, Android Resource Inspection - Annotations, Android Resources Library, Android Support AnimatedVectorDrawable, Android Support CardView v7, Android Support DynamicAnimation, Android Support ExifInterface, Android Support Library Annotations, Android Support Library collections, Android Support Library compat, Android Support Library Coordinator Layout, Android Support Library core utils, Android Support Library Cursor Adapter, Android Support Library Custom View - androidx.customview:customview, Android Support Library Custom View - androidx.swiperefreshlayout:swiperefreshlayout, Android Support Library Document File, Android Support Library Drawer Layout, Android Support Library fragment, Android Support Library Interpolators, Android Support Library loader, Android Support Library Local Broadcast Manager, Android Support Library Print, Android Support Library Sliding Pane Layout, Android Support Library View Pager, Android Support RecyclerView v7, Android Support VectorDrawable, Android Tracing, Android Transition Support Library, AndroidX Futures, AndroidX Widget ViewPager2, androidx.profileinstaller:profileinstaller, androidx.savedstate:savedstate, Collections Kotlin Extensions, commons-net, Converter: Gson, EventBus, Experimental annotation, Fragment Kotlin Extensions, Glide, Glide Annotation processor, Glide Annotations, Glide Disk LRU Cache Library, Glide GIF Decoder Library, google-gson, Guava ListenableFuture only, Jetbrains annotations, Jetpack WindowManager Library, Kotlin, Kotlin Libraries bill-of-materials, kotlin-compiler, kotlin-reflect, kotlin-script-runtime, kotlin-stdlib-common, kotlinx-coroutines-android, kotlinx-coroutines-bom, kotlinx-coroutines-core, LiveData Core Kotlin Extensions, LiveData Kotlin Extensions, lottie-android, Material Components for Android - com.google.android.material:material, OkHttp, OkHttp Logging Interceptor, org.jetbrains.kotlin:kotlin-annotation-processing-gradle, org.jetbrains.kotlin:kotlin-daemon-embeddable, org.jetbrains.kotlin:kotlin-klib-commonizer-embeddable, org.jetbrains.kotlin:kotlin-stdlib-jdk7, org.jetbrains.kotlin:kotlin-stdlib-jdk8, SavedState Kotlin Extensions, square-retrofit, VersionedParcelable and friends, videocache, viewbinding)
+(Activity, Activity Kotlin Extensions, Android App Startup Runtime, Android AppCompat Library, Android Arch-Common, Android Arch-Runtime, Android ConstraintLayout, Android ConstraintLayout Core, Android Emoji2 Compat, Android Emoji2 Compat view helpers, Android KTX Core, Android Lifecycle Kotlin Extensions, Android Lifecycle LiveData, Android Lifecycle LiveData Core, Android Lifecycle Process, Android Lifecycle Runtime, Android Lifecycle ViewModel, Android Lifecycle ViewModel Kotlin Extensions, Android Lifecycle ViewModel with SavedState, Android Lifecycle-Common, Android Navigation Common, Android Navigation Common Kotlin Extensions, Android Navigation Fragment, Android Navigation Fragment Kotlin Extensions, Android Navigation Runtime, Android Navigation Runtime Kotlin Extensions, Android Navigation UI, Android Navigation UI Kotlin Extensions, Android Resource Inspection - Annotations, Android Resources Library, Android Support AnimatedVectorDrawable, Android Support CardView v7, Android Support DynamicAnimation, Android Support ExifInterface, Android Support Library Annotations, Android Support Library collections, Android Support Library compat, Android Support Library Coordinator Layout, Android Support Library core utils, Android Support Library Cursor Adapter, Android Support Library Custom View - androidx.customview:customview, Android Support Library Custom View - androidx.swiperefreshlayout:swiperefreshlayout, Android Support Library Document File, Android Support Library Drawer Layout, Android Support Library fragment, Android Support Library Interpolators, Android Support Library loader, Android Support Library Local Broadcast Manager, Android Support Library Print, Android Support Library Sliding Pane Layout, Android Support Library View Pager, Android Support RecyclerView v7, Android Support VectorDrawable, Android Tracing, Android Transition Support Library, Android-FadingEdgeLayout, AndroidX Futures, AndroidX Widget ViewPager2, androidx.profileinstaller:profileinstaller, androidx.savedstate:savedstate, Collections Kotlin Extensions, commons-net, Converter: Gson, EventBus, Experimental annotation, Fragment Kotlin Extensions, Glide, Glide Annotations, Glide Disk LRU Cache Library, Glide GIF Decoder Library, google-gson, Guava ListenableFuture only, Jetbrains annotations, Jetpack WindowManager Library, Kotlin, Kotlin Libraries bill-of-materials, kotlin-compiler, kotlin-reflect, kotlin-script-runtime, kotlin-stdlib-common, kotlinx-coroutines-android, kotlinx-coroutines-bom, kotlinx-coroutines-core, LiveData Core Kotlin Extensions, lottie-android, Material Components for Android - com.google.android.material:material, OkHttp, OkHttp Logging Interceptor, OkIO, org.jetbrains.kotlin:kotlin-annotation-processing-gradle, org.jetbrains.kotlin:kotlin-daemon-embeddable, org.jetbrains.kotlin:kotlin-klib-commonizer-embeddable, org.jetbrains.kotlin:kotlin-stdlib-jdk7, org.jetbrains.kotlin:kotlin-stdlib-jdk8, SavedState Kotlin Extensions, square-retrofit, VersionedParcelable and friends, viewbinding)
 
 Apache License
 Version 2.0, January 2004

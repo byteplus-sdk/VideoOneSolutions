@@ -102,5 +102,22 @@ class SolutionCommonDialog : DialogFragment() {
         const val EXTRA_MESSAGE_S = "extra_message_s"
         const val EXTRA_BUTTON_POSITIVE = "extra_button_positive"
         const val EXTRA_BUTTON_NEGATIVE = "extra_button_negative"
+
+        @JvmStatic
+        fun dialogArgs(requestKey: String, message: Int, positive: Int, negative: Int) =
+            Bundle().apply {
+                putString(EXTRA_REQUEST_KEY, requestKey)
+                putInt(EXTRA_MESSAGE, message)
+                putInt(EXTRA_BUTTON_POSITIVE, positive)
+                putInt(EXTRA_BUTTON_NEGATIVE, negative)
+            }
+
+        @JvmStatic
+        fun dialogArgs(requestKey: String, message: String, positive: Int) =
+            Bundle().apply {
+                putString(EXTRA_REQUEST_KEY, requestKey)
+                putString(EXTRA_MESSAGE_S, message)
+                putInt(EXTRA_BUTTON_POSITIVE, positive)
+            }
     }
 }

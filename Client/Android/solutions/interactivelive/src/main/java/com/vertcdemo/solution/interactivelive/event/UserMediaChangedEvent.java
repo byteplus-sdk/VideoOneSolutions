@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 import com.vertcdemo.core.net.rts.RTSInform;
-import com.vertcdemo.solution.interactivelive.core.annotation.MediaStatus;
+import com.vertcdemo.core.annotation.MediaStatus;
 
 /**
  * Media state change event

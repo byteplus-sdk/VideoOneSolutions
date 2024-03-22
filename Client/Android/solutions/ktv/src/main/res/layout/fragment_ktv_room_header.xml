@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    tools:showIn="@layout/fragment_ktv_room">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="0dp"
+        android:ellipsize="middle"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/audience_num"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rtt_label"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Jesse Pinkman's online Karaoke Room" />
+
+    <TextView
+        android:id="@+id/audience_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:drawablePadding="2dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="8dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:drawableStartCompat="@drawable/ktv_room_audience"
+        app:layout_constraintBottom_toBottomOf="@id/title"
+        app:layout_constraintEnd_toStartOf="@id/power_button"
+        app:layout_constraintStart_toEndOf="@id/title"
+        app:layout_constraintTop_toTopOf="@id/title"
+        tools:drawableStart="@drawable/ktv_room_audience"
+        tools:text="123" />
+
+    <ImageView
+        android:id="@+id/power_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_power_button"
+        app:layout_constraintBottom_toBottomOf="@id/title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/audience_num"
+        app:layout_constraintTop_toTopOf="@id/title" />
+
+    <TextView
+        android:id="@+id/rtt_label"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/bg_stats_label"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="6dp"
+        android:text="@string/label_rtt_title"
+        android:textColor="#9DA3AF"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <TextView
+        android:id="@+id/rtt_value"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:background="@drawable/bg_stats_value"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="6dp"
+        android:textColor="#C7CCD6"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/rtt_label"
+        app:layout_constraintTop_toTopOf="@id/rtt_label"
+        tools:text="9ms" />
+
+    <Space
+        android:id="@+id/rtt_space"
+        android:layout_width="12dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toEndOf="@id/rtt_value"
+        app:layout_constraintTop_toTopOf="@id/rtt_label" />
+
+    <TextView
+        android:id="@+id/plr_down_label"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/bg_stats_label"
+        android:drawablePadding="2dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="6dp"
+        android:text="@string/ktv_stats_package_lost_rate"
+        android:textColor="#9DA3AF"
+        android:textSize="12sp"
+        app:drawableStartCompat="@drawable/ic_stats_package_down"
+        app:layout_constraintStart_toEndOf="@id/rtt_space"
+        app:layout_constraintTop_toTopOf="@id/rtt_label"
+        app:layout_goneMarginStart="0dp"
+        tools:drawableStart="@drawable/ic_stats_package_down" />
+
+    <TextView
+        android:id="@+id/package_down_lost_rate_value"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:background="@drawable/bg_stats_value"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="6dp"
+        android:textColor="#C7CCD6"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/plr_down_label"
+        app:layout_constraintTop_toTopOf="@id/rtt_label"
+        tools:text="90%" />
+
+    <Space
+        android:id="@+id/plr_down_space"
+        android:layout_width="12dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toEndOf="@id/package_down_lost_rate_value"
+        app:layout_constraintTop_toTopOf="@id/rtt_label" />
+
+    <TextView
+        android:id="@+id/plr_up_label"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/bg_stats_label"
+        android:drawablePadding="2dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="6dp"
+        android:text="@string/ktv_stats_package_lost_rate"
+        android:textColor="#9DA3AF"
+        android:textSize="12sp"
+        app:drawableStartCompat="@drawable/ic_stats_package_up"
+        app:layout_constraintStart_toEndOf="@id/plr_down_space"
+        app:layout_constraintTop_toTopOf="@id/rtt_label"
+        app:layout_goneMarginStart="0dp"
+        tools:drawableStart="@drawable/ic_stats_package_up" />
+
+    <TextView
+        android:id="@+id/package_up_lost_rate_value"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:background="@drawable/bg_stats_value"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="6dp"
+        android:textColor="#C7CCD6"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/plr_up_label"
+        app:layout_constraintTop_toTopOf="@id/rtt_label"
+        tools:text="90%" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/rtt"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="rtt_label, rtt_value, rtt_space" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/package_down_lost_rate"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="plr_down_label, package_down_lost_rate_value, plr_down_space"
+        tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/package_up_lost_rate"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="plr_up_label, package_up_lost_rate_value"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

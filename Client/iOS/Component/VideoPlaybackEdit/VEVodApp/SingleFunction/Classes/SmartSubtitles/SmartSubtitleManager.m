@@ -208,7 +208,7 @@
     return result;
 }
 
-#pragma mark -Getter
+#pragma mark - Getter
 - (NSString *)currentLanguangeName {
     if (self.currentSubtitleId == 0) {
         return LocalizedStringFromBundle(@"subtitle_default", @"VEVodApp");

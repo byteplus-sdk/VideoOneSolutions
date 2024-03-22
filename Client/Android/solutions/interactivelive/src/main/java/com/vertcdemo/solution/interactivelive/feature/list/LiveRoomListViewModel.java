@@ -11,14 +11,14 @@ import com.vertcdemo.core.net.IRequestCallback;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomListResponse;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 
 import java.util.Collections;
 import java.util.List;
 
 public class LiveRoomListViewModel extends ViewModel {
 
-    public MutableLiveData<List<LiveRoomInfo>> rooms = new MutableLiveData<>(Collections.emptyList());
+    public MutableLiveData<List<LiveRoomInfo>> rooms = new MutableLiveData<>();
 
     public void requestRoomList() {
         LiveRTCManager.rts().requestLiveClearUser(() -> {

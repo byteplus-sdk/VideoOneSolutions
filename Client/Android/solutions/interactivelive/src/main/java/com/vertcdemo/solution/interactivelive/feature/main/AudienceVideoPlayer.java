@@ -99,11 +99,11 @@ public class AudienceVideoPlayer extends MediaStatusObservable {
         Context context = mBinding.root.getContext();
         ConstraintSet constraints = new ConstraintSet();
         if (liveMode == LiveMode.LINK_1v1 || liveMode == LiveMode.LINK_1vN) {
-            constraints.load(context, R.layout.constraint_link);
+            constraints.load(context, R.layout.constraint_live_link);
         } else if (liveMode == LiveMode.LINK_PK) {
-            constraints.load(context, R.layout.constraint_pk);
+            constraints.load(context, R.layout.constraint_live_pk);
         } else {
-            constraints.load(context, R.layout.constraint_normal);
+            constraints.load(context, R.layout.constraint_live_normal);
         }
         constraints.applyTo(mBinding.root);
         SolutionEventBus.post(new LiveModeChangeEvent(liveMode));

@@ -15,7 +15,7 @@ import com.vertcdemo.solution.interactivelive.bean.LiveFinishResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.event.RequestFinishLiveResultEvent;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 
 public class HostViewModel extends ViewModel {
     // room information

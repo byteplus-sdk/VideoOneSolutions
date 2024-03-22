@@ -4,6 +4,7 @@
 
 #import "BaseRTCManager.h"
 #import "Localizator.h"
+#import "GCDTimer.h"
 #import "NotificationConstans.h"
 
 typedef NSString *RTSMessageType;
@@ -16,10 +17,23 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
 @property (nonatomic, copy) void (^rtcSetParamsBlock)(BOOL result);
 @property (nonatomic, strong) NSMutableDictionary *listenerDic;
 @property (nonatomic, strong) NSMutableDictionary *senderDic;
+@property (nonatomic, strong) GCDTimer *timer;
 
 @end
 
 @implementation BaseRTCManager
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        __weak __typeof(self) wself = self;
+        [self.timer start:1 block:^(BOOL result) {
+            [wself timerMethod];
+        }];
+
+    }
+    return self;
+}
 
 #pragma mark - Publish Action
 
@@ -120,6 +134,7 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
     NSString *json = [requestModel yy_modelToJSONString];
 
     // Client side sends a text message to the application server (P2Server)
+    requestModel.requestStartDate = [NSDate date];
     requestModel.msgid = (NSInteger)[self.rtcEngineKit sendServerMessage:json];
 
     NSString *key = requestModel.requestID;
@@ -173,7 +188,8 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
             if (model.msgid == msgid) {
                 key = model.requestID;
                 [self throwErrorAck:RTSStatusCodeSendMessageFaild
-                            message:[NetworkingTool messageFromResponseCode:RTSStatusCodeSendMessageFaild]
+                            message:[NetworkingTool
+                                     messageFromResponseCode:RTSStatusCodeSendMessageFaild]
                               block:model.requestBlock];
                 NSLog(@"[%@]-RECEIVED %@ msgid %lld request_id %@ ErrorCode %ld", [self class], model.eventName, msgid, key, (long)error);
                 break;
@@ -203,14 +219,10 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
 - (void)rtcEngine:(ByteRTCVideo *)engine connectionChangedToState:(ByteRTCConnectionState)state {
     if (state == ByteRTCConnectionStateDisconnected) {
         for (RTSRequestModel *requestModel in self.senderDic.allValues) {
-            if (requestModel.requestBlock) {
-                RTSACKModel *ackModel = [[RTSACKModel alloc] init];
-                ackModel.code = 400;
-                ackModel.message = LocalizedStringFromBundle(@"operation_failed_message", ToolKitBundleName);
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    requestModel.requestBlock(ackModel);
-                });
-            }
+            [self throwErrorAck:RTSStatusCodeSendMessageFaild
+                        message:[NetworkingTool
+                                 messageFromResponseCode:RTSStatusCodeSendMessageFaild]
+                          block:requestModel.requestBlock];
         }
         [self.senderDic removeAllObjects];
     }
@@ -304,6 +316,28 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
     });
 }
 
+
+- (void)timerMethod {
+    NSInteger timeOut = 5;
+    RTSRequestModel *timeOutModel = nil;
+    for (RTSRequestModel *model in self.senderDic.allValues) {
+        NSTimeInterval startTime = [model.requestStartDate timeIntervalSince1970];
+        NSTimeInterval nowTime = [[NSDate date] timeIntervalSince1970];
+        if (fabs(nowTime - startTime) > timeOut) {
+            timeOutModel = model;
+            break;
+        }
+    }
+    
+    if (timeOutModel) {
+        [self throwErrorAck:RTSStatusCodeSendMessageFaild
+                    message:[NetworkingTool
+                             messageFromResponseCode:RTSStatusCodeSendMessageFaild]
+                      block:timeOutModel.requestBlock];
+        [self.senderDic removeObjectForKey:timeOutModel.requestID];
+    }
+}
+
 #pragma mark - Getter
 
 - (NSMutableDictionary *)listenerDic {
@@ -318,6 +352,13 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
         _senderDic = [[NSMutableDictionary alloc] init];
     }
     return _senderDic;
+}
+
+- (GCDTimer *)timer {
+    if (!_timer) {
+        _timer = [[GCDTimer alloc] init];
+    }
+    return _timer;
 }
 
 #pragma mark - Tool

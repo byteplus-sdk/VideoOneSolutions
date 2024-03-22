@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="44dp"
+    android:orientation="horizontal"
+    android:paddingHorizontal="12dp"
+    tools:showIn="@layout/fragment_ktv_room">
+
+    <TextView
+        android:id="@+id/action_input"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:background="@drawable/bg_ktv_bottom_item3"
+        android:gravity="center_vertical|start"
+        android:paddingHorizontal="16dp"
+        android:text="@string/label_input_placeholder"
+        android:textColor="#80FFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/action_mic"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/action_mic"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_ktv_bottom_item2"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_mic_20"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/action_interact"
+        app:layout_constraintStart_toEndOf="@id/action_input" />
+
+    <ImageView
+        android:id="@+id/action_interact"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_ktv_bottom_item2"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_phone_20"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/action_request_song"
+        app:layout_constraintStart_toEndOf="@+id/action_mic" />
+
+    <ImageView
+        android:id="@+id/interact_indicator"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:src="@drawable/ic_ktv_red_dot"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/action_interact"
+        app:layout_constraintTop_toTopOf="@id/action_interact"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/action_request_song"
+        android:layout_width="99dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_ktv_request_song"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/action_interact" />
+
+    <TextView
+        android:id="@+id/request_song_tips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="4dp"
+        android:text="@string/button_music_list_request_song"
+        android:textColor="#FFF"
+        app:drawableStartCompat="@drawable/ic_ktv_music_icon"
+        app:layout_constraintBottom_toBottomOf="@id/action_request_song"
+        app:layout_constraintEnd_toEndOf="@id/action_request_song"
+        app:layout_constraintStart_toStartOf="@id/action_request_song"
+        app:layout_constraintTop_toTopOf="@id/action_request_song"
+        tools:drawableStart="@drawable/ic_ktv_music_icon" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_request_song"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="action_request_song, request_song_tips" />
+
+    <TextView
+        android:id="@+id/select_count"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_ktv_select_count"
+        android:gravity="center"
+        android:minWidth="20dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@id/action_request_song"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="99"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

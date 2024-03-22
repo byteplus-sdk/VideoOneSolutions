@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@mipmap/ktv_background_0">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp"
+        tools:layout_constraintGuide_begin="25dp" />
+
+    <ImageView
+        android:id="@+id/close"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_create_close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top" />
+
+    <View
+        android:id="@+id/room_name_area"
+        android:layout_width="0dp"
+        android:layout_height="68dp"
+        android:layout_marginHorizontal="40dp"
+        android:background="@drawable/bg_room_name_area"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/close" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/user_avatar"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="6dp"
+        app:layout_constraintBottom_toBottomOf="@id/room_name_area"
+        app:layout_constraintStart_toStartOf="@id/room_name_area"
+        app:layout_constraintTop_toTopOf="@id/room_name_area"
+        app:shapeAppearanceOverlay="@style/roundCorner8"
+        tools:src="@drawable/avatar00" />
+
+    <TextView
+        android:id="@+id/room_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="6dp"
+        android:textColor="#FFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/room_name_area"
+        app:layout_constraintEnd_toEndOf="@id/room_name_area"
+        app:layout_constraintStart_toEndOf="@id/user_avatar"
+        app:layout_constraintTop_toTopOf="@id/room_name_area"
+        tools:text="Suli's online karaoke room" />
+
+    <TextView
+        android:id="@+id/time_tips"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_room_name_area"
+        android:drawablePadding="6dp"
+        android:padding="5dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:drawableStartCompat="@drawable/ic_live_alert16"
+        app:layout_constraintEnd_toEndOf="@id/room_name_area"
+        app:layout_constraintStart_toStartOf="@id/room_name_area"
+        app:layout_constraintTop_toBottomOf="@id/room_name_area"
+        tools:drawableStart="@drawable/ic_live_alert16"
+        tools:text="A single LIVE within 20 minutes." />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp"
+        tools:layout_constraintGuide_end="48dp" />
+
+    <TextView
+        android:id="@+id/bg0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:drawablePadding="8dp"
+        android:gravity="center_horizontal"
+        android:minWidth="82dp"
+        android:minHeight="100dp"
+        android:text="@string/ktv_background_name1"
+        android:textColor="@color/color_ktv_bg_name"
+        android:textSize="12sp"
+        app:drawableTopCompat="@drawable/ic_ktv_bg0"
+        app:layout_constraintBottom_toTopOf="@id/start"
+        app:layout_constraintEnd_toStartOf="@id/bg1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:drawableTop="@drawable/ic_ktv_bg0"
+        tools:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/bg1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:drawablePadding="8dp"
+        android:gravity="center_horizontal"
+        android:minWidth="82dp"
+        android:minHeight="100dp"
+        android:text="@string/ktv_background_name2"
+        android:textColor="@color/color_ktv_bg_name"
+        android:textSize="12sp"
+        app:drawableTopCompat="@drawable/ic_ktv_bg1"
+        app:layout_constraintEnd_toStartOf="@id/bg2"
+        app:layout_constraintStart_toEndOf="@id/bg0"
+        app:layout_constraintTop_toTopOf="@id/bg0"
+        tools:drawableTop="@drawable/ic_ktv_bg1" />
+
+    <TextView
+        android:id="@+id/bg2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="8dp"
+        android:gravity="center_horizontal"
+        android:minWidth="82dp"
+        android:minHeight="100dp"
+        android:text="@string/ktv_background_name3"
+        android:textColor="@color/color_ktv_bg_name"
+        android:textSize="12sp"
+        app:drawableTopCompat="@drawable/ic_ktv_bg2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bg1"
+        app:layout_constraintTop_toTopOf="@id/bg0"
+        tools:drawableTop="@drawable/ic_ktv_bg2" />
+
+    <TextView
+        android:id="@+id/start"
+        style="@style/TkButtonPrimary"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginBottom="44dp"
+        android:text="@string/button_create_start"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,8 @@ import androidx.annotation.Nullable;
 
 @MainThread
 public interface IRTSCallback {
+    int CODE_SUCCESS = 200;
+
     @MainThread
     void onSuccess(@Nullable String data);
 

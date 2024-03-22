@@ -39,11 +39,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/user_avatar_small"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_marginStart="4dp"
+            app:shapeAppearanceOverlay="@style/circleStyle"
             tools:src="@drawable/avatar00" />
 
         <TextView

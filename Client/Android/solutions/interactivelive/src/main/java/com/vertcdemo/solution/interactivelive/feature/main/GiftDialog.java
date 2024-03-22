@@ -14,13 +14,13 @@ import androidx.annotation.Nullable;
 import com.vertcdemo.core.net.ErrorTool;
 import com.vertcdemo.core.net.IRequestCallback;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
+import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
 import com.vertcdemo.solution.interactivelive.bean.MessageBody;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.databinding.DialogGiftLayoutBinding;
-import com.vertcdemo.solution.interactivelive.databinding.LayoutGiftItemBinding;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.solution.interactivelive.databinding.DialogLiveGiftLayoutBinding;
+import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveGiftItemBinding;
+import com.vertcdemo.ui.CenteredToast;
 
 public class GiftDialog extends BottomDialogFragmentX {
     @Override
@@ -40,14 +40,14 @@ public class GiftDialog extends BottomDialogFragmentX {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_gift_layout, container, false);
+        return inflater.inflate(R.layout.dialog_live_gift_layout, container, false);
     }
 
-    LayoutGiftItemBinding mCurrent = null;
+    LayoutLiveGiftItemBinding mCurrent = null;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        DialogGiftLayoutBinding binding = DialogGiftLayoutBinding.bind(view);
+        DialogLiveGiftLayoutBinding binding = DialogLiveGiftLayoutBinding.bind(view);
 
         binding.like.icon.setImageResource(R.drawable.ic_gift_like);
         binding.like.name.setText(R.string.gift_like);
@@ -90,7 +90,7 @@ public class GiftDialog extends BottomDialogFragmentX {
         selectItem(binding.like);
     }
 
-    void selectItem(LayoutGiftItemBinding item) {
+    void selectItem(LayoutLiveGiftItemBinding item) {
         if (mCurrent != null) {
             mCurrent.root.setSelected(false);
             mCurrent.name.setVisibility(View.VISIBLE);

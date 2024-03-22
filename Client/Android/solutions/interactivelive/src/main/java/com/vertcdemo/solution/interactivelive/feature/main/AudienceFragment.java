@@ -4,6 +4,8 @@
 package com.vertcdemo.solution.interactivelive.feature.main;
 
 import static android.appwidget.AppWidgetManager.EXTRA_HOST_ID;
+import static com.vertcdemo.core.chat.ChatConfig.SEND_MESSAGE_COUNT_LIMIT;
+import static com.vertcdemo.core.dialog.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
 import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActivity.EXTRA_ROOM_ID;
 
 import android.content.Context;
@@ -26,22 +28,22 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
-import com.vertcdemo.solution.interactivelive.feature.main.audiencelink.RequestAudienceLinkDialog;
-import com.vertcdemo.solution.interactivelive.feature.main.chat.LiveChatAdapter;
-import com.vertcdemo.solution.interactivelive.feature.main.chat.LiveChatItemDecoration;
-import com.videoone.avatars.Avatars;
 import com.vertcdemo.core.SolutionDataManager;
+import com.vertcdemo.core.annotation.MediaStatus;
+import com.vertcdemo.core.chat.ChatAdapter;
+import com.vertcdemo.core.dialog.MessageInputDialog;
 import com.vertcdemo.core.eventbus.RTCReconnectToRoomEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.ErrorTool;
 import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.JoinLiveRoomResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveReconnectResponse;
@@ -55,7 +57,6 @@ import com.vertcdemo.solution.interactivelive.core.annotation.LiveFinishType;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveLinkMicStatus;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveMode;
 import com.vertcdemo.solution.interactivelive.core.annotation.LivePermitType;
-import com.vertcdemo.solution.interactivelive.core.annotation.MediaStatus;
 import com.vertcdemo.solution.interactivelive.core.annotation.MessageType;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveAudienceBinding;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkFinishEvent;
@@ -74,10 +75,9 @@ import com.vertcdemo.solution.interactivelive.event.MessageEvent;
 import com.vertcdemo.solution.interactivelive.event.PublishVideoStreamEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaControlEvent;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
-import com.vertcdemo.solution.interactivelive.util.ViewUtils;
-import com.vertcdemo.solution.interactivelive.view.LiveSendMessageInputDialog;
-import com.vertcdemo.core.utils.DebounceClickListener;
+import com.vertcdemo.solution.interactivelive.feature.main.audiencelink.RequestAudienceLinkDialog;
+import com.vertcdemo.ui.CenteredToast;
+import com.videoone.avatars.Avatars;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -157,7 +157,9 @@ public class AudienceFragment extends Fragment {
     private AudienceVideoRenderHelper mVideoRender;
     private GiftAnimateHelper mGiftAnimateHelper;
 
-    private LiveChatAdapter mLiveChatAdapter;
+    private ChatAdapter mLiveChatAdapter;
+
+    private int mSendMessageCount = 0;
 
     private boolean isLeaveByKickOut = false;
 
@@ -222,6 +224,9 @@ public class AudienceFragment extends Fragment {
                         .setAppearanceLightStatusBars(false);
             }
         });
+
+        getChildFragmentManager()
+                .setFragmentResultListener(REQUEST_KEY_MESSAGE_INPUT, this, messageInputResultListener);
     }
 
     @Nullable
@@ -254,17 +259,12 @@ public class AudienceFragment extends Fragment {
         mVideoRender.showPlayer();
         mGiftAnimateHelper = new GiftAnimateHelper(requireContext(), mBinding.giftSlot1, mBinding.giftSlot2);
 
-        mLiveChatAdapter = new LiveChatAdapter();
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
-        layoutManager.setStackFromEnd(true);
-        mBinding.messagePanel.setLayoutManager(layoutManager);
-        mBinding.messagePanel.addItemDecoration(new LiveChatItemDecoration(ViewUtils.dp2px(2)));
-        mBinding.messagePanel.setAdapter(mLiveChatAdapter);
+        mLiveChatAdapter = ChatAdapter.bind(mBinding.messagePanel);
 
         mBinding.close.setOnClickListener(v -> popBackStack());
 
         // region bottom actions
-        mBinding.comment.setOnClickListener(this::onCommentClicked);
+        mBinding.comment.setOnClickListener(v -> openInputDialog());
         mBinding.audienceLink.setOnClickListener(this::onAudienceLinkClicked);
         mBinding.liveGift.setOnClickListener(this::onGiftButtonClicked);
         mBinding.liveLike.setOnClickListener(DebounceClickListener.create(this::onLikeButtonClicked, 100));
@@ -314,7 +314,6 @@ public class AudienceFragment extends Fragment {
         mBinding.hostAvatar.userName.setText(hostUserName);
         Glide.with(mBinding.hostAvatar.userAvatar)
                 .load(Avatars.byUserId(hostUserId))
-                .circleCrop()
                 .into(mBinding.hostAvatar.userAvatar);
 
 //        Glide.with(mBinding.hostAvatarBig)
@@ -331,12 +330,6 @@ public class AudienceFragment extends Fragment {
 
     private void setAudienceCount(int count) {
         mBinding.audienceNum.setText(String.format(Locale.US, "%d", count));
-    }
-
-
-    private void addChatMessage(CharSequence message) {
-        mLiveChatAdapter.addChatMsg(message);
-        mBinding.messagePanel.post(() -> mBinding.messagePanel.smoothScrollToPosition(mLiveChatAdapter.getItemCount()));
     }
 
     /**
@@ -605,12 +598,34 @@ public class AudienceFragment extends Fragment {
 
     // region bottom action handlers
     // Audience Link
-    void onCommentClicked(View view) {
-        LiveSendMessageInputDialog dialog = new LiveSendMessageInputDialog();
-        final Bundle args = new Bundle();
-        args.putString("rtsRoomId", getRTSRoomId());
-        dialog.setArguments(args);
-        dialog.show(getChildFragmentManager(), "send-message-input-dialog");
+    private String mLastInputText = null;
+    private final FragmentResultListener messageInputResultListener = (requestKey, result) -> {
+        String content = result.getString(MessageInputDialog.EXTRA_CONTENT);
+        boolean actionDone = result.getBoolean(MessageInputDialog.EXTRA_ACTION_DONE, false);
+        if (actionDone) {
+            mLastInputText = null;
+
+            if (mSendMessageCount >= SEND_MESSAGE_COUNT_LIMIT) {
+                showToast(R.string.send_message_exceeded_limit);
+                return;
+            }
+            mSendMessageCount++;
+
+            MessageBody body = MessageBody.createMessage(content);
+            LiveRTCManager.ins().getRTSClient().sendMessage(getRTSRoomId(), body);
+        } else {
+            mLastInputText = content;
+        }
+    };
+
+    void openInputDialog() {
+        MessageInputDialog dialog = new MessageInputDialog();
+        if (!TextUtils.isEmpty(mLastInputText)) {
+            Bundle args = new Bundle();
+            args.putString(MessageInputDialog.EXTRA_CONTENT, mLastInputText);
+            dialog.setArguments(args);
+        }
+        dialog.show(getChildFragmentManager(), "message-input-dialog");
     }
 
     void onAudienceLinkClicked(View view) {
@@ -694,26 +709,8 @@ public class AudienceFragment extends Fragment {
         String userName = user.userName;
         boolean isHost = TextUtils.equals(mLiveRoomInfo.anchorUserId, user.userId);
 
-        SpannableStringBuilder ssb = new SpannableStringBuilder();
-
-        if (isHost) {
-            ssb.append(" ");
-            ImageSpan imageSpan = new ImageSpan(context, R.drawable.ic_message_host);
-            ssb.setSpan(imageSpan, 0, 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-            ssb.append(" ");
-        }
-        { // Change User Name Color
-            final int start = ssb.length();
-            ssb.append(userName);
-            final int end = ssb.length();
-
-            final ForegroundColorSpan colorSpan = new ForegroundColorSpan(LiveChatAdapter.USER_NAME_COLOR);
-            ssb.setSpan(colorSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        }
-        ssb.append(": ");
-        ssb.append(content);
-
-        addChatMessage(ssb);
+        mLiveChatAdapter.onNormalMessage(context, userName, content, isHost);
+        mBinding.messagePanel.post(() -> mBinding.messagePanel.smoothScrollToPosition(mLiveChatAdapter.getItemCount()));
     }
 
     private void onGiftMessage(MessageEvent event) {

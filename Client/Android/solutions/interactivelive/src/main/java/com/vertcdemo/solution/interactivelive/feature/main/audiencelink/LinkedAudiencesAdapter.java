@@ -62,7 +62,6 @@ public class LinkedAudiencesAdapter extends RecyclerView.Adapter<BVH<LayoutLiveL
 
         Glide.with(binding.avatar)
                 .load(Avatars.byUserId(info.userId))
-                .circleCrop()
                 .into(binding.avatar);
 
         binding.name.setText(info.userName);

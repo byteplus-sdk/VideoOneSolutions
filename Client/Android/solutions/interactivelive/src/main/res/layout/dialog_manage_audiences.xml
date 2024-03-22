@@ -18,7 +18,7 @@
             android:layout_marginStart="16dp"
             android:gravity="center"
             android:text="@string/co_host"
-            android:textColor="@color/tab_title_text_color"
+            android:textColor="@color/color_live_tab_title"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +54,7 @@
             android:layout_marginStart="24dp"
             android:gravity="center"
             android:text="@string/co_host_application"
-            android:textColor="@color/tab_title_text_color"
+            android:textColor="@color/color_live_tab_title"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/tab_co_host"
@@ -94,7 +94,7 @@
 
         <include
             android:id="@+id/application"
-            layout="@layout/layout_manage_audience_application"
+            layout="@layout/layout_live_manage_audience_application"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="51dp"
@@ -105,7 +105,7 @@
 
         <include
             android:id="@+id/co_host"
-            layout="@layout/layout_manage_audience_co_host"
+            layout="@layout/layout_live_manage_audience_co_host"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="51dp"

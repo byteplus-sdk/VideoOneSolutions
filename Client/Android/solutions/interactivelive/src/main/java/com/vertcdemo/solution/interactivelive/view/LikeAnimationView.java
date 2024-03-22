@@ -19,10 +19,10 @@ import android.view.View;
 
 import androidx.annotation.DrawableRes;
 
+import com.vertcdemo.core.utils.ViewUtils;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.util.Animatorable;
 import com.vertcdemo.solution.interactivelive.util.AnimatorableFactory;
-import com.vertcdemo.solution.interactivelive.util.ViewUtils;
 
 import java.util.LinkedList;
 import java.util.Random;

@@ -12,7 +12,7 @@ import com.vertcdemo.solution.interactivelive.bean.CreateLiveRoomResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 
 public class CreateLiveRoomViewModel extends ViewModel {
 

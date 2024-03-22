@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.videoone.avatars.Avatars;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.ErrorTool;
@@ -21,10 +22,9 @@ import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.databinding.DialogAnchorLinkConfirmFinishBinding;
+import com.vertcdemo.solution.interactivelive.databinding.DialogLiveAnchorLinkConfirmFinishBinding;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkFinishEvent;
-import com.vertcdemo.solution.interactivelive.feature.bottomsheet.BottomDialogFragmentX;
-import com.vertcdemo.solution.interactivelive.util.CenteredToast;
+import com.vertcdemo.ui.CenteredToast;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -36,7 +36,7 @@ public final class AnchorLinkConfirmFinishDialog extends BottomDialogFragmentX {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_anchor_link_confirm_finish, container, false);
+        return inflater.inflate(R.layout.dialog_live_anchor_link_confirm_finish, container, false);
     }
 
     @Override
@@ -49,7 +49,7 @@ public final class AnchorLinkConfirmFinishDialog extends BottomDialogFragmentX {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        DialogAnchorLinkConfirmFinishBinding binding = DialogAnchorLinkConfirmFinishBinding.bind(view);
+        DialogLiveAnchorLinkConfirmFinishBinding binding = DialogLiveAnchorLinkConfirmFinishBinding.bind(view);
 
         final Bundle arguments = requireArguments();
 
@@ -60,14 +60,12 @@ public final class AnchorLinkConfirmFinishDialog extends BottomDialogFragmentX {
 
         Glide.with(binding.hostAvatar)
                 .load(Avatars.byUserId(host.userId))
-                .circleCrop()
                 .into(binding.hostAvatar);
         binding.hostName.setText(host.userName);
 
         binding.coHostName.setText(coHost.userName);
         Glide.with(binding.coHostAvatar)
                 .load(Avatars.byUserId(coHost.userId))
-                .circleCrop()
                 .into(binding.coHostAvatar);
 
         binding.ok.setOnClickListener(v -> {

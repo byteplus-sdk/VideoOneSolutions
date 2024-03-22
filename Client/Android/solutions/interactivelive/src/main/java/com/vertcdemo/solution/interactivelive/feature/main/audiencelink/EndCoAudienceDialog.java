@@ -18,7 +18,7 @@ import com.vertcdemo.core.net.IRequestCallback;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.databinding.DialogEndCoAudienceBinding;
+import com.vertcdemo.solution.interactivelive.databinding.DialogLiveEndCoAudienceBinding;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkKickResultEvent;
 import com.videoone.avatars.Avatars;
 
@@ -32,7 +32,7 @@ public class EndCoAudienceDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_end_co_audience, container, false);
+        return inflater.inflate(R.layout.dialog_live_end_co_audience, container, false);
     }
 
     @Override
@@ -43,12 +43,11 @@ public class EndCoAudienceDialog extends DialogFragment {
         final String audienceId = arguments.getString("audienceId");
         final String audienceName = arguments.getString("audienceName");
 
-        DialogEndCoAudienceBinding binding = DialogEndCoAudienceBinding.bind(view);
+        DialogLiveEndCoAudienceBinding binding = DialogLiveEndCoAudienceBinding.bind(view);
         binding.userName.setText(audienceName);
 
         Glide.with(binding.userAvatar)
                 .load(Avatars.byUserId(audienceId))
-                .circleCrop()
                 .into(binding.userAvatar);
 
         binding.button1.setOnClickListener(v -> {

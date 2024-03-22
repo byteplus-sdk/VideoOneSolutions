@@ -18,7 +18,7 @@ import com.bumptech.glide.Glide;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.MessageBody;
 import com.vertcdemo.solution.interactivelive.core.annotation.GiftType;
-import com.vertcdemo.solution.interactivelive.databinding.LayoutGiftShowItemBinding;
+import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveGiftShowItemBinding;
 import com.vertcdemo.solution.interactivelive.event.MessageEvent;
 import com.videoone.avatars.Avatars;
 
@@ -32,7 +32,7 @@ public class GiftAnimateHelper {
 
     private final Queue<MessageEvent> mEvents = new LinkedList<>();
 
-    private final LayoutGiftShowItemBinding[] mSlots;
+    private final LayoutLiveGiftShowItemBinding[] mSlots;
 
     private final SparseBooleanArray mUsedMap = new SparseBooleanArray();
 
@@ -42,7 +42,7 @@ public class GiftAnimateHelper {
 
     private boolean mViewDestroyed;
 
-    public GiftAnimateHelper(Context context, LayoutGiftShowItemBinding... slots) {
+    public GiftAnimateHelper(Context context, LayoutLiveGiftShowItemBinding... slots) {
         mContext = context;
         mGiftLayoutWidth = context.getResources().getDimensionPixelSize(R.dimen.live_gift_show_item_width);
         mSlots = slots;
@@ -80,7 +80,7 @@ public class GiftAnimateHelper {
         }
     }
 
-    private void renderGift(int position, MessageEvent next, LayoutGiftShowItemBinding binding) {
+    private void renderGift(int position, MessageEvent next, LayoutLiveGiftShowItemBinding binding) {
         final MessageBody body = next.getBody();
         String giftName;
         switch (body.giftType) {
@@ -109,7 +109,6 @@ public class GiftAnimateHelper {
 
         Glide.with(binding.userAvatar)
                 .load(Avatars.byUserId(next.user.userId))
-                .circleCrop()
                 .into(binding.userAvatar);
 
         binding.userName.setText(next.user.userName);

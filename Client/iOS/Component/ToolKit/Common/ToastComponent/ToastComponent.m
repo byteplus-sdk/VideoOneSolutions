@@ -9,6 +9,7 @@
 @interface ToastComponent ()
 
 @property (nonatomic, weak) ToastView *keepToastView;
+@property (nonatomic, weak) ToastView *keepLoadingToastView;
 @property (nonatomic, strong) UIWindow *toastWindow;
 
 @end
@@ -32,6 +33,10 @@
 
 - (void)showWithMessage:(NSString *)message block:(void (^)(BOOL result))block {
     [self _showWithMessage:message describe:@"" status:ToastViewStatusNone view:nil keep:NO delay:0 block:block];
+}
+
+- (void)showWithMessage:(NSString *)message keep:(BOOL)isKeep {
+    [self _showWithMessage:message describe:@"" status:ToastViewStatusNone view:nil keep:isKeep delay:0 block:nil];
 }
 
 - (void)showWithMessage:(NSString *)message delay:(NSTimeInterval)delay {
@@ -64,7 +69,11 @@
 
         UIView *windowView = view;
         if (!windowView) {
-            windowView = [DeviceInforTool topViewController].view;
+            if (isKeep) {
+                windowView = [UIApplication sharedApplication].keyWindow.rootViewController.view;
+            } else {
+                windowView = [DeviceInforTool topViewController].view;
+            }
         }
         ToastView *toastView = [[ToastView alloc] init];
         [toastView updateMessage:message describe:describe stauts:status];
@@ -93,11 +102,7 @@
     }
 }
 
-#pragma mark - Keep Toast
-
-- (void)showKeepMessage:(NSString *)message view:(UIView *)view {
-    [self _showWithMessage:message describe:@"" status:ToastViewStatusNone view:view keep:YES delay:0 block:nil];
-}
+#pragma mark - Loading Toast
 
 - (void)showLoading {
     [self showLoadingAtView:nil message:@""];
@@ -113,7 +118,7 @@
 
 - (void)showLoadingAtView:(UIView *)view message:(NSString *)message {
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
-        if (self.keepToastView) {
+        if (self.keepLoadingToastView) {
             [self dismiss];
         }
 
@@ -127,11 +132,19 @@
         [toastView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.equalTo(windowView);
         }];
-        self.keepToastView = toastView;
+        self.keepLoadingToastView = toastView;
     });
 }
 
 - (void)dismiss {
+    dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
+        [self.keepLoadingToastView stopLoaidng];
+        [self.keepLoadingToastView removeFromSuperview];
+        self.keepLoadingToastView = nil;
+    });
+}
+
+- (void)dismissKeep {
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
         [self.keepToastView stopLoaidng];
         [self.keepToastView removeFromSuperview];

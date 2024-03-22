@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, RTSStatusCode) {
     RTSStatusCodeInviteOthersBeingError = 481,
     RTSStatusCodeInternalServerError = 500,
     RTSStatusCodeTransferHostFailed = 504,
+    RTSStatusCodeRoleDontMatchFailed = 541,
     RTSStatusCodeTransferUserOnMicExceedLimit = 506,
     RTSStatusCodeLinkerParamError = 610,
     RTSStatusCodeLinkerNotExist = 611,
