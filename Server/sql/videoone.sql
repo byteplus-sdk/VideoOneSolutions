@@ -49,6 +49,7 @@ CREATE TABLE `live_linker`
   DEFAULT CHARSET = utf8mb4
   ROW_FORMAT = DYNAMIC COMMENT ='link information';
 
+SET sql_mode = '';
 DROP TABLE IF EXISTS `live_room`;
 CREATE TABLE `live_room`
 (
@@ -120,7 +121,7 @@ CREATE TABLE `video_info`
     `update_time`                datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update_time',
     `create_time`                datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uniq_vid` (`vid`),
+    UNIQUE KEY `uniq_vid` (`vid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='video info';
 
 CREATE TABLE `video_comments`

@@ -102,3 +102,13 @@ type HandleOpenPlatFormReq struct {
 	Content   string `json:"content"`
 	EventName string `json:"event_name"`
 }
+
+type RTCJoinRoomTokenParam struct {
+	LoginToken string `json:"login_token" binding:"required"`
+	AppID      string `json:"app_id" binding:"required"`
+	AppKey     string `json:"app_key" binding:"required"`
+	RoomID     string `json:"room_id" binding:"required"`
+	UserID     string `json:"user_id" binding:"required"`
+	Expire     int64  `json:"expire"`
+	Pub        bool   `json:"pub"`
+}

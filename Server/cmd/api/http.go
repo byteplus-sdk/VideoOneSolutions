@@ -57,6 +57,7 @@ func (api *HttpApi) Run() error {
 	rr.POST("/rts", api.HandleRtsOpenApiEvent)
 	rr.POST("/rts_callback", api.HandleRtsCallback)
 	rr.POST("/http_response", api.HandleHttpResponseEvent)
+	rr.POST("/getRTCJoinRoomToken", api.HandleGetRTCJoinRoomToken)
 
 	{
 		vod := rr.Group("/vod")
