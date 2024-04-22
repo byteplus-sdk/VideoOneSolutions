@@ -59,6 +59,7 @@ var (
 	ErrCheckTrafficUpLimit             = NewCustomError(803, errors.New("check traffic up limit"))
 	ErrGetBID                          = NewCustomError(806, errors.New("get bid error"))
 	ErrLockRoom                        = NewCustomError(809, errors.New("lock room error"))
+	ErrMissParam                       = NewCustomError(811, errors.New("required parameter missing"))
 )
 
 type CustomError struct {

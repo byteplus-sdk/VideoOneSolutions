@@ -17,13 +17,15 @@
 package public
 
 const (
-	BizIDLive = "live"
-	BizIDKtv  = "ktv"
+	BizIDLive       = "live"
+	BizIDKtv        = "ktv"
+	BizIDAPIExample = "rtc_api_example"
 )
 
 const (
-	BidLive = "BytePlusRTC_bid_live"
-	BidKTV  = "BytePlusRTC_bid_ktv"
+	BidLive       = "BytePlusRTC_bid_live"
+	BidKTV        = "BytePlusRTC_bid_ktv"
+	BidAPIExample = "BytePlusRTC_bid_api_example"
 )
 
 const (
@@ -31,8 +33,9 @@ const (
 )
 
 var BidMap = map[string]string{
-	BizIDLive: BidLive,
-	BizIDKtv:  BidKTV,
+	BizIDLive:       BidLive,
+	BizIDKtv:        BidKTV,
+	BizIDAPIExample: BidAPIExample,
 }
 
 const VideoCommentNum = 10
