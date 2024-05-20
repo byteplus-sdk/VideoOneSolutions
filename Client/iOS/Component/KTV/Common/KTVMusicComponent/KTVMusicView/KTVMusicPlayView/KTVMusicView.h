@@ -1,11 +1,5 @@
-//
-//  KTVMusicView.h
-//  veRTC_Demo
-//
-//  Created by on 2021/11/30.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <UIKit/UIKit.h>
 #import "KTVUserModel.h"
 #import "KTVSongModel.h"
@@ -37,8 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadLrcByPath:(KTVDownloadSongModel *)downloadSongModel;
 
 - (void)resetLrc;
-
-/// 音频播放路由改变
 - (void)updateAudioRouteChanged;
 
 @end

@@ -1,8 +1,5 @@
-/*
- * Copyright (c) 2023 BytePlus Pte. Ltd.
- * SPDX-License-Identifier: Apache-2.0
- */
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 package com.videoone.vod.function.fragment;
 
 import android.content.Context;
@@ -21,43 +18,43 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-import com.bytedance.playerkit.player.Player;
-import com.bytedance.playerkit.player.playback.DisplayModeHelper;
-import com.bytedance.playerkit.player.playback.DisplayView;
-import com.bytedance.playerkit.player.playback.PlaybackController;
-import com.bytedance.playerkit.player.playback.VideoLayerHost;
-import com.bytedance.playerkit.player.playback.VideoView;
-import com.bytedance.playerkit.player.source.MediaSource;
-import com.bytedance.vod.scenekit.VideoSettings;
-import com.bytedance.vod.scenekit.data.model.VideoItem;
-import com.bytedance.vod.scenekit.ui.base.BaseFragment;
-import com.bytedance.vod.scenekit.ui.base.VideoViewExtras;
-import com.bytedance.vod.scenekit.ui.video.layer.CoverLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.FullScreenLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.FullScreenTipsLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.GestureLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.LoadingLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.LockLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.LogLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.MiniPlayerLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.PlayCompleteLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.PlayErrorLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.PlayPauseLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.SyncStartTimeLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.TimeProgressBarLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.TipsLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.TitleBarLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.VolumeBrightnessIconLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.dialog.MoreDialogLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.dialog.SpeedSelectDialogLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.dialog.TimeProgressDialogLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.helper.MiniPlayerHelper;
-import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
-import com.bytedance.vod.scenekit.utils.FormatHelper;
-import com.bytedance.voddemo.impl.R;
-import com.bytedance.voddemo.impl.databinding.VevodFunctionFragmentBinding;
+import com.byteplus.playerkit.player.Player;
+import com.byteplus.playerkit.player.playback.DisplayModeHelper;
+import com.byteplus.playerkit.player.playback.DisplayView;
+import com.byteplus.playerkit.player.playback.PlaybackController;
+import com.byteplus.playerkit.player.playback.VideoLayerHost;
+import com.byteplus.playerkit.player.playback.VideoView;
+import com.byteplus.playerkit.player.source.MediaSource;
+import com.byteplus.vod.scenekit.VideoSettings;
+import com.byteplus.vod.scenekit.data.model.VideoItem;
+import com.byteplus.vod.scenekit.ui.base.BaseFragment;
+import com.byteplus.vod.scenekit.ui.base.VideoViewExtras;
+import com.byteplus.vod.scenekit.ui.video.layer.CoverLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.FullScreenLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.FullScreenTipsLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.GestureLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.LoadingLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.LockLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.LogLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.MiniPlayerLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.PlayCompleteLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.PlayErrorLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.PlayPauseLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.SyncStartTimeLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.TimeProgressBarLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.TipsLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.TitleBarLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.VolumeBrightnessIconLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.dialog.MoreDialogLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.dialog.SpeedSelectDialogLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.dialog.TimeProgressDialogLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.helper.MiniPlayerHelper;
+import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
+import com.byteplus.vod.scenekit.utils.FormatHelper;
+import com.byteplus.voddemo.R;
+import com.byteplus.voddemo.databinding.VevodFunctionFragmentBinding;
 import com.videoone.avatars.Avatars;
 
 public class VodFunctionFragment extends BaseFragment {

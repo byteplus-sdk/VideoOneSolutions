@@ -126,7 +126,6 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
         return;
     }
     if (self.playerController.isPause) {
-        // 通过横屏切换成竖屏，如果是暂停状态，保持暂停状态。
         if (!self.isReturnPortrait) {
             [self.playerController play];
         }

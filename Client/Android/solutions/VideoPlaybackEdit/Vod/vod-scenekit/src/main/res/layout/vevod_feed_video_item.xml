@@ -16,7 +16,7 @@
         android:id="@+id/header"
         layout="@layout/vevod_feed_video_item_header" />
 
-    <com.bytedance.playerkit.player.playback.widgets.RatioFrameLayout
+    <com.byteplus.playerkit.player.playback.widgets.RatioFrameLayout
         android:id="@+id/videoViewContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,14 +25,14 @@
         tools:layout_height="250dp">
 
         <!-- FrameLayout is holder Layout for toggle full screen -->
-        <com.bytedance.playerkit.player.playback.VideoView
+        <com.byteplus.playerkit.player.playback.VideoView
             android:id="@+id/videoView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:ratio="1.7777777"
             app:ratioMode="width" />
 
-    </com.bytedance.playerkit.player.playback.widgets.RatioFrameLayout>
+    </com.byteplus.playerkit.player.playback.widgets.RatioFrameLayout>
 
     <View
         android:layout_width="match_parent"

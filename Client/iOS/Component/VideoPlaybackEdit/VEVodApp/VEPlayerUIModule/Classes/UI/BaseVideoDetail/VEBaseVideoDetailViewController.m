@@ -254,12 +254,10 @@
         return;
     }
     if (self.landscapeMode) {
-        // 全屏模式需要先 pop 然后竖屏
         [self closeViewControllerAnimated:NO];
         [self setDeviceInterfaceOrientation:UIInterfaceOrientationPortrait];
         return;
     }
-    // 需要通过发送通知的形式刷新UI
     [self.playerControlView.eventMessageBus postEvent:VEUIEventScreenRotation withObject:nil rightNow:YES];
 }
 

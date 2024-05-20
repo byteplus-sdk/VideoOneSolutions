@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdk project.compileSdkVersion
+    namespace "com.byteplus.live.pusher"
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+
+        consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField('String', 'SERVER_URL', "\"${project.SERVER_URL}\"")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.constraintlayout
+
+    implementation project(path: ':solutions:media-live:live-common')
+
+
+    implementation libs.ttsdk.ttlivepush.rtc
+
+    implementation libs.zxing
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application android:requestLegacyExternalStorage="true">
+        <activity
+            android:name=".ui.activity.InputPullUrlActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/LiveTheme.Transparent">
+            <intent-filter>
+                <action android:name="com.byteplus.videoone.medialive.action.MEDIA_LIVE_PULL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.LivePullActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/LiveTheme" />
+
+        <service
+            android:name=".ui.activity.KeepPlayerLiveService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback"
+            android:stopWithTask="false" />
+
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="portrait"
+            tools:replace="screenOrientation" />
+    </application>
+
+</manifest>

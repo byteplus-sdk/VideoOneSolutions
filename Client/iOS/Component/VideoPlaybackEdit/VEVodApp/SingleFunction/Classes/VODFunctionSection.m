@@ -8,6 +8,7 @@
 #import "SmartSubtitles.h"
 #import "VideoPlayback.h"
 #import "PlayList.h"
+#import <ToolKit/Localizator.h>
 
 @implementation VODFunctionSection
 
@@ -19,6 +20,10 @@
                    [PreventRecording new]];
     }
     return _items;
+}
+
+- (NSString *)functionSectionName {
+    return LocalizedStringFromBundle(@"function_vod_title", @"App");
 }
 
 @end

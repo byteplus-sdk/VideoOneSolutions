@@ -4,18 +4,17 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.bytedance.voddemo.impl">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application>
         <activity
-            android:name="com.bytedance.voddemo.ui.main.MainActivity"
+            android:name="com.byteplus.voddemo.ui.main.MainActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/VEVodAppTheme" />
 
         <activity
-            android:name="com.bytedance.voddemo.ui.main.MainTabActivity"
+            android:name="com.byteplus.voddemo.ui.main.MainTabActivity"
             android:supportsPictureInPicture="true"
             android:launchMode="singleTask"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
@@ -23,7 +22,7 @@
             android:theme="@style/VEVodAppTheme" />
 
         <activity
-            android:name="com.bytedance.voddemo.ui.video.scene.VideoActivity"
+            android:name="com.byteplus.voddemo.ui.video.scene.VideoActivity"
             android:supportsPictureInPicture="true"
             android:launchMode="singleTask"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
@@ -31,27 +30,27 @@
             android:theme="@style/VEVodAppTheme" />
 
         <activity
-            android:name="com.bytedance.voddemo.ui.settings.SettingsActivity"
+            android:name="com.byteplus.voddemo.ui.settings.SettingsActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/VEVodAppTheme" />
 
         <activity
-            android:name="com.bytedance.voddemo.ui.sample.SampleShortVideoActivity"
+            android:name="com.byteplus.voddemo.ui.sample.SampleShortVideoActivity"
             android:hardwareAccelerated="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/VEVodAppTheme" />
 
         <activity
-            android:name="com.bytedance.voddemo.ui.sample.SampleFeedVideoActivity"
+            android:name="com.byteplus.voddemo.ui.sample.SampleFeedVideoActivity"
             android:hardwareAccelerated="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/VEVodAppTheme" />
 
         <activity
-            android:name="com.bytedance.voddemo.ui.sample.SampleSourceActivity"
+            android:name="com.byteplus.voddemo.ui.sample.SampleSourceActivity"
             android:hardwareAccelerated="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"

@@ -57,7 +57,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <com.bytedance.vod.scenekit.ui.widgets.MediaSeekBar
+        <com.byteplus.vod.scenekit.ui.widgets.MediaSeekBar
             android:id="@+id/mediaSeekBar"
             android:layout_width="0dp"
             android:layout_height="44dp"

@@ -91,7 +91,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             SettingInfo(R.string.terms_of_service) { openBrowser(BuildConfig.TERMS_OF_SERVICE_URL) },
             SettingInfo(R.string.notices) { it.findNavController().navigate(R.id.notices) },
             SettingInfo(R.string.cancel_account) { showDeleteAccountConfirm() },
-            SettingInfo(R.string.app_version, "v${BuildConfig.VERSION_NAME}")
+            SettingInfo(R.string.app_version, "v${BuildConfig.VERSION_NAME}"),
+            SettingInfo(R.string.github) { openBrowser(BuildConfig.GITHUB_REPO) },
         )
     }
 

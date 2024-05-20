@@ -26,22 +26,44 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
-        android:text="@string/function_title"
+        android:text="@string/product_function_title"
         android:textColor="#1D2129"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/guideline_top" />
 
+    <HorizontalScrollView
+        android:id="@+id/tags"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:paddingHorizontal="16dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_product_function_tag"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:text="@string/product_video_playback"
+            android:textColor="#0066FC"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </HorizontalScrollView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/tags"
         tools:itemCount="4"
         tools:listitem="@layout/item_function_entry" />
 

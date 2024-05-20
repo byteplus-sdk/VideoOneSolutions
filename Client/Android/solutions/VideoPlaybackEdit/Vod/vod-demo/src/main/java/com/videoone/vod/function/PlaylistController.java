@@ -1,11 +1,13 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 package com.videoone.vod.function;
 
-import com.bytedance.playerkit.player.PlayerEvent;
-import com.bytedance.playerkit.player.playback.PlaybackController;
-import com.bytedance.playerkit.player.playback.PlaybackEvent;
-import com.bytedance.playerkit.player.playback.VideoView;
-import com.bytedance.playerkit.utils.event.Dispatcher;
-import com.bytedance.vod.scenekit.data.model.VideoItem;
+import com.byteplus.playerkit.player.PlayerEvent;
+import com.byteplus.playerkit.player.playback.PlaybackController;
+import com.byteplus.playerkit.player.playback.PlaybackEvent;
+import com.byteplus.playerkit.player.playback.VideoView;
+import com.byteplus.playerkit.utils.event.Dispatcher;
+import com.byteplus.vod.scenekit.data.model.VideoItem;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

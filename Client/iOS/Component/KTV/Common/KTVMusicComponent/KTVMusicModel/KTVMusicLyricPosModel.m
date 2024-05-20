@@ -1,10 +1,5 @@
-//
-//  KTVMusicLyricPosModel.m
-//  AFNetworking
-//
-//  Created by bytedance on 2022/11/21.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVMusicLyricPosModel.h"
 #import "KTVMusicLyricModel.h"
 

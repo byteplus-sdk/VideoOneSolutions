@@ -1,3 +1,5 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVRTCManager.h"
 #import "AlertActionManager.h"
 #import "SystemAuthority.h"
@@ -229,7 +231,6 @@
         // For users who enable audio capture, the round-trip delay of data transmission.
         self.paramInfoModel.rtt = [NSString stringWithFormat:@"%.0ld",(long)localQuality.rtt];
     } else {
-        // 关闭音频采集的用户，数据传输往返时延。
         // For users who turn off audio capture, the round-trip delay of data transmission.
         self.paramInfoModel.rtt = [NSString stringWithFormat:@"%.0ld",(long)remoteQualities.firstObject.rtt];
     }
@@ -262,14 +263,6 @@
     }
 }
 
-/**
- * @type callback
- * @region 音频事件回调
- * @author dixing
- * @brief 音频播放路由变化时，收到该回调。
- * @param device 新的音频播放路由，详见 ByteRTCAudioRouteDevice{@link #ByteRTCAudioRouteDevice}
- * @notes 关于音频路由设置，详见 setAudioRoute:{@link #ByteRTCEngineKit#setAudioRoute:}。
- */
 - (void)rtcEngine:(ByteRTCVideo *)engine onAudioRouteChanged:(ByteRTCAudioRoute)device {
     _currentAudioRoute = device;
     

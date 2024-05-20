@@ -59,7 +59,6 @@
 
 + (void)setupTTSDK {
     #ifdef DEBUG
-    // 建议开发的过程中打开 logcat 日志，获取更多播放信息
     [TTVideoEngine setLogFlag:TTVideoEngineLogFlagAll];
     #endif
     TTSDKConfiguration *cfg = [TTSDKConfiguration defaultConfigurationWithAppID:VODAPPID licenseName:VODLicenseName];

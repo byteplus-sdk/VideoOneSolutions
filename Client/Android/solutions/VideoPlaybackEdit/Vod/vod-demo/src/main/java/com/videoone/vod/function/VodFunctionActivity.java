@@ -1,8 +1,5 @@
-/*
- * Copyright (c) 2023 BytePlus Pte. Ltd.
- * SPDX-License-Identifier: Apache-2.0
- */
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 package com.videoone.vod.function;
 
 import android.content.Intent;
@@ -13,8 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.bytedance.vod.scenekit.ui.base.BaseActivity;
-import com.bytedance.voddemo.utils.OuterActionsHelper;
+import com.byteplus.vod.scenekit.ui.base.BaseActivity;
+import com.byteplus.voddemo.utils.OuterActionsHelper;
 import com.videoone.vod.function.fragment.PlaylistFragment;
 import com.videoone.vod.function.fragment.PreventRecordingFragment;
 import com.videoone.vod.function.fragment.SubtitleFragment;

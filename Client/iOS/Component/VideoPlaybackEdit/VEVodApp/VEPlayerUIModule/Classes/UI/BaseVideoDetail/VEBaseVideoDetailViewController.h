@@ -29,6 +29,6 @@
 
 @property (nonatomic, copy) void (^closeCallback)(BOOL landscapeMode, VEVideoPlayerController *playerController);
 
-@property (nonatomic, assign) BOOL landscapeMode; // 全屏模式
+@property (nonatomic, assign) BOOL landscapeMode;
 
 @end

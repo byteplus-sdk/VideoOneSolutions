@@ -13,7 +13,7 @@ class ServerResponse<T>(
     var message: String,
     @JvmField
     @SerializedName("response")
-    var response: T
+    var response: T?
 ) {
     val data: T? get() = response
 }

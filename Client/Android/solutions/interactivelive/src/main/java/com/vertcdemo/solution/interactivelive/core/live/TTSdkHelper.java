@@ -5,6 +5,7 @@ package com.vertcdemo.solution.interactivelive.core.live;
 
 import com.vertcdemo.solution.interactivelive.BuildConfig;
 
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 
 import androidx.annotation.NonNull;
@@ -16,22 +17,34 @@ import com.pandora.ttlicense2.LicenseManager;
 import com.vertcdemo.core.utils.AppUtil;
 
 public class TTSdkHelper {
-
-    private static final String LIVE_TTSDK_APP_NAME = "byteplus_demo";
-
     private static boolean isInitialized = false;
 
     public static void initTTVodSdk() {
         if (isInitialized) {
             return;
         }
+
+        if (TextUtils.isEmpty(BuildConfig.LIVE_TTSDK_APP_ID)) {
+            throw new RuntimeException("Please setup LIVE_TTSDK_APP_ID in gradle.properties!");
+        }
+
+        if (TextUtils.isEmpty(BuildConfig.LIVE_TTSDK_LICENSE_URI)) {
+            throw new RuntimeException("Please setup LIVE_TTSDK_LICENSE_URI in gradle.properties!");
+        }
+
+        String appChannel;
+        if (TextUtils.isEmpty(BuildConfig.LIVE_TTSDK_APP_CHANNEL)) {
+            appChannel = "PlayStore";
+        } else {
+            appChannel = BuildConfig.LIVE_TTSDK_APP_CHANNEL;
+        }
         Env.init(new Config.Builder()
                 .setApplicationContext(AppUtil.getApplicationContext())
                 .setAppID(BuildConfig.LIVE_TTSDK_APP_ID)
-                .setAppName(LIVE_TTSDK_APP_NAME)
+                .setAppName(BuildConfig.LIVE_TTSDK_APP_NAME)
                 .setAppVersion(BuildConfig.APP_VERSION_NAME)
-                .setAppChannel("SDKDemo")
-                .setLicenseUri("assets:///ttsdk.lic")
+                .setAppChannel(appChannel)
+                .setLicenseUri(BuildConfig.LIVE_TTSDK_LICENSE_URI)
                 .setLicenseCallback(new LogLicenseManagerCallback())
                 .build());
 

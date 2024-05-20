@@ -1,10 +1,5 @@
-//
-//  KTVMusicBottomView.m
-//  AFNetworking
-//
-//  Created by bytedance on 2024/1/15.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVMusicBottomView.h"
 
 @interface KTVMusicBottomView ()

@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="vevod_circle_image">
         <item name="cornerFamily">rounded</item>

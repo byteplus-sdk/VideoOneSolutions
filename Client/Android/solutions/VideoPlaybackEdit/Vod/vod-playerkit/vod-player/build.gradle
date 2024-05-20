@@ -5,13 +5,9 @@ plugins {
     id 'com.android.library'
 }
 
-def publishFile = rootProject.file("publish.gradle")
-if (publishFile.exists()) {
-    apply from: publishFile
-}
-
 android {
     compileSdk rootProject.ext.compileSdkVersion
+    namespace "com.byteplus.playerkit.player"
 
     resourcePrefix 'vevod_'
 
@@ -37,12 +33,13 @@ android {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation libs.appcompat
 
-    implementation rootProject.ext.libs["app-compat"]
-    implementation rootProject.ext.libs["gson"]
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    implementation libs.gson
 
     implementation project(rootProject.ext.projects[':Vod:vod-playerkit:vod-player-utils'])
 }

@@ -34,7 +34,6 @@
 - (void)openSubtitle:(NSString *)subtitleAuthToken {
     [self.videoEngine setOptionForKey:VEKKeyPlayerSubEnabled_BOOL value:@(YES)];
     [self.videoEngine setOptionForKey:VEKKeyPlayerSubtitleOptEnable_BOOL value:@(YES)];
-    // {zh)打开字幕线程
     [self.videoEngine setOptionForKey:VEKeyPlayerEnableSubThread_BOOL value:@(YES)];
     [self.videoEngine setSubtitleDelegate:self];
     [self.videoEngine setSubtitleAuthToken:subtitleAuthToken];

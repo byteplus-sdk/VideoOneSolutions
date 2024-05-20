@@ -1,11 +1,5 @@
-//
-//  KTVRoomTableView.m
-//  veRTC_Demo
-//
-//  Created by on 2021/5/18.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVRoomTableView.h"
 #import "KTVEmptyComponent.h"
 #import <ToolKit/ToolKit.h>

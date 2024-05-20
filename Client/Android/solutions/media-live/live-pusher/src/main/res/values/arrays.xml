@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pic_actions">
+        <item>@string/medialive_replace_pic</item>
+        <item>@string/medialive_remove_pic</item>
+    </string-array>
+</resources>

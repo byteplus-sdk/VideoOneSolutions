@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="pusher_info_panel_width">350dp</dimen>
+    <dimen name="pusher_info_panel_height">150dp</dimen>
+    <dimen name="pushing_actions_bottom">60dp</dimen>
+</resources>

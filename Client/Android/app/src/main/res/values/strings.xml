@@ -2,14 +2,16 @@
 <resources>
     <string name="home">Home</string>
     <string name="account">Account</string>
-    <string name="scene">Scene</string>
-    <string name="function">Function</string>
+    <string name="main_tab_scene">Scene</string>
+    <string name="main_tab_function">Product</string>
+    <string name="main_tab_for_developers">Developers</string>
     <string name="language">Language</string>
     <string name="language_value">English</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="terms_of_service">Terms of service</string>
     <string name="notices">Notices</string>
     <string name="app_version">App version</string>
+    <string name="github" translatable="false">Github</string>
     <string name="log_out">Log out</string>
     <string name="log_out_alert_message">Click Confirm to log out immediately.</string>
     <string name="change_user_name">Change your username</string>
@@ -19,5 +21,7 @@
     <string name="same_logged_in">A user with the same ID has logged in. You will be forced to log out.</string>
     <string name="videoone_center_title">VideoOne Center</string>
     <string name="videoone_center_welcome">Welcome to the VideoOne! Please select the scene of interest.</string>
-    <string name="function_title">Single function</string>
+    <string name="product_function_title">Product function</string>
+    <string name="product_video_playback">Video playback</string>
+    <string name="developers_guide_title">Developers guide</string>
 </resources>

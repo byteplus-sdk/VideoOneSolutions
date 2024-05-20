@@ -14,8 +14,6 @@
 @property (nonatomic, copy) void (^prepareCompletionBlock)(PIPManagerStatus status);
 @property (nonatomic, assign) CGFloat avPlayerInterval;
 @property (nonatomic, weak) UIView *contentView;
-
-// 记录是否通过恢复按钮，关闭画中画
 @property (nonatomic, assign) BOOL isRestore;
 
 @end
@@ -83,7 +81,6 @@
             return;
         }
     } else {
-        // 该设备不支持画中画功能
         self.status = PIPManagerStatusDeviceSupportFailure;
         if (block) {
             block(PIPManagerStatusDeviceSupportFailure);
@@ -111,7 +108,6 @@
         }
     }];
     self.playerView.playerEndBlock = ^{
-        // 完播后，关闭画中画
         [wself stopPictureInPictureEvenWhenInBackground];
     };
 }
@@ -142,7 +138,6 @@
 #pragma mark - Notification
 
 - (void)didBecomeActiveNotification {
-    // 如果处于画中画中，启动APP需要关闭画中画
     if (self.pipController.isPictureInPictureActive) {
         [self.pipController stopPictureInPicture];
     }
@@ -213,57 +208,39 @@
 }
 
 #pragma mark - AVPictureInPictureControllerDelegate
-
-// 即将开启画中画
 - (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
     [self willStartPictureInPicture];
     if (self.startCompletionBlock) {
         self.startCompletionBlock();
     }
 }
-
-// 已经开启画中画
 - (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
 }
 
 - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController failedToStartPictureInPictureWithError:(NSError *)error {
-    // 开启画中画失败
     self.status = PIPManagerStatusExceptionFailed;
     if (self.prepareCompletionBlock) {
         self.prepareCompletionBlock(PIPManagerStatusExceptionFailed);
     }
 }
-
-// 即将关闭画中画
 - (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
 }
-
-// 已经关闭画中画
 - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
     [self didStopPictureInPicture];
     if (self.isRestore) {
-        // 通过恢复关闭画中画
         BOOL isPlaying = self.pipController.playerLayer.player.rate > 0 ? YES : NO;
         if (self.restoreCompletionBlock) {
             self.restoreCompletionBlock(self.playerView.currentTime, isPlaying);
         }
     } else {
-        // 直接关闭画中画
         if (self.closeCompletionBlock) {
             self.closeCompletionBlock(self.playerView.currentTime);
         }
     }
-    // 重置 isRestore 状态
     self.isRestore = NO;
 }
-
-// 关闭画中画且恢复播放界面
 - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
     self.isRestore = YES;
 }
-
-// 点击 X  will stop
-// 点击 恢复 didactive 恢复 will stop
-// 点击 APP didactive will 恢复 stop
 
 @end

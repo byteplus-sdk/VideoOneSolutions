@@ -43,12 +43,24 @@ def scene_KTV_pods
   pod 'KTV', :path => './Component/KTV'
 end
 
+def scene_MedeaLive_pods
+  # LiveDemo SingleFunction
+   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'Quic/Pull', 'Quic/Push', 'ScreenCapture']
+  pod 'MediaLive', :path => './Component/MediaLive'
+end
+
 target 'VideoOne' do
   common_pods
   # Scenes
   scene_InteractiveLive_pods
-  scene_VideoPlaybackEdit_pods
   scene_KTV_pods
+  scene_VideoPlaybackEdit_pods
+ scene_MedeaLive_pods
+end
+
+target 'ScreenShareExtension' do
+  pod 'AppConfig', :path => './Component/AppConfig'
+   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git', :subspecs => ['ScreenCaptureExtension']
 end
 
 post_install do |installer|

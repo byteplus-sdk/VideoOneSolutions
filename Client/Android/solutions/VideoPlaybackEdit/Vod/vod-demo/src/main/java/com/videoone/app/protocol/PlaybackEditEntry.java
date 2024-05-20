@@ -11,9 +11,9 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.bytedance.voddemo.impl.R;
-import com.bytedance.voddemo.ui.main.MainTabActivity;
-import com.bytedance.voddemo.ui.settings.SettingsActivity;
+import com.byteplus.voddemo.R;
+import com.byteplus.voddemo.ui.main.MainTabActivity;
+import com.byteplus.voddemo.ui.settings.SettingsActivity;
 
 /**
  * Demo App Entry

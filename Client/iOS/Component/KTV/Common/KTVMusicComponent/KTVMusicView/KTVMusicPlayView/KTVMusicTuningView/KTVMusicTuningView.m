@@ -1,11 +1,5 @@
-//
-//  KTVMusicTuningView.m
-//  veRTC_Demo
-//
-//  Created by on 2022/1/19.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVMusicTuningView.h"
 #import "KTVMusicReverberationView.h"
 #import "KTVRTCManager.h"
@@ -192,8 +186,6 @@ static CGFloat DefaultVocalVolume = 100;
         [self enableMusicVolume];
     }
 }
-
-/// 音频播放路由改变
 - (void)updateAudioRouteChanged {
     if ([KTVRTCManager shareRtc].canEarMonitor) {
         

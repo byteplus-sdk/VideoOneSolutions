@@ -1,3 +1,5 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <ToolKit/BaseRTCManager.h>
 #import "KTVRTCManager.h"
 #import "KTVRoomParamInfoModel.h"
@@ -21,8 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)KTVRTCManager:(KTVRTCManager *_Nonnull)KTVRTCManager songEnds:(BOOL)result;
 
 - (void)KTVRTCManager:(KTVRTCManager *_Nonnull)KTVRTCManager onAudioMixingPlayingProgress:(NSInteger)progress;
-
-/// 用户音频播放路由改变回调
 /// @param KTVRTCManager RTC manager
 - (void)KTVRTCManagerOnAudioRouteChanged:(KTVRTCManager *_Nonnull)KTVRTCManager;
 
@@ -31,8 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface KTVRTCManager : BaseRTCManager
 
 @property (nonatomic, weak) id<KTVRTCManagerDelegate> delegate;
-
-/// 是否可以开启耳返
 @property(nonatomic, assign, readonly) BOOL canEarMonitor;
 
 /*

@@ -1,11 +1,5 @@
-//
-//  KTVSeatView.m
-//  veRTC_Demo
-//
-//  Created by on 2021/11/29.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVSeatView.h"
 #import "KTVSeatItemView.h"
 

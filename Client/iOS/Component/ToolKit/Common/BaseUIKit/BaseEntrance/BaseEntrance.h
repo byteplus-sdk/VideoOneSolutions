@@ -43,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, nonnull) NSArray<__kindof BaseFunctionEntrance *> *items;
 
+@property (nonatomic, copy) NSString *functionSectionName;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

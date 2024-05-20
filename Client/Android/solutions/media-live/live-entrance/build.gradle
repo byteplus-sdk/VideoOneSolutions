@@ -1,0 +1,45 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdk project.compileSdkVersion
+    namespace 'com.byteplus.live.entrance'
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+
+        consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField('String', 'LIVE_TTSDK_APP_NAME', "\"${project.LIVE_TTSDK_APP_NAME}\"")
+        buildConfigField('String', 'LIVE_TTSDK_APP_ID', "\"${project.LIVE_TTSDK_APP_ID}\"")
+        buildConfigField('String', 'LIVE_TTSDK_APP_CHANNEL', "\"${project.LIVE_TTSDK_APP_CHANNEL}\"")
+        buildConfigField('String', 'LIVE_TTSDK_LICENSE_URI', "\"${project.LIVE_TTSDK_LICENSE_URI}\"")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.constraintlayout
+
+    implementation project(path: ':solutions:media-live:live-common')
+    implementation project(path: ':solutions:media-live:live-pusher')
+    implementation project(path: ':solutions:media-live:live-player')
+
+    implementation libs.ttsdk.ttcommon
+    implementation libs.ttsdk.ttlicense2
+
+    implementation project(':component:SolutionBase')
+}

@@ -6,6 +6,7 @@ plugins {
 android {
 
     compileSdk rootProject.ext.compileSdkVersion
+    namespace "com.byteplus.vodupload"
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -30,10 +31,11 @@ android {
 }
 
 dependencies {
-    implementation rootProject.ext.libs["app-compat"]
-    implementation rootProject.ext.libs["retrofit2"]
-    implementation rootProject.ext.libs["converter-gson"]
-    implementation rootProject.ext.libs["okhttp"]
+    implementation libs.appcompat
 
-    implementation rootProject.ext.libs["ttsdk-ttuploader"]
+    implementation libs.retrofit2
+    implementation libs.retrofit2.converter.gson
+    implementation libs.okhttp
+
+    implementation libs.ttsdk.ttuploader
 }

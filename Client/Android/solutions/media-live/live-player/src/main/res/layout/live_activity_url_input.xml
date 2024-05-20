@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/live_bg_main">
+
+    <include
+        android:id="@+id/close_bar"
+        layout="@layout/live_back_title_bar" />
+
+    <TextView
+        android:id="@+id/tv_input_url_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="22dp"
+        android:text="@string/medialive_input_pull_address"
+        android:textColor="#1D2129"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/close_bar" />
+
+    <EditText
+        android:id="@+id/et_input_url"
+        android:layout_width="0dp"
+        android:layout_height="160dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/live_bg_white"
+        android:ems="10"
+        android:gravity="top"
+        android:hint="@string/medialive_pull_address_placeholder"
+        android:inputType="textMultiLine|textUri"
+        android:padding="20dp"
+        android:textColor="@color/live_text_black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_input_url_title" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/group_middle_settings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_input_url">
+
+        <FrameLayout
+            android:id="@+id/group_input_url_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/live_ic_scan_black" />
+
+            <TextView
+                android:id="@+id/tv_input_url_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="28dp"
+                android:text="@string/medialive_pull_scan_placeholder"
+                android:textColor="#1D2129"
+                android:textSize="14sp" />
+
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_abr_setting"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            app:constraint_referenced_ids="tv_add_abr, tv_clear_abr"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_clear_abr"
+            style="@style/LiveButton.WhiteStroke"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="7dp"
+            android:text="@string/medialive_clear_abr_gear"
+            android:textColor="@color/live_bg_blue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_add_abr"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_add_abr"
+            style="@style/LiveButton.Blue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="9dp"
+            android:text="@string/medialive_add_abr_gear"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tv_entrance"
+        style="@style/LiveButton.BlueR"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:paddingVertical="10dp"
+        android:text="@string/medialive_start_play"
+        android:textAppearance="@style/LiveTextView"
+        app:layout_constraintTop_toBottomOf="@id/group_middle_settings" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_liveplayer_version"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_entrance">
+
+        <LinearLayout
+            android:id="@+id/group_settings_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/abr"
+                style="@style/LiveSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/live_bg_item_r5"
+                android:padding="10dp"
+                android:text="@string/live_abr_title"
+                android:textColor="#000"
+                android:textSize="15sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/abr_auto_switch"
+                style="@style/LiveSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/live_bg_item_r5"
+                android:padding="10dp"
+                android:text="@string/medialive_auto_switch"
+                android:textColor="#000"
+                android:textSize="15sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sei"
+                style="@style/LiveSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/live_bg_item_r5"
+                android:padding="10dp"
+                android:text="@string/live_sei_title"
+                android:textColor="#000"
+                android:textSize="15sp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/live_bg_item_r5"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/medialive_protocol"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+
+                <Spinner
+                    android:id="@+id/protocol"
+                    style="@style/LiveSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_gravity="end"
+                    android:gravity="center"
+                    android:minWidth="80dp"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/live_bg_item_r5"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/medialive_format"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+
+                <Spinner
+                    android:id="@+id/format"
+                    style="@style/LiveSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_gravity="end"
+                    android:gravity="center"
+                    android:minWidth="80dp"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/tv_liveplayer_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:textColor="@color/live_text_gray"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:text="LivePlayer: 99" />
+</androidx.constraintlayout.widget.ConstraintLayout>

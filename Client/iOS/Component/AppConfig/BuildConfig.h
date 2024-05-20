@@ -70,6 +70,8 @@
  */
 #define VODAPPID @""
 #define VODLicenseName @""
+#define APP_GROUP_ID @""
+#define BROADCASE_EXTENSION_BUNDLE_ID @""
 
 
 #endif /* BuildConfig_h */

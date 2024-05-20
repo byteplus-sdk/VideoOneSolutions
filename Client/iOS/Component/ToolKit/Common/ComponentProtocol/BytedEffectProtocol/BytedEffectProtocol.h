@@ -8,10 +8,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BytedEffectDelegate <NSObject>
+typedef NS_ENUM(NSInteger, EffectType) {
+    EffectTypeUnknown = 0,
+    EffectTypeRTC = 1,
+    EffectTypeMediaLive = 2
+};
+@protocol BytedEffectComponentDelegate <NSObject>
 
 - (instancetype)protocol:(BytedEffectProtocol *)protocol
-    initWithRTCEngineKit:(id)rtcEngineKit
+          initWithEngine:(id)engine
                 useCache:(BOOL)useCache;
 
 - (void)protocol:(BytedEffectProtocol *)protocol
@@ -26,12 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BytedEffectProtocol : NSObject
 
-/**
- * @brief Initialization
- * @param rtcEngineKit Rtc Engine
- */
-
-- (instancetype)initWithRTCEngineKit:(id)rtcEngineKit useCache:(BOOL)useCache;
+- (instancetype) initWithEngine:(id)engine
+            withType:(EffectType)type
+                useCache:(BOOL)useCache;
 
 /**
  * @brief Show effect beauty view

@@ -1,11 +1,5 @@
-//
-//  KTVMusicComponent.m
-//  veRTC_Demo
-//
-//  Created by on 2021/11/30.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVMusicComponent.h"
 #import "KTVMusicView.h"
 #import "KTVMusicNullView.h"
@@ -185,13 +179,9 @@ typedef NS_ENUM(NSInteger, KTVMusicViewStatus) {
 }
 
 - (void)sendSongTime:(NSInteger)songTime {
-    // 演唱者
     if ([self isSingerWithSongModel:self.songModel 
                      loginUserModel:self.loginUserModel]) {
-        // 更新本地歌词
         self.musicView.time = songTime;
-        
-        // 发送给远端歌词
         NSString *timeStr = [NSString stringWithFormat:@"%ld", (long)songTime];
         NSDictionary *syncInfoDic = [[NSMutableDictionary alloc] init];
         [syncInfoDic setValue:timeStr forKey:@"progress"];
@@ -199,8 +189,6 @@ typedef NS_ENUM(NSInteger, KTVMusicViewStatus) {
         [[KTVRTCManager shareRtc] sendStreamSyncTime:[syncInfoDic copy]];
     }
 }
-
-/// 音频播放路由改变
 - (void)updateAudioRouteChanged {
     [self.musicView updateAudioRouteChanged];
 }

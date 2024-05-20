@@ -14,7 +14,11 @@ android {
         consumerProguardFiles "consumer-rules.pro"
 
         buildConfigField('String', 'APP_VERSION_NAME', "\"${project.APP_VERSION_NAME}\"")
+
+        buildConfigField('String', 'LIVE_TTSDK_APP_NAME', "\"${project.LIVE_TTSDK_APP_NAME}\"")
         buildConfigField('String', 'LIVE_TTSDK_APP_ID', "\"${project.LIVE_TTSDK_APP_ID}\"")
+        buildConfigField('String', 'LIVE_TTSDK_LICENSE_URI', "\"${project.LIVE_TTSDK_LICENSE_URI}\"")
+        buildConfigField('String', 'LIVE_TTSDK_APP_CHANNEL', "\"${project.LIVE_TTSDK_APP_CHANNEL}\"")
 
         buildConfigField('String', 'LIVE_PULL_DOMAIN', "\"${project.LIVE_PULL_DOMAIN}\"")
         buildConfigField('String', 'LIVE_PUSH_DOMAIN', "\"${project.LIVE_PUSH_DOMAIN}\"")
@@ -39,29 +43,32 @@ android {
 }
 
 dependencies {
-    implementation project.libs['swiperefreshlayout']
-    implementation project.libs['app-compat']
-    implementation project.libs['recyclerview']
-    implementation project.libs['constraint-layout']
-    implementation project.libs['material']
 
-    implementation project.libs['navigation-fragment']
-    implementation project.libs['navigation-ui']
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.constraintlayout
+    implementation libs.material
+    implementation libs.swiperefreshlayout
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
 
     implementation project(':component:SolutionBase')
     implementation project(':component:ToolKit')
     implementation project(':component:Avatars')
 
-    implementation project.libs['eventbus']
-    implementation project.libs['gson']
-    implementation project.libs["okhttp"]
-    implementation project.libs["glide"]
+    implementation libs.ttsdk.ttlivepush.rtc
 
-    implementation 'commons-net:commons-net:3.9.0'
+    implementation libs.eventbus
+    implementation libs.gson
+    implementation libs.okhttp
+    implementation libs.glide
 
-    implementation project.libs["ttsdk-ttlivepull"]
+    implementation libs.commons.net
+
+    implementation libs.ttsdk.ttlivepull
 }

@@ -83,19 +83,16 @@
         AVPlayerStatus status = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
         switch (status) {
             case AVPlayerStatusReadyToPlay: {
-                // 播放器已准备好播放
                 if (self.prepareToPlayBlock) {
                     self.prepareToPlayBlock(YES);
                 }
             } break;
             case AVPlayerStatusFailed:
-                // 播放器播放失败
                 if (self.prepareToPlayBlock) {
                     self.prepareToPlayBlock(NO);
                 }
                 break;
             case AVPlayerStatusUnknown:
-                // 播放器状态未知
 
                 break;
             default:

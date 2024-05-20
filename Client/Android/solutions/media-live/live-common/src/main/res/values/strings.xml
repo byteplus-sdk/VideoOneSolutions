@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+
+
+    <string name="notification_media_live_in_background">MediaLive is running in the background.</string>
+</resources>

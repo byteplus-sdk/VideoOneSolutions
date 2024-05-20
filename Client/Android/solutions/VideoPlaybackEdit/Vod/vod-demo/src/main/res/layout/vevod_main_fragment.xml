@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F4F5F7"
-    tools:context="com.bytedance.voddemo.ui.main.MainFragment">
+    tools:context="com.byteplus.voddemo.ui.main.MainFragment">
 
     <ImageView
         android:layout_width="match_parent"

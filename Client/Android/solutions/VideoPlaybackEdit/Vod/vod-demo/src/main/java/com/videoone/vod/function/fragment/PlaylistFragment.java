@@ -1,3 +1,5 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 package com.videoone.vod.function.fragment;
 
 import android.os.Bundle;
@@ -9,12 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bytedance.playerkit.player.playback.VideoLayerHost;
-import com.bytedance.playerkit.player.playback.VideoView;
-import com.bytedance.vod.scenekit.data.model.VideoItem;
-import com.bytedance.vod.scenekit.ui.video.layer.PlayPauseLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.PlaylistLayer;
-import com.bytedance.vod.scenekit.ui.video.layer.adapter.PlayListItemAdapter;
+import com.byteplus.playerkit.player.playback.VideoLayerHost;
+import com.byteplus.playerkit.player.playback.VideoView;
+import com.byteplus.vod.scenekit.data.model.VideoItem;
+import com.byteplus.vod.scenekit.ui.video.layer.PlayPauseLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.PlaylistLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.adapter.PlayListItemAdapter;
 import com.videoone.vod.function.PlaylistController;
 import com.videoone.vod.function.VodFunctionActivity;
 

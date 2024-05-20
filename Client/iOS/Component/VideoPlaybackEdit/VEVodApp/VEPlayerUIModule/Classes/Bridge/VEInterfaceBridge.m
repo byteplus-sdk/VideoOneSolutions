@@ -227,14 +227,12 @@ NSString *const VEPlayEventPiPStatusChanged = @"VEPlayEventPiPStatusChanged";
 }
 
 - (void)didBecomeActiveNotification {
-    // 进入前台，恢复 loop 状态
     if ([self.core respondsToSelector:@selector(setLooping:)]) {
         [self.core setLooping:self.isActivePlayLoop];
     }
 }
 
 - (void)willResignActiveNotification {
-    // 进入后台，关闭 loop
     self.isActivePlayLoop = self.core.looping;
     if (self.isActivePlayLoop) {
         if ([self.core respondsToSelector:@selector(setLooping:)]) {
@@ -421,19 +419,14 @@ NSString *const VEPlayEventPiPStatusChanged = @"VEPlayEventPiPStatusChanged";
 #pragma mark - PIP
 - (void)configPIP {
     self.pipManager = [[PIPManager alloc] init];
-    // 收到画中画因为恢复关闭
     __weak __typeof(self) wself = self;
     self.pipManager.restoreCompletionBlock = ^(CGFloat progress, BOOL isPlaying) {
-        // 恢复 TTPlayer seek
         [wself.core seek:progress];
         wself.core.muted = NO;
-        // 恢复 TTPlayer 播放状态
         if (!isPlaying) {
             [wself.core pause];
         }
     };
-
-    // 收到画中画直接关闭
     self.pipManager.closeCompletionBlock = ^(CGFloat progress) {
         [wself.core seek:progress];
         wself.core.muted = NO;
@@ -443,8 +436,6 @@ NSString *const VEPlayEventPiPStatusChanged = @"VEPlayEventPiPStatusChanged";
             [wself.core pause];
         }
     };
-
-    // 收到画中画开启
     self.pipManager.startCompletionBlock = ^{
         wself.core.muted = YES;
     };

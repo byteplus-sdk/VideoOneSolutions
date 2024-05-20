@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   s.version          = '0.1.1'
   s.summary          = 'BytePlus VOD Demo'
   s.description      = <<-DESC
-  BytePlus VOD Dem
+  BytePlus VOD
                        DESC
   s.homepage     = 'https://github.com/byteplus-sdk/VideoOneSolutions'
   s.license          = { :type => 'Apache License 2.0', :file => 'LICENSE' }
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.default_subspecs = 'VEPlayerUIModule', 'VEPlayerKit', 'VESceneKit', 'Setting', 'LongVideo', 'FeedVideo', 'ShortVideo', 'VideoDetail', 'Uploader', 'Entry', 'SingleFunction'
   
   $XCODE_VERSION = `xcrun xcodebuild -version | grep Xcode | cut -d' ' -f2`
-  if $XCODE_VERSION > '15.0.0'
+  if $XCODE_VERSION >= '15.0.0'
     s.user_target_xcconfig = {"OTHER_LDFLAGS"=> "-ld64", }
   end
 

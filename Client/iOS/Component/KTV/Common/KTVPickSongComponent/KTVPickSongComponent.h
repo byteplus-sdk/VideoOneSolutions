@@ -1,11 +1,5 @@
-//
-//  KTVPickSongComponent.h
-//  veRTC_Demo
-//
-//  Created by on 2022/1/18.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 @class KTVPickSongComponent;
 

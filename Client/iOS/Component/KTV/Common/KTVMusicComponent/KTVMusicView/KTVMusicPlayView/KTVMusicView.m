@@ -1,11 +1,5 @@
-//
-//  KTVMusicView.m
-//  veRTC_Demo
-//
-//  Created by on 2021/11/30.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVMusicView.h"
 #import "KTVMusicTuningView.h"
 #import "KTVMusicTopView.h"
@@ -72,18 +66,13 @@
 
 - (void)setTime:(NSTimeInterval)time {
     _time = time;
-    
-    // 更新 顶部UI
     self.topView.time = time / 1000;
-    // 更新 歌词
     [self.KTVMusicLyricView playAtTime:time];
 }
 
 - (void)dismissTuningPanel {
     [self tuningMaskButtonAction];
 }
-
-/// 音频播放路由改变
 - (void)updateAudioRouteChanged {
     [self.tuningView updateAudioRouteChanged];
 }

@@ -8,21 +8,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.Guideline
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vertcdemo.app.databinding.ItemSceneEntryBinding
 import com.videoone.app.protocol.SceneEntry
 
 class SceneEntryFragment : Fragment(R.layout.fragment_scene_entry) {
+
+    private lateinit var mMainViewModel: MainViewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mMainViewModel = ViewModelProvider(requireParentFragment())[MainViewModel::class.java]
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val guidelineTop = view.findViewById<Guideline>(R.id.guideline_top)
-        ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets: WindowInsetsCompat ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            guidelineTop.setGuidelineBegin(insets.top)
-            windowInsets
+        mMainViewModel.guidelineTop.observe(viewLifecycleOwner) { top ->
+            guidelineTop.setGuidelineBegin(top)
         }
 
         val context = requireContext()

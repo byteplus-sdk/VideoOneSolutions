@@ -176,8 +176,6 @@
                               dismissBlock:^(BOOL result) {
                                   wself.controlView.hidden = NO;
                               }];
-    } else {
-        [[ToastComponent shareToastComponent] showWithMessage:LocalizedString(@"not_support_beauty_error")];
     }
 }
 - (void)liveCreateRoomControlView:(LiveCreateRoomControlView *)liveCreateRoomControlView didClickedSettingButton:(UIButton *)button {
@@ -252,7 +250,7 @@
 
 - (BytedEffectProtocol *)beautyComponent {
     if (!_beautyComponent) {
-        _beautyComponent = [[BytedEffectProtocol alloc] initWithRTCEngineKit:[LiveRTCManager shareRtc].rtcEngineKit useCache:NO];
+        _beautyComponent = [[BytedEffectProtocol alloc] initWithEngine:[LiveRTCManager shareRtc].rtcEngineKit withType:EffectTypeRTC useCache:NO];
     }
     return _beautyComponent;
 }

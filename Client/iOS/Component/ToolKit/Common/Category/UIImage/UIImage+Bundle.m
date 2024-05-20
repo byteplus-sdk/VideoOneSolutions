@@ -15,7 +15,8 @@
         return nil;
     }
     if (bundle == nil || bundle.length <= 0) {
-        return [UIImage imageNamed:name];
+        UIImage *iamge = [UIImage imageNamed:name];
+        return iamge;
     }
     NSString *bundlePath = [[NSBundle mainBundle] pathForResource:bundle ofType:@"bundle"];
     NSBundle *resourceBundle = [NSBundle bundleWithPath:bundlePath];

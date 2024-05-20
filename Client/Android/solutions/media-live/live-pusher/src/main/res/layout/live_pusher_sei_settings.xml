@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/live_shape_basic_item_r14"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="24dp"
+        android:text="@string/medialive_custom_sei"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/live_shape_basic_item_r4"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="36dp"
+                android:hint="@string/medialive_sei_placeholder"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/live_text_gray_deep"
+                android:textSize="13sp" />
+
+            <ImageView
+                android:id="@+id/scan_url"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="end|center_vertical"
+                android:padding="3dp"
+                android:src="@drawable/live_ic_scan_white" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/send"
+            style="@style/LiveButton.Settings.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:text="@string/medialive_sei_send"
+            android:textColor="@color/white" />
+    </LinearLayout>
+</LinearLayout>

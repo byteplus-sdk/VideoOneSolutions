@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp" />
 
-    <com.bytedance.vod.scenekit.ui.widgets.MediaSeekBar
+    <com.byteplus.vod.scenekit.ui.widgets.MediaSeekBar
         android:id="@+id/mediaSeekBar"
         android:layout_width="match_parent"
         android:layout_height="28dp"
