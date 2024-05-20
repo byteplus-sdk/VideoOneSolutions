@@ -1,11 +1,5 @@
-//
-//  KTVSeatItemButton.h
-//  quickstart
-//
-//  Created by on 2021/3/24.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "BaseButton.h"
 
 typedef NS_ENUM(NSInteger, KTVSheetStatus) {
@@ -15,8 +9,8 @@ typedef NS_ENUM(NSInteger, KTVSheetStatus) {
     KTVSheetStatusCloseMic,
     KTVSheetStatusLock,
     KTVSheetStatusUnlock,
-    KTVSheetStatusApply,      //观众申请上麦
-    KTVSheetStatusLeave,      //嘉宾主动下麦
+    KTVSheetStatusApply,
+    KTVSheetStatusLeave,
 };
 
 NS_ASSUME_NONNULL_BEGIN

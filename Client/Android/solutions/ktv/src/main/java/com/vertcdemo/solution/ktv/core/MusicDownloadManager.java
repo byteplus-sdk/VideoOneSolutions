@@ -83,7 +83,7 @@ public class MusicDownloadManager {
                     SolutionEventBus.post(new DownloadStatusChanged(setOf(roomId), songId, DownloadType.MUSIC, SongStatus.DOWNLOADING));
                     AppExecutors.networkIO().execute(() -> {
                         boolean success = downloadFile(mp3Url, mp3File);
-                        Log.d(TAG, "download: mp3; success=" + success);
+                        Log.d(TAG, "download: token=" + token + "; success=" + success);
                         HashSet<String> roomIds = removeToken(token);
                         if (roomIds != null) {
                             SolutionEventBus.post(new DownloadStatusChanged(roomIds, songId, DownloadType.MUSIC,
@@ -104,7 +104,7 @@ public class MusicDownloadManager {
                 if (enqueueDownload(token, roomId)) {
                     AppExecutors.networkIO().execute(() -> {
                         boolean success = downloadFile(lrcUrl, lrcFile);
-                        Log.d(TAG, "download: lrc; success=" + success);
+                        Log.d(TAG, "download: token=" + token + "; success=" + success);
                         HashSet<String> roomIds = removeToken(token);
                         if (roomIds != null) {
                             SolutionEventBus.post(new DownloadStatusChanged(roomIds, songId, DownloadType.LRC,

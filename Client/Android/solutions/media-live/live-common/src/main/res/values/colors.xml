@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="live_text_white">#ffffff</color>
+    <color name="live_text_black">#000000</color>
+    <color name="live_text_gray">#b8b8b8</color>
+    <color name="live_text_gray_deep">#49ffffff</color>
+
+    <color name="live_bg_blue">#2C5BF6</color>
+    <color name="live_bg_white">#ffffff</color>
+    <color name="live_bg_white_p13">#20ffffff</color>
+    <color name="live_bg_gray">#1e000000</color>
+    <color name="live_bg_gray_light">#e5e8ef</color>
+    <color name="live_bg_gray_deep">#99535552</color>
+
+    <color name="live_bg_main">#F7F8FA</color>
+    <color name="live_bg_base_settings">#99000000</color>
+    <color name="live_bg_basic_item">#FFFCFC</color>
+
+</resources>

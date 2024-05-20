@@ -7,12 +7,14 @@ import android.util.Log
 
 /**
  * @see PlaybackEditInitializer
+ * @see MediaLiveInitializer
  */
 object InitializeManager {
     private const val TAG = "InitializeManager"
 
     private val INITIALIZERS = listOf(
-        "com.videoone.app.protocol.PlaybackEditInitializer"
+        "com.videoone.app.protocol.PlaybackEditInitializer",
+        "com.videoone.app.protocol.MediaLiveInitializer",
     )
 
     private var called = false

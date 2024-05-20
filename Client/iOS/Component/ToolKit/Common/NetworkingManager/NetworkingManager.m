@@ -68,6 +68,10 @@
     [self postWithPath:space parameters:parameters headers:nil progress:nil block:block];
 }
 
++ (void)postWithParameters:(id)parameters space:(NSString *)space block:(void (^)(NetworkingResponse * _Nonnull))block {
+    [self postWithPath:space parameters:parameters headers:nil progress:nil block:block];
+}
+
 + (void)postWithPath:(NSString *)path
           parameters:(id)parameters
              headers:(NSDictionary<NSString *, NSString *> *)headers

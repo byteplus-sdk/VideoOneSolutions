@@ -8,17 +8,17 @@
 
 @property (nonatomic, assign) NSInteger type;// 0: vid； 1: direct url 2: video model
 
-@property (nonatomic, copy) NSString *vid;// vid 必需
+@property (nonatomic, copy) NSString *vid;
 
-@property (nonatomic, copy) NSString *playAuthToken; // vid 必须
+@property (nonatomic, copy) NSString *playAuthToken;
 
-@property (nonatomic, copy) NSString *httpUrl; // direct url 必须
+@property (nonatomic, copy) NSString *httpUrl;
 
-@property (nonatomic, copy) NSString *title; // 非必需
+@property (nonatomic, copy) NSString *title;
 
-@property (nonatomic, copy) NSString *coverUrl; // 非必需
+@property (nonatomic, copy) NSString *coverUrl;
 
-@property (nonatomic, copy) NSString *duration; // 非必需，单位：MS
+@property (nonatomic, copy) NSString *duration;
 
 //
 @property (nonatomic, copy) NSArray<NSString *> *urlArray; //multi urls.

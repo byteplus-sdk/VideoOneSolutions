@@ -1,16 +1,8 @@
-//
-//  KTVDownloadSongModel.h
-//  veRTC_Demo
-//
-//  Created by on 2022/1/20.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-/// 获取歌曲歌词下载地址模型
 /// Get song lyrics download address model
 @interface KTVDownloadSongModel : NSObject
 

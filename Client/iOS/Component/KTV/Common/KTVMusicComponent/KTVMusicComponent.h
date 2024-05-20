@@ -1,11 +1,5 @@
-//
-//  KTVMusicComponent.h
-//  veRTC_Demo
-//
-//  Created by on 2021/11/30.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 #import "KTVUserModel.h"
 #import "KTVSongModel.h"
@@ -52,8 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dismissTuningPanel;
 
 @property (nonatomic, weak) id<MusicComponentDelegate> delegate;
-
-/// 音频播放路由改变
 - (void)updateAudioRouteChanged;
 
 @end

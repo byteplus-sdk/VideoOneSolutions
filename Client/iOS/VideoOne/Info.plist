@@ -47,8 +47,6 @@
 	<string>If not allowed, you will not be able to use video editing.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>If not allowed, you will not be able to use video editing.</string>
-	<key>SSAppID</key>
-	<string>491302</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

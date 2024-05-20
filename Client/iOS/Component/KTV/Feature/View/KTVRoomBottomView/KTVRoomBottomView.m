@@ -1,11 +1,5 @@
-//
-//  KTVRoomBottomView.m
-//  quickstart
-//
-//  Created by on 2021/3/23.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVRoomBottomView.h"
 #import "UIView+Fillet.h"
 #import "KTVRTSManager.h"

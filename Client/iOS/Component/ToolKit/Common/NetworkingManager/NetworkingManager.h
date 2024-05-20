@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
                   content:(NSDictionary *)content
                     block:(void (^__nullable)(NetworkingResponse *response))block;
 
++ (void)postWithParameters:(nullable id)parameters
+                     space:(NSString *)space
+                     block:(void (^__nullable)(NetworkingResponse *response))block;
+
 + (void)postWithPath:(NSString *)path
           parameters:(nullable id)parameters
              headers:(nullable NSDictionary<NSString *, NSString *> *)headers

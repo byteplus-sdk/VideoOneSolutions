@@ -593,8 +593,6 @@ static inline CGSize squareSize(void) {
                 pipButton.status = [weak_self.eventPoster pipStatus] == PIPManagerStatusStartSuccess ? ButtonStatusActive : ButtonStatusNone;
                 [buttons addObject:pipButton];
             }
-
-            // 举报
             VEInterfaceSlideButton *reportButton = [[VEInterfaceSlideButton alloc] init];
             reportButton.elementID = @"report";
             [reportButton bingImage:[UIImage imageNamed:@"vod_video_report"] status:ButtonStatusNone];
@@ -833,7 +831,6 @@ static inline CGSize squareSize(void) {
     if (version.doubleValue >= 14.0) {
         return _skipPIPMode;
     } else {
-        // iOS 14 以下，不展示画中画入口
         return YES;
     }
 }

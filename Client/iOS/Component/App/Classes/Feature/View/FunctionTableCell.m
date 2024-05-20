@@ -68,22 +68,21 @@
     self.nameLabel.textColor = [UIColor colorWithRed:0.0 green:0.172 blue:0.279 alpha:1.0];
     self.nameLabel.font = [UIFont systemFontOfSize:16 weight:UIFontWeightMedium];
     self.nameLabel.numberOfLines = 0;
+    self.nameLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [textContent addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.top.equalTo(textContent);
-        make.trailing.lessThanOrEqualTo(textContent);
+        make.leading.trailing.top.equalTo(textContent);
     }];
 
     self.desLabel = [[UILabel alloc] init];
     self.desLabel.textColor = [UIColor colorWithRed:0.451 green:0.478 blue:0.529 alpha:1.0];
     self.desLabel.font = [UIFont systemFontOfSize:12];
     self.desLabel.numberOfLines = 0;
+    self.desLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [textContent addSubview:self.desLabel];
     [self.desLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.nameLabel.mas_bottom).offset(4);
-        make.leading.equalTo(textContent);
-        make.bottom.equalTo(textContent);
-        make.trailing.lessThanOrEqualTo(textContent);
+        make.leading.trailing.bottom.equalTo(textContent);
     }];
 }
 

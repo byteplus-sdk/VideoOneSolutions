@@ -6,15 +6,19 @@
 #import "FunctionsViewController.h"
 #import "FunctionTableCell.h"
 #import "Localizator.h"
+#import "SectionListView.h"
 #import <Masonry/Masonry.h>
 #import <ToolKit/ToolKit.h>
+
 
 @interface FunctionsViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UIImageView *backgroundImgView;
 @property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) SectionListView *sectionListView;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) NSMutableArray *dataArray;
+@property (nonatomic, copy) NSArray <BaseFunctionSection *> *sectionDataArray;
+@property (nonatomic, assign) NSInteger curSectionRow;
 
 @end
 
@@ -23,24 +27,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorFromHexString:@"#F6FAFD"];
-
-    [self.view addSubview:self.backgroundImgView];
-    [self.backgroundImgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.right.equalTo(self.view);
-    }];
-
-    [self.view addSubview:self.titleLabel];
-    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.view.mas_left).offset(16);
-        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(12);
-    }];
-
-    // TableView
-    [self.view addSubview:self.tableView];
-    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(71);
-        make.left.right.bottom.equalTo(self.view);
-    }];
+    [self addSubvieAndMakeConstraints];
+    __weak __typeof(self) wself = self;
+    self.sectionListView.clickBlock = ^(NSInteger row) {
+        wself.curSectionRow = row;
+        [wself.tableView reloadData];
+    };
 }
 
 #pragma mark - TableView Delegate && Datasource
@@ -49,18 +41,24 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.dataArray.count;
+    if (self.sectionDataArray.count <= 0) {
+        return 0;
+    }
+    BaseFunctionSection *sectionModel = self.sectionDataArray[self.curSectionRow];
+    return sectionModel.items.count;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    BaseFunctionEntrance *model = self.dataArray[indexPath.row];
+    BaseFunctionSection *sectionModel = self.sectionDataArray[self.curSectionRow];
+    BaseFunctionEntrance *model = sectionModel.items[indexPath.row];
     [self sceneCellAction:model];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FunctionTableCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FunctionTableCell" forIndexPath:indexPath];
-    cell.model = self.dataArray[indexPath.row];
+    BaseFunctionSection *sectionModel = self.sectionDataArray[self.curSectionRow];
+    cell.model = sectionModel.items[indexPath.row];
     return cell;
 }
 
@@ -77,8 +75,43 @@
 }
 
 #pragma mark - Private Action
+- (void)addSubvieAndMakeConstraints {
+    [self.view addSubview:self.backgroundImgView];
+    [self.backgroundImgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.equalTo(self.view);
+    }];
+
+    [self.view addSubview:self.titleLabel];
+    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left).offset(16);
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(12);
+    }];
+    
+    [self.view addSubview:self.sectionListView];
+    [self.sectionListView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view).offset(16);
+        make.right.equalTo(self.view).offset(-16);
+        make.top.equalTo(self.titleLabel.mas_bottom).offset(31);
+        make.height.equalTo(@36);
+    }];
+
+    [self.view addSubview:self.tableView];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
+        make.left.right.bottom.equalTo(self.view);
+    }];
+}
+
 
 #pragma mark - Getter
+- (SectionListView *)sectionListView {
+    if (!_sectionListView) {
+        _sectionListView = [[SectionListView alloc] initWithList:self.sectionDataArray];
+    }
+    return _sectionListView;
+}
+
+
 - (UITableView *)tableView {
     if (!_tableView) {
         _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
@@ -94,15 +127,16 @@
     return _tableView;
 }
 
-- (NSMutableArray *)dataArray {
-    if (!_dataArray) {
-        _dataArray = [NSMutableArray array];
+- (NSArray<BaseFunctionSection *> *)sectionDataArray {
+    if (!_sectionDataArray) {
+        NSMutableArray *list = [[NSMutableArray alloc] init];
         BaseFunctionSection *section = [[NSClassFromString(@"VODFunctionSection") alloc] init];
         if (section) {
-            [_dataArray addObjectsFromArray:section.items];
+            [list addObject:section];
         }
+        _sectionDataArray = [list copy];
     }
-    return _dataArray;
+    return _sectionDataArray;
 }
 
 - (UIImageView *)backgroundImgView {

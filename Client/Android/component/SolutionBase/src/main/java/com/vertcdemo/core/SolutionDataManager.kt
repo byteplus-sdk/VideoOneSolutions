@@ -15,6 +15,7 @@ object SolutionDataManager {
     private const val KEY_USER_NAME = "user_name"
     private const val KEY_TOKEN = "token"
     private const val KEY_DEVICE_ID = "device_id"
+    private const val KEY_OPEN_UDID = "openudid"
 
     var userId: String?
         get() = prefs.getString(KEY_USER_ID, "")

@@ -1,11 +1,5 @@
-//
-//  KTVMusicTopView.m
-//  veRTC_Demo
-//
-//  Created by on 2022/1/19.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVMusicTopView.h"
 #import <SDWebImage/SDWebImage.h>
 
@@ -74,8 +68,6 @@
     self.time = 0;
     [self.songCoverImageView sd_setImageWithURL:[NSURL URLWithString:songModel.coverURL] placeholderImage:nil];
 }
-
-// time 单位秒
 - (void)setTime:(NSTimeInterval)time {
     _time = time;
     

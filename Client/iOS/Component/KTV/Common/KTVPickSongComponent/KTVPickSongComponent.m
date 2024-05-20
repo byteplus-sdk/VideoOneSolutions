@@ -1,11 +1,5 @@
-//
-//  KTVPickSongComponent.m
-//  veRTC_Demo
-//
-//  Created by on 2022/1/18.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVPickSongComponent.h"
 #import "KTVDownloadMusicComponent.h"
 #import "KTVPickSongTopView.h"
@@ -128,13 +122,10 @@
 }
 
 - (void)requestPickedSongList {
-    // 获取已点歌歌曲
     __weak typeof(self) weakSelf = self;
     [KTVRTSManager requestPickedSongList:self.roomID
                                    block:^(RTSACKModel * _Nonnull model, NSArray<KTVSongModel *> * _Nonnull list) {
         weakSelf.pickedListView.dataArray = list;
-        
-        // 更新在线曲库数据
         [weakSelf syncSongListStstus];
         
         if ([weakSelf.delegate respondsToSelector:@selector(ktvPickSongComponent:pickedSongCountChanged:)]) {

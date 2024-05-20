@@ -19,12 +19,12 @@ typedef NS_ENUM(NSInteger, VEPlaybackLoadState) {
 };
 
 typedef NS_ENUM(NSInteger, PIPManagerStatus) {
-    PIPManagerStatusNone,                 // 默认
-    PIPManagerStatusStartSuccess,         // 开启成功
-    PIPManagerStatusParameterFailed,      // 参数错误失败
-    PIPManagerStatusPermissionFailed,     // 权限失败
-    PIPManagerStatusDeviceSupportFailure, // 设备不支持失败
-    PIPManagerStatusExceptionFailed,      // 异常失败
+    PIPManagerStatusNone,
+    PIPManagerStatusStartSuccess,
+    PIPManagerStatusParameterFailed,
+    PIPManagerStatusPermissionFailed,
+    PIPManagerStatusDeviceSupportFailure,
+    PIPManagerStatusExceptionFailed,
 };
 
 @protocol VEPlayCoreAbilityProtocol;

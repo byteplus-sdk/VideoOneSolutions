@@ -1,1 +1,2 @@
+#include "Pods/Target Support Files/Pods-VideoOne/Pods-VideoOne.debug.xcconfig"
 #include? "VideoOne-Debug-Private.xcconfig"

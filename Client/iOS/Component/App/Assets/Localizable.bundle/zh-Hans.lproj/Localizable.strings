@@ -1,5 +1,6 @@
 "menu_scene"="场景";
-"menu_function"="功能";
+"menu_function"="产品";
+"menu_developers"="开发者";
 "user_name"="用户名";
 "language_info" = "语言";
 "language_name" = "简体中文";
@@ -25,3 +26,8 @@
 "home_title" = "VOS 中心";
 "home_des" = "欢迎来到VOS中心，请选择感兴趣的场景进入体验";
 "function_title" = "单功能体验";
+"developers_title" = "开发者指南";
+"function_rtc_title" = "实时音视频";
+"function_vod_title" = "视频播放";
+"developers_rtc_api_title" = "RTC API Example";
+"developers_rtc_api_des" = "RTC 的 API 功能演示，包括音频、视频等模块";

@@ -1,3 +1,5 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 package com.videoone.app.protocol;
 
 import static com.videoone.vod.function.VodFunctionActivity.EXTRA_FUNCTION;
@@ -8,7 +10,7 @@ import android.content.Intent;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
-import com.bytedance.voddemo.impl.R;
+import com.byteplus.voddemo.R;
 import com.videoone.vod.function.Function;
 import com.videoone.vod.function.VodFunctionDispatchActivity;
 

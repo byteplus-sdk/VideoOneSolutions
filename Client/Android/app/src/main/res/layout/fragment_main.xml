@@ -14,20 +14,8 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="42dp" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/tab_scenes_content"
-        android:name="com.vertcdemo.app.SceneEntryFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/tab_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/fragment_scene_entry" />
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/tab_function_content"
-        android:name="com.vertcdemo.app.FunctionEntryFragment"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/tab_layout"
@@ -49,7 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/scene"
+        android:text="@string/main_tab_scene"
         android:textColor="@color/tab_text_color"
         android:textSize="14sp"
         app:drawableTopCompat="@drawable/ic_tab_scenes"
@@ -64,15 +52,30 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="@string/function"
+        android:text="@string/main_tab_function"
         android:textColor="@color/tab_text_color"
         android:textSize="14sp"
         app:drawableTopCompat="@drawable/ic_tab_functions"
         app:layout_constraintBottom_toBottomOf="@id/tab_layout"
-        app:layout_constraintEnd_toEndOf="@id/tab_layout"
+        app:layout_constraintEnd_toStartOf="@id/tab_for_developers"
         app:layout_constraintStart_toEndOf="@id/tab_scenes"
         app:layout_constraintTop_toTopOf="@id/tab_layout"
         tools:drawableTopCompat="@drawable/ic_tab_functions" />
+
+    <TextView
+        android:id="@+id/tab_for_developers"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/main_tab_for_developers"
+        android:textColor="@color/tab_text_color"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/ic_tab_for_developers"
+        app:layout_constraintBottom_toBottomOf="@id/tab_layout"
+        app:layout_constraintEnd_toEndOf="@id/tab_layout"
+        app:layout_constraintStart_toEndOf="@id/tab_function"
+        app:layout_constraintTop_toTopOf="@id/tab_layout"
+        tools:drawableTopCompat="@drawable/ic_tab_for_developers" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"

@@ -10,9 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_OPTIONS(NSUInteger, VEVideoPlayerType) {
     VEVideoPlayerTypeFeed = 1 << 1,
     VEVideoPlayerTypeLong = 1 << 2,
-    VEVideoPlayerTypeShortHorizontalScreen = 1 << 3,                                                        // 横屏短视频
-    VEVideoPlayerTypeShortVerticalScreen = 1 << 4,                                                          // 竖屏短视频
-    VEVideoPlayerTypeShort = VEVideoPlayerTypeShortHorizontalScreen | VEVideoPlayerTypeShortVerticalScreen, // 短视频包含横屏、竖屏
+    VEVideoPlayerTypeShortHorizontalScreen = 1 << 3,
+    VEVideoPlayerTypeShortVerticalScreen = 1 << 4,
+    VEVideoPlayerTypeShort = VEVideoPlayerTypeShortHorizontalScreen | VEVideoPlayerTypeShortVerticalScreen,
 };
 
 @interface VEVideoPlayerController : UIViewController <VEVideoPlayback>

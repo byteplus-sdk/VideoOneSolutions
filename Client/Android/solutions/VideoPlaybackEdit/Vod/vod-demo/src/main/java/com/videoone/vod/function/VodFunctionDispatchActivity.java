@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2023 BytePlus Pte. Ltd.
- * SPDX-License-Identifier: Apache-2.0
- */
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 package com.videoone.vod.function;
 
 import static com.videoone.vod.function.VodFunctionActivity.EXTRA_FUNCTION;
@@ -19,14 +17,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.bytedance.vod.scenekit.VideoSettings;
-import com.bytedance.vod.scenekit.data.model.VideoItem;
-import com.bytedance.vod.scenekit.data.page.Page;
-import com.bytedance.vod.scenekit.ui.video.scene.PlayScene;
-import com.bytedance.voddemo.data.remote.RemoteApi;
-import com.bytedance.voddemo.data.remote.api2.GetFeedStreamApi;
-import com.bytedance.voddemo.data.remote.api2.Params;
-import com.bytedance.voddemo.data.remote.api2.model.GetFeedStreamRequest;
+import com.byteplus.vod.scenekit.VideoSettings;
+import com.byteplus.vod.scenekit.data.model.VideoItem;
+import com.byteplus.vod.scenekit.data.page.Page;
+import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
+import com.byteplus.voddemo.data.remote.RemoteApi;
+import com.byteplus.voddemo.data.remote.api2.GetFeedStreamApi;
+import com.byteplus.voddemo.data.remote.api2.Params;
+import com.byteplus.voddemo.data.remote.api2.model.GetFeedStreamRequest;
 import com.vertcdemo.ui.dialog.SolutionProgressDialog;
 
 import java.lang.ref.WeakReference;

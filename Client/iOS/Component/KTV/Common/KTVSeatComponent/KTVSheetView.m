@@ -1,11 +1,5 @@
-//
-//  KTVSheetView.m
-//  veRTC_Demo
-//
-//  Created by on 2021/12/1.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVSheetView.h"
 
 @interface KTVSheetView ()
@@ -131,47 +125,38 @@
                 // unlock
                 if (NOEmptyStr(seatModel.userModel.uid)) {
                     if (seatModel.userModel.mic) {
-                        // 存在用户 下麦 & 静音 & 锁麦
                         list = @[@(KTVSheetStatusKick),
                                  @(KTVSheetStatusCloseMic),
                                  @(KTVSheetStatusLock)];
                     } else {
-                        // 存在用户 下麦 & 打开麦克风 & 锁麦
                         list = @[@(KTVSheetStatusKick),
                                  @(KTVSheetStatusOpenMic),
                                  @(KTVSheetStatusLock)];
                     }
                 } else {
-                    // 不存在用户， 邀请上麦，锁麦
                     list = @[@(KTVSheetStatusInvite),
                              @(KTVSheetStatusLock)];
                 }
             } else {
-                // lock, 解锁
                 list = @[@(KTVSheetStatusUnlock)];
             }
         } else {
-            // 麦位为空，邀请上麦 & 锁麦位
             list = @[@(KTVSheetStatusInvite),
                      @(KTVSheetStatusLock)];
         }
     } else {
         if (seatModel.status == 0) {
-            // 麦位被锁
         } else {
             if ([loginUserModel.uid isEqualToString:seatModel.userModel.uid]) {
-                // 主动下麦
                 list = @[@(KTVSheetStatusLeave)];
             } else {
                 if (NOEmptyStr(seatModel.userModel.uid)) {
-                    // 麦位有人
                 } else {
                     if (loginUserModel.status == KTVUserStatusApply) {
                         [[ToastComponent shareToastComponent] showWithMessage:LocalizedString(@"toast_apply_guest")];
                     } else if (loginUserModel.status == KTVUserStatusActive) {
                         [[ToastComponent shareToastComponent] showWithMessage:LocalizedString(@"toast_error_switch_seat")];
                     } else {
-                        // 申请上麦
                         list = @[@(KTVSheetStatusApply)];
                     }
                 }

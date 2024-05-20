@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="ttsdk_version_xxx" translatable="false">TTSDK %1$s</string>
+</resources>

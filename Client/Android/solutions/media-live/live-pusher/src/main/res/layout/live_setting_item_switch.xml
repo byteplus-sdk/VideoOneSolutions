@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.SwitchCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/record_start"
+    style="@style/LiveSwitch"
+    android:layout_width="match_parent"
+    android:layout_height="44dp"
+    android:layout_margin="3dp"
+    android:background="@drawable/live_shape_basic_item_r4"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="8dp"
+    android:textColor="#FFF"
+    android:textSize="12sp"
+    tools:text="Capture App Audio" />

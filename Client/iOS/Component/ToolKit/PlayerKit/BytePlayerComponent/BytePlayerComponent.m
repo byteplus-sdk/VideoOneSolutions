@@ -266,8 +266,6 @@
     }
     return urlComponents.URL.absoluteString;
 }
-
-/// 获取源流地址
 - (NSString *)getOriginalUrl {
     __block NSString *originalUrl = [self.urlMap objectForKey:@"origin"];
     if (originalUrl == nil) {

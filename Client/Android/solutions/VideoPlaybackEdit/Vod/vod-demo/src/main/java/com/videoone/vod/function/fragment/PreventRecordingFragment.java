@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2023 BytePlus Pte. Ltd.
- * SPDX-License-Identifier: Apache-2.0
- */
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 package com.videoone.vod.function.fragment;
 
 import android.os.Bundle;
@@ -14,8 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
-import com.bytedance.vod.settingskit.CenteredToast;
-import com.bytedance.voddemo.impl.R;
+import com.byteplus.vod.settingskit.CenteredToast;
+import com.byteplus.voddemo.R;
 
 public class PreventRecordingFragment extends VodFunctionFragment {
 

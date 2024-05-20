@@ -1,11 +1,5 @@
-//
-//  KTVRoomTopSeatView.m
-//  veRTC_Demo
-//
-//  Created by on 2021/11/30.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVRoomTopSeatView.h"
 
 @interface KTVRoomTopSeatView ()

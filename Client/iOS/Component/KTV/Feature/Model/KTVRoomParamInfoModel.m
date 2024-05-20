@@ -1,11 +1,5 @@
-//
-//  KTVRoomParamInfoModel.m
-//  veRTC_Demo
-//
-//  Created by on 2021/6/2.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVRoomParamInfoModel.h"
 
 @implementation KTVRoomParamInfoModel

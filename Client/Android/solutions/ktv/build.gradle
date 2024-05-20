@@ -32,26 +32,28 @@ android {
 }
 
 dependencies {
-    implementation project.libs['swiperefreshlayout']
-    implementation project.libs['app-compat']
-    implementation project.libs['recyclerview']
-    implementation project.libs['constraint-layout']
-    implementation project.libs['material']
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.constraintlayout
+    implementation libs.material
+    implementation libs.swiperefreshlayout
 
-    implementation project.libs['navigation-fragment']
-    implementation project.libs['navigation-ui']
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
 
     implementation 'com.github.bosphere.android-fadingedgelayout:fadingedgelayout:1.0.0'
-
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation project(':component:ToolKit')
     implementation project(':component:SolutionBase')
     implementation project(':component:Avatars')
 
-    implementation project.libs['eventbus']
-    implementation project.libs['gson']
-    implementation project.libs["glide"]
+    implementation libs.rtc.sdk
+
+    implementation libs.eventbus
+    implementation libs.gson
+    implementation libs.glide
 }

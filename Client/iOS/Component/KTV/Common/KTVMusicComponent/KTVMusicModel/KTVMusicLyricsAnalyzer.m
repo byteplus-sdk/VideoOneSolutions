@@ -1,10 +1,5 @@
-//
-//  KTVMusicLyricsAnalyzer.m
-//  veRTC_Demo
-//
-//  Created by on 2022/1/18.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVMusicLyricsAnalyzer.h"
 #import "KTVMusicLyricModel.h"
 
@@ -71,7 +66,6 @@
     
     NSMutableArray *wordArray = [[NSMutableArray alloc] init];
     NSMutableArray <KTVMusicLyricWordModel *> *wordModelArray = [[NSMutableArray alloc] init];
-    // Parse each word For example [@"<0,151,0>歌", @"<151,102,0>词"]
     NSArray *wordList = [self matchString:lineLrcStr
                               regexString:wordRegexStr];
     // Parse each character such as [@"<0,151,0>", @"<151,102,0>"]
@@ -90,8 +84,6 @@
                                   regexString:timeRegexStr];
         wordModel.offset = [timeList[1] integerValue];
         wordModel.duration = [timeList[2] integerValue];
-        
-        // WorkStr @"歌"
         NSString *workStr = [wordList[i] stringByReplacingOccurrencesOfString:timeStr withString:@""];
         wordModel.word = workStr;
         [wordModelArray addObject:wordModel];

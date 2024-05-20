@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="5dp"
+    android:layout_marginTop="5dp">
+
+    <LinearLayout
+        android:id="@+id/settings_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:background="@drawable/live_shape_basic_item_r4"
+            android:orientation="vertical"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="3dp">
+
+            <EditText
+                android:id="@+id/push_url_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/medialive_input_push_address"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="#FFF"
+                android:textColorHint="@color/live_bg_white_p13"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/scan_url"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="3dp"
+                android:src="@drawable/live_ic_scan_white" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -30,6 +30,7 @@ android {
 
         buildConfigField('String', 'TERMS_OF_SERVICE_URL', "\"$TERMS_OF_SERVICE_URL\"")
         buildConfigField('String', 'PRIVACY_POLICY_URL', "\"$PRIVACY_POLICY_URL\"")
+        buildConfigField('String', 'GITHUB_REPO', "\"$GITHUB_REPO\"")
 
         manifestPlaceholders = [appName: project.APP_NAME]
 
@@ -68,33 +69,38 @@ android {
 
         pickFirst 'lib/armeabi-v7a/libbytenn.so'
         pickFirst 'lib/arm64-v8a/libbytenn.so'
+
+        pickFirst 'lib/armeabi-v7a/libh265enc.so'
+        pickFirst 'lib/arm64-v8a/libh265enc.so'
+
+        pickFirst 'lib/armeabi-v7a/libh264.so'
+        pickFirst 'lib/arm64-v8a/libh264.so'
     }
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:${project.kotlin_version}"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.22"))
 
-    implementation project.libs['app-compat']
-    implementation project.libs['recyclerview']
-    implementation project.libs['constraint-layout']
-    implementation project.libs['material']
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.constraintlayout
+    implementation libs.material
 
-    implementation project.libs['navigation-fragment-ktx']
-    implementation project.libs['navigation-ui-ktx']
+    implementation libs.navigation.fragment.ktx
+    implementation libs.navigation.ui.ktx
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
 
-    implementation project.libs["lifecycle-runtime-ktx"]
+    implementation libs.lifecycle.runtime.ktx
 
-    implementation project.libs["service-manager"]
-    implementation project.libs["service-manager-ext"]
+    implementation libs.bundles.servicemanager
 
-    implementation project.libs['eventbus']
+    implementation libs.eventbus
 
-    implementation project.libs['glide']
-    kapt project.libs['glide-compiler']
+    implementation libs.glide
+    kapt libs.glide.compiler
 
     implementation project(":component:SolutionBase")
     implementation project(":component:LoginKit")
@@ -105,5 +111,6 @@ dependencies {
     implementation project(":solutions:interactivelive")
     implementation project(":solutions:ktv")
     implementation project(rootProject.projects[':Vod:vod-demo'])
+    implementation project(':solutions:media-live:live-entrance')
     // endregion
 }

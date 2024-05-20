@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources>
+    <string name="medialive_callback_info">Callback record</string>
+    <string name="medialive_cycle_info">Periodic information</string>
+    <string name="medialive_mute">Mute</string>
+    <string name="medialive_play_background">Play in Background</string>
+    <string name="medialive_open_hdr">Enable HDR</string>
+    <string name="medialive_change_resolution">Switch resolution</string>
+    <string name="medialive_auto_switch">Automatic switch</string>
+    <string name="medialive_protocol">Protocol</string>
+    <string name="medialive_format">Format</string>
+    <string name="medialive_play_basic_setting">Basic\nSettings</string>
+    <string name="medialive_play_av_setting">Audio\nVideo</string>
+    <string name="medialive_play_control">Playback control</string>
+    <string name="medialive_info_display">Information display</string>
+    <string name="medialive_video">Video</string>
+    <string name="medialive_audio">Audio</string>
+    <string name="medialive_start_play">Play</string>
+    <string name="medialive_stop_play">Stop</string>
+    <string name="medialive_pause_resume">Pause/Resume</string>
+    <string name="medialive_snapshot">Screenshot</string>
+    <string name="medialive_loudness">Volume control</string>
+    <string name="medialive_not_support_change_fill_mode">Modifying fill mode is not supported.</string>
+    <string name="medialive_video_frame_format_buffer_combination_invalid">The selected video frame format and buffer combination is invalid or not currently supported!</string>
+    <string name="medialive_clear_abr_gear">Clear ABR profile</string>
+    <string name="medialive_add_abr_gear">Add ABR profile</string>
+    <string name="medialive_open_abr_toast">Please turn on ABR first.</string>
+    <string name="medialive_abr_gear_setting">Please select the ABR profile.</string>
+    <string name="medialive_default">Default</string>
+    <string name="medialive_add">Add</string>
+    <string name="medialive_pull_address_placeholder">Pull stream url</string>
+    <string name="medialive_bitrate_placeholder">Bitrate in kbps</string>
+    <string name="medialive_abr_input_not_complete">Incomplete information</string>
+    <string name="medialive_pull_abr_only_support_flv">ABR Only supports flv format streams</string>
+    <string name="medialive_bitrate_format_error">Bitrate format error</string>
+    <string name="medialive_rtm_not_support_pause_resume">RTM stream does not support pause/resume</string>
+    <string name="medialive_input_pull_address">Please enter the address</string>
+    <string name="medialive_pull_scan_placeholder">Scan the code to get the Pull stream address</string>
+</resources>

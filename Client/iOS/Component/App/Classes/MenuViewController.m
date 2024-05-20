@@ -4,6 +4,7 @@
 
 #import "MenuViewController.h"
 #import "FunctionsViewController.h"
+#import "DevsViewController.h"
 #import "MenuItemButton.h"
 #import "ScenesViewController.h"
 #import "UserEntry.h"
@@ -18,10 +19,12 @@
 @property (nonatomic, strong) UserEntry *userEntry;
 @property (nonatomic, strong) MenuItemButton *scenesButton;
 @property (nonatomic, strong) MenuItemButton *functionButton;
+@property (nonatomic, strong) MenuItemButton *developersButton;
 
 @property (nonatomic, weak) UIViewController *currentVC;
 @property (nonatomic, strong) FunctionsViewController *functionsViewController;
 @property (nonatomic, strong) ScenesViewController *scenesViewController;
+@property (nonatomic, strong) DevsViewController *devsController;
 
 @property (nonatomic, strong) UIView *bottomView;
 @end
@@ -47,7 +50,10 @@
     }];
     [self.bottomView addSubview:self.scenesButton];
     [self.bottomView addSubview:self.functionButton];
-    NSArray *bottomBtns = @[self.scenesButton, self.functionButton];
+    [self.bottomView addSubview:self.developersButton];
+    NSArray *bottomBtns = @[self.scenesButton,
+                            self.functionButton,
+                            self.developersButton];
     [bottomBtns mas_distributeViewsAlongAxis:(MASAxisTypeHorizontal)
                             withFixedSpacing:0
                                  leadSpacing:0
@@ -109,10 +115,15 @@
 
 - (void)prepareEnvironment {
     [self.userEntry reloadData];
-    Class impClass = NSClassFromString(@"VideoPlaybackEdit");
-    if (impClass && [impClass conformsToProtocol:@protocol(EntranceProtocol)]) {
-        [(Class<EntranceProtocol>)impClass prepareEnvironment];
+    Class impVodClass = NSClassFromString(@"VideoPlaybackEdit");
+    if (impVodClass && [impVodClass conformsToProtocol:@protocol(EntranceProtocol)]) {
+        [(Class<EntranceProtocol>)impVodClass prepareEnvironment];
     }
+    Class impLiveClass = NSClassFromString(@"VELApplication");
+    if (impLiveClass && [impLiveClass respondsToSelector:@selector(prepareEnvironment)]) {
+        [impLiveClass prepareEnvironment];
+    }
+
 }
 
 #pragma mark - Touch Action
@@ -137,18 +148,32 @@
 }
 
 - (void)scenesButtonAction {
+    [self hideViewController:self.devsController];
     [self hideViewController:self.functionsViewController];
     [self showViewController:self.scenesViewController];
     self.scenesButton.status = ButtonStatusActive;
     self.functionButton.status = ButtonStatusNone;
+    self.developersButton.status = ButtonStatusNone;
 }
 
 - (void)functionButtonAction {
+    [self hideViewController:self.devsController];
     [self hideViewController:self.scenesViewController];
     [self showViewController:self.functionsViewController];
     self.functionButton.status = ButtonStatusActive;
     self.scenesButton.status = ButtonStatusNone;
+    self.developersButton.status = ButtonStatusNone;
 }
+
+- (void)developersButtonAction {
+    [self showViewController:self.devsController];
+    [self hideViewController:self.scenesViewController];
+    [self hideViewController:self.functionsViewController];
+    self.developersButton.status = ButtonStatusActive;
+    self.functionButton.status = ButtonStatusNone;
+    self.scenesButton.status = ButtonStatusNone;
+}
+
 
 - (void)entryUserViewContorller {
     UserViewController *userVC = [[UserViewController alloc] init];
@@ -169,6 +194,14 @@
         _functionsViewController = [[FunctionsViewController alloc] init];
     }
     return _functionsViewController;
+}
+
+- (DevsViewController *)devsController {
+    if (!_devsController) {
+        _devsController = [[DevsViewController alloc] init];
+    }
+    return _devsController;
+
 }
 
 - (UIView *)bottomView {
@@ -210,6 +243,20 @@
         [_functionButton bingFont:[UIFont systemFontOfSize:14 weight:UIFontWeightMedium] status:ButtonStatusActive];
     }
     return _functionButton;
+}
+
+- (MenuItemButton *)developersButton {
+    if (!_developersButton) {
+        _developersButton = [[MenuItemButton alloc] init];
+        _developersButton.backgroundColor = [UIColor clearColor];
+        [_developersButton addTarget:self action:@selector(developersButtonAction) forControlEvents:UIControlEventTouchUpInside];
+        [_developersButton setTitle:LocalizedStringFromBundle(@"menu_developers", @"App") forState:UIControlStateNormal];
+        [_developersButton bingImage:[UIImage imageNamed:@"menu_developers" bundleName:@"App"] status:ButtonStatusNone];
+        [_developersButton bingImage:[UIImage imageNamed:@"menu_developers_s" bundleName:@"App"] status:ButtonStatusActive];
+        [_developersButton bingFont:[UIFont systemFontOfSize:14] status:ButtonStatusNone];
+        [_developersButton bingFont:[UIFont systemFontOfSize:14 weight:UIFontWeightMedium] status:ButtonStatusActive];
+    }
+    return _developersButton;
 }
 
 - (UserEntry *)userEntry {

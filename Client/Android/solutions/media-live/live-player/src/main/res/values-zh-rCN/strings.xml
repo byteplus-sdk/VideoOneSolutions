@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="medialive_callback_info">回调记录</string>
+    <string name="medialive_cycle_info">周期信息</string>
+    <string name="medialive_mute">静音</string>
+    <string name="medialive_play_background">后台播放</string>
+    <string name="medialive_open_hdr">开启HDR</string>
+    <string name="medialive_change_resolution">分辨率切换</string>
+    <string name="medialive_auto_switch">自动切档位</string>
+    <string name="medialive_protocol">协议</string>
+    <string name="medialive_format">格式</string>
+    <string name="medialive_play_basic_setting">基 础\n设 置</string>
+    <string name="medialive_play_av_setting">音 频\n视 频</string>
+    <string name="medialive_play_control">播放控制</string>
+    <string name="medialive_info_display">信息展示</string>
+    <string name="medialive_video">视频</string>
+    <string name="medialive_audio">音频</string>
+    <string name="medialive_start_play">开始播放</string>
+    <string name="medialive_stop_play">停止播放</string>
+    <string name="medialive_pause_resume">暂停/恢复</string>
+    <string name="medialive_snapshot">截图</string>
+    <string name="medialive_loudness">音量控制</string>
+    <string name="medialive_not_support_change_fill_mode">不支持修改填充模式</string>
+    <string name="medialive_video_frame_format_buffer_combination_invalid">选择的视频帧 Format 和 Buffer 组合非法或暂不支持！</string>
+    <string name="medialive_clear_abr_gear">清空档位</string>
+    <string name="medialive_add_abr_gear">添加ABR档位</string>
+    <string name="medialive_open_abr_toast">请先开启ABR</string>
+    <string name="medialive_abr_gear_setting">请配置ABR档位</string>
+    <string name="medialive_default">默认</string>
+    <string name="medialive_add">添加</string>
+    <string name="medialive_pull_address_placeholder">拉流地址</string>
+    <string name="medialive_bitrate_placeholder">码率，单位为kbps</string>
+    <string name="medialive_abr_input_not_complete">信息填写不完整</string>
+    <string name="medialive_pull_abr_only_support_flv">仅支持 flv 格式流</string>
+    <string name="medialive_bitrate_format_error">Bitrate 格式错误</string>
+    <string name="medialive_rtm_not_support_pause_resume">RTM 流不支持暂停/恢复播放</string>
+    <string name="medialive_input_pull_address">请输入拉流地址</string>
+    <string name="medialive_pull_scan_placeholder">扫码获取拉流地址</string>
+</resources>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/live_bg_main"
+        android:minWidth="320dp">
+
+        <include
+            android:id="@+id/close_bar"
+            layout="@layout/live_back_title_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/abr_gear"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/abr_gear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/live_bg_item_r5"
+            app:layout_constraintBottom_toTopOf="@id/url"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/close_bar">
+
+            <androidx.gridlayout.widget.GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                app:columnCount="3"
+                app:useDefaultMargins="true">
+
+                <RadioButton
+                    android:id="@+id/abr_gear_origin"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_resolution_origin"
+                    app:layout_column="0"
+                    app:layout_columnWeight="1"
+                    app:layout_row="0" />
+
+                <RadioButton
+                    android:id="@+id/abr_gear_uhd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_resolution_uhd"
+                    app:layout_column="1"
+                    app:layout_columnWeight="1"
+                    app:layout_row="0" />
+
+                <RadioButton
+                    android:id="@+id/abr_gear_hd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_resolution_hd"
+                    app:layout_column="2"
+                    app:layout_columnWeight="1"
+                    app:layout_row="0" />
+
+                <RadioButton
+                    android:id="@+id/abr_gear_ld"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_resolution_ld"
+                    app:layout_column="0"
+                    app:layout_columnWeight="1"
+                    app:layout_row="1" />
+
+                <RadioButton
+                    android:id="@+id/abr_gear_sd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_resolution_sd"
+                    app:layout_column="1"
+                    app:layout_columnWeight="1"
+                    app:layout_row="1" />
+            </androidx.gridlayout.widget.GridLayout>
+        </RadioGroup>
+
+
+        <EditText
+            android:id="@+id/url"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/live_bg_item_r5"
+            android:hint="@string/medialive_pull_address_placeholder"
+            android:padding="10dp"
+            android:textColor="#000"
+            android:textColorHint="@color/live_text_gray"
+            app:layout_constraintBottom_toTopOf="@id/bitrate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/abr_gear" />
+
+        <ImageView
+            android:id="@+id/scan"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="12dp"
+            android:src="@drawable/live_ic_scan_black"
+            app:layout_constraintBottom_toBottomOf="@id/url"
+            app:layout_constraintEnd_toEndOf="@id/url"
+            app:layout_constraintTop_toTopOf="@id/url" />
+
+        <EditText
+            android:id="@+id/bitrate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/live_bg_item_r5"
+            android:hint="@string/medialive_bitrate_placeholder"
+            android:inputType="numberDecimal"
+            android:padding="10dp"
+            android:textColor="#000"
+            android:textColorHint="@color/live_text_gray"
+            app:layout_constraintBottom_toTopOf="@id/abr_gear_is_default"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/url" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/abr_gear_is_default"
+            style="@style/LiveSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/live_bg_item_r5"
+            android:minWidth="120dp"
+            android:padding="5dp"
+            android:text="@string/medialive_default"
+            app:layout_constraintBottom_toTopOf="@id/tv_add_abr"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bitrate" />
+
+        <TextView
+            android:id="@+id/tv_add_abr"
+            style="@style/LiveButton.BlueR"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="25dp"
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            android:text="@string/medialive_add"
+            android:textAppearance="@style/LiveTextView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/abr_gear_is_default" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

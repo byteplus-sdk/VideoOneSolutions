@@ -1,11 +1,5 @@
-//
-//  KTVRoomTopSelectView.h
-//  veRTC_Demo
-//
-//  Created by on 2021/5/24.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <UIKit/UIKit.h>
 @class KTVRoomTopSelectView;
 

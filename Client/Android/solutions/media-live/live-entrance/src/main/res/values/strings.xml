@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="medialive_entry_title">Live Broadcast Integration Guide</string>
+    <string name="medialive_entry_des">Offering technical guides to helps you better integrate the Live Broadcast SDK.</string>
+    <string name="medialive_navbar_title">MediaLive</string>
+    <string name="medialive_live_push">Live Streaming Push</string>
+    <string name="medialive_live_pull">Live Streaming Pull</string>
+</resources>

@@ -1,11 +1,5 @@
-//
-//  KTVRoomViewController.m
-//  veRTC_Demo
-//
-//  Created by on 2021/5/18.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVRoomViewController.h"
 #import "KTVRoomViewController+SocketControl.h"
 #import "KTVDownloadMusicComponent.h"
@@ -458,14 +452,12 @@
 
 - (void)KTVRTCManager:(KTVRTCManager *)KTVRTCManager onRoomStateChanged:(RTCJoinModel *)joinModel uid:(NSString *)uid {
     if (joinModel.errorCode == 0 && joinModel.joinType == 0) {
-        // 加入房间成功
         __weak __typeof(self) wself = self;
         [self.pickSongComponent requestMusicListWithBlock:^(NSArray<KTVSongModel *> *musicList) {
             [[KTVDownloadMusicComponent shared] updateOnlineMusicList:musicList];
             [wself.musicComponent startSingWithSongModel:wself.songModel];
         }];
     } else if (joinModel.errorCode == 0 && joinModel.joinType != 0) {
-        // 断网重新连接
         [self reconnectKTVRoom];
     }
 }
@@ -666,12 +658,10 @@
 }
 
 - (void)showPickSongView {
-    // 在线曲库列表
     [self.pickSongComponent show];
 }
 
 - (void)showSongListView {
-    // 已点歌曲列表
     [self.pickSongComponent showPickedSongList];
 }
 

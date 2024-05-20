@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="live_abr_title" translatable="false">ABR</string>
+    <string name="live_sei_title" translatable="false">SEI</string>
+
+    <string name="live_resolution_origin" translatable="false">Origin</string>
+    <string name="live_resolution_uhd" translatable="false">UHD</string>
+    <string name="live_resolution_hd" translatable="false">HD</string>
+    <string name="live_resolution_ld" translatable="false">LD</string>
+    <string name="live_resolution_sd" translatable="false">SD</string>
+
+    <string-array name="live_protocols" translatable="false">
+        <item>TCP</item>
+        <item>TLS</item>
+        <item>QUIC</item>
+    </string-array>
+
+    <string-array name="live_formats" translatable="false">
+        <item>FLV</item>
+        <item>HLS</item>
+        <item>RTM</item>
+    </string-array>
+
+    <string name="medialive_player_version_xxx" translatable="false">BytePlus LivePlayer: %s</string>
+</resources>

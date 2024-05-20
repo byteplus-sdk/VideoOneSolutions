@@ -1,11 +1,5 @@
-//
-//  KTVNavViewController.h
-//  quickstart
-//
-//  Created by on 2021/3/22.
-//  
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

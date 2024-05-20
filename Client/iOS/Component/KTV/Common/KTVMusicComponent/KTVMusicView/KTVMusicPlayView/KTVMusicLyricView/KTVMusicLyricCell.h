@@ -1,10 +1,5 @@
-//
-//  KTVMusicLyricCell.h
-//  AFNetworking
-//
-//  Created by bytedance on 2022/11/21.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "KTVMusicLyricConfig.h"
 #import "KTVMusicLyricModel.h"
 #import <UIKit/UIKit.h>

@@ -2,8 +2,9 @@
 <resources>
     <string name="home">主页</string>
     <string name="account">个人中心</string>
-    <string name="scene">场景</string>
-    <string name="function">功能</string>
+    <string name="main_tab_scene">场景</string>
+    <string name="main_tab_function">功能</string>
+    <string name="main_tab_for_developers">开发者</string>
     <string name="language">语言</string>
     <string name="language_value">简体中文</string>
     <string name="privacy_policy">隐私协议</string>
@@ -18,5 +19,7 @@
     <string name="same_logged_in">相同ID用户已登录，您已被强制下线！</string>
     <string name="videoone_center_title">VideoOne 中心</string>
     <string name="videoone_center_welcome">欢迎来到 VideoOne 中心，请选择感兴趣的场景进入体验</string>
-    <string name="function_title">单功能体验</string>
+    <string name="product_function_title">单功能体验</string>
+    <string name="product_video_playback">视频回放</string>
+    <string name="developers_guide_title">开发者指南</string>
 </resources>

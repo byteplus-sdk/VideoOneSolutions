@@ -7,4 +7,6 @@ import androidx.lifecycle.ViewModel
 
 class MainViewModel : ViewModel() {
     val currentTab = MutableLiveData(0)
+
+    val guidelineTop = MutableLiveData<Int>()
 }
