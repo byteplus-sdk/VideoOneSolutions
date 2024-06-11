@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-package handler
+package owc_handler
 
 import (
+	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
+	"github.com/byteplus/VideoOneServer/internal/models/public"
+
 	"context"
 
-	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_handler"
-	"github.com/byteplus/VideoOneServer/internal/application/live/live_handler"
-	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_handler"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
+	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
-func disconnectHandler(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
+func (eh *EventHandler) Disconnect(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
+	logs.CtxInfo(ctx, "owc disconnect,param:%#v", param)
 
-	liveHandler := live_handler.NewEventHandler()
-	liveHandler.Disconnect(ctx, param)
-
-	ktvHandler := ktv_handler.NewEventHandler()
-	ktvHandler.Disconnect(ctx, param)
-
-	owcHandler := owc_handler.NewEventHandler()
-	owcHandler.Disconnect(ctx, param)
-
+	roomService := owc_service.GetRoomService()
+	roomService.Disconnect(ctx, param.AppID, param.RoomID, param.UserID)
 	return nil, nil
 }

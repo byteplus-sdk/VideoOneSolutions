@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-package public
+package owc_db
 
-const (
-	BizIDLive       = "live"
-	BizIDKtv        = "ktv"
-	BizIDAPIExample = "rtc_api_example"
-	BizIDOwc        = "owc"
+import (
+	"context"
+
+	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_entity"
+	"github.com/byteplus/VideoOneServer/internal/pkg/db"
+	"github.com/byteplus/VideoOneServer/internal/pkg/util"
 )
 
-const (
-	BidLive       = "BytePlusRTC_bid_live"
-	BidKTV        = "BytePlusRTC_bid_ktv"
-	BidAPIExample = "BytePlusRTC_bid_api_example"
-	BidOwc        = "BytePlusRTC_bid_owc"
-)
+const PresetSong = "song"
 
-const (
-	CtxSourceApi = "SourceApi"
-)
+type DbPresetSongRepo struct{}
 
-var BidMap = map[string]string{
-	BizIDLive:       BidLive,
-	BizIDKtv:        BidKTV,
-	BizIDAPIExample: BidAPIExample,
-	BizIDOwc:        BidOwc,
+func (repo *DbPresetSongRepo) OwcGetPresetSong(ctx context.Context) ([]owc_entity.PresetSong, error) {
+	defer util.CheckPanic()
+	var s []owc_entity.PresetSong
+	err := db.Client.WithContext(ctx).Debug().Table(PresetSong).Find(&s).Error
+	if err != nil {
+		return nil, err
+	}
+	return s, nil
 }
-
-const VideoCommentNum = 10

@@ -53,6 +53,8 @@ var (
 	ErrSceneReplyInviteRoomHasAudience = NewCustomError(643, errors.New("host link other host ，room has audience"))
 	ErrSceneReplyRoomLinked            = NewCustomError(644, errors.New("host link other host，host already link another host"))
 	ErrSceneRepeatInvite               = NewCustomError(645, errors.New("host invite other host，host invite audience repeatedly"))
+	ErrStartSingType                   = NewCustomError(646, errors.New("start type must be 1 or 2"))
+	ErrStartSingError                  = NewCustomError(647, errors.New("start sing found error"))
 	ErrGetAppInfo                      = NewCustomError(800, errors.New("get appInfo error"))
 	ErrNotExistAppInfo                 = NewCustomError(801, errors.New("appInfo not exist in redis"))
 	ErrCheckTrafficAppID               = NewCustomError(802, errors.New("check traffic appID error"))

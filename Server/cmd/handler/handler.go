@@ -23,6 +23,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_handler"
+
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_handler"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_handler"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_handler"
@@ -129,6 +131,24 @@ func (ehd *EventHandlerDispatch) initHandlers() {
 	ehd.register("ktvReconnect", ktvHandler.Reconnect)
 	ehd.register("ktvClearUser", ktvHandler.ClearUser)
 	ehd.register("ktvGetPresetSongList", ktvHandler.GetPreSetSongList)
+
+	//owc
+	owcHandler := owc_handler.NewEventHandler()
+	ehd.register("owcFinishLive", owcHandler.FinishLive)
+	ehd.register("owcGetActiveLiveRoomList", owcHandler.GetActiveLiveRoomList)
+	ehd.register("owcJoinLiveRoom", owcHandler.JoinLiveRoom)
+	ehd.register("owcLeaveLiveRoom", owcHandler.LeaveLiveRoom)
+	ehd.register("owcSendMessage", owcHandler.SendMessage)
+	ehd.register("owcStartLive", owcHandler.StartLive)
+	ehd.register("owcUpdateMediaStatus", owcHandler.UpdateMediaStatus)
+	ehd.register("owcRequestSong", owcHandler.RequestSong)
+	ehd.register("owcCutOffSong", owcHandler.CutOffSong)
+	ehd.register("owcStartSing", owcHandler.StartSing)
+	ehd.register("owcFinishSing", owcHandler.FinishSing)
+	ehd.register("owcGetRequestSongList", owcHandler.GetRequestSongList)
+	ehd.register("owcClearUser", owcHandler.ClearUser)
+	ehd.register("owcReconnect", owcHandler.Reconnect)
+	ehd.register("owcGetPresetSongList", owcHandler.GetPreSetSongList)
 }
 
 func (ehd *EventHandlerDispatch) register(eventName string, handlerFunc endpoint.Endpoint) {
