@@ -9,3 +9,5 @@ app_id: "{your_vod_appid}"
 vod_play_list_id: "{your_vod_play_list_id}"
 ktv_timer_enable: true
 ktv_experience_time: 20
+owc_timer_enable: true
+owc_experience_time: 20

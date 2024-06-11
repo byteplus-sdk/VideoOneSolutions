@@ -49,7 +49,8 @@ CREATE TABLE `live_linker`
   DEFAULT CHARSET = utf8mb4
   ROW_FORMAT = DYNAMIC COMMENT ='link information';
 
-SET sql_mode = '';
+SET
+sql_mode = '';
 DROP TABLE IF EXISTS `live_room`;
 CREATE TABLE `live_room`
 (
@@ -201,3 +202,42 @@ CREATE TABLE `ktv_user`
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_room_id_user_id` (`room_id`,`user_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='info of KTV live user';
+
+CREATE TABLE `owc_room`
+(
+    `id`             bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'key',
+    `app_id`         varchar(100) NOT NULL DEFAULT '' COMMENT 'app id',
+    `room_id`        varchar(100) NOT NULL DEFAULT '' COMMENT 'room id',
+    `room_name`      varchar(200) NOT NULL DEFAULT '' COMMENT 'room name',
+    `host_user_id`   varchar(100) NOT NULL DEFAULT '' COMMENT 'host id',
+    `host_user_name` varchar(200) NOT NULL DEFAULT '' COMMENT 'host bame',
+    `status`         int(11) NOT NULL DEFAULT '0' COMMENT 'status of room',
+    `create_time`    timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time`    timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    `start_time`     bigint(20) DEFAULT NULL COMMENT 'room start time',
+    `finish_time`    bigint(20) DEFAULT NULL COMMENT 'room finsh time',
+    `ext`            varchar(200)          DEFAULT NULL COMMENT 'extra info',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_room_id` (`room_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='room of one-way chorus';
+
+
+CREATE TABLE `owc_user`
+(
+    `id`          bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'key',
+    `app_id`      varchar(100) NOT NULL DEFAULT '' COMMENT 'app id',
+    `room_id`     varchar(100) NOT NULL DEFAULT '' COMMENT 'room id',
+    `user_id`     varchar(255) NOT NULL DEFAULT '' COMMENT 'user id',
+    `user_name`   varchar(255) NOT NULL DEFAULT '' COMMENT 'user name',
+    `user_role`   int(11) NOT NULL DEFAULT '0' COMMENT '1: host，2:audience',
+    `net_status`  int(11) NOT NULL DEFAULT '0' COMMENT 'user net status',
+    `seat_id`     int(11) NOT NULL DEFAULT '0' COMMENT 'seat id',
+    `mic`         tinyint(4) NOT NULL DEFAULT '0' COMMENT 'mic status',
+    `create_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    `join_time`   bigint(20) DEFAULT NULL COMMENT 'join time',
+    `leave_time`  bigint(20) DEFAULT NULL COMMENT 'leave time',
+    `device_id`   varchar(128) NOT NULL DEFAULT '' COMMENT 'device_id',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_room_id_user_id` (`room_id`,`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='user of one-way chorus';

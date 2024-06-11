@@ -36,6 +36,7 @@ const (
 	csLocalUserIDAssignKey   = "cs:rtc_demo:local:userid:assign"
 	ktvRoomLockKeyPrefix     = "twv:rtc_demo:room_song:lock:"
 	ktvRoomSongLockKeyPrefix = "ktv:rtc_demo:room_song:lock:"
+	owcRoomSongLockKeyPrefix = "owc:rtc_demo:room_song:lock:"
 )
 
 func getDistributedLockKey(roomID string) string {
@@ -117,4 +118,12 @@ func LockKtvRoomSong(ctx context.Context, roomID string) (bool, int64) {
 
 func UnlockKtvRoomSong(ctx context.Context, roomID string, lt int64) error {
 	return freeLock(ctx, ktvRoomSongLockKeyPrefix+roomID, lt)
+}
+
+func LockOwcRoom(ctx context.Context, roomID string) (bool, int64) {
+	return mustGetLock(ctx, owcRoomSongLockKeyPrefix+roomID, lockExpiration)
+}
+
+func UnlockOwcRoom(ctx context.Context, roomID string, lt int64) error {
+	return freeLock(ctx, owcRoomSongLockKeyPrefix+roomID, lt)
 }

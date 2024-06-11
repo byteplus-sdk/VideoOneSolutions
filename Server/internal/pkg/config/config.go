@@ -35,6 +35,8 @@ type Configuration struct {
 	KtvExperienceTime  int    `yaml:"ktv_experience_time"`
 	AppID              string `yaml:"app_id"`
 	VodPlayListID      string `yaml:"vod_play_list_id"`
+	OwcTimerEnable     bool   `yaml:"owc_timer_enable"`
+	OwcExperienceTime  int    `yaml:"owc_experience_time"`
 }
 
 var configs *Configuration
