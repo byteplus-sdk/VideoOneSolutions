@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rtc_bg_config_card"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/label_pcm_mixing"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_mixing_file_label" />
+
+        <EditText
+            android:id="@+id/res_pcm"
+            style="@style/EditTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="4"
+            android:enabled="false"
+            android:textSize="12sp"
+            tools:text="music.m4a" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_play"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/button_play"
+            tools:gravity="center" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_pause"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/button_pause"
+            android:visibility="gone"
+            tools:gravity="center"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_resume"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/button_resume"
+            android:visibility="gone"
+            tools:gravity="center"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_stop"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/button_stop"
+            tools:gravity="center"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_volume" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/volume_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1"
+            android:stepSize="1"
+            android:value="100"
+            android:valueFrom="0"
+            android:valueTo="400"
+            app:tickVisible="false"
+            tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+        <TextView
+            android:id="@+id/volume_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minWidth="36dp"
+            android:text="@string/label_100" />
+    </LinearLayout>
+</LinearLayout>

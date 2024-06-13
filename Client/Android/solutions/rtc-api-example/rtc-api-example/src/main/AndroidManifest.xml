@@ -1,0 +1,147 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <application>
+        <activity
+            android:name="com.vertc.api.example.examples.basic.QuickStartActivity"
+            android:exported="false"
+            android:label="@string/example_quick_start">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.room.MultiRoomActivity"
+            android:exported="false"
+            android:label="@string/example_multi_room">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.room.CrossRoomPKActivity"
+            android:exported="false"
+            android:label="@string/example_cross_room_pk">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.audio.RawAudioDataActivity"
+            android:exported="false"
+            android:label="@string/example_raw_audio_data">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.audio.mixing.AudioMediaMixingActivity"
+            android:exported="false"
+            android:label="@string/title_audio_media_mixing">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.audio.mixing.AudioEffectMixingActivity"
+            android:exported="false"
+            android:label="@string/title_audio_effect_mixing">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.audio.VoiceEffectActivity"
+            android:exported="false"
+            android:label="@string/example_voice_effect">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.video.pip.PictureInPictureActivity"
+            android:exported="false"
+            android:label="@string/example_picture_in_picture">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.video.VideoCommonConfigActivity"
+            android:exported="false"
+            android:label="@string/example_video_config">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.video.VideoRotateConfigActivity"
+            android:exported="false"
+            android:label="@string/example_video_rotation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.video.CDNStreamActivity"
+            android:exported="false"
+            android:label="@string/example_cdn_stream">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.thirdpart.bytebeauty.ByteBeautyActivity"
+            android:exported="false"
+            android:label="@string/title_byte_beauty">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.messaging.SEIMessageActivity"
+            android:exported="false"
+            android:label="@string/example_sei_messaging">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.messaging.StreamSyncInfoActivity"
+            android:exported="false"
+            android:label="@string/example_stream_sync_info">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

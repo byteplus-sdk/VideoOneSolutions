@@ -47,9 +47,9 @@ dependencies {
 
     implementation 'com.github.bosphere.android-fadingedgelayout:fadingedgelayout:1.0.0'
 
-    implementation project(':component:ToolKit')
-    implementation project(':component:SolutionBase')
-    implementation project(':component:Avatars')
+    implementation project(':component:rtc-toolkit')
+    implementation project(':component:solution-base')
+    implementation project(':component:avatars')
 
     implementation libs.rtc.sdk
 

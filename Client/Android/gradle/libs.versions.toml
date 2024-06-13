@@ -20,15 +20,9 @@ lifecycle = "2.5.1"
 viewpager = "1.0.0"
 viewpager2 = "1.0.0"
 
-kotlin = "1.9.22"
 kotlinx-coroutines = "1.7.3"
 
-servicemanager = "1.0.9.3"
-
-ttsdk = "1.39.100.9.onekit"
-
-immersionbar = "3.2.2"
-
+ttsdk = "1.41.300.201-rtc"
 
 [libraries]
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -50,17 +44,13 @@ navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version = "2.2.0" }
 
 viewpager = { module = "androidx.viewpager:viewpager", version.ref = "viewpager" }
 viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 
 cardview = { module = "androidx.cardview:cardview", version = "1.0.0" }
 
-exifinterface = { module = "androidx.exifinterface:exifinterface", version = "1.3.7" }
-
 core-ktx = { module = "androidx.core:core-ktx", version = "1.10.1" }
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 
 commons-net = { module = "commons-net:commons-net", version = "3.9.0" }
@@ -74,14 +64,9 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 lottie = { module = "com.airbnb.android:lottie", version = "6.1.0" }
-
 zxing = { module = "com.journeyapps:zxing-android-embedded", version = "3.6.0" }
 
-rtc-sdk = { module = "com.bytedanceapi:ttsdk-ttlivepush_rtc", version = "1.39.100.9.onekit" }
-
-servicemanager-core = { module = "com.bytedance.news.common:service-manager", version.ref = "servicemanager" }
-servicemanager-ext = { module = "com.bytedance.news.common:service-manager-ext", version.ref = "servicemanager" }
-servicemanager-processor = { module = "com.bytedance.news.common:service-manager-processor", version = "1.0.9" }
+rtc-sdk = { module = "com.bytedanceapi:ttsdk-ttlivepush_rtc", version.ref = "ttsdk" }
 
 ttsdk-player-premium = { module = "com.bytedanceapi:ttsdk-player_premium", version.ref = "ttsdk" }
 ttsdk-ttlivepush-rtc = { module = "com.bytedanceapi:ttsdk-ttlivepush_rtc", version.ref = "ttsdk" }
@@ -93,14 +78,5 @@ ttsdk-ttvideoengine-debugtool = { module = "com.bytedanceapi:ttvideoengine-debug
 
 applog-lite = { module = "com.bytedance.applog:RangersAppLog-Lite-global", version = "6.14.3" }
 
-immersionbar = { module = "com.geyifeng.immersionbar:immersionbar", version.ref = "immersionbar" }
-immersionbar-ktx = { module = "com.geyifeng.immersionbar:immersionbar-ktx", version.ref = "immersionbar" }
-
-
 [bundles]
-servicemanager = ["servicemanager-core", "servicemanager-ext"]
 lifecycle-ktx = ["lifecycle-runtime-ktx", "lifecycle-livedata-ktx", "lifecycle-viewmodel-ktx"]
-
-[plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }

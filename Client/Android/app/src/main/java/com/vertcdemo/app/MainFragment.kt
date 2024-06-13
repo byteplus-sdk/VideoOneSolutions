@@ -22,7 +22,7 @@ import com.videoone.avatars.Avatars
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-class MainFragment : Fragment(R.layout.fragment_main) {
+class MainFragment : VersionFragment(R.layout.fragment_main) {
     private lateinit var mViewModel: MainViewModel
     private var mBinding: FragmentMainBinding? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +31,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val binding = FragmentMainBinding.bind(view).also { mBinding = it }
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets: WindowInsetsCompat ->

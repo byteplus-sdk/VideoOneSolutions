@@ -52,11 +52,6 @@
             self.descriptionLabel.text = LocalizedString(@"rtm_pull_streaming_des");
             break;
         }
-        case LiveSettingRTMPushStreaming: {
-            self.titleLabel.text = LocalizedString(@"rtm_push_streaming");
-            self.descriptionLabel.text = LocalizedString(@"rtm_push_streaming_des");
-            break;
-        }
         case LiveSettingABR: {
             self.titleLabel.text = LocalizedString(@"ABR");
             self.descriptionLabel.text = LocalizedString(@"ABR_des");

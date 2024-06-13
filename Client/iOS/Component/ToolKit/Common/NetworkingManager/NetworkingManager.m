@@ -68,7 +68,7 @@
     [self postWithPath:space parameters:parameters headers:nil progress:nil block:block];
 }
 
-+ (void)postWithParameters:(id)parameters space:(NSString *)space block:(void (^)(NetworkingResponse * _Nonnull))block {
++ (void)postWithParameters:(id)parameters space:(NSString *)space block:(void (^)(NetworkingResponse *_Nonnull))block {
     [self postWithPath:space parameters:parameters headers:nil progress:nil block:block];
 }
 
@@ -82,7 +82,8 @@
         parameters:parameters
         headers:headers
         progress:uploadProgress
-        success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+        success:^(NSURLSessionDataTask *_Nonnull task,
+                  id _Nullable responseObject) {
             [self processResponse:responseObject block:block];
             NSLog(@"[%@]-%@ %@", [self class], path, responseObject);
         } failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {

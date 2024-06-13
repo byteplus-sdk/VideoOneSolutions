@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdk 34
+
+    defaultConfig {
+        namespace 'com.vertc.api.example'
+
+        minSdkVersion 19
+        targetSdkVersion 34
+
+        buildConfigField('String', 'CV_LICENCE_FILENAME', "\"${safeGetProp('CV_LICENCE_FILENAME')}\"")
+        buildConfigField('String', 'CV_MODEL_RESOURCE_VERSION', "\"${safeGetProp('CV_MODEL_RESOURCE_VERSION', '1')}\"")
+        buildConfigField('String', 'CV_COMPOSE_MAKEUP_RESOURCE_VERSION', "\"${safeGetProp('CV_COMPOSE_MAKEUP_RESOURCE_VERSION', '1')}\"")
+        buildConfigField('String', 'CV_STICKER_RESOURCE_VERSION', "\"${safeGetProp('CV_STICKER_RESOURCE_VERSION', '1')}\"")
+        buildConfigField('String', 'CV_FILTER_RESOURCE_VERSION', "\"${safeGetProp('CV_FILTER_RESOURCE_VERSION', '1')}\"")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.constraintlayout
+    implementation libs.recyclerview
+    implementation libs.gridlayout
+
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    implementation libs.rtc.sdk
+
+    implementation project(':solutions:rtc-api-example:rtc-api-example-base')
+}
+
+def safeGetProp(prop, defaultValue = '') {
+    if (rootProject.hasProperty(prop)) {
+        return rootProject.property(prop)
+    } else if (project.hasProperty(prop)) {
+        return project.property(prop)
+    } else {
+        return defaultValue
+    }
+}

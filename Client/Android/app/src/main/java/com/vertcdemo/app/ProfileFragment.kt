@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.vertcdemo.app
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDialog
@@ -12,8 +14,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
 import com.vertcdemo.app.databinding.FragmentProfileBinding
 import com.vertcdemo.app.databinding.LayoutCommonKeyValueBinding
@@ -26,9 +30,14 @@ import com.videoone.avatars.Avatars.byUserId
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
+private const val TAG = "ProfileFragment"
+
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private var mBinding: FragmentProfileBinding? = null
+
+    private val versionModel: VersionViewModel
+            by navGraphViewModels(R.id.nav_app_main)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         WindowCompat.getInsetsController(
@@ -51,12 +60,16 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             val itemBinding =
                 LayoutCommonKeyValueBinding.inflate(layoutInflater, binding.settingContainer, false)
                     .apply {
-                        more.visibility = if (info.listener != null) View.VISIBLE else View.GONE
                         key.setText(info.key)
                         value.text = info.value
                         root.setOnClickListener(info.listener)
+                        more.visibility =
+                            if (info.showMore && info.listener != null) View.VISIBLE else View.GONE
                     }
 
+            info.hasNew?.observe(viewLifecycleOwner) { hasNew ->
+                itemBinding.dot.visibility = if (hasNew) View.VISIBLE else View.GONE
+            }
             binding.settingContainer.addView(itemBinding.root)
         }
 
@@ -91,7 +104,17 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             SettingInfo(R.string.terms_of_service) { openBrowser(BuildConfig.TERMS_OF_SERVICE_URL) },
             SettingInfo(R.string.notices) { it.findNavController().navigate(R.id.notices) },
             SettingInfo(R.string.cancel_account) { showDeleteAccountConfirm() },
-            SettingInfo(R.string.app_version, "v${BuildConfig.VERSION_NAME}"),
+            SettingInfo(
+                R.string.app_version,
+                "v${BuildConfig.VERSION_NAME}",
+                hasNew = versionModel.hasNew,
+                showMore = false
+            ) {
+                val url = versionModel.newVersionUrl
+                if (!url.isNullOrEmpty()) {
+                    openBrowser(url)
+                }
+            },
             SettingInfo(R.string.github) { openBrowser(BuildConfig.GITHUB_REPO) },
         )
     }
@@ -129,11 +152,19 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         dialog.show()
     }
 
-    private fun openBrowser(url: String) = startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-
-    private class SettingInfo(
-        val key: Int,
-        val value: String? = null,
-        val listener: View.OnClickListener? = null
-    )
+    private fun openBrowser(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (e: ActivityNotFoundException) {
+            Log.d(TAG, "openBrowser: failed: $url")
+        }
+    }
 }
+
+private class SettingInfo(
+    val key: Int,
+    val value: String? = null,
+    val hasNew: MutableLiveData<Boolean>? = null,
+    val showMore: Boolean = true,
+    val listener: View.OnClickListener? = null
+)

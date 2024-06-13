@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.vertc.api.example.examples.video.VideoCommonConfigActivity">
+
+    <com.vertc.api.example.view.NoPressedLinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/local_view_container"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:background="#A3C1DA" />
+
+            <FrameLayout
+                android:id="@+id/remote_view_container"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:background="#A4D4AE" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/room_id_input"
+                style="@style/EditTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:hint="@string/hint_room_id" />
+
+            <Button
+                android:id="@+id/btn_join_room"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_join_room" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/label_render_settings"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/video_configuration_label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_local_render_mode" />
+
+                <Spinner
+                    android:id="@+id/local_render_mode_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@drawable/rtc_spinner_bg"
+                    android:entries="@array/renderMode"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/video_configuration_label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_remote_render_mode" />
+
+                <Spinner
+                    android:id="@+id/remote_render_mode_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rtc_spinner_bg"
+                    android:entries="@array/renderMode"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/video_configuration_label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_local_mirror_type" />
+
+                <Spinner
+                    android:id="@+id/mirror_type_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rtc_spinner_bg"
+                    android:entries="@array/mirrorType"
+                    android:spinnerMode="dropdown" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/label_encode_settings"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/video_configuration_label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_encode_resolution" />
+
+                <EditText
+                    android:id="@+id/encoder_width"
+                    style="@style/EditTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rtc_bg_edittext"
+                    android:inputType="number"
+                    android:paddingHorizontal="10dp"
+                    android:text="1920" />
+
+                <TextView
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:text="X" />
+
+                <EditText
+                    android:id="@+id/encoder_height"
+                    style="@style/EditTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rtc_bg_edittext"
+                    android:inputType="number"
+                    android:paddingHorizontal="10dp"
+                    android:text="1080" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/video_configuration_label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_encode_frame_rate" />
+
+                <EditText
+                    android:id="@+id/encoder_frame_rate"
+                    style="@style/EditTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@drawable/rtc_bg_edittext"
+                    android:paddingHorizontal="10dp"
+                    android:text="30" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/video_configuration_label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_max_bitrate" />
+
+                <EditText
+                    android:id="@+id/max_bitrate"
+                    style="@style/EditTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@drawable/rtc_bg_edittext"
+                    android:inputType="number"
+                    android:paddingHorizontal="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/video_configuration_label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_min_bitrate" />
+
+                <EditText
+                    android:id="@+id/min_bitrate"
+                    style="@style/EditTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@drawable/rtc_bg_edittext"
+                    android:inputType="number"
+                    android:paddingHorizontal="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/video_configuration_label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_encoder_preference" />
+
+                <Spinner
+                    android:id="@+id/encoder_preference_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rtc_spinner_bg"
+                    android:entries="@array/encoderPreference"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_encoder_config"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_update_encoder_config" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/label_capture_params"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_capture_resolution" />
+
+                <EditText
+                    android:id="@+id/capture_width"
+                    style="@style/EditTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rtc_bg_edittext"
+                    android:inputType="number"
+                    android:text="1920" />
+
+                <TextView
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:text="X" />
+
+                <EditText
+                    android:id="@+id/capture_height"
+                    style="@style/EditTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rtc_bg_edittext"
+                    android:inputType="number"
+                    android:text="1080" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_capture_frame_rate" />
+
+                <EditText
+                    android:id="@+id/capture_frame_rate"
+                    style="@style/EditTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@drawable/rtc_bg_edittext"
+                    android:paddingHorizontal="10dp"
+                    android:text="30" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_capture_preference" />
+
+                <Spinner
+                    android:id="@+id/capture_preference_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rtc_spinner_bg"
+                    android:entries="@array/capturePreference"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_capture_config"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_update_capture_config" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="30dp" />
+
+    </com.vertc.api.example.view.NoPressedLinearLayout>
+</ScrollView>

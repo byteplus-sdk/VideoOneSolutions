@@ -4,15 +4,13 @@
 #import "AlertActionManager.h"
 #import "SystemAuthority.h"
 
-
-
 @interface KTVRTCManager () <ByteRTCVideoDelegate>
 
 // RTC / RTS room object
 @property (nonatomic, strong, nullable) ByteRTCRoom *rtcRoom;
 @property (nonatomic, strong) KTVRoomParamInfoModel *paramInfoModel;
 @property (nonatomic, assign) int audioMixingID;
-@property (nonatomic, assign) BOOL isAudioMixing;
+@property (nonatomic, assign) BOOL isAudioPlaying;
 @property (nonatomic, assign) BOOL isEnableAudioCapture;
 @property (nonatomic, assign) ByteRTCAudioRoute currentAudioRoute;
 @property (nonatomic, copy) NSString *currentMusicID;
@@ -74,14 +72,14 @@
     if (enable) {
         [SystemAuthority authorizationStatusWithType:AuthorizationTypeAudio
                                                block:^(BOOL isAuthorize) {
-            if (isAuthorize) {
-                NSLog(@"KTV RTC Manager == startAudioCapture");
-                [self.rtcRoom setUserVisibility:YES];
-                [self.rtcRoom publishStream:ByteRTCMediaStreamTypeAudio];
-                [self.rtcEngineKit startAudioCapture];
-                self.isEnableAudioCapture = YES;
-            }
-        }];
+                                                   if (isAuthorize) {
+                                                       NSLog(@"KTV RTC Manager == startAudioCapture");
+                                                       [self.rtcRoom setUserVisibility:YES];
+                                                       [self.rtcRoom publishStream:ByteRTCMediaStreamTypeAudio];
+                                                       [self.rtcEngineKit startAudioCapture];
+                                                       self.isEnableAudioCapture = YES;
+                                                   }
+                                               }];
     } else {
         NSLog(@"KTV RTC Manager == stopAudioCapture");
         [self.rtcRoom setUserVisibility:NO];
@@ -115,10 +113,9 @@
     if (IsEmptyStr(filePath)) {
         return;
     }
-    
+
     [self enableEarMonitor:NO];
-    
-    self.isAudioMixing = YES;
+    self.isAudioPlaying = YES;
     ByteRTCAudioMixingManager *audioMixingManager = [self.rtcEngineKit getAudioMixingManager];
     
     ByteRTCAudioMixingConfig *config = [[ByteRTCAudioMixingConfig alloc] init];
@@ -143,14 +140,14 @@
 }
 
 - (void)stopSinging {
-    self.isAudioMixing = NO;
+    self.isAudioPlaying = NO;
     ByteRTCAudioMixingManager *audioMixingManager = [self.rtcEngineKit getAudioMixingManager];
     
     [audioMixingManager stopAudioMixing:self.audioMixingID];
 }
 
 - (void)resetAudioMixingStatus {
-    self.isAudioMixing = NO;
+    self.isAudioPlaying = NO;
 }
 
 - (void)switchAccompaniment:(BOOL)isAccompaniment {
@@ -229,10 +226,10 @@
 - (void)rtcRoom:(ByteRTCRoom *)rtcRoom onNetworkQuality:(ByteRTCNetworkQualityStats *)localQuality remoteQualities:(NSArray<ByteRTCNetworkQualityStats *> *)remoteQualities {
     if (self.isEnableAudioCapture) {
         // For users who enable audio capture, the round-trip delay of data transmission.
-        self.paramInfoModel.rtt = [NSString stringWithFormat:@"%.0ld",(long)localQuality.rtt];
+        self.paramInfoModel.rtt = [NSString stringWithFormat:@"%.0ld", (long)localQuality.rtt];
     } else {
         // For users who turn off audio capture, the round-trip delay of data transmission.
-        self.paramInfoModel.rtt = [NSString stringWithFormat:@"%.0ld",(long)remoteQualities.firstObject.rtt];
+        self.paramInfoModel.rtt = [NSString stringWithFormat:@"%.0ld", (long)remoteQualities.firstObject.rtt];
     }
     // Downlink network quality score
     self.paramInfoModel.rxQuality = localQuality.rxQuality;
@@ -252,7 +249,7 @@
     }
 }
 
-- (void)rtcEngine:(ByteRTCVideo *)engine onLocalAudioPropertiesReport:(NSArray<ByteRTCLocalAudioPropertiesInfo *> *_Nonnull)audioPropertiesInfos {
+- (void)rtcEngine:(ByteRTCVideo *)engine onLocalAudioPropertiesReport:(NSArray<ByteRTCLocalAudioPropertiesInfo *> *)audioPropertiesInfos {
     NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
     for (int i = 0; i < audioPropertiesInfos.count; i++) {
         ByteRTCLocalAudioPropertiesInfo *model = audioPropertiesInfos[i];
@@ -265,7 +262,7 @@
 
 - (void)rtcEngine:(ByteRTCVideo *)engine onAudioRouteChanged:(ByteRTCAudioRoute)device {
     _currentAudioRoute = device;
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([self.delegate respondsToSelector:@selector(KTVRTCManagerOnAudioRouteChanged:)]) {
             [self.delegate KTVRTCManagerOnAudioRouteChanged:self];
@@ -284,20 +281,20 @@
 }
 
 - (void)rtcEngine:(ByteRTCVideo *)engine onAudioMixingPlayingProgress:(NSInteger)mixId progress:(int64_t)progress {
-        if ([self.delegate respondsToSelector:@selector(KTVRTCManager:onAudioMixingPlayingProgress:)]) {
-            [self.delegate KTVRTCManager:self onAudioMixingPlayingProgress:progress];
-        }
+    if ([self.delegate respondsToSelector:@selector(KTVRTCManager:onAudioMixingPlayingProgress:)]) {
+        [self.delegate KTVRTCManager:self onAudioMixingPlayingProgress:progress];
+    }
 }
 
 - (void)rtcEngine:(ByteRTCVideo *)engine onStreamSyncInfoReceived:(ByteRTCRemoteStreamKey *)remoteStreamKey streamType:(ByteRTCSyncInfoStreamType)streamType data:(NSData *)data {
     // Cut the song enough to start local playback and still be able to receive callbacks causing the lyrics to flicker
-    if (self.isAudioMixing) {
+    if (self.isAudioPlaying) {
         return;
     }
-    
+
     NSString *json = [[NSString alloc] initWithBytes:data.bytes length:data.length encoding:NSUTF8StringEncoding];
     NSDictionary *dic = [NetworkingTool decodeJsonMessage:json];
-    
+
     if ([self.delegate respondsToSelector:@selector(KTVRTCManager:onStreamSyncInfoReceived:)]) {
         [self.delegate KTVRTCManager:self onStreamSyncInfoReceived:dic];
     }

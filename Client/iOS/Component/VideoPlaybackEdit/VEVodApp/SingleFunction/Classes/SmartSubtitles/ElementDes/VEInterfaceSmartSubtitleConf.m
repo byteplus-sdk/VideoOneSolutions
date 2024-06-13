@@ -110,7 +110,7 @@ static NSString *playSpeedButtonIdentifier = @"playSpeedButtonIdentifier";
     __weak __typeof__(self) weak_self = self;
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
         [weak_self.button setTitle:languageName forState:UIControlStateNormal];
-    })
+    });
 }
 
 - (BOOL)buttonHiddon {

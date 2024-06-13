@@ -197,8 +197,20 @@
 
 - (void)mediaComponent:(LiveMediaComponent *)mediaComponent
        clickDisconnect:(BOOL)isClick {
-    [self loadDataWithAudienceLinkmicLeave];
-    [self.mediaComponent close];
+    __weak __typeof(self) wself = self;
+    AlertActionModel *alertModel = [[AlertActionModel alloc] init];
+    alertModel.title = LocalizedString(@"ok");
+    alertModel.alertModelClickBlock = ^(UIAlertAction *_Nonnull action) {
+        if ([action.title isEqualToString:LocalizedString(@"ok")]) {
+            [wself loadDataWithAudienceLinkmicLeave];
+            [wself.mediaComponent close];
+        }
+    };
+    AlertActionModel *alertCancelModel = [[AlertActionModel alloc] init];
+    alertCancelModel.title = LocalizedString(@"cancel");
+    NSString *title = LocalizedString(@"alert_guests_finish_mic_title");
+    NSString *message = LocalizedString(@"alert_guests_finish_mic_des");
+    [[AlertActionManager shareAlertActionManager] showWithTitle:title message:message actions:@[alertCancelModel, alertModel] alertUserModel:nil];
 }
 
 - (void)mediaComponent:(LiveMediaComponent *)mediaComponent clickStreamInfo:(BOOL)isClick {

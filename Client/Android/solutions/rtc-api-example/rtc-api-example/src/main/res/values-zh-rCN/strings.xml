@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="example_quick_start">快速开始</string>
+    <string name="example_multi_room">多房间</string>
+    <string name="example_cross_room_pk">跨房间pk</string>
+    <string name="example_raw_audio_data">原始音频数据</string>
+    <string name="example_audio_mixing">音乐混音</string>
+    <string name="example_voice_effect">声音特效</string>
+    <string name="example_picture_in_picture">画中画</string>
+    <string name="example_video_config">视频配置</string>
+    <string name="example_video_rotation">视频旋转</string>
+    <string name="example_cdn_stream">推流到CDN</string>
+    <string name="example_third_beauty">第三方美颜</string>
+    <string name="example_pull_stream">拉流</string>
+    <string name="example_sei_messaging">SEI消息</string>
+    <string name="example_stream_sync_info">随帧同步消息</string>
+
+    <string name="title_audio_media_mixing">音乐混音</string>
+    <string name="title_audio_effect_mixing">音效混音</string>
+    <string name="title_media_player">媒体播放器</string>
+    <string name="title_byte_beauty">字节美颜</string>
+
+    <string name="hint_room_id">房间 ID</string>
+    <string name="hint_room_id_1">第一个房间ID</string>
+    <string name="hint_room_id_2">第二个房间ID</string>
+    <string name="button_join_room">加入房间</string>
+    <string name="button_leave_room">离开房间</string>
+
+    <string name="label_step_1_create_engine">Step1: 创建引擎</string>
+    <string name="button_create_engine">创建引擎</string>
+    <string name="label_step_2_start_capture">Step2: 开启音视频采集</string>
+    <string name="button_start_capture">开启采集</string>
+    <string name="label_step_3_set_local_canvas">Step3: 设置本地渲染</string>
+    <string name="button_set_local_canvas">设置本地渲染</string>
+    <string name="label_step_4_join_room">Step4: 加入房间</string>
+    <string name="label_step_5_set_remote_canvas">Step5: 更新远端用户的view</string>
+    <string name="label_step_6_leave_room">Step6: 离开房间</string>
+    <string name="label_step_7_destroy_room">Step7: 销毁房间</string>
+    <string name="button_destroy_room">销毁房间</string>
+    <string name="label_step_8_destroy_engine">Step8: 销毁引擎</string>
+    <string name="button_destroy_engine">销毁引擎</string>
+
+    <string name="button_start">开始</string>
+    <string name="button_stop">停止</string>
+    <string name="button_pause">暂停</string>
+    <string name="button_resume">恢复</string>
+    <string name="button_update">更新</string>
+
+    <string name="button_preload">预加载</string>
+    <string name="button_unload">卸载</string>
+    <string name="button_play">播放</string>
+
+    <string name="hint_forward_to_room_id">转发房间ID</string>
+
+    <string name="button_audio_effect_mixing">音效混音</string>
+    <string name="button_audio_media_mixing">音乐混音</string>
+
+    <string name="label_mixing_file_title">播放本地文件</string>
+    <string name="label_mixing_url_title">播放在线URL</string>
+    <string name="label_mixing_music_title">音乐混音</string>
+
+    <string name="button_confirm">确定</string>
+    <string name="label_volume">音量</string>
+    <string name="label_progress">进度</string>
+    <string name="button_jump_time">跳转</string>
+    <string name="label_total_time_length">总时长</string>
+    <string name="label_total_time_length_xxx">总时长: %1$d</string>
+    <string name="label_mixing_file_label">文件：</string>
+    <string name="label_mixing_url_label">URL：</string>
+
+    <string name="label_all_effect_volume">所有音效音量</string>
+    <string name="button_pause_all">暂停所有</string>
+    <string name="button_resume_all">恢复所有</string>
+    <string name="button_stop_all">停止所有</string>
+
+    <string name="button_open">打开</string>
+    <string name="label_play_progress">播放进度</string>
+    <string name="label_play_progress_xxx">播放进度: %1$d</string>
+    <string name="label_set_progress">设置进度</string>
+    <string name="hint_progress_ms">进度ms</string>
+    <string name="label_set_audio_track">设置音轨</string>
+    <string name="hint_audio_track">音轨(0,1)</string>
+
+    <string name="label_pcm_mixing">PCM混音</string>
+    <string name="label_effect">特效</string>
+    <string name="label_voice_changer">变声特效</string>
+    <string name="label_voice_reverb">混响特效</string>
+    <string name="label_voice_pitch">变调</string>
+    <string name="label_voice_equalization_title">均衡效果</string>
+    <string name="label_voice_equalization">均衡效果</string>
+    <string name="label_voice_gain">频带增益db</string>
+    <string name="label_voice_reverb_switch">开启混响</string>
+    <string name="label_room_size">房间大小</string>
+    <string name="label_decay_time">拖尾长度</string>
+    <string name="label_damping">衰减阻尼大小</string>
+    <string name="label_wet_gain">早期反射信号强度</string>
+    <string name="label_dry_gain">原始信号强度</string>
+    <string name="label_pre_delay">早期反射信号的延迟</string>
+    <string name="label_ans_mode">降噪模式</string>
+
+    <string name="close">Close</string>
+    <string name="button_open_float_window">打开悬浮窗</string>
+    <string name="toast_no_float_window_permission">未授予悬浮窗口权限，无法添加悬浮窗口</string>
+
+    <string name="label_render_settings">渲染设置</string>
+    <string name="label_local_render_mode">本地渲染模式</string>
+    <string name="label_remote_render_mode">远端渲染模式</string>
+    <string name="label_local_mirror_type">本地视频镜像</string>
+    <string name="label_encode_settings">编码参数</string>
+    <string name="label_encode_resolution">编码分辨率</string>
+    <string name="label_encode_frame_rate">帧率</string>
+    <string name="label_max_bitrate">最大码率</string>
+    <string name="label_min_bitrate">最小码率</string>
+    <string name="label_encoder_preference">编码策略偏好</string>
+    <string name="button_update_encoder_config">设置编码配置</string>
+    <string name="label_capture_params">采集参数</string>
+    <string name="label_capture_resolution">采集分辨率</string>
+    <string name="label_capture_frame_rate">帧率</string>
+    <string name="label_capture_preference">视频采集模式</string>
+    <string name="button_update_capture_config">设置采集配置</string>
+    <string name="label_rotate_settings">旋转设置</string>
+    <string name="label_video_orientation">视频帧朝向</string>
+    <string name="label_video_rotation_mode">视频旋转模式</string>
+    <string name="button_add_watermark">添加水印</string>
+    <string name="button_clear_watermark">清除水印</string>
+    <string name="label_cdn_address">CDN地址</string>
+    <string name="label_background_color">背景色</string>
+    <string name="label_cdn_layout_mode">布局模式</string>
+
+    <string name="button_start_transcoding">开始推流</string>
+    <string name="button_update_transcoding">更新推流</string>
+    <string name="button_stop_transcoding">停止推流</string>
+    <string name="toast_cdn_url_is_empty">CDN 地址为空</string>
+    <string name="toast_message_is_empty">消息为空</string>
+    <string name="toast_input_is_empty">输入空</string>
+    <string name="toast_token_will_expire">Token 即将过期</string>
+    <string name="toast_rtc_engine_not_created">引擎未创建</string>
+    <string name="toast_open_audio_effect_first">请先开启混响效果开关</string>
+
+    <string name="label_sei_messaging_title">SEI方案</string>
+    <string name="hint_sei_message">sei消息</string>
+    <string name="hint_cdn_url">CDN地址</string>
+
+    <string name="button_send">发送</string>
+
+    <string name="label_transcoding_messaging_title">合流转推布局</string>
+
+    <string name="hint_message_content">消息内容</string>
+    <string name="button_send_message">发送消息</string>
+
+    <string name="toast_check_valid_false">输入不合法，只支持数字、大小写字母、@._-,长度小于128字符</string>
+
+    <string name="label_callback_mixed">本地和远端音频回调</string>
+    <string name="label_callback_playback">所有远端音频回调</string>
+    <string name="label_callback_record">本地录制音频回调</string>
+    <string name="label_callback_remote_user">单个远端音频回调</string>
+
+    <string name="label_hint_track">音轨数</string>
+    <string name="label_hint_track_xxx">音轨数: %1$d</string>
+    <string name="label_hint_speed">播放速度</string>
+    <string name="label_hint_channel_mode">声道模式</string>
+
+    <string name="label_beauty_title">美颜</string>
+    <string name="label_beauty_intensity">美颜强度</string>
+    <string name="label_beauty_whiten_title">美白</string>
+    <string name="label_beauty_smooth_title">磨皮</string>
+    <string name="label_beauty_eye_title">大眼</string>
+    <string name="label_beauty_overall_title">瘦脸</string>
+    <string name="label_sticker_title">贴纸</string>
+    <string name="label_filter_title">滤镜</string>
+    <string name="label_filter_intensity">滤镜强度</string>
+    <string name="label_filter_0603_title">蜜桃</string>
+    <string name="label_filter_37l5_title">清透</string>
+    <string name="label_filter_35l3_title">夜色</string>
+    <string name="label_filter_308_title">冷氧</string>
+    <string name="label_virtual_title">背景分割</string>
+    <string name="label_virtual_color_title">纯色</string>
+    <string name="label_virtual_image_title">图片</string>
+
+</resources>

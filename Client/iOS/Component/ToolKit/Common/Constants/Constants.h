@@ -21,14 +21,22 @@
 
 #define NOEmptyStr(string) (string == nil || string == NULL || [string isKindOfClass:[NSNull class]] || [string isEqualToString:@""] || [[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] == 0 ? NO : YES)
 
-#ifndef dispatch_queue_async_safe
-#define dispatch_queue_async_safe(queue, block)                                                      \
-    if (dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL) == dispatch_queue_get_label(queue)) { \
-        block();                                                                                     \
-    } else {                                                                                         \
-        dispatch_async(queue, block);                                                                \
+//#ifndef dispatch_queue_async_safe
+//#define dispatch_queue_async_safe(queue, block)                                                      \
+//    if (dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL) == dispatch_queue_get_label(queue)) { \
+//        block();                                                                                     \
+//    } else {                                                                                         \
+//        dispatch_async(queue, block);                                                                \
+//    }
+//#endif
+ 
+NS_INLINE void dispatch_queue_async_safe(dispatch_queue_t queue, dispatch_block_t block) {
+    if (dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL) == dispatch_queue_get_label(queue)) {
+        block();
+    } else {
+        dispatch_async(queue, block);
     }
-#endif
+}
 
 #define SYSTEM_VERSION_LESS_THAN(v) \
     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)

@@ -763,7 +763,7 @@ public class KTVRoomFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDownloadStatusChanged(DownloadStatusChanged event) {
         mViewModel.onDownloadStatusChanged(event);
-        if (event.roomIds.contains(mViewModel.requireRoomId()) && event.status == SongStatus.DOWNLOADED) {
+        if (event.contains(mViewModel.requireRoomId()) && event.status == SongStatus.DOWNLOADED) {
             if (event.type == DownloadType.LRC) {
                 File lrcFile = MusicDownloadManager.lrcFile(event.songId);
                 tryShowLrcView(lrcFile, event.songId);

@@ -3,8 +3,6 @@
 
 package com.vertcdemo.solution.ktv.core;
 
-import static com.vertcdemo.solution.ktv.utils.CollectionUtils.setOf;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -76,11 +74,11 @@ public class MusicDownloadManager {
             File mp3File = mp3File(songId);
             if (mp3File.exists()) {
                 // Downloaded
-                SolutionEventBus.post(new DownloadStatusChanged(setOf(roomId), songId, DownloadType.MUSIC));
+                SolutionEventBus.post(new DownloadStatusChanged(roomId, songId, DownloadType.MUSIC));
             } else {
                 String token = songId + ".mp3";
                 if (enqueueDownload(token, roomId)) {
-                    SolutionEventBus.post(new DownloadStatusChanged(setOf(roomId), songId, DownloadType.MUSIC, SongStatus.DOWNLOADING));
+                    SolutionEventBus.post(new DownloadStatusChanged(roomId, songId, DownloadType.MUSIC, SongStatus.DOWNLOADING));
                     AppExecutors.networkIO().execute(() -> {
                         boolean success = downloadFile(mp3Url, mp3File);
                         Log.d(TAG, "download: token=" + token + "; success=" + success);
@@ -98,7 +96,7 @@ public class MusicDownloadManager {
             File lrcFile = lrcFile(songId);
             if (lrcFile.exists()) {
                 // Downloaded
-                SolutionEventBus.post(new DownloadStatusChanged(setOf(roomId), songId, DownloadType.LRC));
+                SolutionEventBus.post(new DownloadStatusChanged(roomId, songId, DownloadType.LRC));
             } else {
                 String token = songId + ".lrc";
                 if (enqueueDownload(token, roomId)) {

@@ -1,27 +1,37 @@
 rootProject.name = "VideoOne"
 
-
 include ':app'
-include ':component:Avatars'
-include ':component:SolutionBase'
+include ':component:avatars'
+include ':component:solution-base'
 
-include ':component:ToolKit'
-include ':component:LoginKit'
-include ':component:StoreResources'
-
+include ':component:rtc-toolkit'
+include ':component:loginkit'
 
 include ':solutions:interactivelive'
 
 // KTV
 include ':solutions:ktv'
 
-apply from: file('projects.gradle')
-ext.projects.forEach { _, project ->
-    include project
-}
+// vod
+include ':solutions:vod:vod-demo'
+// vod-playerkit
+include ':solutions:vod:vod-playerkit'
+include ':solutions:vod:vod-playerkit:vod-player-utils'
+include ':solutions:vod:vod-playerkit:vod-player'
+include ':solutions:vod:vod-playerkit:vod-player-ve'
+// vod-scenekit
+include ':solutions:vod:vod-settingskit'
+include ':solutions:vod:vod-scenekit'
+// vod-upload
+include ':solutions:vod:vod-upload'
 
 // media live
 include ':solutions:media-live:live-entrance'
 include ':solutions:media-live:live-pusher'
 include ':solutions:media-live:live-player'
 include ':solutions:media-live:live-common'
+
+// RTC API Examples
+include ':solutions:rtc-api-example:rtc-api-example-entry'
+include ':solutions:rtc-api-example:rtc-api-example-base'
+include ':solutions:rtc-api-example:rtc-api-example'

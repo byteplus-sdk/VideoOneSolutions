@@ -8,7 +8,7 @@ install! 'cocoapods',
 
 
 # TTSDK version
-$TT_SDK_VERSION = '1.40.200.5-premium'
+$TT_SDK_VERSION = '1.41.300.203-rtc'
 
 def common_pods
   # Depends on SDK
@@ -32,8 +32,10 @@ end
 def scene_VideoPlaybackEdit_pods
   # One-Stop Video
   # Depends on SDK
-   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['Player', 'Uploader']
   pod 'VideoPlaybackEdit', :path => './Component/VideoPlaybackEdit'
+  
+   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['Player']
+  
 end
 
 def scene_KTV_pods
@@ -49,13 +51,25 @@ def scene_MedeaLive_pods
   pod 'MediaLive', :path => './Component/MediaLive'
 end
 
+def develop_rtc_pods
+  
+  pod 'RTCAPIExample', :path => 'Component/RTCAPIExample'
+  pod 'RTCTokenOnlineKit', :path => 'Component/RTCTokenOnlineKit'
+
+  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['RTC-Framework', 'ByteAudio'], :modular_headers => true
+  pod 'SnapKit'
+  pod 'OpenSSL-Universal'
+  pod 'IQKeyboardManagerSwift'
+end
+
 target 'VideoOne' do
   common_pods
-  # Scenes
   scene_InteractiveLive_pods
   scene_KTV_pods
   scene_VideoPlaybackEdit_pods
- scene_MedeaLive_pods
+  scene_MedeaLive_pods
+  develop_rtc_pods
+  
 end
 
 target 'ScreenShareExtension' do

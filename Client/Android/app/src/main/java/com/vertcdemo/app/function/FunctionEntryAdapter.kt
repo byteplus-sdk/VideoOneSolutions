@@ -6,6 +6,7 @@ package com.vertcdemo.app.function
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.vertcdemo.app.databinding.ItemFunctionEntryBinding
 import com.videoone.app.protocol.IFunctionEntry
@@ -28,10 +29,11 @@ class FunctionEntryHolder(private val binding: ItemFunctionEntryBinding) :
     fun bind(entry: IFunctionEntry) {
         val context = itemView.context
         binding.title.setText(entry.title)
-        binding.description.setText(entry.description)
+        if (entry.description != ResourcesCompat.ID_NULL) {
+            binding.description.setText(entry.description)
+        }
         binding.icon.setImageResource(entry.icon)
         val card = binding.getRoot()
         card.setOnClickListener { entry.startup(context) }
     }
 }
-

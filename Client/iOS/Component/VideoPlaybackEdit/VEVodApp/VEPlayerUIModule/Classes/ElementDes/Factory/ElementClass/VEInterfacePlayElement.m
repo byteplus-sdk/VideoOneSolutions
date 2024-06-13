@@ -73,7 +73,7 @@ NSString *const likeGestureId = @"likeGestureId";
 }
 
 - (BOOL)isPlayerButtonHiden:(VEPlaybackState)playbackState {
-    return playbackState != VEPlaybackStatePaused && playbackState != VEPlaybackStateError;
+    return playbackState != VEPlaybackStatePaused && playbackState != VEPlaybackStateError && playbackState != VEPlaybackStateFinishedBecauseUser;
 }
 
 #pragma mark----- Element output

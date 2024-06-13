@@ -34,7 +34,9 @@ object InitializeManager {
             val initializer = clazz.newInstance() as IInitializer
             initializer.initialize(application)
         } catch (e: ReflectiveOperationException) {
-            Log.d(TAG, "invokeInitialize: failed", e)
+            Log.w(TAG, "invokeInitialize: failed", e)
+        } catch (e: NeedConfigurationException) {
+            Log.w(TAG, "invokeInitialize: failed", e)
         }
     }
 }

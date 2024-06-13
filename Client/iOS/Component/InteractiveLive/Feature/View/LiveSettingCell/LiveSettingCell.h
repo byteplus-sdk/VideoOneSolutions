@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, LiveSettingCellType) {
     LiveSettingRTMPullStreaming = 2,
-    LiveSettingRTMPushStreaming = 1,
     LiveSettingABR = 3,
 };
 
