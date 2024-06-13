@@ -19,9 +19,11 @@ private const val TAG = "ForDevelopersFragment"
 
 /**
  * @see com.videoone.app.protocol.FunctionMediaLive
+ * @see com.videoone.app.protocol.RTCApiExampleFunction
  */
 private val entryNames = listOf(
-    "com.videoone.app.protocol.FunctionMediaLive"
+    "com.videoone.app.protocol.FunctionMediaLive",
+    "com.videoone.app.protocol.RTCApiExampleFunction",
 )
 
 class ForDevelopersFragment : Fragment(R.layout.fragment_for_developers) {

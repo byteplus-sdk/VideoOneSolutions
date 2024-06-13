@@ -142,15 +142,8 @@ static inline BOOL VEIsMainDartTheme(NSUInteger index) {
         [feedVideoItem addTarget:self action:@selector(scenesButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [array addObject:feedVideoItem];
 
-        VEMainItemButton *addItem = [[VEMainItemButton alloc] init];
-        addItem.index = 2;
-        [addItem bingImage:[UIImage imageNamed:@"vod_entry_add_dark"] status:VEMainItemStatusDark];
-        [addItem bingImage:[UIImage imageNamed:@"vod_entry_add"] status:VEMainItemStatusLight];
-        [addItem addTarget:self action:@selector(scenesButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [array addObject:addItem];
-
         VEMainItemButton *longVideoItem = [[VEMainItemButton alloc] init];
-        longVideoItem.index = 3;
+        longVideoItem.index = 2;
         longVideoItem.bingedVC = [[VELongVideoViewController alloc] init];
         [longVideoItem bingImage:[UIImage imageNamed:@"vod_entry_channel_dark"] status:VEMainItemStatusDark];
         [longVideoItem bingImage:[UIImage imageNamed:@"vod_entry_channel"] status:VEMainItemStatusLight];
@@ -160,7 +153,7 @@ static inline BOOL VEIsMainDartTheme(NSUInteger index) {
         [array addObject:longVideoItem];
 
         VEMainItemButton *settingItem = [[VEMainItemButton alloc] init];
-        settingItem.index = 4;
+        settingItem.index = 3;
         settingItem.bingedVC = [[VESettingViewController alloc] init];
         [settingItem bingImage:[UIImage imageNamed:@"vod_entry_setting_dark"] status:VEMainItemStatusDark];
         [settingItem bingImage:[UIImage imageNamed:@"vod_entry_setting"] status:VEMainItemStatusLight];

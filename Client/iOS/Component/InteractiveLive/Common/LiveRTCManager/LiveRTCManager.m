@@ -126,7 +126,6 @@
     self.rtcRoom = [self.rtcEngineKit createRTCRoom:rtcRoomID];
     self.rtcRoom.delegate = self;
     [self.rtcRoom joinRoom:token userInfo:userInfo roomConfig:config];
-    NSLog(@"aaa joinrtcroom %@ to:%@, uid:%@", rtcRoomID, [token substringToIndex:10], userID);
 }
 
 - (void)leaveRTCRoom {
@@ -137,9 +136,8 @@
 }
 
 - (void)startForwardStreamToRooms:(NSString *)roomId token:(NSString *)token {
-    NSLog(@"aaa startForwardStreamToRooms");
     // Enable forward stream
-    ForwardStreamConfiguration *configuration = [[ForwardStreamConfiguration alloc] init];
+    ByteRTCForwardStreamConfiguration *configuration = [[ByteRTCForwardStreamConfiguration alloc] init];
     configuration.roomId = roomId;
     configuration.token = token;
 
@@ -147,7 +145,6 @@
 }
 
 - (void)stopForwardStreamToRooms {
-    NSLog(@"aaa stopForwardStreamToRooms");
     // End forward stream
     CGSize videoSize = [LiveSettingVideoConfig defaultVideoConfig].videoSize;
     self.pushRTCVideoConfig.width = videoSize.width;
@@ -270,17 +267,17 @@
     if (type == ByteRTCMediaStreamTypeBoth ||
         type == ByteRTCMediaStreamTypeVideo) {
         dispatch_queue_async_safe(dispatch_get_main_queue(), (^{
-                                      if ([self.delegate respondsToSelector:@selector(liveRTCManager:onUserPublishStream:)]) {
-                                          [self.delegate liveRTCManager:self onUserPublishStream:userId];
-                                      }
-                                  }));
+            if ([self.delegate respondsToSelector:@selector(liveRTCManager:onUserPublishStream:)]) {
+                [self.delegate liveRTCManager:self onUserPublishStream:userId];
+            }
+        }));
     }
 }
 
 - (void)rtcRoom:(ByteRTCRoom *)rtcRoom onLocalStreamStats:(ByteRTCLocalStreamStats *)stats {
     LiveNetworkQualityStatus liveStatus = LiveNetworkQualityStatusNone;
-    if (stats.tx_quality == ByteRTCNetworkQualityExcellent ||
-        stats.tx_quality == ByteRTCNetworkQualityGood) {
+    if (stats.txQuality == ByteRTCNetworkQualityExcellent ||
+        stats.txQuality == ByteRTCNetworkQualityGood) {
         liveStatus = LiveNetworkQualityStatusGood;
     } else {
         liveStatus = LiveNetworkQualityStatusBad;
@@ -292,8 +289,8 @@
 
 - (void)rtcRoom:(ByteRTCRoom *)rtcRoom onRemoteStreamStats:(ByteRTCRemoteStreamStats *)stats {
     LiveNetworkQualityStatus liveStatus = LiveNetworkQualityStatusNone;
-    if (stats.tx_quality == ByteRTCNetworkQualityExcellent ||
-        stats.tx_quality == ByteRTCNetworkQualityGood) {
+    if (stats.txQuality == ByteRTCNetworkQualityExcellent ||
+        stats.txQuality == ByteRTCNetworkQualityGood) {
         liveStatus = LiveNetworkQualityStatusGood;
     } else {
         liveStatus = LiveNetworkQualityStatusBad;
@@ -303,7 +300,7 @@
     }
 }
 
-- (void)rtcRoom:(ByteRTCRoom *)rtcRoom onForwardStreamStateChanged:(NSArray<ForwardStreamStateInfo *> *)infos {
+- (void)rtcRoom:(ByteRTCRoom *)rtcRoom onForwardStreamStateChanged:(NSArray<ByteRTCForwardStreamStateInfo *> * _Nonnull)infos {
     NSLog(@"Manager RTCSDK onForwardStreamStateChanged %@", infos);
 }
 
@@ -382,7 +379,7 @@
 - (void)renderPixelBuffer:(CVPixelBufferRef _Nonnull)pixelBuffer
                  rotation:(ByteRTCVideoRotation)rotation
              extendedData:(NSData *_Nullable)extendedData {
-    NSLog(@"video---");
+    NSLog(@"video");
 }
 #pragma mark - ByteRTCAudioProcessor
 - (int)processAudioFrame:(ByteRTCAudioFrame *)audioFrame {

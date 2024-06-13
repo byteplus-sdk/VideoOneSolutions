@@ -54,9 +54,6 @@ public class LiveCoreConfigFragment extends Fragment {
 
         binding.back.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
 
-        mViewModel.rtmPushStreaming.observe(getViewLifecycleOwner(), binding.rtmPushStreaming::setSelected);
-        binding.rtmPushStreaming.setOnClickListener(v -> mViewModel.setRtmPushStreaming(!v.isSelected()));
-
         mViewModel.rtmPullStreaming.observe(getViewLifecycleOwner(), binding.rtmPullStreaming::setSelected);
         binding.rtmPullStreaming.setOnClickListener(v -> mViewModel.setRtmPullStreaming(!v.isSelected()));
 

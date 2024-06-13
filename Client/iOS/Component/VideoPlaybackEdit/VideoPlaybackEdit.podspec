@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '11.0'
 
-  s.default_subspecs = 'VEPlayerUIModule', 'VEPlayerKit', 'VESceneKit', 'Setting', 'LongVideo', 'FeedVideo', 'ShortVideo', 'VideoDetail', 'Uploader', 'Entry', 'SingleFunction'
+  s.default_subspecs = 'VEPlayerUIModule', 'VEPlayerKit', 'VESceneKit', 'Setting', 'LongVideo', 'FeedVideo', 'ShortVideo', 'VideoDetail', 'Entry', 'SingleFunction'
   
   $XCODE_VERSION = `xcrun xcodebuild -version | grep Xcode | cut -d' ' -f2`
   if $XCODE_VERSION >= '15.0.0'
@@ -130,18 +130,6 @@ Pod::Spec.new do |s|
     ]
     subspec.dependency 'VideoPlaybackEdit/Setting'
     subspec.dependency 'VideoPlaybackEdit/VEPlayerUIModule'
-  end
-
-  s.subspec 'Uploader' do |subspec|
-    subspec.public_header_files = [
-      'VEVodApp/VEUploader/*.{h}'
-    ]
-    subspec.source_files = [
-      'VEVodApp/VEUploader/**/*'
-    ]
-    subspec.dependency 'TTSDK/Uploader'
-    subspec.dependency 'YYModel'
-    subspec.dependency 'ToolKit'
   end
 
   s.subspec 'Entry' do |subspec|

@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LiveSettingData : NSObject
 
 @property (class, nonatomic, assign) BOOL rtmPullStreaming;
-@property (class, nonatomic, assign) BOOL rtmPushStreaming;
 @property (class, nonatomic, assign) BOOL abr;
 
 + (BOOL)boolValueForKey:(LiveSettingCellType)key;

@@ -11,23 +11,8 @@ public class LiveCoreConfig {
 
     private static final String PREFS_NAME = "live_core_config";
 
-    private static final String KEY_RTM_PUSH_STREAMING = "rtm_push_streaming";
     private static final String KEY_RTM_PULL_STREAMING = "rtm_pull_streaming";
     private static final String KEY_ABR = "abr";
-
-    public static void setRtmPushStreaming(boolean value) {
-        Context context = AppUtil.getApplicationContext();
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean(KEY_RTM_PUSH_STREAMING, value)
-                .apply();
-    }
-
-    public static boolean getRtmPushStreaming() {
-        Context context = AppUtil.getApplicationContext();
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getBoolean(KEY_RTM_PUSH_STREAMING, false);
-    }
 
     public static void setRtmPullStreaming(boolean value) {
         Context context = AppUtil.getApplicationContext();

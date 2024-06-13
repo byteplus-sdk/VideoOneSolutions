@@ -32,9 +32,6 @@ import com.vertcdemo.solution.interactivelive.core.live.StatisticsInfo;
 import com.vertcdemo.solution.interactivelive.core.live.TTSdkHelper;
 import com.vertcdemo.solution.interactivelive.event.LiveCoreNetworkQualityEvent;
 import com.vertcdemo.solution.interactivelive.feature.main.AudienceVideoPlayer;
-import com.vertcdemo.solution.interactivelive.util.LiveCoreConfig;
-
-import java.util.ArrayList;
 
 public class LivePusherImpl implements LiveCoreHolder {
     private static final String TAG = "LivePusher";
@@ -195,17 +192,7 @@ public class LivePusherImpl implements LiveCoreHolder {
         mLivePusher.startVideoCapture(mVideoCaptureType);
         mLivePusher.startAudioCapture(mAudioCaptureType);
 
-        // NOTE: ILiveStream need a mutable List, so we can't use Arrays.asList(...)
-        final ArrayList<String> urls = new ArrayList<>();
-        if (LiveCoreConfig.getRtmPushStreaming()) {
-            String sdp = LiveCoreHolder.convertToSDPUrl(url);
-            LLog.d(TAG, "RTM push Streaming: ON: sdp=" + sdp);
-            urls.add(sdp);
-        } else {
-            LLog.d(TAG, "RTM push Streaming: OFF");
-        }
-        urls.add(url);
-        mLivePusher.startPushWithUrls(urls.toArray(new String[0]));
+        mLivePusher.startPush(url);
 
         mConsumer.start(rtcVideo);
     }

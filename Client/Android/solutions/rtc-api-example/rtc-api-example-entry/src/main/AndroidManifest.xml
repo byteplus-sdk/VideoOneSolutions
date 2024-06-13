@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name="com.vertc.api.example.entry.APIExampleEntryActivity"
+            android:label="@string/api_example_name"
+            android:theme="@style/Theme.APIExample.Transparent" />
+        <activity
+            android:name="com.vertc.api.example.entry.APIExampleActivity"
+            android:label="@string/api_example_name" />
+    </application>
+</manifest>

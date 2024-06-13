@@ -57,9 +57,9 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    implementation project(':component:SolutionBase')
-    implementation project(':component:ToolKit')
-    implementation project(':component:Avatars')
+    implementation project(':component:solution-base')
+    implementation project(':component:rtc-toolkit')
+    implementation project(':component:avatars')
 
     implementation libs.ttsdk.ttlivepush.rtc
 

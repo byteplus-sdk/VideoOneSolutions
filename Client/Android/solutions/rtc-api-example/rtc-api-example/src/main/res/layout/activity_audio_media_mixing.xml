@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.vertc.api.example.examples.audio.mixing.AudioMediaMixingActivity">
+
+    <com.vertc.api.example.view.NoPressedLinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/local_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="280dp" />
+
+        <EditText
+            android:id="@+id/room_id_input"
+            style="@style/EditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="@string/hint_room_id" />
+
+        <Button
+            android:id="@+id/btn_join_room"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_join_room" />
+
+        <include
+            android:id="@+id/file_mixing"
+            layout="@layout/layout_media_file_mixing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
+
+        <include
+            android:id="@+id/pcm_mixing"
+            layout="@layout/layout_media_pcm_mixing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="36dp" />
+
+    </com.vertc.api.example.view.NoPressedLinearLayout>
+</ScrollView>

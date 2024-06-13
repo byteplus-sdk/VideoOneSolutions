@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.vertc.api.example.examples.video.VideoRotateConfigActivity">
+
+    <com.vertc.api.example.view.NoPressedLinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/local_view_container"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:background="#A3C1DA" />
+
+            <FrameLayout
+                android:id="@+id/remote_view_container"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:background="#A4D4AE" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/room_id_input"
+                style="@style/EditTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:hint="@string/hint_room_id" />
+
+            <Button
+                android:id="@+id/btn_join_room"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_join_room" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/label_rotate_settings"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <androidx.gridlayout.widget.GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:columnCount="2"
+                app:rowCount="2"
+                app:useDefaultMargins="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_video_orientation"
+                    app:layout_column="0"
+                    app:layout_row="0" />
+
+                <Spinner
+                    android:id="@+id/video_orientation_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rtc_spinner_bg"
+                    android:entries="@array/videoOrientation"
+                    android:minHeight="36dp"
+                    android:spinnerMode="dropdown"
+                    app:layout_column="1"
+                    app:layout_columnWeight="1"
+                    app:layout_row="0" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_video_rotation_mode"
+                    app:layout_column="0"
+                    app:layout_row="1" />
+
+                <Spinner
+                    android:id="@+id/video_rotation_mode_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/rtc_spinner_bg"
+                    android:entries="@array/videoRotationMode"
+                    android:minHeight="36dp"
+                    android:spinnerMode="dropdown"
+                    app:layout_column="1"
+                    app:layout_columnWeight="1"
+                    app:layout_row="1" />
+            </androidx.gridlayout.widget.GridLayout>
+
+            <Button
+                android:id="@+id/btn_add_watermark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_add_watermark" />
+
+            <Button
+                android:id="@+id/btn_clear_watermark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_clear_watermark" />
+        </LinearLayout>
+    </com.vertc.api.example.view.NoPressedLinearLayout>
+</ScrollView>

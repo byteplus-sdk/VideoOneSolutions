@@ -117,4 +117,9 @@ public class VeLivePlayerObserverAdapter implements VeLivePlayerObserver {
                                                   VeLivePlayerError error) {
         LLog.d(TAG, "onStreamFailedOpenSuperResolution: error: " + error);
     }
+
+    @Override
+    public void onStreamFailedOpenSharpen(VeLivePlayer veLivePlayer, VeLivePlayerError error) {
+        LLog.d(TAG, "onStreamFailedOpenSharpen: error: " + error);
+    }
 }

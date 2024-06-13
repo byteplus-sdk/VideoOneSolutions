@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.vertc.api.example.examples.video.CDNStreamActivity">
+
+    <com.vertc.api.example.view.NoPressedLinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.gridlayout.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:columnCount="2"
+            app:rowCount="2">
+
+            <FrameLayout
+                android:id="@+id/local_view_container"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                app:layout_column="0"
+                app:layout_columnWeight="1"
+                app:layout_row="0"
+                tools:background="#A3C1DA" />
+
+            <FrameLayout
+                android:id="@+id/remote_view_container1"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="0"
+                tools:background="#A4D4AE" />
+
+            <FrameLayout
+                android:id="@+id/remote_view_container2"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                app:layout_column="0"
+                app:layout_columnWeight="1"
+                app:layout_row="1"
+                tools:background="#C3AED6" />
+
+            <FrameLayout
+                android:id="@+id/remote_view_container3"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="1"
+                tools:background="#F2B880" />
+        </androidx.gridlayout.widget.GridLayout>
+
+        <EditText
+            android:id="@+id/room_id_input"
+            style="@style/EditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            android:hint="@string/hint_room_id"
+            android:paddingHorizontal="5dp" />
+
+        <Button
+            android:id="@+id/btn_join_room"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="@string/button_join_room" />
+
+
+        <androidx.gridlayout.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            app:columnCount="2"
+            app:rowCount="3"
+            app:useDefaultMargins="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_cdn_address"
+                app:layout_column="0"
+                app:layout_row="0" />
+
+            <EditText
+                android:id="@+id/cdn_address_input"
+                style="@style/EditTextStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rtc_bg_edittext"
+                android:minHeight="36dp"
+                android:paddingHorizontal="5dp"
+                android:singleLine="true"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="0" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_background_color"
+                app:layout_column="0"
+                app:layout_row="1" />
+
+            <EditText
+                android:id="@+id/layout_color_input"
+                style="@style/EditTextStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rtc_bg_edittext"
+                android:minHeight="36dp"
+                android:text=""
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="1" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_cdn_layout_mode"
+                app:layout_column="0"
+                app:layout_row="2" />
+
+            <Spinner
+                android:id="@+id/layout_mode_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rtc_spinner_bg"
+                android:entries="@array/layoutType"
+                android:minHeight="36dp"
+                android:spinnerMode="dropdown"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="2" />
+
+        </androidx.gridlayout.widget.GridLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_start_push"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_start_transcoding"
+                tools:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_update_push_config"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_update_transcoding"
+                tools:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_stop_push"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_stop_transcoding"
+                tools:gravity="center" />
+        </LinearLayout>
+
+    </com.vertc.api.example.view.NoPressedLinearLayout>
+
+</ScrollView>

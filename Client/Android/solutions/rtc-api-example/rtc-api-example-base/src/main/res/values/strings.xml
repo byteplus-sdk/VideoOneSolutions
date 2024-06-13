@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="api_example_name">API Example</string>
+    <string name="label_example_audio">Audio Management</string>
+    <string name="label_example_base">Core functions</string>
+    <string name="label_example_important">Other components</string>
+    <string name="label_example_message">Message management</string>
+    <string name="label_example_room">Room management</string>
+    <string name="label_example_transmission">Audio &amp; video transmission</string>
+    <string name="label_example_video">Video management</string>
+    <string name="sdk_version_xxx">Sdk Version: %s</string>
+</resources>

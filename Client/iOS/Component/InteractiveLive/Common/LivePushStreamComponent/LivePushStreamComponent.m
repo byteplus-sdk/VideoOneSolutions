@@ -50,7 +50,7 @@
         __weak __typeof(self) wself = self;
         dispatch_queue_async_safe(dispatch_get_main_queue(), (^{
                                       [wself.renderView updateNetworkQuality:status];
-                                  }))
+        }));
     }
 }
 

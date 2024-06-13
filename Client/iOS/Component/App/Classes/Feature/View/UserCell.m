@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *desTitleLabel;
 @property (nonatomic, strong) UIImageView *moreImageView;
+@property (nonatomic, strong) UIImageView *redDotImageView;
 @property (nonatomic, strong) UIView *bgView;
 @end
 
@@ -84,6 +85,13 @@
         make.right.mas_equalTo(-16);
         make.centerY.equalTo(self.titleLabel);
     }];
+    
+    [contentView addSubview:self.redDotImageView];
+    [self.redDotImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(6, 6));
+        make.top.equalTo(self.desTitleLabel);
+        make.left.equalTo(self.desTitleLabel.mas_right);
+    }];
 
     [contentView addSubview:self.lineView];
     [self.lineView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -153,6 +161,15 @@
         _moreImageView.image = [UIImage imageNamed:@"menu_list_more" bundleName:@"App"];
     }
     return _moreImageView;
+}
+
+- (UIImageView *)redDotImageView {
+    if (!_redDotImageView) {
+        _redDotImageView = [[UIImageView alloc] init];
+        _redDotImageView.hidden = YES;
+        _redDotImageView.image = [UIImage imageNamed:@"ic_red_dot" bundleName:@"App"];
+    }
+    return _redDotImageView;
 }
 
 @end

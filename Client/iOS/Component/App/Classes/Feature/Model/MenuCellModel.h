@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *desTitle;
 
 @property (nonatomic, copy) NSString *link;
-
 @property (nonatomic, assign) BOOL isMore;
 
 @property (nonatomic) void (^block)(void);

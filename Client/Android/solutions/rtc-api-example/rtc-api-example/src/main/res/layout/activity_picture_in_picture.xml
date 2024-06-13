@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.vertc.api.example.examples.video.pip.PictureInPictureActivity">
+
+    <FrameLayout
+        android:id="@+id/local_view_container"
+        android:layout_width="0dp"
+        android:layout_height="320dp"
+        android:layout_weight="1"
+        app:layout_constraintEnd_toStartOf="@id/remote_view_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/remote_view_container"
+        android:layout_width="0dp"
+        android:layout_height="320dp"
+        android:layout_weight="1"
+        app:layout_constraintBottom_toBottomOf="@id/local_view_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/local_view_container"
+        app:layout_constraintTop_toTopOf="@id/local_view_container" />
+
+    <EditText
+        style="@style/EditTextStyle"
+        android:id="@+id/room_id_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="10dp"
+        android:hint="@string/hint_room_id"
+        android:paddingHorizontal="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/local_view_container" />
+
+    <Button
+        android:id="@+id/btn_join_room"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/button_join_room"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_id_input" />
+
+    <Button
+        android:id="@+id/btn_float_window"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/button_open_float_window"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_join_room" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

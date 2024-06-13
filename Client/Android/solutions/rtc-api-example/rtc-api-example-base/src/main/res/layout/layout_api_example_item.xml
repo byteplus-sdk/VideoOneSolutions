@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/title"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_vertical|start"
+    android:paddingHorizontal="16dp"
+    android:textColor="#161823"
+    android:textSize="16sp"
+    app:drawableEndCompat="@drawable/rtc_api_ic_forward"
+    tools:drawableEnd="@drawable/rtc_api_ic_forward"
+    tools:text="Basic" />

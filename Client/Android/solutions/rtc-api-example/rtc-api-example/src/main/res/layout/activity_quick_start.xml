@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.vertc.api.example.examples.basic.QuickStartActivity">
+
+    <FrameLayout
+        android:id="@+id/local_container"
+        android:layout_width="0dp"
+        android:layout_height="300dp"
+        app:layout_constraintEnd_toStartOf="@id/remote_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/remote_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/local_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/local_container"
+        app:layout_constraintTop_toTopOf="@id/local_container" />
+
+    <EditText
+        style="@style/EditTextStyle"
+        android:id="@+id/room_id_input"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="10dp"
+        android:hint="@string/hint_room_id"
+        android:paddingHorizontal="10dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/local_container" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_id_input">
+
+
+        <androidx.gridlayout.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:columnCount="2"
+            app:orientation="horizontal"
+            app:rowCount="8">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/label_step_1_create_engine"
+                app:layout_column="0"
+                app:layout_columnWeight="1"
+                app:layout_row="0" />
+
+            <Button
+                android:id="@+id/btn_create_engine"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_create_engine"
+                app:layout_column="1"
+                app:layout_row="0" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/label_step_2_start_capture"
+                app:layout_column="0"
+                app:layout_columnWeight="1"
+                app:layout_row="1" />
+
+            <Button
+                android:id="@+id/btn_start_capture"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_start_capture"
+                app:layout_column="1"
+                app:layout_row="1" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/label_step_3_set_local_canvas"
+                app:layout_column="0"
+                app:layout_columnWeight="1"
+                app:layout_row="2" />
+
+            <Button
+                android:id="@+id/btn_set_local_view"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_set_local_canvas"
+                app:layout_column="1"
+                app:layout_row="2" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/label_step_4_join_room"
+                app:layout_column="0"
+                app:layout_columnWeight="1"
+                app:layout_row="3" />
+
+            <Button
+                android:id="@+id/btn_join_room"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_join_room"
+                app:layout_column="1"
+                app:layout_row="3" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:gravity="center_vertical"
+                android:text="@string/label_step_5_set_remote_canvas"
+                app:layout_column="0"
+                app:layout_columnSpan="2"
+                app:layout_columnWeight="1"
+                app:layout_row="4" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/label_step_6_leave_room"
+                app:layout_column="0"
+                app:layout_columnWeight="1"
+                app:layout_row="5" />
+
+            <Button
+                android:id="@+id/btn_leave_room"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_leave_room"
+                app:layout_column="1"
+                app:layout_row="5" />
+
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/label_step_7_destroy_room"
+                app:layout_column="0"
+                app:layout_columnWeight="1"
+                app:layout_row="6" />
+
+            <Button
+                android:id="@+id/btn_destroy_room"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_destroy_room"
+                app:layout_column="1"
+                app:layout_row="6" />
+
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/label_step_8_destroy_engine"
+                app:layout_column="0"
+                app:layout_columnWeight="1"
+                app:layout_row="7" />
+
+            <Button
+                android:id="@+id/btn_destroy_engine"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_destroy_engine"
+                app:layout_column="1"
+                app:layout_row="7" />
+
+        </androidx.gridlayout.widget.GridLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,12 +4,12 @@
 //
 
 #import "FunctionsViewController.h"
+#import "RTCFunctionSection.h"
 #import "FunctionTableCell.h"
 #import "Localizator.h"
 #import "SectionListView.h"
 #import <Masonry/Masonry.h>
 #import <ToolKit/ToolKit.h>
-
 
 @interface FunctionsViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -28,6 +28,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorFromHexString:@"#F6FAFD"];
     [self addSubvieAndMakeConstraints];
+
     __weak __typeof(self) wself = self;
     self.sectionListView.clickBlock = ^(NSInteger row) {
         wself.curSectionRow = row;
@@ -36,6 +37,7 @@
 }
 
 #pragma mark - TableView Delegate && Datasource
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
@@ -102,15 +104,14 @@
     }];
 }
 
-
 #pragma mark - Getter
+
 - (SectionListView *)sectionListView {
     if (!_sectionListView) {
         _sectionListView = [[SectionListView alloc] initWithList:self.sectionDataArray];
     }
     return _sectionListView;
 }
-
 
 - (UITableView *)tableView {
     if (!_tableView) {

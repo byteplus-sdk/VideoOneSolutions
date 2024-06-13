@@ -176,3 +176,5 @@
 "h264/hardware = 1" = "硬编";
 "h264/hardware = 0" = "软编";
 "send_message_exceeded_limit" = "最多发送 10 次消息，您已超过上限";
+"alert_guests_finish_mic_title" = "结束连麦？";
+"alert_guests_finish_mic_des" = "与主播的连麦将立即结束";

@@ -96,3 +96,4 @@
 "report_message_8" = "反馈不规范表达问题";
 "placeholder_message" = "请输入评论";
 "effect_sdk_init_failed_tip" = "美颜SDK(%s)\n初始化失败(%d)";
+"new_version_upgrade" = "立即升级";
