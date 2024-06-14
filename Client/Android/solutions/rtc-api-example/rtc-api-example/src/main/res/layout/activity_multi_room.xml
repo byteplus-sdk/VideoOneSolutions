@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.vertc.api.example.examples.room.MultiRoomActivity">
+
+    <TextureView
+        android:id="@+id/local_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/remote_view1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/local_user_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:textColor="@color/red"
+        android:textSize="19sp"
+        app:layout_constraintEnd_toEndOf="@id/local_view"
+        app:layout_constraintStart_toStartOf="@id/local_view"
+        app:layout_constraintTop_toTopOf="@id/local_view"
+        tools:text="local" />
+
+
+    <TextureView
+        android:id="@+id/remote_view1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/input_panel"
+        app:layout_constraintEnd_toStartOf="@id/remote_view2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/local_view" />
+
+    <TextView
+        android:id="@+id/remote_user_name1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:textColor="@color/red"
+        android:textSize="19sp"
+        app:layout_constraintEnd_toEndOf="@id/remote_view1"
+        app:layout_constraintStart_toStartOf="@id/remote_view1"
+        app:layout_constraintTop_toTopOf="@id/remote_view1"
+        tools:text="Remote 1" />
+
+    <TextureView
+        android:id="@+id/remote_view2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/remote_view1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/remote_view1"
+        app:layout_constraintTop_toBottomOf="@id/local_view" />
+
+    <TextView
+        android:id="@+id/remote_user_name2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:textColor="@color/red"
+        android:textSize="19sp"
+        app:layout_constraintEnd_toEndOf="@id/remote_view2"
+        app:layout_constraintStart_toStartOf="@id/remote_view2"
+        app:layout_constraintTop_toTopOf="@id/remote_view2"
+        tools:text="Remote 2" />
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/input_panel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        app:columnCount="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:rowCount="2"
+        app:useDefaultMargins="true">
+
+        <EditText
+            style="@style/EditTextStyle"
+            android:id="@+id/room1_input"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="@string/hint_room_id_1"
+            android:minHeight="36dp"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="0" />
+
+        <Button
+            android:id="@+id/btn_join_room_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_join_room"
+            app:layout_column="1"
+            app:layout_row="0" />
+
+        <EditText
+            style="@style/EditTextStyle"
+            android:id="@+id/room2_input"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="@string/hint_room_id_2"
+            android:minHeight="36dp"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="1" />
+
+        <Button
+            android:id="@+id/btn_join_room_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_join_room"
+            app:layout_column="1"
+            app:layout_row="1" />
+
+    </androidx.gridlayout.widget.GridLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

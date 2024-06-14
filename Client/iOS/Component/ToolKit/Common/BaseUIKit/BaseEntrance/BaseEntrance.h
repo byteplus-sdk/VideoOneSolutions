@@ -3,6 +3,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <ToolKit/ToolKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BaseFunctionEntrance : BaseEntrance
 
+// Default is YES
+@property (nonatomic, assign) BOOL isNeedShow;
+
 @end
 
 @interface BaseFunctionSection : NSObject {
@@ -44,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nonnull) NSArray<__kindof BaseFunctionEntrance *> *items;
 
 @property (nonatomic, copy) NSString *functionSectionName;
-
 
 @end
 

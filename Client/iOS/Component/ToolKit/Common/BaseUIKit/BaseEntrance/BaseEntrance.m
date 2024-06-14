@@ -21,6 +21,14 @@
 
 @implementation BaseFunctionEntrance
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.isNeedShow = YES;
+    }
+    return self;
+}
+
 @end
 
 @implementation BaseFunctionSection

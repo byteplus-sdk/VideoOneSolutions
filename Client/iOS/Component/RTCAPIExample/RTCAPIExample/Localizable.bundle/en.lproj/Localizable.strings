@@ -1,0 +1,458 @@
+
+"api_example_name" = "API Example";
+
+"button_add_watermark" = "Add watermark";
+
+"button_audio_channel" = "Channel";
+
+"button_audio_effect_mixing" = "Sound effect mixing";
+
+"button_audio_encoding_format" = "Codec format";
+
+"button_audio_encoding_specifications" = "Codec standard";
+
+"button_audio_media_mixing" = "Music mixing";
+
+"button_audio_sample_rate" = "Sample rate";
+
+"button_cancel" = "Cancel";
+
+"button_clear_watermark" = "Clear watermark";
+
+"button_confirm" = "OK";
+
+"button_confirm_changes" = "Confirm";
+
+"button_create_engine" = "Create the engine";
+
+"button_destroy_engine" = "Destroy the engine";
+
+"button_destroy_room" = "Destroy the room";
+
+"button_join_room" = "Join the room";
+
+"button_join_room1" = "Join room 1";
+
+"button_join_room2" = "Join room 2";
+
+"button_jump_time" = "Jump to";
+
+"button_layout_mode" = "Layout";
+
+"button_leave_room" = "Leave the room";
+
+"button_leave_room1" = "Leave room 1";
+
+"button_leave_room2" = "Leave room 2";
+
+"button_open" = "Open";
+
+"button_open_float_window" = "Open the floating window";
+
+"button_pause" = "Pause";
+
+"button_pause_all" = "Pause all";
+
+"button_play" = "Play";
+
+"button_preload" = "Preload";
+
+"button_remove_watermark" = "Remove watermark";
+
+"button_resume" = "Resume";
+
+"button_resume_all" = "Resume all";
+
+"button_rotation_mode" = "Rotation mode";
+
+"button_send" = "Send";
+
+"button_send_message" = "Send message";
+
+"button_set_local_canvas" = "Set up local rendering";
+
+"button_start" = "Start";
+
+"button_start_capture" = "Enable capture";
+
+"button_start_pip" = "Turn on picture-in-picture";
+
+"button_start_pull" = "Start";
+
+"button_start_transcoding" = "Start";
+
+"button_stop" = "Stop";
+
+"button_stop_all" = "Stop all";
+
+"button_stop_pip" = "Close picture-in-picture";
+
+"button_stop_pull" = "Stop";
+
+"button_stop_transcoding" = "Stop";
+
+"button_unload" = "Uninstall";
+
+"button_update" = "Update";
+
+"button_update_capture_config" = "Capture configuration";
+
+"button_update_encoder_config" = "Set up encoding configuration";
+
+"button_update_transcoding" = "Update";
+
+"button_video_encoding_format" = "Codec format";
+
+"button_video_orientation" = "Video orientation";
+
+"close" = "Close";
+
+"example_audio_mixing" = "Music mixing";
+
+"example_back" = "Back";
+
+"example_cdn_stream" = "Push to CDN";
+
+"example_cross_room_pk" = "Cross-room PvP";
+
+"example_multi_room" = "Multi-room";
+
+"example_picture_in_picture" = "Picture-in-picture";
+
+"example_pull_stream" = "Stream pulling";
+
+"example_quick_start" = "Quick start";
+
+"example_raw_audio_data" = "Raw audio data";
+
+"example_sei_messaging" = "SEI message";
+
+"example_stream_sync_info" = "Synchronize messages with frames";
+
+"example_third_beauty" = "Third-party beauty effects";
+
+"example_video_config" = "Video configuration";
+
+"example_video_rotation" = "Video rotation";
+
+"example_voice_effect" = "Sound effects";
+
+"hint_audio_track" = "Track (0, 1)";
+
+"hint_cdn_url" = "CDN address";
+
+"hint_forward_to_room_id" = "Target room ID";
+
+"hint_message_content" = "Message content";
+
+"hint_progress_ms" = "Progress (ms)";
+
+"hint_pull_stream_url" = "Playback URL";
+
+"hint_room_id" = "Room ID";
+
+"hint_room_id_1" = "First room ID";
+
+"hint_room_id_2" = "Second room ID";
+
+"hint_sei_message" = "SEI message";
+
+"hint_user_id" = "User ID";
+
+"label_all_effect_volume" = "All volume";
+
+"label_ans_mode" = "Noise reduction mode";
+
+"label_background_color" = "Background color";
+
+"label_beauty_eye_title" = "Eyes resizing";
+
+"label_beauty_intensity" = "Intensity";
+
+"label_beauty_overall_title" = "Face slimming";
+
+"label_beauty_smooth_title" = "Smooth";
+
+"label_beauty_title" = "Beautify";
+
+"label_beauty_whiten_title" = "Whiten";
+
+"label_callback_mixed" = "Enable callback for both local and remote audios";
+
+"label_callback_playback" = "Enable callback for all remote audios";
+
+"label_callback_record" = "Enable callback for locally recorded audio";
+
+"label_callback_remote_user" = "Enable callback for a single remote audio";
+
+"label_capture_frame_rate" = "Frame rate";
+
+"label_capture_params" = "Capture parameters";
+
+"label_capture_preference" = "Mode";
+
+"label_capture_resolution" = "Resolution";
+
+"label_cdn_address" = "CDN address";
+
+"label_cdn_layout_mode" = "Layout";
+
+"label_damping" = "Attenuation damping level";
+
+"label_decay_time" = "Tail length";
+
+"label_dry_gain" = "Original signal strength";
+
+"label_effect" = "Audio effects";
+
+"label_encode_frame_rate" = "Frame rate";
+
+"label_encode_resolution" = "Resolution";
+
+"label_encode_settings" = "Encoding parameter";
+
+"label_encoder_preference" = "Encoding strategy preference";
+
+"label_example_audio" = "Audio Management";
+
+"label_example_base" = "Core functions";
+
+"label_example_important" = "Other components";
+
+"label_example_message" = "Message management";
+
+"label_example_room" = "Room management";
+
+"label_example_transmission" = "Audio & video transmission";
+
+"label_example_video" = "Video management";
+
+"label_filter_0603_title" = "Peach";
+
+"label_filter_308_title" = "Cool";
+
+"label_filter_35l3_title" = "Dark night";
+
+"label_filter_37l5_title" = "Crystal clear";
+
+"label_filter_intensity" = "Intensity";
+
+"label_filter_title" = "Filters";
+
+"label_forward_to_room" = "Target room";
+
+"label_hint_channel_mode" = "Channel";
+
+"label_hint_speed" = "Playback speed";
+
+"label_hint_track" = "Total tracks";
+
+"label_hint_track_%@" = "Total tracks: %@";
+
+"label_local_mirror_type" = "local video mirroring";
+
+"label_local_render_mode" = "Local rendering mode";
+
+"label_max_bitrate" = "Max bitrate";
+
+"label_min_bitrate" = "Min bitrate";
+
+"label_mixing_file_label" = "File:";
+
+"label_mixing_file_title" = "Play local files";
+
+"label_mixing_music_title" = "Music mixing";
+
+"label_mixing_url_label" = "URL:";
+
+"label_mixing_url_title" = "Play online files";
+
+"label_pcm_mixing" = "PCM mixing";
+
+"label_pcm_mixing_file" = "PCM file:";
+
+"label_play_progress" = "Playback progress";
+
+"label_play_progress_%@" = "Playback progress: %@";
+
+"label_pre_delay" = "Early reflection signal delay";
+
+"label_progress" = "Progress";
+
+"label_remote_render_mode" = "Remote rendering mode";
+
+"label_render_settings" = "Render settings";
+
+"label_room1" = "Room 1";
+
+"label_room1_publish" = "Publish streams in Room 1";
+
+"label_room2" = "Room 2";
+
+"label_room2_publish" = "Publish streams in Room 2";
+
+"label_room_size" = "Room size";
+
+"label_rotate_settings" = "Rotation settings";
+
+"label_sei_content_%@" = "SEI: %@";
+
+"label_sei_messaging_title" = "SEI configuration";
+
+"label_sei_received_%@" = "SEI received: %@";
+
+"label_set_audio_track" = "Set Track";
+
+"label_set_progress" = "Set progress";
+
+"label_setting_audio" = "Audio";
+
+"label_setting_bg_color" = "Background Color:";
+
+"label_setting_fps" = "Frame rate:";
+
+"label_setting_height" = "Height:";
+
+"label_setting_mix" = "Custom Information in pushing mixed streams";
+
+"label_setting_push" = "Configuration";
+
+"label_setting_rate" = "Bitrate:";
+
+"label_setting_rate_Kbps" = "Bitrate in kbps";
+
+"label_setting_video" = "Video";
+
+"label_setting_width" = "Width:";
+
+"label_step_1_create_engine" = "Step1: Create the engine";
+
+"label_step_2_start_capture" = "Step2: Enable audio and video capture";
+
+"label_step_3_set_local_canvas" = "Step3: Set up local rendering";
+
+"label_step_4_join_room" = "Step 4: Join the room";
+
+"label_step_5_set_remote_canvas" = "Step5: Update the remote user's view";
+
+"label_step_6_leave_room" = "Step6: Leave the room";
+
+"label_step_7_destroy_room" = "Step7: Destroy the room";
+
+"label_step_8_destroy_engine" = "Step8: Destroy the engine";
+
+"label_sticker_title" = "Stickers";
+
+"label_total_time_length" = "Total duration";
+
+"label_total_time_length_%@" = "Total duration: %@";
+
+"label_transcoding" = "Operation";
+
+"label_transcoding_messaging_title" = "Mixed stream layout";
+
+"label_user1" = "User 1";
+
+"label_user2" = "User 2";
+
+"label_video_orientation" = "Video frame orientation";
+
+"label_video_rotation_mode" = "Video rotation mode";
+
+"label_virtual_color_title" = "Color";
+
+"label_virtual_image_title" = "Picture";
+
+"label_virtual_title" = "Background";
+
+"label_voice_changer" = "Voice changer";
+
+"label_voice_equalization" = "Equalization effect";
+
+"label_voice_equalization_title" = "Equalization effect";
+
+"label_voice_gain" = "Band gain (dB)";
+
+"label_voice_pitch" = "Key change";
+
+"label_voice_reverb" = "Reverb effects";
+
+"label_voice_reverb_switch" = "Turn on reverb";
+
+"label_volume" = "Volume";
+
+"label_wet_gain" = "Early reflection signal intensity";
+
+"sdk_version_%@" = "Sdk Version: %@";
+
+"title_audio_effect_mixing" = "Sound effect mixing";
+
+"title_audio_media_mixing" = "Music mixing";
+
+"title_byte_beauty" = "BytePlus Effects";
+
+"title_error" = "Error";
+
+"title_fu_beauty" = "FaceUnity Beauty";
+
+"title_media_player" = "Media Player";
+
+"toast_cdn_url_is_empty" = "CDN address is null";
+
+"toast_check_valid_false" = "Invalid input. Only numbers, uppercase and lowercase letters, @. _ -, are supported, with a length of less than 128 characters.";
+
+"toast_file_wrong_format" = "Unsupported format.";
+
+"toast_input_is_empty" = "Input is empty";
+
+"toast_message_is_empty" = "Message is null";
+
+"toast_mix_url_false" = "Invalid address.";
+
+"toast_no_float_window_permission" = "Permission for floating window not granted, unable to add floating window.";
+
+"toast_open_audio_effect_first" = "Please turn on the sound effect switch first";
+
+"toast_pip_system_false" = "Picture-in-picture is not supported by the current system.";
+
+"toast_resource_exist" = "Resources not found.";
+
+"toast_room_id_false" = "Same ID as the current room.";
+
+"toast_room_id_is_empty" = "The room number is empty";
+
+"toast_roomid1_false" = "Roomid1 is illegal.";
+
+"toast_roomid2_false" = "Roomid2 is illegal.";
+
+"toast_rtc_engine_not_created" = "RTC Engine not created";
+
+"toast_send_message_empty_false" = "The message is empty.";
+
+"toast_token_will_expire" = "Token will expire";
+
+"toast_url_is_empty" = "URL is empty.";
+
+"toast_userid1_false" = "Userid1 is illegal.";
+
+"toast_userid2_false" = "Userid2 is illegal.";
+
+"toast_will_expire" = "The token is about to expire, please obtain a new token.";
+
+"toast_pip_no_user_fale" = "To see video rendering, remote users need to join.";
+
+"label_sticker_0_title" = "Dragon Summoning";
+
+"label_sticker_1_title" = "Princess Mask";
+
+"label_sticker_2_title" = "Baby Dragon";
+
+"label_sticker_3_title" = "Elderly Makeup";
+
+"label_sticker_4_title" = "Black Cat Glasses";
+
+"label_sticker_5_title" = "Flower";
+
+"label_sticker_6_title" = "Happy Bunny";
+
+"label_sticker_7_title" = "Mask";

@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
 
   s.homepage         = 'https://github.com/byteplus-sdk/VideoOneSolutions'
   s.license          = { :type => 'Apache License 2.0' }
-  s.author       = { 'author' => 'byteplus' }
+  s.author           = { 'author' => 'byteplus' }
   s.source           = { :path => './'}
   s.ios.deployment_target = '11.0'
 

@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)orientationDidChang:(BOOL)isLandscape;
 
+- (void)postInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.vertc.api.example.examples.audio.VoiceEffectActivity">
+
+    <com.vertc.api.example.view.NoPressedLinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/local_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="280dp" />
+
+        <EditText
+            android:id="@+id/room_id_input"
+            style="@style/EditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="@string/hint_room_id" />
+
+        <Button
+            android:id="@+id/btn_join_room"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_join_room" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/label_effect"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_voice_reverb" />
+
+            <Spinner
+                android:id="@+id/voice_reverb_spinner"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/rtc_spinner_bg"
+                android:entries="@array/reverbType"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_voice_pitch" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/voice_pitch_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="1"
+                android:stepSize="1"
+                android:value="0"
+                android:valueFrom="-12"
+                android:valueTo="12"
+                app:tickVisible="false"
+                tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+            <TextView
+                android:id="@+id/voice_pitch_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minWidth="36dp"
+                android:text="0" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/label_voice_equalization_title"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_voice_equalization" />
+
+            <Spinner
+                android:id="@+id/voice_equalization_spinner"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/rtc_spinner_bg"
+                android:entries="@array/voiceEqualizationBandFrequency"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_voice_gain" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/voice_gain_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="1"
+                android:stepSize="1"
+                android:value="0"
+                android:valueFrom="-15"
+                android:valueTo="15"
+                app:tickVisible="false"
+                tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+            <TextView
+                android:id="@+id/voice_gain_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minWidth="36dp"
+                android:text="0" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/label_voice_reverb_switch"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/voice_reverb_switch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+        </LinearLayout>
+
+        <androidx.gridlayout.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:columnCount="3"
+            app:rowCount="6"
+            app:useDefaultMargins="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_room_size"
+                app:layout_column="0"
+                app:layout_gravity="center_vertical"
+                app:layout_row="0" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/room_size_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:value="50"
+                android:valueFrom="0"
+                android:valueTo="100"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_gravity="center_vertical"
+                app:layout_row="0"
+                tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+            <TextView
+                android:id="@+id/room_size_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minWidth="46dp"
+                android:text="50"
+                app:layout_column="2"
+                app:layout_gravity="center_vertical"
+                app:layout_row="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_decay_time"
+                app:layout_column="0"
+                app:layout_gravity="center_vertical"
+                app:layout_row="1" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/decay_time_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:value="50"
+                android:valueFrom="0"
+                android:valueTo="100"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="1"
+                tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+            <TextView
+                android:id="@+id/decat_time_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minWidth="46dp"
+                android:text="50"
+                app:layout_column="2"
+                app:layout_gravity="center_vertical"
+                app:layout_row="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_damping"
+                app:layout_column="0"
+                app:layout_gravity="center_vertical"
+                app:layout_row="2" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/damping_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:value="50"
+                android:valueFrom="0"
+                android:valueTo="100"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="2"
+                tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+            <TextView
+                android:id="@+id/damping_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minWidth="46dp"
+                android:text="50"
+                app:layout_column="2"
+                app:layout_gravity="center_vertical"
+                app:layout_row="2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_wet_gain"
+                app:layout_column="0"
+                app:layout_gravity="center_vertical"
+                app:layout_row="3" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/wet_gain_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:value="0"
+                android:valueFrom="-20"
+                android:valueTo="10"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="3"
+                tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+            <TextView
+                android:id="@+id/wet_gain_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minWidth="46dp"
+                android:text="0"
+                app:layout_column="2"
+                app:layout_gravity="center_vertical"
+                app:layout_row="3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_dry_gain"
+                app:layout_column="0"
+                app:layout_gravity="center_vertical"
+                app:layout_row="4" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/dry_gain_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:value="0"
+                android:valueFrom="-20"
+                android:valueTo="10"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="4"
+                tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+            <TextView
+                android:id="@+id/dry_gain_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minWidth="46dp"
+                android:text="0"
+                app:layout_column="2"
+                app:layout_gravity="center_vertical"
+                app:layout_row="4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/label_pre_delay"
+                app:layout_column="0"
+                app:layout_gravity="center_vertical"
+                app:layout_row="5" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/pre_delay_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:value="0"
+                android:valueFrom="0"
+                android:valueTo="200"
+                app:layout_column="1"
+                app:layout_columnWeight="1"
+                app:layout_row="5"
+                tools:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+            <TextView
+                android:id="@+id/pre_delay_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minWidth="46dp"
+                android:text="0"
+                app:layout_column="2"
+                app:layout_gravity="center_vertical"
+                app:layout_row="5" />
+        </androidx.gridlayout.widget.GridLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_ans_mode"
+                android:textSize="16sp" />
+
+            <Spinner
+                android:id="@+id/ans_mode_spinner"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/rtc_spinner_bg"
+                android:entries="@array/ansMode"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="30dp" />
+
+    </com.vertc.api.example.view.NoPressedLinearLayout>
+</ScrollView>

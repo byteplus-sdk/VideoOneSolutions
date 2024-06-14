@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.text.TextUtils
 import androidx.activity.result.ActivityResultLauncher
+import androidx.fragment.app.FragmentManager
 import com.vertcdemo.core.SolutionDataManager
 import com.vertcdemo.core.eventbus.AppTokenExpiredEvent
 import com.vertcdemo.core.eventbus.SolutionEventBus
@@ -13,7 +14,7 @@ import com.vertcdemo.core.protocol.ILogin
 import com.vertcdemo.core.utils.AppUtil.applicationContext
 
 class ILoginImpl : ILogin {
-    override fun showLoginView(launcher: ActivityResultLauncher<Intent?>) {
+    fun showLoginView(launcher: ActivityResultLauncher<Intent?>) {
         val token = SolutionDataManager.ins().token
         if (TextUtils.isEmpty(token)) {
             val context: Context = applicationContext
@@ -21,8 +22,10 @@ class ILoginImpl : ILogin {
         }
     }
 
-    override fun closeAccount() {
+    fun closeAccount() {
         SolutionDataManager.ins().logout()
         SolutionEventBus.post(AppTokenExpiredEvent())
     }
+
+    fun showNewVersionDialog(fragmentManager: FragmentManager) {}
 }

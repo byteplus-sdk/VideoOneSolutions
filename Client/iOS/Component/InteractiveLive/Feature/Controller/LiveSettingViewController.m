@@ -38,7 +38,7 @@
         make.left.mas_equalTo(self.view).offset(12);
         make.right.mas_equalTo(self.view).offset(-13);
         make.top.mas_equalTo(self.navView.mas_bottom).offset(16);
-        make.height.mas_equalTo(238);
+        make.height.mas_equalTo(164);
     }];
 }
 
@@ -67,9 +67,6 @@
                     }
                 }
             }
-            break;
-        case LiveSettingRTMPushStreaming:
-            [LiveSettingData setRtmPushStreaming:isOn];
             break;
         case LiveSettingABR:
             [LiveSettingData setAbr:isOn];
@@ -102,7 +99,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == 3) {
+    if (indexPath.row == 2) {
         return 90;
     } else {
         return 74;
@@ -147,7 +144,8 @@
 
 - (NSArray *)optionList {
     if (!_optionList) {
-        _optionList = @[@1, @2, @3];
+        _optionList = @[@(LiveSettingRTMPullStreaming),
+                        @(LiveSettingABR)];
     }
     return _optionList;
 }

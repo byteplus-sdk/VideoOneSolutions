@@ -5,12 +5,6 @@ plugins {
 }
 
 android {
-
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
-    }
-
     compileSdk project.compileSdkVersion
 
     defaultConfig {
@@ -19,7 +13,7 @@ android {
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion project.targetSdkVersion
 
-        versionCode 1
+        versionCode project.APP_VERSION_CODE.toInteger()
         versionName project.APP_VERSION_NAME
 
         ndk { abiFilters 'arm64-v8a', 'armeabi-v7a' }
@@ -47,34 +41,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
     packagingOptions {
-        pickFirst 'lib/arm64-v8a/libc++_shared.so'
-        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
-
-        pickFirst 'lib/arm64-v8a/libbytevc0.so'
-        pickFirst 'lib/armeabi-v7a/libbytevc0.so'
-
-        pickFirst 'lib/arm64-v8a/libbytevc1enc.so'
-        pickFirst 'lib/armeabi-v7a/libbytevc1enc.so'
-
-        pickFirst 'lib/armeabi-v7a/libByteVC1_dec.so'
-        pickFirst 'lib/arm64-v8a/libByteVC1_dec.so'
-
-        pickFirst 'lib/armeabi-v7a/libbytenn.so'
-        pickFirst 'lib/arm64-v8a/libbytenn.so'
-
-        pickFirst 'lib/armeabi-v7a/libh265enc.so'
-        pickFirst 'lib/arm64-v8a/libh265enc.so'
-
-        pickFirst 'lib/armeabi-v7a/libh264.so'
-        pickFirst 'lib/arm64-v8a/libh264.so'
+        pickFirst 'lib/*/libc++_shared.so'
     }
 }
 
@@ -95,22 +78,21 @@ dependencies {
 
     implementation libs.lifecycle.runtime.ktx
 
-    implementation libs.bundles.servicemanager
-
     implementation libs.eventbus
 
     implementation libs.glide
     kapt libs.glide.compiler
 
-    implementation project(":component:SolutionBase")
-    implementation project(":component:LoginKit")
-    implementation project(':component:ToolKit')
-    implementation project(':component:Avatars')
+    implementation project(':component:solution-base')
+    implementation project(':component:loginkit')
+    implementation project(':component:rtc-toolkit')
+    implementation project(':component:avatars')
 
     // region Solutions
-    implementation project(":solutions:interactivelive")
-    implementation project(":solutions:ktv")
-    implementation project(rootProject.projects[':Vod:vod-demo'])
+    implementation project(':solutions:interactivelive')
+    implementation project(':solutions:ktv')
+    implementation project(':solutions:vod:vod-demo')
     implementation project(':solutions:media-live:live-entrance')
+    implementation project(':solutions:rtc-api-example:rtc-api-example-entry')
     // endregion
 }

@@ -46,7 +46,7 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    implementation project(':component:SolutionBase')
+    implementation project(':component:solution-base')
 
     implementation libs.eventbus
     implementation libs.gson

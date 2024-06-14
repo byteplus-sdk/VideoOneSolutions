@@ -70,8 +70,6 @@
     <string name="video_bitrate">Video bitrate</string>
     <string name="audience_link_need_permission">Need permission to start link mic.</string>
     <string name="go_live_need_permission">Need permission to start Live.</string>
-    <string name="rtm_push_streaming">RTM push streaming</string>
-    <string name="rtm_push_streaming_description">Prioritize ultra-low latency streaming</string>
     <string name="rtm_pull_streaming">RTM pull streaming</string>
     <string name="rtm_pull_streaming_description">Prioritize ultra-low latency streaming</string>
     <string name="abr">ABR</string>

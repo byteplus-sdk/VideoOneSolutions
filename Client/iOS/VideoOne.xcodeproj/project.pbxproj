@@ -18,6 +18,7 @@
 		2B69FD0129FA4F8C00E475C1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B69FD0029FA4F8C00E475C1 /* Assets.xcassets */; };
 		2B69FD0429FA4F8C00E475C1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2B69FD0229FA4F8C00E475C1 /* LaunchScreen.storyboard */; };
 		2B69FD0729FA4F8C00E475C1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B69FD0629FA4F8C00E475C1 /* main.m */; };
+		2B7036BE2B91B415007FCFB0 /* VideoOne.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B7036BD2B91B415007FCFB0 /* VideoOne.swift */; };
 		2B7C80B22BE9D9C300B803FC /* TTSDK_LIVE.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2B7C80B12BE9D9C300B803FC /* TTSDK_LIVE.bundle */; };
 		2B7C80B72BE9DA4D00B803FC /* TTSDK_VOD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2B7C80B62BE9DA4D00B803FC /* TTSDK_VOD.bundle */; };
 		2B7C80B82BE9DA5100B803FC /* TTSDK_LIVE.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2B7C80B12BE9D9C300B803FC /* TTSDK_LIVE.bundle */; };
@@ -74,6 +75,8 @@
 		2B69FD0029FA4F8C00E475C1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2B69FD0329FA4F8C00E475C1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2B69FD0629FA4F8C00E475C1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2B7036BC2B91B415007FCFB0 /* VideoOne-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoOne-Bridging-Header.h"; sourceTree = "<group>"; };
+		2B7036BD2B91B415007FCFB0 /* VideoOne.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoOne.swift; sourceTree = "<group>"; };
 		2B7C80B12BE9D9C300B803FC /* TTSDK_LIVE.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TTSDK_LIVE.bundle; sourceTree = "<group>"; };
 		2B7C80B62BE9DA4D00B803FC /* TTSDK_VOD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TTSDK_VOD.bundle; sourceTree = "<group>"; };
 		2B7C80B92BE9DA6600B803FC /* TTSDK_UPLOAD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TTSDK_UPLOAD.bundle; sourceTree = "<group>"; };
@@ -162,7 +165,9 @@
 				2B69FD0229FA4F8C00E475C1 /* LaunchScreen.storyboard */,
 				2B69FD0629FA4F8C00E475C1 /* main.m */,
 				2B291A0029FA5B9E00BA3EC4 /* Info.plist */,
+				2B7036BD2B91B415007FCFB0 /* VideoOne.swift */,
 				2B291A0629FA5C1C00BA3EC4 /* InfoPlist.strings */,
+				2B7036BC2B91B415007FCFB0 /* VideoOne-Bridging-Header.h */,
 			);
 			path = VideoOne;
 			sourceTree = "<group>";
@@ -249,6 +254,7 @@
 					};
 					2B69FCF029FA4F8A00E475C1 = {
 						CreatedOnToolsVersion = 14.3;
+						LastSwiftMigration = 1500;
 					};
 				};
 			};
@@ -407,6 +413,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B7036BE2B91B415007FCFB0 /* VideoOne.swift in Sources */,
 				2B69FD0729FA4F8C00E475C1 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -620,6 +627,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VideoOne/VideoOneInHouse.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
@@ -632,7 +640,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 3.2.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.inhouse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -642,6 +650,8 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "VideoOne/VideoOne-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = InHouse;
@@ -764,8 +774,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VideoOne/VideoOneDebug.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "${inherited}";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 100;
 				DEVELOPMENT_TEAM = "$(inherited)";
@@ -777,7 +788,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 3.2.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -788,6 +799,9 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "VideoOne/VideoOne-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -798,6 +812,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VideoOne/VideoOneRelease.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
@@ -811,7 +826,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 3.2.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -822,6 +837,8 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "VideoOne/VideoOne-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

@@ -281,6 +281,11 @@ public class LivePlayerImpl implements LivePlayer {
         public void onStreamFailedOpenSuperResolution(VeLivePlayer player, VeLivePlayerError error) {
             Log.i(TAG, "onStreamFailedOpenSuperResolution: " + format(error));
         }
+
+        @Override
+        public void onStreamFailedOpenSharpen(VeLivePlayer player, VeLivePlayerError error) {
+            Log.i(TAG, "onStreamFailedOpenSharpen: " + format(error));
+        }
     };
 
     private void setAdvancedProperty() {

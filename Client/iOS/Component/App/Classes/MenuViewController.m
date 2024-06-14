@@ -7,6 +7,8 @@
 #import "DevsViewController.h"
 #import "MenuItemButton.h"
 #import "ScenesViewController.h"
+#import "DevsViewController.h"
+#import "MenuItemButton.h"
 #import "UserEntry.h"
 #import "UserViewController.h"
 #import <Masonry/Masonry.h>
@@ -174,7 +176,6 @@
     self.scenesButton.status = ButtonStatusNone;
 }
 
-
 - (void)entryUserViewContorller {
     UserViewController *userVC = [[UserViewController alloc] init];
     [self.navigationController pushViewController:userVC animated:YES];
@@ -201,7 +202,6 @@
         _devsController = [[DevsViewController alloc] init];
     }
     return _devsController;
-
 }
 
 - (UIView *)bottomView {

@@ -47,4 +47,14 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
+    <ImageView
+        android:id="@+id/dot"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:src="@drawable/ic_red_dot"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/value"
+        app:layout_constraintTop_toTopOf="@id/value"
+        tools:visibility="visible" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

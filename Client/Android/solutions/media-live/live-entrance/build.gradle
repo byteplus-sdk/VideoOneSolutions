@@ -41,5 +41,5 @@ dependencies {
     implementation libs.ttsdk.ttcommon
     implementation libs.ttsdk.ttlicense2
 
-    implementation project(':component:SolutionBase')
+    implementation project(':component:solution-base')
 }

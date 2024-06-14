@@ -96,3 +96,5 @@
 "report_message_8" = "Feedback on irregular expression problems";
 "placeholder_message" = "Add a comment";
 "effect_sdk_init_failed_tip" = "Effect SDK(%s)\nInit failed(%d)";
+"new_version_upgrade" = "Upgrade now";
+

@@ -3,6 +3,7 @@
 //
 
 #import <ToolKit/NetworkingManager.h>
+#import <ToolKit/LocalUserComponent.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

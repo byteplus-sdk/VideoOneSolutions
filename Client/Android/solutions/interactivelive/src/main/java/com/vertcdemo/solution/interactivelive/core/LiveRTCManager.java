@@ -45,7 +45,7 @@ import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
 import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.core.protocol.IEffect;
-import com.vertcdemo.core.protocol.ProtocolUtil;
+import com.vertcdemo.core.protocol.EffectFactory;
 import com.vertcdemo.core.utils.AppUtil;
 
 import org.json.JSONException;
@@ -195,7 +195,7 @@ public class LiveRTCManager extends VideoTranscoding {
             mRTSClient.logout();
             mRTSClient = null;
         }
-        ProtocolUtil.destroyEffect();
+        destroyEffectDialog();
         if (mRTCVideo != null) {
             RTCVideo.destroyRTCVideo();
             mRTCVideo = null;
@@ -572,6 +572,8 @@ public class LiveRTCManager extends VideoTranscoding {
         mRTSRoom = null;
     }
 
+    private IEffect mEffect;
+
     /**
      * Initialize video beauty
      */
@@ -579,7 +581,7 @@ public class LiveRTCManager extends VideoTranscoding {
         if (mRTCVideo == null) {
             return;
         }
-        IEffect effect = ProtocolUtil.getIEffect();
+        IEffect effect = mEffect= EffectFactory.create();
         if (effect != null) {
             effect.init(mRTCVideo.getVideoEffectInterface());
         }
@@ -591,7 +593,7 @@ public class LiveRTCManager extends VideoTranscoding {
      * @param context context object
      */
     public void openEffectDialog(Context context, FragmentManager fragmentManager) {
-        IEffect effect = ProtocolUtil.getIEffect();
+        IEffect effect = mEffect;
         if (effect != null) {
             effect.showEffectDialog(context, null, fragmentManager);
         } else {
@@ -600,9 +602,10 @@ public class LiveRTCManager extends VideoTranscoding {
     }
 
     public void destroyEffectDialog() {
-        IEffect effect = ProtocolUtil.getIEffect();
+        IEffect effect = mEffect;
         if (effect != null) {
             effect.destroyEffectDialog();
         }
+        mEffect = null;
     }
 }

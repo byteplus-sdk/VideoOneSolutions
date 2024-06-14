@@ -97,13 +97,13 @@
         if ([uid isEqualToString:[LocalUserComponent userModel].uid]) {
             [[LiveRTCManager shareRtc] switchAudioCapture:mic];
         }
-    } else {
-        if (!self.twoRenderView.hidden) {
-            [self.twoRenderView updateGuestsMic:mic uid:uid];
-        }
-        if (!self.multiRenderView.hidden) {
-            [self.multiRenderView updateGuestsMic:mic uid:uid];
-        }
+    }
+    
+    if (!self.twoRenderView.hidden) {
+        [self.twoRenderView updateGuestsMic:mic uid:uid];
+    }
+    if (!self.multiRenderView.hidden) {
+        [self.multiRenderView updateGuestsMic:mic uid:uid];
     }
 }
 

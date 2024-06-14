@@ -7,7 +7,7 @@ import com.vertcdemo.core.SolutionDataManager.ins
 import com.vertcdemo.core.entity.LoginInfo
 import com.vertcdemo.core.net.IRequestCallback
 import com.vertcdemo.core.net.ServerResponse
-import com.vertcdemo.core.net.http.HttpRequestHelper.sendPost
+import com.vertcdemo.core.net.http.HttpRequestHelper
 import org.json.JSONObject
 
 object LoginApi {
@@ -26,7 +26,11 @@ object LoginApi {
             put("device_id", ins().deviceId)
         }
 
-        sendPost(params, LoginInfo::class.java, callBack)
+        HttpRequestHelper.sendPostAsync(
+            params = params,
+            resultType = LoginInfo::class.java,
+            callback = callBack
+        )
     } catch (e: Exception) {
         Log.d(TAG, "verifyLoginSms failed:", e)
         callBack.onError(-1, "Content Error")

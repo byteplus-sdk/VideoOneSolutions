@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="label_sticker_0_title">Dragon Summoner</string>
+    <string name="label_sticker_1_title">Princess Mask</string>
+    <string name="label_sticker_2_title">Baby Dragon</string>
+    <string name="label_sticker_3_title">Elderly Makeup</string>
+    <string name="label_sticker_4_title">Black Cat Glasses</string>
+    <string name="label_sticker_5_title">Flower</string>
+    <string name="label_sticker_6_title">Happy Bunny</string>
+    <string name="label_sticker_7_title">Mask</string>
+</resources>

@@ -4,6 +4,7 @@
 //
 
 #import "DevsViewController.h"
+#import "RTCFunctionSection.h"
 #import "FunctionTableCell.h"
 #import "Localizator.h"
 #import <Masonry/Masonry.h>
@@ -34,21 +35,20 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    BaseFunctionSection *sectionModel = self.sectionDataArray.firstObject;
-    return sectionModel.items.count;
+    return self.sectionDataArray.count;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    BaseFunctionSection *sectionModel = self.sectionDataArray.firstObject;
-    BaseFunctionEntrance *model = sectionModel.items[indexPath.row];
+    BaseFunctionSection *sectionModel = self.sectionDataArray[indexPath.row];
+    BaseFunctionEntrance *model = sectionModel.items.firstObject;
     [self sceneCellAction:model];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FunctionTableCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FunctionTableCell" forIndexPath:indexPath];
-    BaseFunctionSection *sectionModel = self.sectionDataArray.firstObject;
-    cell.model = sectionModel.items[indexPath.row];
+    BaseFunctionSection *sectionModel = self.sectionDataArray[indexPath.row];
+    cell.model = sectionModel.items.firstObject;
     return cell;
 }
 
@@ -105,10 +105,14 @@
 - (NSArray<BaseFunctionSection *> *)sectionDataArray {
     if (!_sectionDataArray) {
         NSMutableArray *list = [[NSMutableArray alloc] init];
-        
         BaseFunctionSection *mediaLiveSection = [[NSClassFromString(@"MediaLiveFunctionSection") alloc] init];
         if (mediaLiveSection) {
             [list addObject:mediaLiveSection];
+        }
+        
+        RTCFunctionSection *RTCSection = [[RTCFunctionSection alloc] init];
+        if (RTCSection && RTCSection.items.count > 0) {
+            [list addObject:RTCSection];
         }
         
         _sectionDataArray = [list copy];

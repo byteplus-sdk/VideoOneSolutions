@@ -1,0 +1,48 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdk 34
+
+    defaultConfig {
+        namespace 'com.vertc.api.example.entry'
+
+        minSdkVersion 19
+        targetSdkVersion 34
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.constraintlayout
+    implementation libs.recyclerview
+    implementation libs.gridlayout
+
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    implementation libs.gson
+    implementation libs.eventbus
+
+    implementation libs.rtc.sdk
+
+    implementation project(':solutions:rtc-api-example:rtc-api-example-base')
+    implementation project(':solutions:rtc-api-example:rtc-api-example')
+
+    implementation project(':component:solution-base')
+    implementation project(':component:rtc-toolkit')
+}

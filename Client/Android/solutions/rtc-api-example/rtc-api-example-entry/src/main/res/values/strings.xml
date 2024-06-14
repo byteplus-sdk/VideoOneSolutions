@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="rtc_example_entry_name">API Example</string>
+    <string name="rtc_example_entry_desc">RTC API function demonstration, including audio, video and other modules</string>
+</resources>

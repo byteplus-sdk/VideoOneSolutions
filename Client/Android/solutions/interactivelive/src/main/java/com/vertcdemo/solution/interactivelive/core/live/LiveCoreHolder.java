@@ -3,8 +3,6 @@
 
 package com.vertcdemo.solution.interactivelive.core.live;
 
-import android.net.Uri;
-
 import androidx.annotation.NonNull;
 
 import com.ss.bytertc.engine.RTCVideo;
@@ -37,12 +35,4 @@ public interface LiveCoreHolder {
 
     @NonNull
     StatisticsInfo getStatisticsInfo();
-
-    static String convertToSDPUrl(String url) {
-        Uri uri = Uri.parse(url);
-        Uri.Builder builder = uri.buildUpon();
-        builder.scheme("http");
-        builder.path(uri.getPath() + ".sdp");
-        return builder.toString();
-    }
 }

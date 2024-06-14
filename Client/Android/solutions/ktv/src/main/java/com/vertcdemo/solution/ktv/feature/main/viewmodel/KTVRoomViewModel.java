@@ -395,7 +395,7 @@ public class KTVRoomViewModel extends ViewModel {
             updateStatusSongItem(event.songId, event.status);
         }
 
-        if (event.roomIds.contains(requireRoomId()) && event.status == SongStatus.DOWNLOADED) {
+        if (event.contains(requireRoomId()) && event.status == SongStatus.DOWNLOADED) {
             if (event.type == DownloadType.MUSIC) {
                 onMusicDownloaded(event.songId);
             }

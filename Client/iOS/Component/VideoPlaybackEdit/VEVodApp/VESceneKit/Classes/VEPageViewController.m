@@ -487,7 +487,8 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
     if (_delegateHas.hasDidScrollChangeDirection) {
         [self.delegate pageViewController:self didScrollChangeDirection:self.currentDirection offsetProgress:MIN(1.0, progress)];
     }
-    if (progress >= 1.0) {
+    if ([self areFloatsAlmostEqual:progress b:1.0 epsilon:0.001] ||
+        progress >= 1.0) {
         self.shouldChangeToNextPage = YES;
         [self _shouldChangeToNextPage];
     }
@@ -532,5 +533,12 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
         }
     }
 }
+
+#pragma mark - Tool
+
+- (BOOL)areFloatsAlmostEqual:(float)a b:(float)b epsilon:(CGFloat)epsilon {
+    return fabs(a - b) <= epsilon;
+}
+
 
 @end

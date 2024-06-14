@@ -68,14 +68,7 @@
         NSString *rtmpUrl = self.streamConfig.rtmpUrl;
         rtmpUrl = [LiveRTCInteractUtils setPriorityForUrl:rtmpUrl];
         NSAssert(rtmpUrl, @"rtmp url is nil");
-        NSArray *urls;
-
-        if ([LiveSettingData rtmPushStreaming]) {
-            NSString *rtmUrl = [self generalRTMUrl:rtmpUrl];
-            urls = @[rtmUrl, rtmpUrl];
-        } else {
-            urls = @[rtmpUrl];
-        }
+        NSArray *urls = @[rtmpUrl];
 
         [self.livePusher startPushWithUrls:urls];
     }

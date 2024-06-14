@@ -12,11 +12,6 @@
     return [defaults boolForKey:[NSString stringWithFormat:@"LiveSettingTypeOf%ld", (long)LiveSettingRTMPullStreaming]];
 }
 
-+ (BOOL)rtmPushStreaming {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults boolForKey:[NSString stringWithFormat:@"LiveSettingTypeOf%ld", (long)LiveSettingRTMPushStreaming]];
-}
-
 + (BOOL)abr {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     return [defaults boolForKey:[NSString stringWithFormat:@"LiveSettingTypeOf%ld", (long)LiveSettingABR]];
@@ -27,12 +22,6 @@
 + (void)setRtmPullStreaming:(BOOL)rtmPullStreaming {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setBool:rtmPullStreaming forKey:[NSString stringWithFormat:@"LiveSettingTypeOf%ld", (long)LiveSettingRTMPullStreaming]];
-    [defaults synchronize];
-}
-
-+ (void)setRtmPushStreaming:(BOOL)rtmPushStreaming {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setBool:rtmPushStreaming forKey:[NSString stringWithFormat:@"LiveSettingTypeOf%ld", (long)LiveSettingRTMPushStreaming]];
     [defaults synchronize];
 }
 

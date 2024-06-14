@@ -70,8 +70,6 @@
     <string name="video_bitrate">码率</string>
     <string name="audience_link_need_permission">连麦缺少权限</string>
     <string name="go_live_need_permission">开播需要权限</string>
-    <string name="rtm_push_streaming">超低延时推流</string>
-    <string name="rtm_push_streaming_description">开启后优先启用超低延时推流能力</string>
     <string name="rtm_pull_streaming">超低延时拉流</string>
     <string name="rtm_pull_streaming_description">开启后优先启用超低延时拉流能力</string>
     <string name="abr">开启 ABR</string>

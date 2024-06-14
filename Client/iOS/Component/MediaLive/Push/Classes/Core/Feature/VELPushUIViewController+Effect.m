@@ -1,6 +1,8 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VELPushUIViewController+Private.h"
+#import <ToolKit/ToolKit.h>
+#import <ToolKit/Localizator.h>
 
 @implementation VELPushUIViewController (Effect)
 - (BOOL)isSupportEffect {
@@ -16,6 +18,8 @@
             weakSelf.currentPopObj = nil;
         }];
         self.currentPopObj = self.effectViewModel;
+    } else {
+        [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"not_support_beauty_error", @"ToolKit")];
     }
 }
 
