@@ -23,7 +23,7 @@ public class FunctionPlaylist implements IFunctionEntry {
 
     @Override
     public int getIcon() {
-        return R.drawable.vevod_function_playlist_icon;
+        return R.drawable.vevod_function_playlist;
     }
 
     @Override

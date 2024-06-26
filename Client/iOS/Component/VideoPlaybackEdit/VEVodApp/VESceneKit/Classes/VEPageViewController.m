@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "VEPageViewController.h"
 #import <objc/message.h>
+#import <ToolKit/ToolKit.h>
 
 NSUInteger const VEPageMaxCount = NSIntegerMax;
 
@@ -233,7 +234,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
 
 - (void)setCurrentIndex:(NSUInteger)currentIndex autoAdjustOffset:(BOOL)autoAdjustOffset {
     if (currentIndex > self.itemCount - 1) {
-        NSLog(@"VEPageViewController(%p) currentIndex out of bounds %lu", self, (unsigned long)currentIndex);
+        VOLogI(VOVideoPlayback,@"VEPageViewController(%p) currentIndex out of bounds %lu", self, (unsigned long)currentIndex);
         return;
     }
     if (_currentIndex == currentIndex) return;

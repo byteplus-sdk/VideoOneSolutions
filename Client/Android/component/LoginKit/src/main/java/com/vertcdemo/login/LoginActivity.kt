@@ -20,7 +20,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.vertcdemo.core.SolutionDataManager
 import com.vertcdemo.core.entity.LoginInfo
-import com.vertcdemo.core.eventbus.RefreshUserNameEvent
+import com.vertcdemo.core.event.RefreshUserNameEvent
 import com.vertcdemo.core.eventbus.SolutionEventBus
 import com.vertcdemo.core.net.IRequestCallback
 import com.vertcdemo.core.net.ServerResponse

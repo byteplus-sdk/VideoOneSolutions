@@ -11,7 +11,7 @@ import com.vertcdemo.base.BuildConfig
 import com.vertcdemo.base.R
 import com.vertcdemo.core.SolutionDataManager
 import com.vertcdemo.core.common.GsonUtils.gson
-import com.vertcdemo.core.eventbus.AppTokenExpiredEvent
+import com.vertcdemo.core.event.AppTokenExpiredEvent
 import com.vertcdemo.core.eventbus.SolutionEventBus
 import com.vertcdemo.core.net.IRequestCallback
 import com.vertcdemo.core.net.ServerResponse

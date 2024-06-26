@@ -4,6 +4,7 @@
 
 #import "LiveInvitePKView.h"
 #import "GCDTimer.h"
+#import <ToolKit/ToolKit.h>
 
 @interface LiveInvitePKView ()
 
@@ -83,7 +84,7 @@
 - (void)dismissDelayAfterTenSeconds {
     __weak __typeof(self) wself = self;
     dispatch_after(dispatch_walltime(NULL, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"10s is over");
+        VOLogI(VOInteractiveLive,@"10s is over");
         if (wself && wself.superview) {
             [wself rejectButtonAction];
         }

@@ -1,12 +1,4 @@
-"medialive_entry_title" = "Live Broadcast Integration Guide";
-"medialive_entry_des" = "Offering technical guides to helps you better integrate the Live Broadcast SDK.";
-"medialive_navbar_title" = "MediaLive";
-"medialive_live_push" = "Live Streaming Push";
-"medialive_live_pull" = "Live Streaming Pull";
 "medialive_camera" = "Camera";
-"medialive_external_capture" = "External acquisition";
-"medialive_voice_darkframe" = "Audio + Black Frame/Picture";
-"medialive_screen_capture" = "Screen";
 "medialive_video_file" = "Video file";
 "medialive_camera_flip" = "Flip";
 "medialive_flash_light" = "Flash";
@@ -38,7 +30,7 @@
 "medialive_not_support_record" = "Recording, screenshots cannot be taken for the time being.";
 "medialive_push_status" = "push state";
 "medialive_push_status_unknown" = "unknown state";
-"medialive_push_status_connecting" = "Jianlianzhong";
+"medialive_push_status_connecting" = "Connecting";
 "medialive_push_status_connected" = "Connect successfully";
 "medialive_push_status_reconnecting" = "Reconnecting";
 "medialive_push_status_stop" = "Stop";
@@ -255,3 +247,10 @@
 "medialive_source_required" = "The source stream must be configured.";
 "medialive_resolution_required" = "Definition selection is required.";
 "medialive_abr_config" = "ABR configuration";
+"medialive_camera_entry_title" = "Camera";
+"medialive_screen_entry_title" = "Screen";
+"medialive_voice_entry_title" = "Voice & black frames/pictures";
+"medialive_file_entry_title" = "Video file";
+"medialive_pull_entry_title" = "Pull stream";
+"medialive_push_section_title" = "Live stream pushing";
+"medialive_pull_section_title" = "Live stream pulling";

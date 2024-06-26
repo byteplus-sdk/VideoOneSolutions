@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F8FA">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_ktv_list_header"
+        android:importantForAccessibility="no"
+        app:layout_constraintDimensionRatio="1125:846"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_ktv_list_bottom"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1125:324"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp"
+        tools:layout_constraintGuide_begin="25dp" />
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_ktv_back_b"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/karaoke_scene_title"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/back"
+        tools:text="Choose the singing mode you like" />
+
+    <ImageView
+        android:id="@+id/solo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="20dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/bg_karaoke_solo"
+        app:layout_constraintDimensionRatio="1029:480"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <TextView
+        android:id="@+id/solo_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:maxLines="1"
+        android:text="@string/karaoke_scene_solo"
+        android:textColor="#FFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/solo_f1"
+        app:layout_constraintEnd_toEndOf="@id/solo_f2"
+        app:layout_constraintStart_toStartOf="@id/solo_f2" />
+
+    <TextView
+        android:id="@+id/solo_f1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:drawablePadding="6dp"
+        android:maxLines="1"
+        android:text="@string/karaoke_scene_solo_desc1"
+        android:textColor="#FFF"
+        android:textSize="12sp"
+        app:drawableStartCompat="@drawable/ic_karaoke_solo_f1"
+        app:layout_constraintBottom_toTopOf="@id/solo_f2"
+        app:layout_constraintEnd_toEndOf="@id/solo_f2"
+        app:layout_constraintStart_toStartOf="@id/solo_f2"
+        tools:drawableStart="@drawable/ic_karaoke_solo_f1" />
+
+    <TextView
+        android:id="@+id/solo_f2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="16dp"
+        android:drawablePadding="6dp"
+        android:maxLines="1"
+        android:text="@string/karaoke_scene_solo_desc2"
+        android:textColor="#FFF"
+        android:textSize="12sp"
+        app:drawableStartCompat="@drawable/ic_karaoke_solo_f2"
+        app:layout_constraintBottom_toBottomOf="@id/solo"
+        app:layout_constraintEnd_toEndOf="@id/solo"
+        app:layout_constraintStart_toStartOf="@id/solo"
+        tools:drawableStart="@drawable/ic_karaoke_solo_f2" />
+
+    <ImageView
+        android:id="@+id/duet"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="20dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/bg_karaoke_duet"
+        app:layout_constraintDimensionRatio="1029:480"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/solo" />
+
+    <TextView
+        android:id="@+id/duet_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:maxLines="1"
+        android:text="@string/karaoke_scene_duet"
+        android:textColor="#FFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/duet_f1"
+        app:layout_constraintEnd_toEndOf="@id/duet_f2"
+        app:layout_constraintStart_toStartOf="@id/duet_f2" />
+
+    <TextView
+        android:id="@+id/duet_f1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:drawablePadding="6dp"
+        android:maxLines="1"
+        android:text="@string/karaoke_scene_duet_desc1"
+        android:textColor="#FFF"
+        android:textSize="12sp"
+        app:drawableStartCompat="@drawable/ic_karaoke_duet_f1"
+        app:layout_constraintBottom_toTopOf="@id/duet_f2"
+        app:layout_constraintEnd_toEndOf="@id/duet_f2"
+        app:layout_constraintStart_toStartOf="@id/duet_f2"
+        tools:drawableStart="@drawable/ic_karaoke_duet_f1" />
+
+    <TextView
+        android:id="@+id/duet_f2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="16dp"
+        android:drawablePadding="6dp"
+        android:maxLines="1"
+        android:text="@string/karaoke_scene_duet_desc2"
+        android:textColor="#FFF"
+        android:textSize="12sp"
+        app:drawableStartCompat="@drawable/ic_karaoke_duet_f2"
+        app:layout_constraintBottom_toBottomOf="@id/duet"
+        app:layout_constraintEnd_toEndOf="@id/duet"
+        app:layout_constraintStart_toStartOf="@id/duet"
+        tools:drawableStart="@drawable/ic_karaoke_duet_f2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

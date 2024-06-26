@@ -36,7 +36,7 @@ import com.vertcdemo.solution.ktv.core.rts.annotation.SeatStatus;
 import com.vertcdemo.solution.ktv.core.rts.annotation.UserRole;
 import com.vertcdemo.solution.ktv.core.rts.annotation.UserStatus;
 import com.vertcdemo.solution.ktv.databinding.DialogKtvSeatOptionBinding;
-import com.vertcdemo.solution.ktv.event.AudienceChangedBroadcast;
+import com.vertcdemo.solution.ktv.event.AudienceChangedEvent;
 import com.vertcdemo.solution.ktv.event.InteractChangedBroadcast;
 import com.vertcdemo.solution.ktv.event.MediaChangedBroadcast;
 import com.vertcdemo.solution.ktv.event.SeatChangedBroadcast;
@@ -255,7 +255,7 @@ public class SeatOptionDialog extends BottomDialogFragmentX {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAudienceChangedBroadcast(AudienceChangedBroadcast event) {
+    public void onAudienceChangedBroadcast(AudienceChangedEvent event) {
         checkIfClose(event.userInfo.userId);
     }
 

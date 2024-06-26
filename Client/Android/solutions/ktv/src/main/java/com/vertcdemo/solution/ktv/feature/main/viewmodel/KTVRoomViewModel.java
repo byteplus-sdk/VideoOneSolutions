@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.ss.bytertc.engine.type.VoiceReverbType;
 import com.vertcdemo.core.annotation.MediaStatus;
+import com.vertcdemo.core.event.JoinRTSRoomErrorEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.IRequestCallback;
 import com.vertcdemo.core.utils.Streams;
@@ -46,7 +47,6 @@ import com.vertcdemo.solution.ktv.core.rts.annotation.UserStatus;
 import com.vertcdemo.solution.ktv.event.DownloadStatusChanged;
 import com.vertcdemo.solution.ktv.event.FinishSingBroadcast;
 import com.vertcdemo.solution.ktv.event.InitSeatDataEvent;
-import com.vertcdemo.solution.ktv.event.JoinRTSRoomErrorEvent;
 import com.vertcdemo.solution.ktv.event.MusicLibraryInitEvent;
 import com.vertcdemo.solution.ktv.event.RequestSongBroadcast;
 import com.vertcdemo.solution.ktv.event.StartSingBroadcast;
@@ -122,7 +122,7 @@ public class KTVRoomViewModel extends ViewModel {
 
     public final MutableLiveData<Boolean> selfMicOn = new MutableLiveData<>(true);
 
-    public void setBackground(@Nullable String backgroundKey) {
+    private void setBackground(@Nullable String backgroundKey) {
         if (backgroundKey == null) {
             return;
         }
@@ -184,7 +184,7 @@ public class KTVRoomViewModel extends ViewModel {
             @Override
             public void onSuccess(JoinRoomResponse data) {
                 if (data == null) {
-                    onError(-1, "Null JoinRoomResponse data");
+                    onError(-1, "Invalid JoinRoom response");
                     return;
                 }
 
@@ -219,7 +219,7 @@ public class KTVRoomViewModel extends ViewModel {
             @Override
             public void onSuccess(JoinRoomResponse data) {
                 if (data == null) {
-                    onError(-1, "Null JoinRoomResponse data");
+                    onError(-1, "Invalid JoinRoom response");
                     return;
                 }
                 setRoomInfo(Objects.requireNonNull(data.roomInfo));

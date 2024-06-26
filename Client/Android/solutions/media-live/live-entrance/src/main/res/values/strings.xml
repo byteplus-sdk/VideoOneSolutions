@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
-    <string name="medialive_entry_title">Live Broadcast Integration Guide</string>
-    <string name="medialive_entry_des">Offering technical guides to helps you better integrate the Live Broadcast SDK.</string>
-    <string name="medialive_navbar_title">MediaLive</string>
-    <string name="medialive_live_push">Live Streaming Push</string>
-    <string name="medialive_live_pull">Live Streaming Pull</string>
+    <string name="medialive_entry_title">Live streaming</string>
+
+    <string name="medialive_push_section_title">"Live stream pushing"</string>
+    <string name="medialive_camera_entry_title">"Camera"</string>
+    <string name="medialive_screen_entry_title">"Screen"</string>
+    <string name="medialive_voice_entry_title">"Voice &amp; black frames/pictures"</string>
+    <string name="medialive_file_entry_title">"Video file"</string>
+
+    <string name="medialive_pull_section_title">"Live stream pulling"</string>
+    <string name="medialive_pull_entry_title">"Pull stream"</string>
 </resources>

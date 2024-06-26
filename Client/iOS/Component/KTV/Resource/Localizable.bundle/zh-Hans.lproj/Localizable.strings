@@ -91,3 +91,10 @@
 "label_rtt_value_%@"="%@ms";
 "label_music_empty" = "还没有人点歌";
 "send_message_exceeded_limit" = "最多发送 10 次消息，您已超过上限";
+"solo_singing_des_1" = "6人语音聊天";
+
+"solo_singing_des_2" = "延迟 < 400毫秒";
+
+"sub_scene_title" = "选择你喜欢的唱歌模式";
+
+"solo_singing_title" = "独唱";

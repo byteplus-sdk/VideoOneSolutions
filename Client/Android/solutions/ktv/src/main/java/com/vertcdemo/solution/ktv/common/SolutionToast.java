@@ -10,7 +10,6 @@ import androidx.annotation.StringRes;
 
 import com.vertcdemo.core.common.AppExecutors;
 import com.vertcdemo.ui.CenteredToast;
-import com.vertcdemo.solution.ktv.utils.ContextProvider;
 
 @SuppressLint("SoonBlockedPrivateApi")
 public class SolutionToast {
@@ -18,12 +17,10 @@ public class SolutionToast {
     }
 
     public static void show(String message) {
-        ContextProvider.get();
         show(message, Toast.LENGTH_SHORT);
     }
 
     public static void show(@StringRes int resId) {
-        ContextProvider.get();
         show(resId, Toast.LENGTH_SHORT);
     }
 

@@ -58,7 +58,7 @@
             break;
         }
         default: {
-            NSLog(@"Set CellType");
+            VOLogI(VOInteractiveLive,@"Set CellType");
             break;
         };
     }

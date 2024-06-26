@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="chorus_scene_name">Duet Singing</string>
+    <string name="chorus_scenes">Duet Singing</string>
+    <string name="chorus_scenes_des">2-Person singing, Lead/backup singer</string>
+
+    <string name="same_logged_in">A user with the same ID has logged in. You will be forced to log out.</string>
+
+    <string name="net_quality_disconnect">Disconnected</string>
+    <string name="net_quality_good">Good network</string>
+    <string name="net_quality_poor">Poor network</string>
+
+    <string name="label_audio_tuning_title">Tuning</string>
+    <string name="label_monitor_mix_title">In-ear Monitor</string>
+    <string name="label_monitor_mix_tip">Experience the in-ear monitor function after you plug in the earphones</string>
+    <string name="label_music_volume_title">Music volume</string>
+    <string name="label_vocal_volume_title">Vocal volume</string>`
+    <string name="label_reverberation_title">Reverberation</string>
+    <string name="reverberation_button_original">Original</string>
+    <string name="reverberation_button_echo">Echo</string>
+    <string name="reverberation_button_concert">Concert</string>
+    <string name="reverberation_button_ethereal">Ethereal</string>
+    <string name="reverberation_button_ktv">KTV</string>
+    <string name="reverberation_button_recording_studio">Recording studio</string>
+
+    <string name="button_music_list_title">Song Library</string>
+    <string name="button_karaoke_station_pick_song">Song Queue</string>
+    <string name="button_karaoke_station_pick_song_xxx">Song Queue(%1$d)</string>
+    <string name="label_music_library_empty">Music library is empty</string>
+    <string name="label_no_singing_host_tip">Select a song and start singing now</string>
+
+    <string name="ktv_background_name1">Background 1</string>
+    <string name="ktv_background_name2">Background 2</string>
+    <string name="ktv_background_name3">Background 3</string>
+
+    <string name="im_label_join_room">%1$s joined the room</string>
+    <string name="im_label_leave_room">%1$s has left</string>
+
+    <string name="label_no_lrc">No lyrics</string>
+
+    <string name="toast_original_vocals_enabled">Original vocals enabled</string>
+    <string name="toast_backing_track_enabled">Accompaniment enabled</string>
+    <string name="toast_false_duplicate_song">Repeat song request</string>
+
+    <string name="chorus_next_song_hint"> Finished. Next song is "%1$s"</string>
+    <string name="start_sing_solo">Start solo singing</string>
+    <string name="start_sing_chorus">Join the singing</string>
+    <string name="finish_room_by_overtime">The duration of this experience has reached  20 minutes.</string>
+    <string name="toast_chorus_live_is_end">The host has closed the room</string>
+    <string name="label_chorus_room_list_empty">Create a Karaoke room.</string>
+    <string name="button_room_list_create">Create a room</string>
+    <string name="label_chorus_create_name_xxx">%1$s\'s Karaoke room</string>
+    <string name="application_experiencing_xxx_title">FOR FUNCTIONAL EXPERIENCE ONLY (LIMITED TO %1$s MINS). YOUR LIVESTREAM IS OPEN TO ANYONE WITH THE APP.</string>
+    <string name="button_create_start">Open the Karaoke room</string>
+    <string name="label_alert_live_end">Are you sure end this LIVE？</string>
+    <string name="button_alert_live_end">Confirm</string>
+
+    <string name="toast_cut_off_failed">Failed to switch song, try again later</string>
+
+    <string name="label_input_placeholder">Comment</string>
+    <string name="label_music_list_singer_xxx">Artist: %1$s</string>
+    <string name="button_music_list_already">Added</string>
+    <string name="button_music_list_request_song">Add</string>
+    <string name="button_music_list_waiting">Waiting</string>
+    <string name="button_music_list_downloading">Downloading</string>
+    <string name="label_music_picked_empty">No one has requested a song yet</string>
+    <string name="label_pick_song_singer_xxx">Song requester: %1$s</string>
+    <string name="label_pick_song_singing">Singing</string>
+
+    <string name="toast_chorus_need_permission">Need permission to create Karaoke room.</string>
+    <string name="toast_chorus_no_camera_permission">No camera permission</string>
+    <string name="toast_chorus_no_mic_permission">No microphone permission</string>
+
+</resources>

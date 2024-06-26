@@ -2,4 +2,5 @@
 <resources>
     <string name="rtc_example_entry_name">API Example</string>
     <string name="rtc_example_entry_desc">RTC 的 API 功能演示，包括音频、视频等模块</string>
+    <string name="rtc_example_tab_name">RTC</string>
 </resources>

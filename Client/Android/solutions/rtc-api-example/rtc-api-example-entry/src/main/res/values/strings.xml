@@ -2,4 +2,5 @@
 <resources>
     <string name="rtc_example_entry_name">API Example</string>
     <string name="rtc_example_entry_desc">RTC API function demonstration, including audio, video and other modules</string>
+    <string name="rtc_example_tab_name">RTC</string>
 </resources>

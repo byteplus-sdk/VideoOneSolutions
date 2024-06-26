@@ -73,7 +73,7 @@
         [SystemAuthority authorizationStatusWithType:AuthorizationTypeAudio
                                                block:^(BOOL isAuthorize) {
                                                    if (isAuthorize) {
-                                                       NSLog(@"KTV RTC Manager == startAudioCapture");
+                                                       VOLogI(VOKTV, @"KTV RTC Manager == startAudioCapture");
                                                        [self.rtcRoom setUserVisibility:YES];
                                                        [self.rtcRoom publishStream:ByteRTCMediaStreamTypeAudio];
                                                        [self.rtcEngineKit startAudioCapture];
@@ -81,7 +81,7 @@
                                                    }
                                                }];
     } else {
-        NSLog(@"KTV RTC Manager == stopAudioCapture");
+        VOLogI(VOKTV, @"KTV RTC Manager == stopAudioCapture");
         [self.rtcRoom setUserVisibility:NO];
         self.isEnableAudioCapture = NO;
         [self.rtcEngineKit stopAudioCapture];
@@ -117,7 +117,7 @@
     [self enableEarMonitor:NO];
     self.isAudioPlaying = YES;
     ByteRTCAudioMixingManager *audioMixingManager = [self.rtcEngineKit getAudioMixingManager];
-    
+
     ByteRTCAudioMixingConfig *config = [[ByteRTCAudioMixingConfig alloc] init];
     config.type = ByteRTCAudioMixingTypePlayoutAndPublish;
     config.playCount = 1;
@@ -129,20 +129,20 @@
 
 - (void)pauseSinging {
     ByteRTCAudioMixingManager *audioMixingManager = [self.rtcEngineKit getAudioMixingManager];
-    
+
     [audioMixingManager pauseAudioMixing:self.audioMixingID];
 }
 
 - (void)resumeSinging {
     ByteRTCAudioMixingManager *audioMixingManager = [self.rtcEngineKit getAudioMixingManager];
-    
+
     [audioMixingManager resumeAudioMixing:self.audioMixingID];
 }
 
 - (void)stopSinging {
     self.isAudioPlaying = NO;
     ByteRTCAudioMixingManager *audioMixingManager = [self.rtcEngineKit getAudioMixingManager];
-    
+
     [audioMixingManager stopAudioMixing:self.audioMixingID];
 }
 
@@ -152,7 +152,7 @@
 
 - (void)switchAccompaniment:(BOOL)isAccompaniment {
     ByteRTCAudioMixingManager *audioMixingManager = [self.rtcEngineKit getAudioMixingManager];
-    
+
     NSInteger trackCount = [audioMixingManager getAudioTrackCount:self.audioMixingID];
     if (trackCount >= 2) {
         if (isAccompaniment) {
@@ -200,7 +200,7 @@
 
 - (void)setMusicVolume:(NSInteger)volume {
     ByteRTCAudioMixingManager *audioMixingManager = [self.rtcEngineKit getAudioMixingManager];
-    
+
     [audioMixingManager setAudioMixingVolume:self.audioMixingID volume:(int)volume type:ByteRTCAudioMixingTypePlayoutAndPublish];
 }
 

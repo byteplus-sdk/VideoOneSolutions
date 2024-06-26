@@ -424,7 +424,7 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 }
 
 - (void)dealloc {
-    NSLog(@"deallocdeallocdealloc");
+    VOLogI(VOVideoPlayback,@"deallocdeallocdealloc");
 }
 
 @end

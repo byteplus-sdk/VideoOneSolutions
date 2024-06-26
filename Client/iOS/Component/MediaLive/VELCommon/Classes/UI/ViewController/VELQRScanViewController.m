@@ -4,6 +4,7 @@
 #import <MediaLive/VELCommon.h>
 #import <AVFoundation/AVFoundation.h>
 #import <ToolKit/Localizator.h>
+#import <ToolKit/ToolKit.h>
 @interface VELQRMaskView : UIView
 @property (nonatomic, assign) CGRect qrRect;
 @end
@@ -253,7 +254,7 @@
 }
 
 + (VELQRScanViewController *)showFromVC:(UIViewController *)vc completion:(void (^)(VELQRScanViewController *vc, NSString * _Nonnull))completion {
-    vc = vc ?: UIApplication.sharedApplication.keyWindow.rootViewController;
+    vc = vc ?: [DeviceInforTool topViewController];
     VELQRScanViewController *qrVc = [[VELQRScanViewController alloc] init];
     qrVc.completionBlock = completion;
     if (![vc.presentedViewController isKindOfClass:VELQRScanViewController.class]) {
@@ -422,7 +423,7 @@
                                         cropRect.size.width / fixWidth);
         }
     }
-    NSLog(@"%@", NSStringFromCGRect(rectOfInterest));
+    VOLogI(VOMediaLive,@"%@", NSStringFromCGRect(rectOfInterest));
     return rectOfInterest;
 }
 @end

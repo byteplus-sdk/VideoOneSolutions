@@ -45,6 +45,7 @@
     self.view.backgroundColor = UIColor.blackColor;
     UIApplication.sharedApplication.idleTimerDisabled = YES;
     [self.config setupUrlsWithString:self.config.originUrlString];
+    [self setupBackgroundView];
     [self setupUI];
     [self changeControlIsHidden:YES];
     [VELUIToast setTemporaryLoadingShowView:self.previewContainer];
@@ -59,12 +60,30 @@
     [super viewDidAppear:animated];
     [self startEngineAndPreview];
     [self changeControlIsHidden:NO];
+    [self removeBackgroundView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self stopEngineAndPreview];
     [self changeControlIsHidden:YES];
+}
+
+- (void)setupBackgroundView  {
+    self.contentView = [[UIView alloc] init];
+    self.contentView.backgroundColor = [UIColor blackColor];
+    self.contentView.userInteractionEnabled = YES;
+    [self.view addSubview:self.contentView];
+    [self.contentView  mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.top.bottom.right.equalTo(self.view);
+        make.left.equalTo(self.view).offset(-10);
+    }];
+}
+
+- (void)removeBackgroundView {
+    if (self.contentView) {
+        [self.contentView removeFromSuperview];
+    }
 }
 
 - (void)setupUI {
@@ -120,7 +139,7 @@
 - (void)setupNavigationBar {
     [super setupNavigationBar];
     [self.navigationBar onlyShowLeftBtn];
-    self.navigationBar.hidden = YES;
+    self.navigationBar.hidden = NO;
     self.navigationBar.titleLabel.hidden = YES;
     self.navigationBar.titleLabel.textColor = UIColor.whiteColor;
     self.navigationBar.backgroundColor = UIColor.clearColor;

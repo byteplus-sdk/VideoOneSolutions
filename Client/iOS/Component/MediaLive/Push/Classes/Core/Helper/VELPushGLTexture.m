@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "VELPushGLTexture.h"
 #import <OpenGLES/EAGL.h>
+#import <ToolKit/ToolKit.h>
 
 @implementation VELPushNormalGLTexture {
     
@@ -53,7 +54,7 @@
 
 - (void)update:(unsigned char *)buffer width:(int)width height:(int)height format:(GLenum)format {
     if (!glIsTexture(_texture)) {
-        NSLog(@"error: not a valid texture %d", _texture);
+        VOLogE(VOMediaLive,@"error: not a valid texture %d", _texture);
         _available = NO;
         return;
     }
@@ -170,9 +171,9 @@
     CVReturn res = CVPixelBufferCreate(kCFAllocatorDefault, width, height, kCVPixelFormatType_32BGRA, optionsDicitionary, &pixelBuffer);
     CFRelease(optionsDicitionary);
     if (res != kCVReturnSuccess) {
-        NSLog(@"CVPixelBufferCreate error: %d", res);
+        VOLogE(VOMediaLive,@"CVPixelBufferCreate error: %d", res);
         if (res == kCVReturnInvalidPixelFormat) {
-            NSLog(@"only format BGRA and YUV420 can be used");
+            VOLogE(VOMediaLive,@"only format BGRA and YUV420 can be used");
         }
         _available = NO;
     }
@@ -203,7 +204,7 @@
         EAGLContext *context = [EAGLContext currentContext];
         CVReturn ret = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, context, NULL, &_textureCache);
         if (ret != kCVReturnSuccess) {
-            NSLog(@"create CVOpenGLESTextureCacheRef fail: %d", ret);
+            VOLogE(VOMediaLive,@"create CVOpenGLESTextureCacheRef fail: %d", ret);
             _available = NO;
             return;
         }
@@ -226,7 +227,7 @@
     bytesPerRow = bytesPerRow + (int) iLeft + (int) iRight;
     CVReturn ret = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, GL_TEXTURE_2D, GL_RGBA, width, height, GL_BGRA, GL_UNSIGNED_BYTE, 0, &_cvTexture);
     if (ret != kCVReturnSuccess || !_cvTexture) {
-        NSLog(@"create CVOpenGLESTextureRef fail: %d", ret);
+        VOLogE(VOMediaLive,@"create CVOpenGLESTextureRef fail: %d", ret);
         _available = NO;
         return;
     }
@@ -254,13 +255,13 @@
         _cvTexture = nil;
     }
     if (_pixelBuffer && _needReleasePixelBuffer) {
-        NSLog(@"release pixelBuffer %@", _pixelBuffer);
+        VOLogI(VOMediaLive,@"release pixelBuffer %@", _pixelBuffer);
         _needReleasePixelBuffer = NO;
         CVPixelBufferRelease(_pixelBuffer);
         _pixelBuffer = nil;
     }
     if (_textureCache && _needReleaseTextureCache) {
-        NSLog(@"release CVTextureCache %@", _textureCache);
+        VOLogI(VOMediaLive,@"release CVTextureCache %@", _textureCache);
         CVOpenGLESTextureCacheFlush(_textureCache, 0);
         CFRelease(_textureCache);
         _textureCache = nil;

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chorus_graph"
+    app:startDestination="@id/room_list">
+    <fragment
+        android:id="@+id/room_list"
+        android:name="com.vertcdemo.solution.chorus.feature.list.ChorusRoomListFragment"
+        tools:layout="@layout/fragment_chorus_rooms">
+        <action
+            android:id="@+id/action_create_room"
+            app:destination="@id/create_chorus_room" />
+        <action
+            android:id="@+id/action_room"
+            app:destination="@id/chorus_room_graph" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/create_chorus_room"
+        android:name="com.vertcdemo.solution.chorus.feature.create.ChorusCreateRoomFragment"
+        tools:layout="@layout/fragment_chorus_create">
+
+        <action
+            android:id="@+id/action_room"
+            app:destination="@id/chorus_room_graph" />
+    </fragment>
+
+    <navigation
+        android:id="@+id/chorus_room_graph"
+        app:startDestination="@id/chorus_room">
+        <fragment
+            android:id="@+id/chorus_room"
+            android:name="com.vertcdemo.solution.chorus.feature.room.ChorusRoomFragment"
+            tools:layout="@layout/fragment_chorus_room">
+            <action
+                android:id="@+id/action_music_library"
+                app:destination="@id/dialog_music_library" />
+
+            <action
+                android:id="@+id/action_tuning"
+                app:destination="@id/dialog_tuning" />
+        </fragment>
+
+        <dialog
+            android:id="@+id/dialog_music_library"
+            android:name="com.vertcdemo.solution.chorus.feature.room.song.MusicLibraryDialog"
+            tools:layout="@layout/dialog_chorus_music_library" />
+
+        <dialog
+            android:id="@+id/dialog_tuning"
+            android:name="com.vertcdemo.solution.chorus.feature.room.ChorusTuningDialog"
+            tools:layout="@layout/dialog_chorus_tuning" />
+    </navigation>
+</navigation>

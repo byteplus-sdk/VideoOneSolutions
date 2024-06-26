@@ -13,7 +13,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
-
+@objc(AudioRawDataViewController)
 class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate,ByteRTCAudioFrameObserver {
     
     var rtcVideo: ByteRTCVideo?
@@ -30,7 +30,7 @@ class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, Byte
     }
     
     deinit {
-        self.rtcVideo!.registerAudioFrameObserver(nil)
+        self.rtcVideo?.registerAudioFrameObserver(nil)
 
         self.rtcRoom1?.leaveRoom()
         self.rtcRoom1?.destroy()

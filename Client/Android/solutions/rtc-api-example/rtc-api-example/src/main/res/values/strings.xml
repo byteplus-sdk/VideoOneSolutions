@@ -4,6 +4,7 @@
     <string name="example_multi_room">Multi-room</string>
     <string name="example_cross_room_pk">Cross-room PvP</string>
     <string name="example_raw_audio_data">Raw audio data</string>
+    <string name="example_audio_effect_mixing">Sound effect mixing</string>
     <string name="example_audio_mixing">Music mixing</string>
     <string name="example_voice_effect">Sound effects</string>
     <string name="example_picture_in_picture">Picture-in-picture</string>
@@ -11,13 +12,10 @@
     <string name="example_video_rotation">Video rotation</string>
     <string name="example_cdn_stream">Push to CDN</string>
     <string name="example_third_beauty">Third-party beauty effects</string>
+    <string name="example_third_beauty_byte">BytePlus Effects</string>
     <string name="example_pull_stream">Stream pulling</string>
     <string name="example_sei_messaging">SEI message</string>
     <string name="example_stream_sync_info">Synchronize messages with frames</string>
-    <string name="title_audio_media_mixing">Music mixing</string>
-    <string name="title_audio_effect_mixing">Sound effect mixing</string>
-    <string name="title_media_player">Media Player</string>
-    <string name="title_byte_beauty">BytePlus Effects</string>
     <string name="hint_room_id">Room ID</string>
     <string name="hint_room_id_1">First room ID</string>
     <string name="hint_room_id_2">Second room ID</string>

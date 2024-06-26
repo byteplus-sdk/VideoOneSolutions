@@ -23,7 +23,7 @@ public class FunctionVideoPlayback implements IFunctionEntry {
 
     @Override
     public int getIcon() {
-        return R.drawable.vevod_function_playback_icon;
+        return R.drawable.vevod_function_video_playback;
     }
 
     @Override

@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="server_error_message_unknown">unknown error</string>
-    <string name="server_error_message_success">success</string>
-
     <string name="app_version_vxxx">App Version %s</string>
     <string name="sdk_version_vxxx">SDK Version %s</string>
     <string name="ok">OK</string>
@@ -45,37 +42,6 @@
     <string name="network_link_down">No network</string>
     <string name="minutes_error_message">The duration of this experience has reached  20 minutes.</string>
     <string name="operation_failed_message">Please try again</string>
-    <string name="network_message_1011">Server data exception</string>
-    <string name="network_message_101">Service request failed</string>
-    <string name="network_message_400">Request data cannot be parsed correctly</string>
-    <string name="network_message_404">User does not exist</string>
-    <string name="network_message_419">User has left</string>
-    <string name="network_message_406">Number of users exceeded the limit</string>
-    <string name="network_message_416">Permission denied</string>
-    <string name="network_message_418">Long disconnection time. Unable to reconnect</string>
-    <string name="network_message_422">Room has been closed</string>
-    <string name="network_message_430">Your comment may be uncomfortable to others. Please rethink before posting</string>
-    <string name="network_message_440">Verification failed. Please click Resend and try again</string>
-    <string name="network_message_441">Wrong code. Please click Resend and try again</string>
-    <string name="network_message_450">Login has expired. Please try to log in again</string>
-    <string name="network_message_481">You can\'t invite others for the time being, because the previous invitation has not been confirmed and replied yet.</string>
-    <string name="network_message_500">System busy. Please try again later</string>
-    <string name="network_message_506">All host seats have been filled up</string>
-    <string name="network_message_504">Pass host control failed</string>
-    <string name="network_message_702">Generating token failed. Please try again</string>
-    <string name="network_message_472">Number of co-hosts exceeded the limit</string>
-    <string name="network_message_611">Co-hosting has ended</string>
-    <string name="network_message_622">Host is busy</string>
-    <string name="network_message_632">Host is starting co-hosting</string>
-    <string name="network_message_634">You can\'t invite others for the time being, because the previous invitation has not been confirmed and replied yet.</string>
-    <string name="network_message_643">A guest is in your room. Failed to add a host</string>
-    <string name="network_message_644">A host is in your room. Failed to add a guest</string>
-    <string name="network_message_645">Waiting for responding</string>
-    <string name="network_message_801">setAppInfo interface error. Please check configuration information.</string>
-    <string name="network_message_802">You have reached QPS limit. Please try later</string>
-    <string name="network_message_804">On-demand configuration is incorrect. Please check the configuration information</string>
-    <string name="network_message_805">Watch video together configuration is incorrect. Please check the configuration information</string>
-    <string name="network_message_806">BID configuration is incorrect. Please check the configuration information</string>
     <string name="camera_flip">Flip</string>
     <string name="experience_time_exceeded_xxx_minutes">The duration of this experience has reached %s minutes.</string>
     <string name="say_something">Add comment</string>

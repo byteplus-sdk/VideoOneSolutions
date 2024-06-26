@@ -3,33 +3,23 @@
 
 package com.videoone.app.protocol;
 
-import android.content.Context;
-import android.content.Intent;
-
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
-import com.vertc.api.example.entry.APIExampleEntryActivity;
+import com.vertc.api.example.entry.APIExampleTabFragment;
 import com.vertc.api.example.entry.R;
 
-public class RTCApiExampleFunction implements IFunctionEntry {
+@Keep
+public class RTCApiExampleFunction implements IFunctionTabEntry {
     @Override
     public int getTitle() {
-        return R.string.rtc_example_entry_name;
+        return R.string.rtc_example_tab_name;
     }
 
+    @NonNull
     @Override
-    public int getIcon() {
-        return R.drawable.rtc_example_function_entry;
-    }
-
-    @Override
-    public int getDescription() {
-        return R.string.rtc_example_entry_desc;
-    }
-
-    @Override
-    public void startup(@NonNull Context context) {
-        Intent intent = new Intent(context, APIExampleEntryActivity.class);
-        context.startActivity(intent);
+    public Fragment fragment() {
+        return new APIExampleTabFragment();
     }
 }

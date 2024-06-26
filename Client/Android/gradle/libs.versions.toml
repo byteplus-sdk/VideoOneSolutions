@@ -20,6 +20,8 @@ lifecycle = "2.5.1"
 viewpager = "1.0.0"
 viewpager2 = "1.0.0"
 
+fadingedgelayout = "1.0.0"
+
 kotlinx-coroutines = "1.7.3"
 
 ttsdk = "1.41.300.201-rtc"
@@ -65,6 +67,7 @@ glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 lottie = { module = "com.airbnb.android:lottie", version = "6.1.0" }
 zxing = { module = "com.journeyapps:zxing-android-embedded", version = "3.6.0" }
+fadingedgelayout = { module = "com.github.bosphere.android-fadingedgelayout:fadingedgelayout", version.ref = "fadingedgelayout" }
 
 rtc-sdk = { module = "com.bytedanceapi:ttsdk-ttlivepush_rtc", version.ref = "ttsdk" }
 

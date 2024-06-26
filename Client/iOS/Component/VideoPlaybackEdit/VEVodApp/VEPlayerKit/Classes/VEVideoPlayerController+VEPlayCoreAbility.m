@@ -3,6 +3,7 @@
 #import "VEPlayerUIModule.h"
 #import "VEVideoPlayerController+VEPlayCoreAbility.h"
 #import <ToolKit/Localizator.h>
+#import <ToolKit/ToolKit.h>
 
 @implementation VEVideoPlayerController (VEPlayCoreAbility)
 
@@ -27,7 +28,7 @@
 - (void)setCurrentResolution:(TTVideoEngineResolutionType)resolution {
     NSDictionary *param = @{};
     [self.videoEngine configResolution:resolution params:param completion:^(BOOL success, TTVideoEngineResolutionType completeResolution) {
-        NSLog(@"resolution changed %@, current = %ld, param = %@", (success ? @"success" : @"fail"), completeResolution, param);
+        VOLogI(VOVideoPlayback,@"resolution changed %@, current = %ld, param = %@", (success ? @"success" : @"fail"), completeResolution, param);
     }];
 }
 
@@ -52,12 +53,12 @@
         return;
     }
     [self seekToTime:destination complete:^(BOOL success) {
-        NSLog(@"call seek succeed %lf", [self currentPlaybackTime]);
+        VOLogI(VOVideoPlayback,@"call seek succeed %lf", [self currentPlaybackTime]);
         if (self.currentPlaybackState == VEPlaybackStatePaused && destination == self.duration) {
             [self.videoEngine stop];
         }
     } renderComplete:^{
-        NSLog(@"render succeed after seek");
+        VOLogI(VOVideoPlayback,@"render succeed after seek");
     }];
 }
 

@@ -45,11 +45,13 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    implementation 'com.github.bosphere.android-fadingedgelayout:fadingedgelayout:1.0.0'
+    implementation libs.fadingedgelayout
 
     implementation project(':component:rtc-toolkit')
     implementation project(':component:solution-base')
     implementation project(':component:avatars')
+
+    implementation project(':solutions:chorus')
 
     implementation libs.rtc.sdk
 

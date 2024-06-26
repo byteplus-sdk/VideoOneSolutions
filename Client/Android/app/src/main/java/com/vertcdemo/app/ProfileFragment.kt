@@ -22,8 +22,8 @@ import com.bumptech.glide.Glide
 import com.vertcdemo.app.databinding.FragmentProfileBinding
 import com.vertcdemo.app.databinding.LayoutCommonKeyValueBinding
 import com.vertcdemo.core.SolutionDataManager
-import com.vertcdemo.core.eventbus.AppTokenExpiredEvent
-import com.vertcdemo.core.eventbus.RefreshUserNameEvent
+import com.vertcdemo.core.event.AppTokenExpiredEvent
+import com.vertcdemo.core.event.RefreshUserNameEvent
 import com.vertcdemo.core.eventbus.SolutionEventBus
 import com.vertcdemo.login.ILoginImpl
 import com.videoone.avatars.Avatars.byUserId

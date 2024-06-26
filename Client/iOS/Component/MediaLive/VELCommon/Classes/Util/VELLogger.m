@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VELLogger.h"
+#import <ToolKit/ToolKit.h>
 
 #if __has_include(<CocoaLumberjack/CocoaLumberjack.h>)
 #import <CocoaLumberjack/CocoaLumberjack.h>
@@ -109,7 +110,7 @@ static VELLogLevel __log_level__ = VELLogLevelOff;
            tag:tag
         format:@"%@", message];
 #else
-    NSLog(@"[%@][VELLogger][%@] %s %@", [self getLogLevelDes:level], tag, function, message);
+    VOLogI(VOMediaLive,@"[%@][VELLogger][%@] %s %@", [self getLogLevelDes:level], tag, function, message);
 #endif
     }
 }

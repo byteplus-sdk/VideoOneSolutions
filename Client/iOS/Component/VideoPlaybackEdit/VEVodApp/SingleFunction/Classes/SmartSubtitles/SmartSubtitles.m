@@ -14,7 +14,6 @@
     self = [super init];
     if (self) {
         self.title = LocalizedStringFromBundle(@"function_title_smart_subtitles", @"VEVodApp");
-        self.des = LocalizedStringFromBundle(@"function_des_smart_subtitles", @"VEVodApp");
         self.iconName = @"function_icon_smart_subtitles";
     }
     return self;

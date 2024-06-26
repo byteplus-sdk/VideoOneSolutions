@@ -9,7 +9,7 @@
 import UIKit
 
 class BaseViewController : UIViewController {
-    var titleText :String = "" {
+    @objc var titleText :String = "" {
         didSet {
             self.titleLabel.text = titleText;
         }

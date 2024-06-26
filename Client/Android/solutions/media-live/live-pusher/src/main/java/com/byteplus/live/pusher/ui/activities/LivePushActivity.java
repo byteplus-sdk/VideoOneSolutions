@@ -2,10 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.byteplus.live.pusher.ui.activities;
 
-import static com.byteplus.live.settings.PreferenceUtil.CAPTURE_TYPE_AUDIO;
-import static com.byteplus.live.settings.PreferenceUtil.CAPTURE_TYPE_CAMERA;
-import static com.byteplus.live.settings.PreferenceUtil.CAPTURE_TYPE_FILE;
-import static com.byteplus.live.settings.PreferenceUtil.CAPTURE_TYPE_SCREEN;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_EXTERNAL;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_MICROPHONE;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_VOICE_COMMUNICATION;
@@ -85,7 +81,6 @@ import com.byteplus.live.pusher.MediaResourceMgr;
 import com.byteplus.live.pusher.R;
 import com.byteplus.live.pusher.TextureMgr;
 import com.byteplus.live.pusher.YuvHelper;
-import com.byteplus.live.pusher.ui.widget.CaptureModeGroup;
 import com.byteplus.live.pusher.ui.widget.LiveSettingDialog;
 import com.byteplus.live.pusher.ui.widget.PreviewSettingsDialog;
 import com.byteplus.live.pusher.ui.widget.PusherInfoDialog;
@@ -104,6 +99,9 @@ import java.util.Objects;
 
 public class LivePushActivity extends AppCompatActivity
         implements ILivePusherActivity {
+
+    public static final String EXTRA_CAPTURE_TYPE = "extra_live_capture_type";
+
     private static final String TAG = LivePushActivity.class.getSimpleName();
     private boolean mIsLive = false;
     private boolean mIsClosing = false;
@@ -118,7 +116,7 @@ public class LivePushActivity extends AppCompatActivity
     private PreviewSettingsDialog mPreviewSettingsDialog = null;
     private LiveSettingDialog mLiveSettingDialog = null;
     private PusherInfoDialog mPusherInfoDialog = null;
-    private int mCaptureMode = CAPTURE_TYPE_CAMERA;
+    private int mCaptureMode;
     private boolean mIsCapturing = false;
     private static boolean mIsFrontCamera = true;
     private boolean mIsTorchEnable = false;
@@ -207,6 +205,8 @@ public class LivePushActivity extends AppCompatActivity
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+        Intent intent = getIntent();
+        mCaptureMode = intent.getIntExtra(EXTRA_CAPTURE_TYPE, LiveCaptureType.CAMERA);
         setContentView(R.layout.activity_live_push);
         initUI();
 
@@ -267,7 +267,7 @@ public class LivePushActivity extends AppCompatActivity
             }
         });
         mPreviewView.setOnTouchListener((view, event) -> {
-            if (mCaptureMode != CAPTURE_TYPE_CAMERA) {
+            if (mCaptureMode != LiveCaptureType.CAMERA) {
                 return false;
             }
             boolean handled = scaleDetector.onTouchEvent(event);
@@ -280,7 +280,11 @@ public class LivePushActivity extends AppCompatActivity
         for (Map.Entry<View, boolean[]> entry : mSettingsVisibilityMap.entrySet()) {
             entry.getKey().setVisibility(entry.getValue()[mCaptureMode] ? View.VISIBLE : View.GONE);
         }
-        startCaptureMode(mCaptureMode);
+        if (mCaptureMode == LiveCaptureType.FILE) {
+            checkCaptureTypeFileResources();
+        } else {
+            startCaptureMode(mCaptureMode);
+        }
     }
 
     private void startKeepLive() {
@@ -294,29 +298,29 @@ public class LivePushActivity extends AppCompatActivity
 
     private void startCaptureMode(int captureMode) {
         if (mIsCapturing) {
-            if (mCaptureMode == CAPTURE_TYPE_FILE) {
+            if (mCaptureMode == LiveCaptureType.FILE) {
                 if (mExternalCaptureSource != null) {
                     mExternalCaptureSource.stop();
                 }
-            } else if (mCaptureMode == CAPTURE_TYPE_SCREEN) {
+            } else if (mCaptureMode == LiveCaptureType.SCREEN) {
                 mLivePusher.stopScreenRecording();
                 stopKeepLive();
             }
         }
-        if (captureMode == CAPTURE_TYPE_CAMERA) {
+        if (captureMode == LiveCaptureType.CAMERA) {
             audioCaptureType = PUSH_AUDIO_CAPTURE_MICROPHONE;
             videoCaptureType = mIsFrontCamera ? PUSH_VIDEO_CAPTURE_FRONT : PUSH_VIDEO_CAPTURE_BACK;
-        } else if (captureMode == CAPTURE_TYPE_AUDIO) {
+        } else if (captureMode == LiveCaptureType.AUDIO) {
             audioCaptureType = PUSH_AUDIO_CAPTURE_MICROPHONE;
             videoCaptureType = PUSH_VIDEO_CAPTURE_DUMMY_FRAME;
-        } else if (captureMode == CAPTURE_TYPE_SCREEN) {
+        } else if (captureMode == LiveCaptureType.SCREEN) {
             if (!checkPermission()) {
                 return;
             }
             mLivePusher.startScreenRecording(LivePusherSettingsHelper.getEnableAppAudio(), mScreenIntent);
             audioCaptureType = PUSH_AUDIO_CAPTURE_VOICE_COMMUNICATION;
             videoCaptureType = PUSH_VIDEO_CAPTURE_SCREEN;
-        } else if (captureMode == CAPTURE_TYPE_FILE) {
+        } else if (captureMode == LiveCaptureType.FILE) {
             if (mExternalCaptureSource == null) {
                 mExternalCaptureSource = new ExternalCaptureSource();
             }
@@ -325,7 +329,7 @@ public class LivePushActivity extends AppCompatActivity
             videoCaptureType = PUSH_VIDEO_CAPTURE_EXTERNAL;
         }
         mCaptureMode = captureMode;
-        if (captureMode != CAPTURE_TYPE_SCREEN) {
+        if (captureMode != LiveCaptureType.SCREEN) {
             if (!mIsCapturing) {
                 mLivePusher.startVideoCapture(videoCaptureType);
                 mLivePusher.startAudioCapture(audioCaptureType);
@@ -341,11 +345,11 @@ public class LivePushActivity extends AppCompatActivity
         if (!mIsCapturing) {
             return;
         }
-        if (mCaptureMode == CAPTURE_TYPE_FILE) {
+        if (mCaptureMode == LiveCaptureType.FILE) {
             if (mExternalCaptureSource != null) {
                 mExternalCaptureSource.stop();
             }
-        } else if (mCaptureMode == CAPTURE_TYPE_SCREEN) {
+        } else if (mCaptureMode == LiveCaptureType.SCREEN) {
             mLivePusher.stopScreenRecording();
             stopKeepLive();
         }
@@ -394,7 +398,6 @@ public class LivePushActivity extends AppCompatActivity
         mInfoListener.onEnableCallbackRecord(false);
 
         registerClickListener();
-        registerCaptureModeListener();
     }
 
     private void registerClickListener() {
@@ -547,68 +550,46 @@ public class LivePushActivity extends AppCompatActivity
                 if (result.getResultCode() == RESULT_OK) {
                     mScreenIntent = result.getData();
                     startKeepLive();
-                    startCaptureMode(CAPTURE_TYPE_SCREEN);
+                    startCaptureMode(LiveCaptureType.SCREEN);
                 }
             });
 
-    private void registerCaptureModeListener() {
-        CaptureModeGroup group = new CaptureModeGroup(this, findViewById(R.id.tabs));
-
-        if (!MediaResourceMgr.isLocalFileReady(this, MediaResourceMgr.RawVideo.NV21)
-                || !MediaResourceMgr.isLocalFileReady(this, MediaResourceMgr.RawAudio.PCM_1)) {
-            group.setEnable(CAPTURE_TYPE_FILE, false);
-            if (mCaptureMode == CAPTURE_TYPE_FILE) {
-                mCaptureMode = CAPTURE_TYPE_SCREEN;
-            }
+    private void checkCaptureTypeFileResources() {
+        Context context = LivePushActivity.this;
+        Toast.makeText(context, R.string.medialive_preparing, Toast.LENGTH_SHORT).show();
+        List<RawFile> fileNameList = new ArrayList<>();
+        if (!MediaResourceMgr.isLocalFileReady(context, MediaResourceMgr.RawAudio.PCM_1)) {
+            fileNameList.add(MediaResourceMgr.RawAudio.PCM_1);
         }
-        group.setTabs(CaptureModeTitles, mCaptureMode);
-        group.setListener(new CaptureModeGroup.OnSelectListener() {
+        if (!MediaResourceMgr.isLocalFileReady(context, MediaResourceMgr.RawVideo.NV21)) {
+            fileNameList.add(MediaResourceMgr.RawVideo.NV21);
+        }
+        if (fileNameList.isEmpty()) {
+            Toast.makeText(context, R.string.medialive_load_completed, Toast.LENGTH_SHORT).show();
+            // All file downloaded
+            startCaptureMode(LiveCaptureType.FILE);
+            return;
+        }
+        MediaResourceMgr.downloadOnlineResource(context, fileNameList, new MediaResourceMgr.DownloadListener() {
             @Override
-            public void onSelect(int position) {
-                if (mPreviewSettingsDialog != null) {
-                    mPreviewSettingsDialog.dismiss();
-                    mPreviewSettingsDialog = null;
+            public void onSuccess() {
+                // All file downloaded
+                if (!isFinishing()) {
+                    Toast.makeText(context, R.string.medialive_load_completed, Toast.LENGTH_SHORT).show();
+                    startCaptureMode(LiveCaptureType.FILE);
                 }
-                for (Map.Entry<View, boolean[]> entry : mSettingsVisibilityMap.entrySet()) {
-                    entry.getKey().setVisibility(entry.getValue()[position] ? View.VISIBLE : View.GONE);
-                }
-                startCaptureMode(position);
             }
 
-            @Override
-            public void onSelectDisableItem(int position) {
-                Context context = LivePushActivity.this;
-                if (position == CAPTURE_TYPE_FILE) {
-                    Toast.makeText(context, R.string.medialive_preparing, Toast.LENGTH_SHORT).show();
-                    List<RawFile> fileNameList = new ArrayList<>();
-                    if (!MediaResourceMgr.isLocalFileReady(context, MediaResourceMgr.RawAudio.PCM_1)) {
-                        fileNameList.add(MediaResourceMgr.RawAudio.PCM_1);
-                    }
-                    if (!MediaResourceMgr.isLocalFileReady(context, MediaResourceMgr.RawVideo.NV21)) {
-                        fileNameList.add(MediaResourceMgr.RawVideo.NV21);
-                    }
-                    if (fileNameList.isEmpty()) {
-                        Toast.makeText(context, R.string.medialive_load_completed, Toast.LENGTH_SHORT).show();
-                        group.setEnable(CAPTURE_TYPE_FILE, true);
-                        return;
-                    }
-                    MediaResourceMgr.downloadOnlineResource(context, fileNameList, new MediaResourceMgr.DownloadListener() {
-                        @Override
-                        public void onSuccess() {
-                            Toast.makeText(context, R.string.medialive_load_completed, Toast.LENGTH_SHORT).show();
-                            group.setEnable(CAPTURE_TYPE_FILE, true);
-                        }
-                    });
-                } else {
-                    Toast.makeText(context, R.string.medialive_unsupported_mode,
-                            Toast.LENGTH_SHORT).show();
+            public void onFail() {
+                if (!isFinishing()) {
+                    finish();
                 }
             }
         });
     }
 
     private void switchCamera() {
-        if (mCaptureMode != CAPTURE_TYPE_CAMERA) {
+        if (mCaptureMode != LiveCaptureType.CAMERA) {
             Toast.makeText(this, R.string.medialive_camera_flip_unsupported, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -622,7 +603,7 @@ public class LivePushActivity extends AppCompatActivity
     }
 
     private void switchTorch() {
-        if (mCaptureMode != CAPTURE_TYPE_CAMERA || mIsFrontCamera) {
+        if (mCaptureMode != LiveCaptureType.CAMERA || mIsFrontCamera) {
             Toast.makeText(this, R.string.medialive_not_support_flashlight, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -638,7 +619,7 @@ public class LivePushActivity extends AppCompatActivity
         if (mIsLive) {
             return;
         }
-        if (mCaptureMode == CAPTURE_TYPE_SCREEN) {
+        if (mCaptureMode == LiveCaptureType.SCREEN) {
             if (!mKeepLiveServiceConnectionIsConnected) {
                 Toast.makeText(this, R.string.medialive_starting_foreground_service, Toast.LENGTH_SHORT).show();
                 return;
@@ -725,12 +706,12 @@ public class LivePushActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (mCaptureMode == CAPTURE_TYPE_CAMERA && mIsLive && !mIsClosing) {
+        if (mCaptureMode == LiveCaptureType.CAMERA && mIsLive && !mIsClosing) {
             mLivePusher.stopPush();
             stopCaptureMode();
             destroyPreview();
         }
-        if (mCaptureMode != CAPTURE_TYPE_SCREEN) {
+        if (mCaptureMode != LiveCaptureType.SCREEN) {
             startKeepLive();
         }
     }
@@ -738,10 +719,10 @@ public class LivePushActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (mCaptureMode != CAPTURE_TYPE_SCREEN) {
+        if (mCaptureMode != LiveCaptureType.SCREEN) {
             stopKeepLive();
         }
-        if (mCaptureMode == CAPTURE_TYPE_CAMERA && mIsLive && mLivePusher != null) {
+        if (mCaptureMode == LiveCaptureType.CAMERA && mIsLive && mLivePusher != null) {
             preparePreview();
             mLivePusher.startPush();
         }
@@ -946,15 +927,9 @@ public class LivePushActivity extends AppCompatActivity
         ConstraintSet constraints = new ConstraintSet();
         constraints.clone(parent);
         if (isLandscape) {
-            constraints.connect(R.id.tabs_scroll, ConstraintSet.START, R.id.close, ConstraintSet.END, 0);
-            constraints.connect(R.id.tabs_scroll, ConstraintSet.TOP, R.id.guideline_top, ConstraintSet.TOP, 0);
-
             constraints.connect(R.id.pushing_actions, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
             constraints.connect(R.id.pushing_actions, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
         } else {
-            constraints.connect(R.id.tabs_scroll, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
-            constraints.connect(R.id.tabs_scroll, ConstraintSet.TOP, R.id.close, ConstraintSet.BOTTOM, 0);
-
             constraints.clear(R.id.pushing_actions, ConstraintSet.TOP);
             int marginBottom = getResources().getDimensionPixelSize(R.dimen.pushing_actions_bottom);
             constraints.connect(R.id.pushing_actions, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, marginBottom);

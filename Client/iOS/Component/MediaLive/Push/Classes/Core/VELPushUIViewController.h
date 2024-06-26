@@ -27,6 +27,8 @@ typedef NS_ENUM(NSInteger, VELStreamStatus) {
 @interface VELPushUIViewController : VELUIViewController
 @property (nonatomic, strong) BytedEffectProtocol *beautyComponent;
 @property (nonatomic, copy) VELPushSettingConfig *config;
+
+@property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong, readonly) UIView *previewContainer;
 @property (nonatomic, strong, readonly) UIView *controlContainerView;
 @property (nonatomic, assign, readonly) VELStreamStatus streamStatus;

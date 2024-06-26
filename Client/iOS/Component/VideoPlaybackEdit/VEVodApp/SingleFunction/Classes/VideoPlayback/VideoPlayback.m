@@ -14,7 +14,6 @@
     self = [super init];
     if (self) {
         self.title = LocalizedStringFromBundle(@"function_title_video_playback", @"VEVodApp");
-        self.des = LocalizedStringFromBundle(@"function_des_video_playback", @"VEVodApp");
         self.iconName = @"function_icon_video_playback";
     }
     return self;

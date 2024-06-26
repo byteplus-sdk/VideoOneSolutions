@@ -30,7 +30,7 @@
     <string name="button_music_list_waiting">等待中</string>
     <string name="button_music_list_downloading">下载中</string>
     <string name="button_karaoke_station_pick_song">已点歌曲</string>
-    <string name="button_karaoke_station_pick_song_xxx">已点歌曲(xxx)</string>
+    <string name="button_karaoke_station_pick_song_xxx">已点歌曲(%1$d)</string>
     <string name="button_karaoke_station_title">点歌台</string>
     <string name="button_music_list_title">在线曲库</string>
     <string name="label_user_list_empty">暂无在线观众</string>
@@ -63,7 +63,6 @@
     <string name="button_create_start">开启KTV</string>
     <string name="toast_create_time_tip">本产品仅用于功能体验，单次直播时长不超20分钟</string>
     <string name="button_room_list_create">创建房间</string>
-    <string name="toast_false_violates_rules">直播间内容违规，直播间已被关闭</string>
     <string name="toast_false_time_out">本次体验时间已超过20分钟</string>
     <string name="toast_false_live_end">直播间已结束</string>
     <string name="toast_become_guest">你已上麦</string>

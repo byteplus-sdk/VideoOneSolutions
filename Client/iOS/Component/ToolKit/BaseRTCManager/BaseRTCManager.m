@@ -6,6 +6,7 @@
 #import "Localizator.h"
 #import "GCDTimer.h"
 #import "NotificationConstans.h"
+#import <ToolKit/ToolKit.h>
 
 typedef NSString *RTSMessageType;
 static RTSMessageType const RTSMessageTypeResponse = @"return";
@@ -191,7 +192,7 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
                             message:[NetworkingTool
                                      messageFromResponseCode:RTSStatusCodeSendMessageFaild]
                               block:model.requestBlock];
-                NSLog(@"[%@]-RECEIVED %@ msgid %lld request_id %@ ErrorCode %ld", [self class], model.eventName, msgid, key, (long)error);
+                VOLogI(VOToolKit,@"[%@]-RECEIVED %@ msgid %lld request_id %@ ErrorCode %ld", [self class], model.eventName, msgid, key, (long)error);
                 break;
             }
         }
@@ -364,7 +365,7 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
 #pragma mark - Tool
 
 - (void)addLog:(NSString *)key message:(NSString *)message {
-    NSLog(@"[%@]-%@ %@", [self class], key, [NetworkingTool decodeJsonMessage:message]);
+    VOLogI(VOToolKit,@"[%@]-%@ %@", [self class], key, [NetworkingTool decodeJsonMessage:message]);
 }
 
 @end

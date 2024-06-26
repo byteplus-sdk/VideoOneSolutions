@@ -15,6 +15,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
+@objc(SEIViewController)
 class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate, ByteRTCMixedStreamObserver {
     
     var rtcVideo: ByteRTCVideo?
@@ -360,7 +361,7 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         if let cdnUrl = kCDNUrl as String?, !cdnUrl.isEmpty {
             settingView.text = cdnUrl
         } else {
-            RTCTokenProtocol().getRTMPAddr(taskId) { [weak settingView] addr in
+            LiveAddrProtocol().getRTMPAddr(taskId) { [weak settingView] addr in
                 settingView?.text = addr
             }
         }

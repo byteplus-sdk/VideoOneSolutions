@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VELScrollableLabel.h"
+#import <ToolKit/ToolKit.h>
 
 static NSString *const ANIMATION_KEY = @"VELScrollableLabelKey";
 
@@ -83,7 +84,7 @@ static NSString *const ANIMATION_KEY = @"VELScrollableLabelKey";
     NSString *text = self.text == nil ? @"" : self.text;
     UIFont *font = self.font;
     if (font == nil) {
-        NSLog(@"font is nil in %@", self);
+        VOLogI(VOMediaLive,@"font is nil in %@", self);
         font = [UIFont systemFontOfSize:15];
     }
     CGSize textSize = [text boundingRectWithSize:CGSizeMake(10000, 10000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:font} context:nil].size;

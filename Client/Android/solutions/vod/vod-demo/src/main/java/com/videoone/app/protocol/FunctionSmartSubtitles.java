@@ -23,7 +23,7 @@ public class FunctionSmartSubtitles implements IFunctionEntry {
 
     @Override
     public int getIcon() {
-        return R.drawable.vevod_function_smart_subtitle_icon;
+        return R.drawable.vevod_function_smart_subtitles;
     }
 
     @Override

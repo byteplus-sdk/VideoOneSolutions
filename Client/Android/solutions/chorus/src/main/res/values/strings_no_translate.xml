@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="zero_time" translatable="false">00:00/00:00</string>
+    <string name="id_prefix" translatable="false">ID: %1$s</string>
+
+    <string name="chorus_live" translatable="false">Live</string>
+</resources>

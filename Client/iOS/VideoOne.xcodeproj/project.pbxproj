@@ -131,10 +131,7 @@
 		2B69FCE829FA4F8A00E475C1 = {
 			isa = PBXGroup;
 			children = (
-				2B7C80B92BE9DA6600B803FC /* TTSDK_UPLOAD.bundle */,
-				2B7C80B62BE9DA4D00B803FC /* TTSDK_VOD.bundle */,
-				2B7C80B12BE9D9C300B803FC /* TTSDK_LIVE.bundle */,
-				2B5D93282BDE57D000B35BBD /* BytePlusRTC.bundle */,
+				2B873BBF2C10823100A1793E /* PrivacyManifest */,
 				2B5D93252BDE57B600B35BBD /* PrivacyInfo.xcprivacy */,
 				2B88500C2BA4403A00D43696 /* ScreenShare-Debug.xcconfig */,
 				2B165F012A72554D006D49E1 /* VideoOne-Debug.xcconfig */,
@@ -170,6 +167,17 @@
 				2B7036BC2B91B415007FCFB0 /* VideoOne-Bridging-Header.h */,
 			);
 			path = VideoOne;
+			sourceTree = "<group>";
+		};
+		2B873BBF2C10823100A1793E /* PrivacyManifest */ = {
+			isa = PBXGroup;
+			children = (
+				2B5D93282BDE57D000B35BBD /* BytePlusRTC.bundle */,
+				2B7C80B12BE9D9C300B803FC /* TTSDK_LIVE.bundle */,
+				2B7C80B62BE9DA4D00B803FC /* TTSDK_VOD.bundle */,
+				2B7C80B92BE9DA6600B803FC /* TTSDK_UPLOAD.bundle */,
+			);
+			path = PrivacyManifest;
 			sourceTree = "<group>";
 		};
 		63B486EC11AEEE50A5F3CF32 /* Pods */ = {
@@ -640,7 +648,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.0;
+				MARKETING_VERSION = 3.3.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.inhouse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -788,7 +796,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.0;
+				MARKETING_VERSION = 3.3.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -826,7 +834,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.0;
+				MARKETING_VERSION = 3.3.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";

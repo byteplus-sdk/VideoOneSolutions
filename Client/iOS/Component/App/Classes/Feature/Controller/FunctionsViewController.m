@@ -5,20 +5,22 @@
 
 #import "FunctionsViewController.h"
 #import "RTCFunctionSection.h"
+#import "FunctionTableView.h"
 #import "FunctionTableCell.h"
 #import "Localizator.h"
 #import "SectionListView.h"
+#import "UIColor+String.h"
 #import <Masonry/Masonry.h>
 #import <ToolKit/ToolKit.h>
 
-@interface FunctionsViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface FunctionsViewController () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIImageView *backgroundImgView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) SectionListView *sectionListView;
-@property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, copy) NSArray <BaseFunctionSection *> *sectionDataArray;
+@property (nonatomic, copy) NSArray <BaseFunctionDataList *> *tableDataArray;
 @property (nonatomic, assign) NSInteger curSectionRow;
+@property (nonatomic, strong) UIScrollView *scrollView;
 
 @end
 
@@ -32,49 +34,12 @@
     __weak __typeof(self) wself = self;
     self.sectionListView.clickBlock = ^(NSInteger row) {
         wself.curSectionRow = row;
-        [wself.tableView reloadData];
+        CGRect frame = wself.scrollView.frame;
+        CGPoint point  = CGPointMake(frame.size.width * row, frame.origin.y);
+        [wself.scrollView setContentOffset:point animated:NO];
     };
 }
 
-#pragma mark - TableView Delegate && Datasource
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (self.sectionDataArray.count <= 0) {
-        return 0;
-    }
-    BaseFunctionSection *sectionModel = self.sectionDataArray[self.curSectionRow];
-    return sectionModel.items.count;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    BaseFunctionSection *sectionModel = self.sectionDataArray[self.curSectionRow];
-    BaseFunctionEntrance *model = sectionModel.items[indexPath.row];
-    [self sceneCellAction:model];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    FunctionTableCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FunctionTableCell" forIndexPath:indexPath];
-    BaseFunctionSection *sectionModel = self.sectionDataArray[self.curSectionRow];
-    cell.model = sectionModel.items[indexPath.row];
-    return cell;
-}
-
-#pragma mark - Touch Action
-
-- (void)sceneCellAction:(BaseFunctionEntrance *)model {
-    self.tableView.userInteractionEnabled = NO;
-
-    __weak __typeof__(self) weakSelf = self;
-    [model enterWithCallback:^(BOOL result) {
-        __strong __typeof__(weakSelf) self = weakSelf;
-        self.tableView.userInteractionEnabled = YES;
-    }];
-}
 
 #pragma mark - Private Action
 - (void)addSubvieAndMakeConstraints {
@@ -97,10 +62,47 @@
         make.height.equalTo(@36);
     }];
 
-    [self.view addSubview:self.tableView];
-    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.view addSubview:self.scrollView];
+    [self.scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
-        make.left.right.bottom.equalTo(self.view);
+        make.left.right.equalTo(self.view);
+        make.bottom.equalTo(self.view);
+    }];
+    
+    [self.scrollView setNeedsLayout];
+    [self.scrollView layoutIfNeeded];
+    
+    CGFloat viewWidth = self.view.frame.size.width;
+    CGFloat viewHeight = self.scrollView.frame.size.height;
+    FunctionTableView *lastTableView;
+    
+    lastTableView = [[FunctionTableView alloc] initWithDataList:[[NSClassFromString([FunctionsViewController funcSectionList][0][@"className"]) alloc] init]];
+    [self.scrollView addSubview:lastTableView];
+    [lastTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.scrollView);
+        make.width.mas_equalTo(viewWidth);
+        make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
+        make.bottom.equalTo(self.view);
+    }];
+    
+    FunctionTableView *table1 = [[FunctionTableView alloc] initWithDataList:[[NSClassFromString([FunctionsViewController funcSectionList][1][@"className"]) alloc] init]];
+    [self.scrollView addSubview:table1];
+    [table1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(lastTableView.mas_right);
+        make.width.mas_equalTo(viewWidth);
+        make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
+        make.bottom.equalTo(self.view);
+    }];
+    lastTableView = table1;
+    
+    FunctionTableView *table2 = [[FunctionTableView alloc] initWithDataList:[[NSClassFromString([FunctionsViewController funcSectionList][2][@"className"]) alloc] init]];
+    [self.scrollView addSubview:table2];
+    [table2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.scrollView);
+        make.left.equalTo(lastTableView.mas_right);
+        make.width.mas_equalTo(viewWidth);
+        make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
+        make.bottom.equalTo(self.view);
     }];
 }
 
@@ -108,36 +110,29 @@
 
 - (SectionListView *)sectionListView {
     if (!_sectionListView) {
-        _sectionListView = [[SectionListView alloc] initWithList:self.sectionDataArray];
+        _sectionListView = [[SectionListView alloc] initWithList:self.tableDataArray];
     }
     return _sectionListView;
 }
 
-- (UITableView *)tableView {
-    if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-        _tableView.backgroundColor = [UIColor clearColor];
-        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _tableView.rowHeight = 121.0;
-        _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        _tableView.showsVerticalScrollIndicator = NO;
-        _tableView.delegate = self;
-        _tableView.dataSource = self;
-        [_tableView registerClass:FunctionTableCell.class forCellReuseIdentifier:@"FunctionTableCell"];
+- (NSArray<BaseFunctionDataList *> *)tableDataArray {
+    if (!_tableDataArray) {
+        NSMutableArray *list = [[NSMutableArray alloc] init];
+        for (NSDictionary *funcSection in [FunctionsViewController funcSectionList]) {
+            BaseFunctionDataList *section = [[NSClassFromString(funcSection[@"className"]) alloc] init];
+            if (section) {
+                [list addObject:section];
+            }
+        }
+        _tableDataArray = [list copy];
     }
-    return _tableView;
+    return _tableDataArray;
 }
 
-- (NSArray<BaseFunctionSection *> *)sectionDataArray {
-    if (!_sectionDataArray) {
-        NSMutableArray *list = [[NSMutableArray alloc] init];
-        BaseFunctionSection *section = [[NSClassFromString(@"VODFunctionSection") alloc] init];
-        if (section) {
-            [list addObject:section];
-        }
-        _sectionDataArray = [list copy];
-    }
-    return _sectionDataArray;
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    CGFloat pageWidth = self.scrollView.frame.size.width;
+    int currentPage = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+    [self.sectionListView updateItemWithCurIndex:currentPage];
 }
 
 - (UIImageView *)backgroundImgView {
@@ -169,6 +164,30 @@
         _titleLabel.attributedText = attr;
     }
     return _titleLabel;
+}
+
+- (UIScrollView *)scrollView {
+    if (!_scrollView) {
+        _scrollView = [[UIScrollView alloc] init];
+        _scrollView.delegate = self;
+        _scrollView.pagingEnabled = YES;
+        _scrollView.showsVerticalScrollIndicator = NO;
+        _scrollView.showsHorizontalScrollIndicator = NO;
+    }
+    return _scrollView;
+}
+
++ (NSArray *)funcSectionList {
+    static NSArray *_funcSectionList;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _funcSectionList = @[
+            @{@"className": @"MediaLiveFunctionSection"},
+            @{@"className": @"VODFunctionSection"},
+            @{@"className": @"RTCFunctionSection"}
+        ];
+    });
+    return _funcSectionList;
 }
 
 @end

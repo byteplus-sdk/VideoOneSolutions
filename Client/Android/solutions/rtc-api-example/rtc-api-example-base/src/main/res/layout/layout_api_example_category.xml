@@ -16,7 +16,7 @@
         android:layout_marginStart="16dp"
         android:textColor="#737A87"
         android:textSize="14sp"
-        tools:text="@string/api_example_category_basic" />
+        tools:text="Api Example category" />
 
     <LinearLayout
         android:id="@+id/items"
@@ -24,7 +24,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:background="@drawable/rtc_api_bg_items_card"
+        android:divider="@drawable/rtc_api_bg_items_divider"
         android:orientation="vertical"
-        tools:layout_height="52dp" />
+        android:showDividers="middle"
+        tools:layout_height="58dp" />
 
 </LinearLayout>

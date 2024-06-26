@@ -13,6 +13,7 @@ import Foundation
 import SnapKit
 import BytePlusRTC
 
+@objc(MutiRoomViewController)
 class MutiRoomViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
     
     var rtcVideo: ByteRTCVideo?

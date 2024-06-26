@@ -17,6 +17,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
+@objc(VolcBeautyViewController)
 class VolcBeautyViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate,BeautyBarViewDelegate {
     
     var rtcVideo: ByteRTCVideo?

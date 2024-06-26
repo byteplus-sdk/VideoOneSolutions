@@ -53,13 +53,9 @@
 "tip_comment_content"="您发布的评论是临时的，仅自己可见。BytePlus保证不会对这些评论进行收集、存储或备份。";
 "tip_close"="关闭";
 "function_title_video_playback"="视频播放演示";
-"function_des_video_playback"="包含手势控制、画中画和各种播放功能";
 "function_title_playlist"="播放列表";
-"function_des_playlist"="一组视频轮播组件";
 "function_title_smart_subtitles"="智能字幕";
-"function_des_smart_subtitles"="多语言智能视频字幕组件";
 "function_title_prevent_recoding"="防录屏/防截图";
-"function_des_prevent_recoding"="防止系统录屏和截图组件";
 "full_screen_video_left_guide_title"="亮度调节";
 "full_screen_video_left_guide_des"="左侧上下滑动";
 "full_screen_video_right_guide_title"="音量调节";

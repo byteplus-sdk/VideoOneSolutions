@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RTCFunctionSection : BaseFunctionSection
+@interface RTCFunctionSection : BaseFunctionDataList
 
 @end
 

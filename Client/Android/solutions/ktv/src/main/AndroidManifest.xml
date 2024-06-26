@@ -3,6 +3,10 @@
     package="com.vertcdemo.solution.ktv">
 
     <application>
+        <activity
+            android:name="com.vertcdemo.solution.karaoke.KaraokeScenesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name="com.vertcdemo.solution.ktv.feature.KTVEntryActivity"

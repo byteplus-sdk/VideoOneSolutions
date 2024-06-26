@@ -4,6 +4,7 @@
 
 #import "BaseIMView.h"
 #import "Masonry.h"
+#import <ToolKit/ToolKit.h>
 
 @interface BaseIMView () <UITableViewDelegate, UITableViewDataSource>
 
@@ -88,7 +89,7 @@
             break;
         sectionCount--;
     }
-    NSLog(@"rowCount: %ld", rowCount);
+    VOLogI(VOToolKit,@"rowCount: %ld", rowCount);
     if (sectionCount && rowCount) {
         NSUInteger ii[2] = {sectionCount - 1, rowCount - 1};
         NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexes:ii length:2];

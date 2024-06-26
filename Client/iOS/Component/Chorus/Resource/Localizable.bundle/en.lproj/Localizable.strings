@@ -1,0 +1,132 @@
+
+"button_chorus_name" = "Join the singing";
+
+"button_close_live" = "End the Live";
+
+"button_create_room" = "Create a room";
+
+"button_music_list_request_song" = "Add";
+
+"button_music_list_title" = "Song Library";
+
+"button_pick_song_title" = "Add";
+
+"button_picked_title" = "Song Queue";
+
+"button_picked_title_%ld" = "Song queue (%ld)";
+
+"button_picked_type_title" = "Added";
+
+"button_solo_name" = "start solo singing";
+
+"button_start_name" = "Open the Karaoke room";
+
+"chorus_button_cancel" = "Cancel";
+
+"chorus_button_confirm" = "Confirm";
+
+"chorus_scene_name" = "Duet";
+
+"duet_singing_des_1" = "2-Person singing";
+
+"duet_singing_des_2" = "Lead/backup singer";
+
+"duet_singing_title" = "Duet Singing";
+
+"im_label_join_room" = "Joined the room";
+
+"im_label_leave_room" = "Has left";
+
+"label_alert_title" = "Are you sure end this LIVE？";
+
+"label_create_background_title_%@" = "Background %@";
+
+"label_create_tip" = "This demo is for experiential purposes only. Each live session will automatically end after 20 minutes.";
+
+"label_current_singer_name_%@" = "Singer: %@";
+
+"label_input_placeholder" = "Comment";
+
+"label_join_im" = "Joined the room";
+
+"label_leave_im" = "has left";
+
+"label_music_empty" = "No one has requested a song yet";
+
+"label_net_good" = "Good network";
+
+"label_net_stuck" = "Poor network";
+
+"label_net_disconnect" = "Disconnected";
+
+"label_no_singing_audience_tip" = "Come and request a song！";
+
+"label_online_song_title" = "Song Library";
+
+"label_original_singer_name_%@" = "Artist: %@";
+
+"label_pick_song_singing" = "Singing";
+
+"label_pick_song_title" = "Song request center";
+
+"label_reverberation_concert" = "concert";
+
+"label_reverberation_echo" = "echo";
+
+"label_reverberation_ethereal" = "Ethereal";
+
+"label_reverberation_ktv" = "KTV";
+
+"label_reverberation_original" = "Original vocals";
+
+"label_reverberation_recording" = "recording studio";
+
+"label_reverberation_title" = "reverberation";
+
+"label_room_background_title" = "background";
+
+"label_room_empty" = "Create a Karaoke room.";
+
+"label_room_title_%@" = "%@'s Karaoke room";
+
+"label_room_title_prefix" = "name";
+
+"label_singer_empty" = "Waiting for another singer";
+
+"label_song_downloading" = "Downloading";
+
+"label_song_empty_title" = "Request a song now";
+
+"label_song_end_title" = "end";
+
+"label_song_end_title_%@" = "Finished. Next song is \"%@\".";
+
+"label_song_waiting" = "Waiting";
+
+"label_text_placeholder" = "Comment";
+
+"label_text_send" = "Send";
+
+"label_tuning_ear" = "In-ear monitor";
+
+"label_tuning_ear_tip" = "Experience the in-ear monitor function after you plug in the earphones";
+
+"label_tuning_music_volume" = "music volume";
+
+"label_tuning_title" = "tuning";
+
+"label_tuning_vocal_volume" = "Vocal volume";
+
+"toast_close_room_error_default" = "The host has closed the room";
+
+"toast_close_room_error_time" = "The duration of this experience has reached  20 minutes.";
+
+"toast_close_room_error_violation" = "Room has been closed due to violations of Terms of Service.";
+
+"toast_join_room_error" = "Joining the room failed. You will be taken to the list page.";
+
+"toast_start_accompaniment" = "Accompaniment enabled";
+
+"toast_start_original" = "Original vocals enabled";
+
+"toast_start_singing" = "Let's start singing";

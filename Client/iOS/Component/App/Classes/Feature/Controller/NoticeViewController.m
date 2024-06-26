@@ -44,7 +44,7 @@
     if(fileContents) {
         self.textView.text = fileContents;
     } else {
-        NSLog(@"Error reading file: %@", error);
+        VOLogE(VOApp, @"Error reading file: %@", error);
     }
 }
 

@@ -46,6 +46,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardDidShow:) name:UIKeyboardWillShowNotification object:nil];
     self.view.alpha = 0;
     self.view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.3];
     [self setupConfig];
@@ -241,6 +242,27 @@
     }];
 }
 
+- (void)keyBoardDidShow:(NSNotification *)notifiction {
+    if (!self.container || !_sendButton) {
+        return;
+    }
+    CGRect keyboardRect = [[notifiction.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect buttonRect = [self.container convertRect:self.sendButton.frame toView:self.view];
+    CGFloat bottomHeight = self.view.frame.size.height -  (buttonRect.origin.y + buttonRect.size.height);
+    CGFloat offsetY = 0;
+    if (bottomHeight < keyboardRect.size.height) {
+        offsetY = keyboardRect.size.height - bottomHeight;
+    } else {
+        return;
+    }
+    [UIView animateWithDuration:0.25 animations:^{
+        [self.container mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(self.view).offset(-offsetY);
+        }];
+    }];
+    [self.view layoutIfNeeded];
+}
+
 - (void)textFieldDidEndEditing:(UITextField *)textField {
     if (textField == self.urlField) {
         self.abrConfig.url = textField.text;
@@ -409,6 +431,10 @@ VEL_CREATE_DEFAULT_SWITCH_VIEW_MODE(@"SD", sdViewModel, VELPullResolutionTypeSD)
     viewModel.size = CGSizeMake((VEL_DEVICE_WIDTH - 100) / 3, 34);
     [viewModel setSwitchModelBlock:action];
     return viewModel;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

@@ -15,8 +15,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.vertcdemo.app.databinding.FragmentMainBinding
 import com.vertcdemo.core.SolutionDataManager
-import com.vertcdemo.core.eventbus.AppTokenExpiredEvent
-import com.vertcdemo.core.eventbus.RefreshUserNameEvent
+import com.vertcdemo.core.event.AppTokenExpiredEvent
+import com.vertcdemo.core.event.RefreshUserNameEvent
 import com.vertcdemo.core.eventbus.SolutionEventBus
 import com.videoone.avatars.Avatars
 import org.greenrobot.eventbus.Subscribe
@@ -50,7 +50,6 @@ class MainFragment : VersionFragment(R.layout.fragment_main) {
 
         binding.tabScenes.setOnClickListener { mViewModel.currentTab.setValue(0) }
         binding.tabFunction.setOnClickListener { mViewModel.currentTab.setValue(1) }
-        binding.tabForDevelopers.setOnClickListener { mViewModel.currentTab.setValue(2) }
 
         mViewModel.currentTab.observe(viewLifecycleOwner) { position: Int ->
             WindowCompat.getInsetsController(
@@ -66,9 +65,6 @@ class MainFragment : VersionFragment(R.layout.fragment_main) {
 
             binding.tabFunction.isSelected = position == 1
             binding.tabFunction.typeface = if (position == 1) bold else normal
-
-            binding.tabForDevelopers.isSelected = position == 2
-            binding.tabForDevelopers.typeface = if (position == 2) bold else normal
         }
 
         updateUserInfo(binding)
@@ -103,12 +99,11 @@ class MainFragment : VersionFragment(R.layout.fragment_main) {
     }
 
     class TabAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int = 3
+        override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment = when (position) {
             0 -> SceneEntryFragment()
             1 -> FunctionEntryFragment()
-            2 -> ForDevelopersFragment()
             else -> throw IllegalArgumentException("Unknown position: $position")
         }
     }

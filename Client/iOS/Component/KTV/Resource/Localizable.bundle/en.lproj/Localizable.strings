@@ -91,3 +91,10 @@
 "label_rtt_value_%@"="%@ms";
 "label_music_empty" = "No one has requested a song yet";
 "send_message_exceeded_limit" = "The maximum number of messages you can send is 10, you have exceeded this limit.";
+"solo_singing_des_1" = "6-Person voice chat";
+
+"solo_singing_des_2" = "Latency <400ms";
+
+"sub_scene_title" = "Choose the singing mode you like ";
+
+"solo_singing_title" = "Solo Singing";

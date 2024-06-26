@@ -37,7 +37,7 @@
                                                        options:NSJSONReadingMutableContainers
                                                          error:&err];
    if(err) {
-       NSLog(@"json解析失败：%@",err);
+       VOLogE(VOKTV,@"json解析失败：%@",err);
        return nil;
    }
    return dic;

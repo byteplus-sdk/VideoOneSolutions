@@ -105,7 +105,7 @@
     [self.addGuestsComponent updateListUnread:NO];
 }
 - (void)receiveLiveTimeEndNotice {
-    NSLog(@"receiveLiveTimeEndNotice");
+    VOLogI(VOInteractiveLive,@"receiveLiveTimeEndNotice");
     [[ToastComponent shareToastComponent] showWithMessage:LocalizedString(@"minutes_error_message") delay:0.8];
     [self hangUp];
 }
@@ -317,7 +317,7 @@
         messageModel.user_name = [LocalUserComponent userModel].name;
         [LiveRTSManager sendIMMessage:messageModel
                                 block:^(RTSACKModel *_Nonnull model) {
-                                    NSLog(@"send like");
+            VOLogI(VOInteractiveLive,@"send like");
                                 }];
         self.isSendLikeOk = NO;
         [self performSelector:@selector(unlockSendLike) withObject:nil afterDelay:0.1];

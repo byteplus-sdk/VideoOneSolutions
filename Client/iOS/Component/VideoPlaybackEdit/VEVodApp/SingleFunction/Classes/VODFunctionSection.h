@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VODFunctionSection : BaseFunctionSection
+@interface VODFunctionSection : BaseFunctionDataList
 
 @end
 

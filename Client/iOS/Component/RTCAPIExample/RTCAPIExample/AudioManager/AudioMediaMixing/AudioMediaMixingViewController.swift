@@ -13,6 +13,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
+@objc(AudioMediaMixingViewController)
 class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate, ByteRTCMediaPlayerEventHandler {
     
     var rtcVideo: ByteRTCVideo?

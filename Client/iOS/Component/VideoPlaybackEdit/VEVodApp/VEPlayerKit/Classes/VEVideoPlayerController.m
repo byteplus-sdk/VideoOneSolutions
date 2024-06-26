@@ -143,7 +143,7 @@
             [preRenderVideoEngine.playerView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.edges.equalTo(self.view);
             }];
-            NSLog(@"EngineStrategy: ===== backgroud image use pre render video engine view");
+            VOLogI(VOVideoPlayback,@"EngineStrategy: ===== backgroud image use pre render video engine view");
             return;
         }
     }
@@ -189,7 +189,7 @@
         TTVideoEngine *preRenderVideoEngine = [TTVideoEngine getPreRenderVideoEngineWithVideoSource:mediaSource];
         if (preRenderVideoEngine) {
             [self resetVideoEngine:preRenderVideoEngine mediaSource:mediaSource];
-            NSLog(@"EngineStrategy: ===== use pre render video engine play");
+            VOLogI(VOVideoPlayback,@"EngineStrategy: ===== use pre render video engine play");
             [[BaseLoadingView sharedInstance] startLoadingIn:self.playerPanelContainerView];
             return;
         }
@@ -300,7 +300,7 @@
 #pragma mark - TTVideoEngineDelegate
 
 - (void)videoEngine:(TTVideoEngine *)videoEngine retryForError:(NSError *)error {
-    NSLog(@"retryForError %@", error);
+    VOLogI(VOVideoPlayback,@"retryForError %@", error);
 }
 
 - (void)videoEnginePrepared:(TTVideoEngine *)videoEngine {
@@ -353,7 +353,7 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayer:key:hitVideoPreloadDataSize:)]) {
         [self.delegate videoPlayer:self key:key hitVideoPreloadDataSize:cacheSize];
     }
-    NSLog(@"EngineStrategy: ===== hitCacheSze %@, vid = %@", @(cacheSize), [self.mediaSource getUniqueId]);
+    VOLogI(VOVideoPlayback,@"EngineStrategy: ===== hitCacheSze %@, vid = %@", @(cacheSize), [self.mediaSource getUniqueId]);
 }
 
 - (void)videoEngineUserStopped:(TTVideoEngine *)videoEngine {
@@ -362,7 +362,7 @@
 
 - (void)videoEngineDidFinish:(TTVideoEngine *)videoEngine error:(nullable NSError *)error {
     if (error) {
-        NSLog(@"videoEngineDidFinish with error : %@", [error description]);
+        VOLogI(VOVideoPlayback,@"videoEngineDidFinish with error : %@", [error description]);
         [self __handlePlaybackStateChanged:VEPlaybackStateError];
         return;
     }
@@ -370,7 +370,7 @@
 }
 
 - (void)videoEngineDidFinish:(TTVideoEngine *)videoEngine videoStatusException:(NSInteger)status {
-    NSLog(@"videoEngineDidFinish with exception : %lu", status);
+    VOLogI(VOVideoPlayback,@"videoEngineDidFinish with exception : %lu", status);
     [self __handlePlaybackStateChanged:VEPlaybackStateError];
 }
 

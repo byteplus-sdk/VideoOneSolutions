@@ -9,8 +9,8 @@ import androidx.annotation.CallSuper;
 
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
 import com.ss.bytertc.engine.type.ErrorCode;
-import com.vertcdemo.core.eventbus.RTCReconnectToRoomEvent;
-import com.vertcdemo.core.eventbus.RTSLogoutEvent;
+import com.vertcdemo.core.event.RTCReconnectToRoomEvent;
+import com.vertcdemo.core.event.RTSLogoutEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 
 import org.json.JSONObject;
@@ -22,10 +22,6 @@ public class RTCRoomEventHandlerWithRTS extends IRTCRoomEventHandler {
     private RTSBaseClient mBaseClient;
 
     private final boolean mNotifyReconnect;
-
-    public RTCRoomEventHandlerWithRTS() {
-        this(false);
-    }
 
     public RTCRoomEventHandlerWithRTS(boolean notifyReconnect) {
         mNotifyReconnect = notifyReconnect;

@@ -9,6 +9,7 @@
 #import <MediaLive/VELCommon.h>
 #import <MediaLive/VELCore.h>
 #import <ToolKit/Localizator.h>
+#import <ToolKit/ToolKit.h>
 
 #define LOG_TAG @"NEW_PUSH_INNER"
 #define kVeLiveCurrentCMTime CMTimeMakeWithSeconds(CACurrentMediaTime(), 1000000000)
@@ -397,14 +398,14 @@ VeLiveSnapshotListener
     error = CMSampleBufferCreate(kCFAllocatorDefault, NULL, false, NULL, NULL, format, audioData.length / (2*channels), 1, &timing, 0, NULL, &buff);
     
     if (error) {
-        NSLog(@"CMSampleBufferCreate returned error: %ld", (long)error);
+        VOLogI(VOMediaLive,@"CMSampleBufferCreate returned error: %ld", (long)error);
         return NULL;
     }
     
     error = CMSampleBufferSetDataBufferFromAudioBufferList(buff, kCFAllocatorDefault, kCFAllocatorDefault, 0, &audioBufferList);
     
     if(error){
-        NSLog(@"CMSampleBufferSetDataBufferFromAudioBufferList returned error: %ld", (long)error);
+        VOLogI(VOMediaLive,@"CMSampleBufferSetDataBufferFromAudioBufferList returned error: %ld", (long)error);
         return NULL;
     }
     return buff;

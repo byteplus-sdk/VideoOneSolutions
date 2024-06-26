@@ -113,11 +113,6 @@ public class PreferenceUtil {
     public static final int PUSH_AUDIO_SAMPLE_RATE_44_1K = 3;
     public static final int PUSH_AUDIO_SAMPLE_RATE_48K = 4;
 
-    public static final int CAPTURE_TYPE_CAMERA = 0;
-    public static final int CAPTURE_TYPE_AUDIO = 1;
-    public static final int CAPTURE_TYPE_SCREEN = 2;
-    public static final int CAPTURE_TYPE_FILE = 3;
-
     public static final int PUSH_VIDEO_CAPTURE_FRONT = 0;
     public static final int PUSH_VIDEO_CAPTURE_BACK = 1;
     public static final int PUSH_VIDEO_CAPTURE_DUAL = 2;

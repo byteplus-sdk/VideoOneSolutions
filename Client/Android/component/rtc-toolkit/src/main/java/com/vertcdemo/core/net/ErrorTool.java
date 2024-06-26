@@ -13,118 +13,91 @@ public class ErrorTool {
     public static final int ERROR_CODE_UNKNOWN = -1;
 
     public static String getErrorMessageByErrorCode(int errorCode, String serverMessage) {
-        String message = serverMessage;
         switch (errorCode) {
             case -1011:
-                message = getString(R.string.network_message_1011);
-                break;
+                return getString(R.string.network_message_1011);
             case -101:
-                message = getString(R.string.network_message_101);
-                break;
+                return getString(R.string.network_message_101);
             case -1:
-                message = getString(R.string.server_error_message_unknown);
-                break;
+                return getString(R.string.network_message_unknown);
             case 200:
-                message = getString(R.string.server_error_message_success);
-                break;
+                return getString(R.string.network_message_200);
             case 400:
-                message = getString(R.string.network_message_400);
-                break;
+                return getString(R.string.network_message_400);
+            case 402:
+                return getString(R.string.network_message_402);
             case 404:
-                message = getString(R.string.network_message_404);
-                break;
+                return getString(R.string.network_message_404);
             case 406:
-                message = getString(R.string.network_message_406);
-                break;
+                return getString(R.string.network_message_406);
             case 416:
-                message = getString(R.string.network_message_416);
-                break;
+                return getString(R.string.network_message_416);
             case 418:
-                message = getString(R.string.network_message_418);
-                break;
+                return getString(R.string.network_message_418);
             case 419:
-                message = getString(R.string.network_message_419);
-                break;
+                return getString(R.string.network_message_419);
             case 422:
-                message = getString(R.string.network_message_422);
-                break;
+                return getString(R.string.network_message_422);
             case 430:
-                message = getString(R.string.network_message_430);
-                break;
+                return getString(R.string.network_message_430);
             case 440:
-                message = getString(R.string.network_message_440);
-                break;
+                return getString(R.string.network_message_440);
             case 441:
-                message = getString(R.string.network_message_441);
-                break;
+                return getString(R.string.network_message_441);
             case ERROR_CODE_TOKEN_EXPIRED:
             case ERROR_CODE_TOKEN_EMPTY:
-                message = getString(R.string.network_message_450);
-                break;
+                return getString(R.string.network_message_450);
             case 472:
-                message = getString(R.string.network_message_472);
-                break;
+                return getString(R.string.network_message_472);
             case 481:
-                message = getString(R.string.network_message_481);
-                break;
+                return getString(R.string.network_message_481);
             case 500:
-                message = getString(R.string.network_message_500);
-                break;
+                return getString(R.string.network_message_500);
             case 504:
-                message = getString(R.string.network_message_504);
-                break;
+                return getString(R.string.network_message_504);
             case 506:
-                message = getString(R.string.network_message_506);
-                break;
+                return getString(R.string.network_message_506);
+            case 541:
+                return getString(R.string.network_message_541);
             case 611:
-                message = getString(R.string.network_message_611);
-                break;
+                return getString(R.string.network_message_611);
             case 622:
-                message = getString(R.string.network_message_622);
-                break;
+            case 630:
+                return getString(R.string.network_message_622);
             case 632:
-                message = getString(R.string.network_message_632);
-                break;
+                return getString(R.string.network_message_632);
             case 634:
-                message = getString(R.string.network_message_634);
-                break;
+                return getString(R.string.network_message_634);
             case 643:
-                message = getString(R.string.network_message_643);
-                break;
+                return getString(R.string.network_message_643);
+            case 642:
             case 644:
-                message = getString(R.string.network_message_644);
-                break;
+                return getString(R.string.network_message_644);
             case 645:
-                message = getString(R.string.network_message_645);
-                break;
+                return getString(R.string.network_message_645);
             case 702:
-                message = getString(R.string.network_message_702);
-                break;
+                return getString(R.string.network_message_702);
+            case 800:
             case 801:
-                message = getString(R.string.network_message_801);
-                break;
+                return getString(R.string.network_message_801);
             case 802:
-                message = getString(R.string.network_message_802);
-                break;
+                return getString(R.string.network_message_802);
             case 804:
-                message = getString(R.string.network_message_804);
-                break;
+                return getString(R.string.network_message_804);
             case 805:
-                message = getString(R.string.network_message_805);
-                break;
+                return getString(R.string.network_message_805);
             case 806:
-                message = getString(R.string.network_message_806);
-                break;
+                return getString(R.string.network_message_806);
+            default:
+                return serverMessage;
         }
-
-        return message;
     }
 
     public static boolean shouldLeaveRoom(int error) {
         return error == 422 || error == 472;
     }
 
-    private static String getString(int res) {
+    protected static String getString(int res) {
         return AppUtil.getApplicationContext().getString(res);
     }
 }

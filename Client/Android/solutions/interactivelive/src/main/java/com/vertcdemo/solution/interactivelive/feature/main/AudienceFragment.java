@@ -10,11 +10,7 @@ import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActi
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +35,7 @@ import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.chat.ChatAdapter;
 import com.vertcdemo.core.dialog.MessageInputDialog;
-import com.vertcdemo.core.eventbus.RTCReconnectToRoomEvent;
+import com.vertcdemo.core.event.RTCReconnectToRoomEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.ErrorTool;
 import com.vertcdemo.core.net.IRequestCallback;

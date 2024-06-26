@@ -4,6 +4,7 @@
     <string name="example_multi_room">多房间</string>
     <string name="example_cross_room_pk">跨房间pk</string>
     <string name="example_raw_audio_data">原始音频数据</string>
+    <string name="example_audio_effect_mixing">音效混音</string>
     <string name="example_audio_mixing">音乐混音</string>
     <string name="example_voice_effect">声音特效</string>
     <string name="example_picture_in_picture">画中画</string>
@@ -11,14 +12,10 @@
     <string name="example_video_rotation">视频旋转</string>
     <string name="example_cdn_stream">推流到CDN</string>
     <string name="example_third_beauty">第三方美颜</string>
+    <string name="example_third_beauty_byte">字节美颜</string>
     <string name="example_pull_stream">拉流</string>
     <string name="example_sei_messaging">SEI消息</string>
     <string name="example_stream_sync_info">随帧同步消息</string>
-
-    <string name="title_audio_media_mixing">音乐混音</string>
-    <string name="title_audio_effect_mixing">音效混音</string>
-    <string name="title_media_player">媒体播放器</string>
-    <string name="title_byte_beauty">字节美颜</string>
 
     <string name="hint_room_id">房间 ID</string>
     <string name="hint_room_id_1">第一个房间ID</string>

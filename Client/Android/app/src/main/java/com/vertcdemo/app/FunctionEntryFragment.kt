@@ -4,43 +4,39 @@ package com.vertcdemo.app
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import androidx.constraintlayout.widget.Guideline
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.vertcdemo.app.function.FunctionEntryAdapter
-import com.vertcdemo.app.function.FunctionItemDecoration
-import com.videoone.app.protocol.IFunctionEntry
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.tabs.TabLayoutMediator
+import com.vertcdemo.app.databinding.FragmentFunctionEntryBinding
+import com.videoone.app.protocol.IFunctionTabEntry
 
 private const val TAG = "FunctionEntryFragment"
 
-/**
- * @see com.videoone.app.protocol.FunctionVideoPlayback
- * @see com.videoone.app.protocol.FunctionPlaylist
- * @see com.videoone.app.protocol.FunctionSmartSubtitles
- * @see com.videoone.app.protocol.FunctionPreventRecording
- */
 private val entryNames = listOf(
-    "com.videoone.app.protocol.FunctionVideoPlayback",
-    "com.videoone.app.protocol.FunctionPlaylist",
-    "com.videoone.app.protocol.FunctionSmartSubtitles",
-    "com.videoone.app.protocol.FunctionPreventRecording",
+    "com.videoone.app.protocol.FunctionMediaLive",
+    "com.videoone.app.protocol.PlaybackFunction",
+    "com.videoone.app.protocol.RTCApiExampleFunction"
 )
 
 class FunctionEntryFragment : Fragment(R.layout.fragment_function_entry) {
-    private val entries: List<IFunctionEntry> by lazy {
+
+    private val entries: List<IFunctionTabEntry> by lazy {
         entryNames.mapNotNull { entryClass ->
             try {
                 val clazz = Class.forName(entryClass)
-                clazz.newInstance() as IFunctionEntry
+                clazz.newInstance() as IFunctionTabEntry
             } catch (e: ReflectiveOperationException) {
                 Log.w(TAG, "Entry not found: $entryClass")
                 null
             }
         }
     }
+
+    private var mBinding: FragmentFunctionEntryBinding? = null
 
     private lateinit var mMainViewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,20 +45,28 @@ class FunctionEntryFragment : Fragment(R.layout.fragment_function_entry) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val guidelineTop = view.findViewById<Guideline>(R.id.guideline_top)
+        val binding = FragmentFunctionEntryBinding.bind(view).also { mBinding = it }
         mMainViewModel.guidelineTop.observe(viewLifecycleOwner) { top ->
-            guidelineTop.setGuidelineBegin(top)
+            binding.guidelineTop.setGuidelineBegin(top)
         }
 
         val context = requireContext()
-        val recyclerView: RecyclerView = view.findViewById(R.id.recycler)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.addItemDecoration(
-            FunctionItemDecoration(
-                resources.getDimensionPixelSize(R.dimen.item_function_top),
-                resources.getDimensionPixelSize(R.dimen.item_function_spacing)
-            )
-        )
-        recyclerView.adapter = FunctionEntryAdapter(context, entries)
+        binding.viewPager.adapter = TabAdapter(this, entries)
+        TabLayoutMediator(binding.tabs, binding.viewPager) { tab, position ->
+            val tabLayout: View = LayoutInflater.from(context)
+                .inflate(R.layout.layout_function_tablayout_item, binding.tabs, false);
+            val tabView: TextView = tabLayout.findViewById(R.id.tab_text)
+            tabView.text = getString(entries[position].title)
+            tab.customView = tabView
+        }.attach()
+    }
+
+    class TabAdapter(fragment: Fragment, entries: List<IFunctionTabEntry>) : FragmentStateAdapter(fragment) {
+        private val entryList = entries
+        override fun getItemCount(): Int = entryList.size
+
+        override fun createFragment(position: Int): Fragment {
+            return entryList[position].fragment()
+        }
     }
 }

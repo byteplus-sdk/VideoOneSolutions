@@ -12,7 +12,6 @@
     self = [super init];
     if (self) {
         self.title = LocalizedStringFromBundle(@"function_title_playlist", @"VEVodApp");
-        self.des = LocalizedStringFromBundle(@"function_des_playlist", @"VEVodApp");
         self.iconName = @"function_icon_playlist";
     }
     return self;

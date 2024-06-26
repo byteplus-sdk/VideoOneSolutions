@@ -8,6 +8,8 @@
 #import <Masonry/Masonry.h>
 #import <TTSDK/TTSDKManager.h>
 #import <TTSDK/TTVideoLive.h>
+#import "BPVOLog.h"
+
 
 @interface BytePlayerComponent () <VeLivePlayerObserver>
 @property (nonatomic, strong) TVLManager *player;
@@ -388,8 +390,8 @@
 }
 
 - (void)onStatistics:(TVLManager *)player statistics:(VeLivePlayerStatistics *)statistics {
-    NSLog(@"BytePlayer: onStatistics: url:%@;", statistics.url);
-    NSLog(@"BytePlayer: onStatistics: fps:%.1f; protocal: %@; format:%@;",
+    VOLogI(VOToolKit,@"BytePlayer: onStatistics: url:%@;", statistics.url);
+    VOLogI(VOToolKit,@"BytePlayer: onStatistics: fps:%.1f; protocal: %@; format:%@;",
           statistics.fps,
           [self getFormatDes:statistics.format],
           [self getProtocolDes:statistics.protocol]);
@@ -424,7 +426,7 @@
 }
 
 - (void)onError:(TVLManager *)player error:(VeLivePlayerError *)error {
-    NSLog(@"onPlayerError: %@", error.errorMsg);
+    VOLogE(VOToolKit,@"onPlayerError: %@", error.errorMsg);
 }
 - (void)onFirstAudioFrameRender:(TVLManager *)player isFirstFrame:(BOOL)isFirstFrame {
 }
@@ -464,7 +466,7 @@
         config.enableStatisticsCallback = YES;
         [_player setConfig:config];
         [TVLManager setLogCallback:^(TVLLogLevel level, NSString *tag, NSString *log) {
-            NSLog(@"LiveTTSDK setLogCallback %luu|%@", (unsigned long)(unsigned long)level, log);
+            VOLogI(VOToolKit,@"LiveTTSDK setLogCallback %luu|%@", (unsigned long)(unsigned long)level, log);
         }];
     }
     return _player;

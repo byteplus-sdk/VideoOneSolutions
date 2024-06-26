@@ -11,7 +11,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
-
+@objc(SoundEffectsViewController)
 class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
     var rtcVideo: ByteRTCVideo?
     var rtcRoom: ByteRTCRoom?

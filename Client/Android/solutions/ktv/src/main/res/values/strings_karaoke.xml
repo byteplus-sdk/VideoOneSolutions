@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="karaoke_scene_title">Choose the singing mode you like</string>
+    <string name="karaoke_scene_solo">Solo Singing</string>
+    <string name="karaoke_scene_solo_desc1">6-Person voice chat</string>
+    <string name="karaoke_scene_solo_desc2">Latency &lt;400ms</string>
+    <string name="karaoke_scene_duet">Duet Singing</string>
+    <string name="karaoke_scene_duet_desc1">2-Person singing</string>
+    <string name="karaoke_scene_duet_desc2">Lead/backup singer</string>
+</resources>

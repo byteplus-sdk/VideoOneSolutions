@@ -23,15 +23,4 @@
     }
 }
 
-- (void)getRTMPAddr:(NSString *)taskID
-              block:(void (^)(NSString *addr))block {
-    NSObject<RTCTokenDelegate> *delegate = [[NSClassFromString(@"TokenGenerator") alloc] init];
-
-    if ([delegate respondsToSelector:@selector(protocol:getRTMPAddr:block:)]) {
-        [delegate protocol:self getRTMPAddr:taskID block:block];
-    }
-}
-
-
-
 @end

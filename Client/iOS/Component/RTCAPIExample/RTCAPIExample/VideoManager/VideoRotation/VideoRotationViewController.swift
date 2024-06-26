@@ -11,6 +11,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
+@objc(VideoRotationViewController)
 class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
     
     var rtcVideo: ByteRTCVideo?

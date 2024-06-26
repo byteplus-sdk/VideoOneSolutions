@@ -62,6 +62,8 @@
 
 #import "LocalUserComponent.h"
 
+#import "BPVOLog.h"
+
 //endif /* ToolKit_h */
 
 #import "BaseLoadingView.h"
@@ -71,3 +73,5 @@
 #import <AppConfig/BuildConfig.h>
 
 #import "RTCTokenProtocol.h"
+
+#import "LiveAddrProtocol.h"

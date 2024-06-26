@@ -43,6 +43,7 @@ def scene_KTV_pods
   # Depends on SDK
    pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['RTC-Framework', 'ByteAudio']
   pod 'KTV', :path => './Component/KTV'
+  pod 'Chorus', :path => './Component/Chorus'
 end
 
 def scene_MedeaLive_pods

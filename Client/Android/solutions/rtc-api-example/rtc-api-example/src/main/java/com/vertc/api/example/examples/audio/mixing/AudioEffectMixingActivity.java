@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.TextureView;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import com.ss.bytertc.engine.IAudioEffectPlayerEventHandler;
 import com.ss.bytertc.engine.RTCRoom;

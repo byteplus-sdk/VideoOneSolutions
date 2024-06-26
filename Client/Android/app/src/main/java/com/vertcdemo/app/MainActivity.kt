@@ -15,8 +15,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.vertcdemo.core.SolutionDataManager
-import com.vertcdemo.core.eventbus.AppTokenExpiredEvent
-import com.vertcdemo.core.eventbus.RTSLogoutEvent
+import com.vertcdemo.core.event.AppTokenExpiredEvent
+import com.vertcdemo.core.event.RTSLogoutEvent
 import com.vertcdemo.core.eventbus.SolutionEventBus
 import com.vertcdemo.core.utils.Activities.transparentStatusBar
 import com.vertcdemo.login.ILoginImpl
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onRTSLogoutEvent(event: RTSLogoutEvent?) {
+    fun onRTSLogoutEvent(event: RTSLogoutEvent) {
         Log.d(TAG, "onRTSLogoutEvent")
         finishOtherActivity()
         Toast.makeText(this, R.string.same_logged_in, Toast.LENGTH_LONG).show()
