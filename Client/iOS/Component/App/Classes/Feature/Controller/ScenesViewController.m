@@ -186,7 +186,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _scenes = @[
-            @{@"className": @"KTV"},
+            @{@"className": @"OnlineKTV"},
             @{@"className": @"VideoPlaybackEdit"},
             @{@"className": @"InteractiveLive"}
         ];

@@ -9,7 +9,6 @@
 #import <ToolKit/RTCTokenProtocol.h>
 #import <ToolKit/ToolKit.h>
 #import "NetworkingManager+RTCToken.h"
-#import <CommonCrypto/CommonDigest.h>
 
 @interface TokenGenerator () <RTCTokenDelegate>
 
@@ -38,12 +37,6 @@
             [[ToastComponent shareToastComponent] showWithMessage:errorDescription];
         }
     }];
-}
-
-- (void)protocol:(RTCTokenProtocol *)protocol getRTMPAddr:(NSString *)taskID block:(void (^)(NSString * _Nonnull))block {
-    if (block) {
-        block(@"");
-    }
 }
 
 @end

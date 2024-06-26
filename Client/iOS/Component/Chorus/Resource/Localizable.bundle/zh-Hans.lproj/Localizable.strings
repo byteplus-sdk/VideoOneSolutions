@@ -1,0 +1,132 @@
+
+"button_chorus_name" = "加入合唱";
+
+"button_close_live" = "结束直播";
+
+"button_create_room" = "创建房间";
+
+"button_music_list_request_song" = "点歌";
+
+"button_music_list_title" = "在线曲库";
+
+"button_pick_song_title" = "点歌";
+
+"button_picked_title" = "已点歌曲";
+
+"button_picked_title_%ld" = "已点歌曲(%ld)";
+
+"button_picked_type_title" = "已点";
+
+"button_solo_name" = "不等了,开始独唱";
+
+"button_start_name" = "开启合唱房";
+
+"chorus_button_cancel" = "取消";
+
+"chorus_button_confirm" = "确定";
+
+"chorus_scene_name" = "双人合唱";
+
+"duet_singing_des_1" = "双人合唱";
+
+"duet_singing_des_2" = "主唱/副唱";
+
+"duet_singing_title" = "双人合唱";
+
+"im_label_join_room" = "加入了房间";
+
+"im_label_leave_room" = "退出了房间";
+
+"label_alert_title" = "是否结束直播？";
+
+"label_create_background_title_%@" = "背景 %@";
+
+"label_create_tip" = "本产品仅用于功能体验，单次直播时长不超20分钟";
+
+"label_current_singer_name_%@" = "点唱者：%@";
+
+"label_input_placeholder" = "说点什么";
+
+"label_join_im" = "加入了房间";
+
+"label_leave_im" = "退出了房间";
+
+"label_music_empty" = "还没有人点歌";
+
+"label_net_good" = "网络良好";
+
+"label_net_stuck" = "网络卡顿";
+
+"label_net_disconnect" = "网络断开";
+
+"label_no_singing_audience_tip" = "快来点歌开始体验吧";
+
+"label_online_song_title" = "在线曲库";
+
+"label_original_singer_name_%@" = "原唱：%@";
+
+"label_pick_song_singing" = "演唱中";
+
+"label_pick_song_title" = "点歌台";
+
+"label_reverberation_concert" = "演唱会";
+
+"label_reverberation_echo" = "回声";
+
+"label_reverberation_ethereal" = "空灵";
+
+"label_reverberation_ktv" = "KTV";
+
+"label_reverberation_original" = "原声";
+
+"label_reverberation_recording" = "录音棚";
+
+"label_reverberation_title" = "混响";
+
+"label_room_background_title" = "背景";
+
+"label_room_empty" = "还没有人创建合唱房，快去创建吧";
+
+"label_room_title_%@" = "%@的合唱房";
+
+"label_room_title_prefix" = "名称";
+
+"label_singer_empty" = "等待合唱者加入";
+
+"label_song_downloading" = "下载中";
+
+"label_song_empty_title" = "立即点歌开始体验吧";
+
+"label_song_end_title" = "播放结束";
+
+"label_song_end_title_%@" = "播放结束，即将播放《%@》";
+
+"label_song_waiting" = "等待中";
+
+"label_text_placeholder" = "说点什么";
+
+"label_text_send" = "发送";
+
+"label_tuning_ear" = "耳返";
+
+"label_tuning_ear_tip" = "插入耳机后可使用耳返功能";
+
+"label_tuning_music_volume" = "音乐音量";
+
+"label_tuning_title" = "调音";
+
+"label_tuning_vocal_volume" = "人声音量";
+
+"toast_close_room_error_default" = "房主已关闭合唱房";
+
+"toast_close_room_error_time" = "本次体验时间已超过20分钟";
+
+"toast_close_room_error_violation" = "直播间内容违规，直播间已被关闭";
+
+"toast_join_room_error" = "加入房间失败，回到房间列表页";
+
+"toast_start_accompaniment" = "已开启伴奏";
+
+"toast_start_original" = "已开启原唱";
+
+"toast_start_singing" = "开始演唱吧";

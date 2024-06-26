@@ -3,6 +3,7 @@
 //
 
 #import "GCDTimer.h"
+#import "BPVOLog.h"
 
 typedef NS_ENUM(NSInteger, GCDTimerStatus) {
     GCDTimerStatusIng,
@@ -34,7 +35,7 @@ typedef NS_ENUM(NSInteger, GCDTimerStatus) {
 
 - (void)start:(float)interval block:(void (^)(BOOL))block {
     if (_timerStatus != GCDTimerStatusStop) {
-        NSLog(@"%@-start error%ld", [self class], (long)_timerStatus);
+        VOLogI(VOToolKit,@"%@-start error%ld", [self class], (long)_timerStatus);
         if (block) {
             block(NO);
         }
@@ -53,7 +54,7 @@ typedef NS_ENUM(NSInteger, GCDTimerStatus) {
 
 - (void)resume {
     if (_timerStatus != GCDTimerStatusSuspend) {
-        NSLog(@"%@-resume error%ld", [self class], _timerStatus);
+        VOLogI(VOToolKit,@"%@-resume error%ld", [self class], _timerStatus);
         return;
     }
     [self resumeTime];
@@ -71,7 +72,7 @@ typedef NS_ENUM(NSInteger, GCDTimerStatus) {
 
 - (void)suspend {
     if (_timerStatus != GCDTimerStatusIng) {
-        NSLog(@"%@-suspend error%ld", [self class], _timerStatus);
+        VOLogI(VOToolKit,@"%@-suspend error%ld", [self class], _timerStatus);
         return;
     }
     dispatch_semaphore_wait(self.timerLock, DISPATCH_TIME_FOREVER);
@@ -85,7 +86,7 @@ typedef NS_ENUM(NSInteger, GCDTimerStatus) {
 
 - (void)stop {
     if (_timerStatus != GCDTimerStatusIng) {
-        NSLog(@"%@-stop error%ld", [self class], _timerStatus);
+        VOLogI(VOToolKit,@"%@-stop error%ld", [self class], _timerStatus);
         return;
     }
     dispatch_semaphore_wait(self.timerLock, DISPATCH_TIME_FOREVER);

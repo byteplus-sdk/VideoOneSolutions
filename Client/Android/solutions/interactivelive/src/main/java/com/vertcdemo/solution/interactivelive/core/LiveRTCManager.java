@@ -32,21 +32,21 @@ import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.NetworkQualityStats;
 import com.ss.bytertc.engine.video.VideoCaptureConfig;
 import com.vertcdemo.core.SolutionDataManager;
-import com.vertcdemo.core.eventbus.RTCNetworkQualityEvent;
+import com.vertcdemo.core.annotation.MediaStatus;
+import com.vertcdemo.core.event.RTCNetworkQualityEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.rts.RTCRoomEventHandlerWithRTS;
 import com.vertcdemo.core.net.rts.RTCVideoEventHandlerWithRTS;
 import com.vertcdemo.core.net.rts.RTSInfo;
-import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.core.annotation.LiveRoleType;
-import com.vertcdemo.core.annotation.MediaStatus;
-import com.vertcdemo.solution.interactivelive.event.PublishVideoStreamEvent;
-import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
-import com.vertcdemo.ui.CenteredToast;
-import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.core.protocol.IEffect;
 import com.vertcdemo.core.protocol.EffectFactory;
 import com.vertcdemo.core.utils.AppUtil;
+import com.vertcdemo.solution.interactivelive.R;
+import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
+import com.vertcdemo.solution.interactivelive.core.annotation.LiveRoleType;
+import com.vertcdemo.solution.interactivelive.event.PublishVideoStreamEvent;
+import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
+import com.vertcdemo.ui.CenteredToast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,7 +92,7 @@ public class LiveRTCManager extends VideoTranscoding {
     /**
      * RTC room event callback
      */
-    private final RTCRoomEventHandlerWithRTS mRTCRoomEventHandler = new RTCRoomEventHandlerWithRTS() {
+    private final RTCRoomEventHandlerWithRTS mRTCRoomEventHandler = new RTCRoomEventHandlerWithRTS(false) {
 
         @Override
         public void onRoomStateChanged(String roomId, String uid, int state, String extraInfo) {

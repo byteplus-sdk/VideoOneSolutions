@@ -4,6 +4,7 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import "VELIQKeyboardManager.h"
+#import <ToolKit/ToolKit.h>
 
 /**
  UIView hierarchy category.
@@ -1751,7 +1752,7 @@ typedef void (^SizeBlock)(CGSize size);
         }
 
         [preLog appendString:logString];
-        NSLog(@"%@",preLog);
+        VOLogI(VOMediaLive,@"%@",preLog);
     }
     
     if (indent > 0)

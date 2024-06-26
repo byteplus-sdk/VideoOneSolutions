@@ -8,7 +8,7 @@ import android.text.TextUtils
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.FragmentManager
 import com.vertcdemo.core.SolutionDataManager
-import com.vertcdemo.core.eventbus.AppTokenExpiredEvent
+import com.vertcdemo.core.event.AppTokenExpiredEvent
 import com.vertcdemo.core.eventbus.SolutionEventBus
 import com.vertcdemo.core.protocol.ILogin
 import com.vertcdemo.core.utils.AppUtil.applicationContext

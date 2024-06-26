@@ -7,15 +7,18 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Guideline;
@@ -48,21 +51,32 @@ public class ApiExampleFragment extends Fragment {
         super(R.layout.fragment_api_example);
     }
 
+    public ApiExampleFragment(@LayoutRes int contentLayoutId) {
+        super(contentLayoutId);
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Context context = requireContext();
 
         Guideline guidelineTop = view.findViewById(R.id.guideline_top);
-        ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            guidelineTop.setGuidelineBegin(insets.top);
-            return windowInsets;
-        });
+        if (guidelineTop != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
+                Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                guidelineTop.setGuidelineBegin(insets.top);
+                return windowInsets;
+            });
+        }
 
-        view.findViewById(R.id.back).setOnClickListener(v -> requireActivity().onBackPressed());
+        View back = view.findViewById(R.id.back);
+        if (back != null) {
+            back.setOnClickListener(v -> requireActivity().onBackPressed());
+        }
 
         TextView sdkVersionView = view.findViewById(R.id.sdk_version);
-        sdkVersionView.setText(getString(R.string.sdk_version_xxx, RTCVideo.getSDKVersion()));
+        if (sdkVersionView != null) {
+            sdkVersionView.setText(getString(R.string.sdk_version_xxx, RTCVideo.getSDKVersion()));
+        }
 
         ViewGroup listview = view.findViewById(R.id.list);
 
@@ -85,21 +99,27 @@ public class ApiExampleFragment extends Fragment {
                 categoryItems = categoryLayout.findViewById(R.id.items);
 
                 listview.addView(categoryLayout);
-            } else {
-                inflater.inflate(R.layout.layout_api_example_line, categoryItems);
             }
 
-            TextView itemLayout = (TextView) inflater.inflate(R.layout.layout_api_example_item,
+            View itemView = inflater.inflate(R.layout.layout_api_example_item,
                     categoryItems, false);
-            itemLayout.setText(info.label);
-            itemLayout.setOnClickListener(v -> {
+            TextView itemText = itemView.findViewById(R.id.title);
+            itemText.setText(info.label);
+            ImageView itemImg = itemView.findViewById(R.id.icon);
+            itemImg.setImageDrawable(info.icon);
+            itemImg.setVisibility(View.VISIBLE);
+            itemView.setOnClickListener(v -> {
                 Class<?> targetClazz = info.getAction();
-                context.startActivity(new Intent(context, targetClazz));
+                openExample(context, targetClazz);
             });
 
-            categoryItems.addView(itemLayout);
+            categoryItems.addView(itemView);
         }
         requestPermission();
+    }
+
+    protected void openExample(Context context, Class<?> targetClazz) {
+        context.startActivity(new Intent(context, targetClazz));
     }
 
 
@@ -158,9 +178,10 @@ public class ApiExampleFragment extends Fragment {
                 Class<?> clazz = Class.forName(activityInfo.name);
                 if (clazz.isAnnotationPresent(ApiExample.class)) {
                     CharSequence label = activityInfo.loadLabel(pm);
+                    Drawable icon = activityInfo.loadIcon(pm);
                     ApiExample annotation = clazz.getAnnotation(ApiExample.class);
                     assert annotation != null;
-                    ExampleInfo info = new ExampleInfo(label, clazz, annotation);
+                    ExampleInfo info = new ExampleInfo(label, icon, clazz, annotation);
                     examples.add(info);
                 }
             } catch (ClassNotFoundException e) {

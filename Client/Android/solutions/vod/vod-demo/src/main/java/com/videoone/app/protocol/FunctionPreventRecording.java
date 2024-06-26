@@ -23,7 +23,7 @@ public class FunctionPreventRecording implements IFunctionEntry {
 
     @Override
     public int getIcon() {
-        return R.drawable.vevod_function_prevent_recording_icon;
+        return R.drawable.vevod_function_prevent_recording;
     }
 
     @Override

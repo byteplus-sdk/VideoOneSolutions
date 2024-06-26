@@ -11,6 +11,7 @@ import AVKit
 import SnapKit
 import BytePlusRTC
 
+@objc(PipViewController)
 class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate, AVPictureInPictureControllerDelegate {
     
     var rtcVideo: ByteRTCVideo?

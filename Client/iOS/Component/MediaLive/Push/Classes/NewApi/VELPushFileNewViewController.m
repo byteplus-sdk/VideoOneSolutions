@@ -61,6 +61,7 @@ static int vel_push_new_file_index = 2;
         }
         if (config == nil || VEL_IS_EMPTY_STRING(config.path) ||  ![NSFileManager.defaultManager fileExistsAtPath:config.path]) {
             [VELUIToast showText:LocalizedStringFromBundle(@"medialive_video_file_not_set", @"MediaLive") inView:self.view];
+            [self.navigationController popViewControllerAnimated:YES];
             return;
         }
         self.videoConfig = config;
@@ -178,6 +179,7 @@ static int vel_push_new_file_index = 2;
         }
         if (config == nil || VEL_IS_EMPTY_STRING(config.path) ||  ![NSFileManager.defaultManager fileExistsAtPath:config.path]) {
             [VELUIToast showText:LocalizedStringFromBundle(@"medialive_audio_file_not_set", @"MediaLive") inView:self.view];
+            [self.navigationController popViewControllerAnimated:YES];
             return;
         }
         self.audioConfig = config;

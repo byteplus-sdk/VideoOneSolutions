@@ -11,6 +11,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
+@objc(QuickStartViewController)
 class QuickStartViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
     
     var rtcVideo: ByteRTCVideo?

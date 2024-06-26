@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lrc_current_text_color">#FF4081</color>
+    <color name="lrc_normal_text_color">#9E9E9E</color>
+    <color name="lrc_time_text_color">#809E9E9E</color>
+    <color name="lrc_timeline_color">#809E9E9E</color>
+    <color name="lrc_timeline_text_color">#F8BBD0</color>
+    <declare-styleable name="LrcView">
+        <attr name="lrcTextSize" format="dimension" />
+        <attr name="lrcCurrentTextSize" format="dimension" />
+        <attr name="lrcNormalTextSize" format="dimension" />
+        <attr name="lrcDividerHeight" format="dimension" />
+        <attr name="lrcNormalTextColor" format="reference|color" />
+        <attr name="lrcCurrentTextColor" format="reference|color" />
+        <attr name="lrcTimelineTextColor" format="reference|color" />
+        <attr name="lrcAnimationDuration" format="integer" />
+        <attr name="lrcLabel" format="string" />
+        <attr name="lrcPadding" format="dimension" />
+        <attr name="lrcTimelineColor" format="reference|color" />
+        <attr name="lrcTimelineHeight" format="dimension" />
+        <attr name="lrcPlayDrawable" format="reference" />
+        <attr name="lrcTimeTextColor" format="reference|color" />
+        <attr name="lrcTimeTextSize" format="dimension" />
+        <attr name="lrcTextGravity">
+            <enum name="center" value="0" />
+            <enum name="left" value="1" />
+            <enum name="right" value="2" />
+        </attr>
+    </declare-styleable>
+    <dimen name="lrc_divider_height">16dp</dimen>
+    <dimen name="lrc_drawable_width">30dp</dimen>
+    <dimen name="lrc_text_size">16sp</dimen>
+    <dimen name="lrc_time_text_size">12sp</dimen>
+    <dimen name="lrc_time_width">40dp</dimen>
+    <dimen name="lrc_timeline_height">1dp</dimen>
+    <integer name="lrc_animation_duration">1000</integer>
+</resources>

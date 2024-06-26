@@ -12,7 +12,7 @@ import com.pandora.ttlicense2.License;
 import com.pandora.ttlicense2.LicenseManager;
 
 class LogLicenseManagerCallback implements LicenseManager.Callback {
-    private static final String TAG = "UIMainActivity";
+    private static final String TAG = "MediaLive";
 
     public String licenseId;
 

@@ -7,7 +7,7 @@ Pod::Spec.new do |spec|
   spec.license      = { :type => 'MIT', :file => 'LICENSE' }
   spec.author       = { 'author' => 'volcengine rtc' }
   spec.source       = { :path => './' }
-  spec.ios.deployment_target = '9.0'
+  spec.ios.deployment_target = '11.0'
   
   spec.source_files = '**/*.{h,m,c,mm,a}'
   spec.pod_target_xcconfig = {'CODE_SIGN_IDENTITY' => ''}

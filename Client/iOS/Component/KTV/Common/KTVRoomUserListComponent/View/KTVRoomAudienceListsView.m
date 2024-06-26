@@ -97,7 +97,7 @@
 }
 
 - (void)dealloc {
-    NSLog(@"dealloc %@",NSStringFromClass([self class]));
+    VOLogI(VOKTV,@"dealloc %@",NSStringFromClass([self class]));
 }
 
 @end

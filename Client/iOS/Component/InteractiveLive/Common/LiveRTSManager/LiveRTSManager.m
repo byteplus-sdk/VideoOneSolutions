@@ -455,7 +455,7 @@
     if (NOEmptyStr(roomID)) {
         dic = @{@"room_id": roomID ?: @""};
     }
-    NSLog(@"liveAudienceLinkmicApply");
+    VOLogI(VOInteractiveLive,@"liveAudienceLinkmicApply");
     dic = [JoinRTSParams addTokenToParams:dic];
     [[LiveRTCManager shareRtc] emitWithAck:@"liveAudienceLinkmicApply"
                                       with:dic

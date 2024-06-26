@@ -12,6 +12,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
+@objc(CrossRoomPKViewController)
 class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
     var rtcVideo: ByteRTCVideo?
     var rtcRoom: ByteRTCRoom?

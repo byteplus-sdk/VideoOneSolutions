@@ -4,6 +4,7 @@
 
 #import "UIDevice+idfvCheck.h"
 #import <objc/runtime.h>
+#import <ToolKit/ToolKit.h>
 
 #ifdef DEBUG
 
@@ -26,7 +27,7 @@
 }
 
 - (NSUUID *)hook_identifierForVendor {
-    NSLog(@"warning:use identifierForVendor.");
+    VOLogI(VOToolKit,@"warning:use identifierForVendor.");
     return [self hook_identifierForVendor];
 }
 

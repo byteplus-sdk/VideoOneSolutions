@@ -10,6 +10,7 @@ import com.ss.bytertc.engine.RTCVideo;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.common.RebroadcastEventListener;
+import com.vertcdemo.core.event.ClearUserEvent;
 import com.vertcdemo.core.net.IRequestCallback;
 import com.vertcdemo.core.net.RequestCallbackAdapter;
 import com.vertcdemo.core.net.rts.RTSBaseClient;
@@ -27,8 +28,7 @@ import com.vertcdemo.solution.ktv.core.rts.annotation.NeedApplyOption;
 import com.vertcdemo.solution.ktv.core.rts.annotation.ReplyType;
 import com.vertcdemo.solution.ktv.core.rts.annotation.SeatOption;
 import com.vertcdemo.solution.ktv.event.AudienceApplyBroadcast;
-import com.vertcdemo.solution.ktv.event.AudienceChangedBroadcast;
-import com.vertcdemo.solution.ktv.event.ClearUserBroadcast;
+import com.vertcdemo.solution.ktv.event.AudienceChangedEvent;
 import com.vertcdemo.solution.ktv.event.FinishLiveBroadcast;
 import com.vertcdemo.solution.ktv.event.FinishSingBroadcast;
 import com.vertcdemo.solution.ktv.event.InteractChangedBroadcast;
@@ -283,10 +283,10 @@ public class KTVRTSClient extends RTSBaseClient {
     private void initEventListener() {
         //观众进房通知
         registerEventListener(ON_AUDIENCE_JOIN_ROOM,
-                RebroadcastEventListener.of(AudienceChangedBroadcast.Join.class));
+                RebroadcastEventListener.of(AudienceChangedEvent.Join.class));
         //观众离房通知
         registerEventListener(ON_AUDIENCE_LEAVE_ROOM,
-                RebroadcastEventListener.of(AudienceChangedBroadcast.Leave.class));
+                RebroadcastEventListener.of(AudienceChangedEvent.Leave.class));
         //结束直播通知
         registerEventListener(ON_FINISH_LIVE,
                 RebroadcastEventListener.of(FinishLiveBroadcast.class));
@@ -309,7 +309,7 @@ public class KTVRTSClient extends RTSBaseClient {
         //麦克风操作:主播mute/unmute嘉宾麦克风
         registerEventListener(ON_MEDIA_OPERATE, RebroadcastEventListener.of(MediaOperateBroadcast.class));
         //互踢: 用户在其它端登陆时，会给前一个登陆端下发该通知，收到后不用调用退房接口，直接关闭即可
-        registerEventListener(ON_CLEAR_USER, RebroadcastEventListener.of(ClearUserBroadcast.class));
+        registerEventListener(ON_CLEAR_USER, RebroadcastEventListener.of(ClearUserEvent.class));
         //点歌通知
         registerEventListener(ON_REQUEST_SONG, RebroadcastEventListener.of(RequestSongBroadcast.class));
         //切歌通知

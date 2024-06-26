@@ -10,6 +10,7 @@
 #import "PublicParameterComponent.h"
 #import <AFNetworking/AFNetworking.h>
 #import <YYModel/YYModel.h>
+#import <ToolKit/ToolKit.h>
 
 @interface NetworkingManager ()
 
@@ -85,12 +86,12 @@
         success:^(NSURLSessionDataTask *_Nonnull task,
                   id _Nullable responseObject) {
             [self processResponse:responseObject block:block];
-            NSLog(@"[%@]-%@ %@", [self class], path, responseObject);
+            VOLogI(VOToolKit, @"[%@]-%@ %@", [self class], path, responseObject);
         } failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
             if (block) {
                 block([NetworkingResponse responseWithError:error]);
             }
-            NSLog(@"[%@]-%@ failure %@", [self class], path, task.response);
+            VOLogE(VOToolKit, @"[%@]-%@ failure %@", [self class], path, task.response);
         }];
 }
 
@@ -104,12 +105,12 @@
         progress:nil
         success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
             [self processResponse:responseObject block:block];
-            NSLog(@"[%@]-%@ %@", [self class], path, responseObject);
+            VOLogI(VOToolKit, @"[%@]-%@ %@", [self class], path, responseObject);
         } failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
             if (block) {
                 block([NetworkingResponse responseWithError:error]);
             }
-            NSLog(@"[%@]-%@ failure %@", [self class], path, task.response);
+            VOLogE(VOToolKit, @"[%@]-%@ failure %@", [self class], path, task.response);
         }];
 }
 

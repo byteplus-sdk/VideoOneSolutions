@@ -80,14 +80,14 @@
 
 @property (nonatomic, strong) UIScrollView *mainScrollView;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, copy) NSArray<BaseFunctionSection *> *sectionList;
+@property (nonatomic, copy) NSArray<BaseFunctionDataList *> *sectionList;
 @property (nonatomic, assign) NSInteger selectedDefault;
 
 @end
 
 @implementation SectionListView
 
-- (instancetype)initWithList:(NSArray<BaseFunctionSection *> *)sectionList {
+- (instancetype)initWithList:(NSArray<BaseFunctionDataList *> *)sectionList {
     self = [super init];
     if (self) {
         self.selectedDefault = 0;
@@ -100,7 +100,7 @@
     return self;
 }
 
-- (void)itemViewAction:(SectionListItemView *)itemView {
+- (NSInteger)updateItemState:(SectionListItemView *)itemView {
     NSInteger selectedRow = self.selectedDefault;
     for (int i = 0; i < self.contentView.subviews.count; i++) {
         if ([self.contentView.subviews[i] isKindOfClass:[SectionListItemView class]]) {
@@ -108,14 +108,31 @@
             
             if (itemView == curItemView) {
                 selectedRow = i;
-                itemView.selected = YES;
+                [UIView animateWithDuration:0.2 animations:^{
+                    itemView.selected = YES;
+                }];
             } else {
-                curItemView.selected = NO;
+                [UIView animateWithDuration:0.2 animations:^{
+                    curItemView.selected = NO;
+                }];
             }
         }
     }
+    return selectedRow;
+}
+
+- (void)itemViewAction:(SectionListItemView *)itemView {
+    NSInteger selectedRow = [self updateItemState:itemView];
     if (self.clickBlock) {
         self.clickBlock(selectedRow);
+    }
+}
+
+
+- (void)updateItemWithCurIndex:(NSInteger)currentRow {
+    if ([self.contentView.subviews[currentRow] isKindOfClass:[SectionListItemView class]]) {
+        SectionListItemView *newItem = (SectionListItemView *)self.contentView.subviews[currentRow];
+        [self updateItemState:newItem];
     }
 }
 
@@ -133,7 +150,7 @@
     
     SectionListItemView *tempItemView = nil;
     for (int i = 0; i < self.sectionList.count; i++) {
-        BaseFunctionSection *sectionModel = self.sectionList[i];
+        BaseFunctionDataList *sectionModel = self.sectionList[i];
         SectionListItemView *itemView = [[SectionListItemView alloc] initWithMessage:sectionModel.functionSectionName];
         [itemView addTarget:self action:@selector(itemViewAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:itemView];

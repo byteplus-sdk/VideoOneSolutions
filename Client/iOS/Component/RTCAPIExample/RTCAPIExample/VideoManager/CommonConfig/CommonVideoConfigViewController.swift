@@ -11,6 +11,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
+@objc(CommonVideoConfigViewController)
 class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
     
     var rtcVideo: ByteRTCVideo?
@@ -121,6 +122,7 @@ class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate,
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
+        self.rtcVideo?.setLocalVideoMirrorType(.none)
         self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
     }
     
@@ -594,7 +596,7 @@ class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate,
     }()
     
     lazy var localMirrorModeSheetView: ActionSheetView = {
-        let actionSheetView = ActionSheetView.init(title: LocalizedString("label_local_render_mode"), optionArray: ["None","Render","RenderAndEncoder"], defaultIndex: 0)
+        let actionSheetView = ActionSheetView.init(title: LocalizedString("label_local_mirror_type"), optionArray: ["None","Render","RenderAndEncoder"], defaultIndex: 0)
         actionSheetView.presentingViewController = self
         
         return actionSheetView

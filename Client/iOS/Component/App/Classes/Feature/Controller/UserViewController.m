@@ -213,11 +213,16 @@
         [lists addObject:model9];
 
         NSString *appVer = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-
         MenuCellModel *model5 = [[MenuCellModel alloc] init];
         model5.title = LocalizedStringFromBundle(@"app_version", @"App");
         model5.desTitle = [NSString stringWithFormat:@"v%@", appVer];
         [lists addObject:model5];
+        
+        MenuCellModel *model1 = [[MenuCellModel alloc] init];
+        model1.title = @"Github";
+        model1.isMore = YES;
+        model1.link = @"https://github.com/byteplus-sdk/VideoOneSolutions/";
+        [lists addObject:model1];
 
         _dataLists = [lists copy];
     }

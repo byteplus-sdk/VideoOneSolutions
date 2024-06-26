@@ -15,6 +15,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
+@objc(PushCDNViewController)
 class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate,ByteRTCMixedStreamObserver {
     
     var rtcVideo: ByteRTCVideo?
@@ -668,7 +669,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         if let cdnUrl = kCDNUrl as String?, !cdnUrl.isEmpty {
             textField.text = cdnUrl
         } else {
-            RTCTokenProtocol().getRTMPAddr(taskId) { [weak textField] addr in
+            LiveAddrProtocol().getRTMPAddr(taskId) { [weak textField] addr in
                 textField?.text = addr
             }
         }

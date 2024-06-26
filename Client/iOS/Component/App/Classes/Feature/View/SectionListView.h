@@ -7,9 +7,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SectionListView : UIView
 
-- (instancetype)initWithList:(NSArray<BaseFunctionSection *> *)sectionList;
+- (instancetype)initWithList:(NSArray<BaseFunctionDataList *> *)sectionList;
 
 @property (nonatomic, copy) void (^clickBlock)(NSInteger row);
+
+- (void)updateItemWithCurIndex:(NSInteger)currentRow;
 
 @end
 

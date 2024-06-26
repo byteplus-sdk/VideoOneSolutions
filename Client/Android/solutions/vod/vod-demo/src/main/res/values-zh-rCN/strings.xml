@@ -45,4 +45,6 @@
     <string name="vevod_tips">提示</string>
     <string name="vevod_close">关闭</string>
 
+    <string name="vevod_video_playback_tab_name">视频播放</string>
+
 </resources>

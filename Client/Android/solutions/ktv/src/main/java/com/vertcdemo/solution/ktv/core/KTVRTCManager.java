@@ -40,13 +40,13 @@ import com.ss.bytertc.engine.type.RemoteStreamStats;
 import com.ss.bytertc.engine.type.VoiceReverbType;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.common.AppExecutors;
+import com.vertcdemo.core.event.AudioRouteChangedEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.rts.RTCRoomEventHandlerWithRTS;
 import com.vertcdemo.core.net.rts.RTCVideoEventHandlerWithRTS;
 import com.vertcdemo.core.net.rts.RTSInfo;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.solution.ktv.event.AudioMixingStateEvent;
-import com.vertcdemo.solution.ktv.event.AudioRouteChangedEvent;
 import com.vertcdemo.solution.ktv.event.AudioStatsEvent;
 import com.vertcdemo.solution.ktv.event.SDKAudioPropertiesEvent;
 
@@ -214,6 +214,10 @@ public class KTVRTCManager {
         }
     };
 
+    private KTVRTCManager() {
+        Log.d(TAG, "RTCVideo sdkVersion: " + RTCVideo.getSDKVersion());
+    }
+
     public static KTVRTCManager ins() {
         if (sInstance == null) {
             sInstance = new KTVRTCManager();
@@ -236,7 +240,6 @@ public class KTVRTCManager {
     }
 
     private RTCVideo createRTCVideo(String appId, String bid) {
-        Log.d(TAG, "createRTCVideo: " + RTCVideo.getSDKVersion());
         final Application context = AppUtil.getApplicationContext();
         RTCVideo rtcVideo = RTCVideo.createRTCVideo(context, appId, mRTCVideoEventHandler, null, null);
         rtcVideo.setBusinessId(bid);
@@ -462,8 +465,7 @@ public class KTVRTCManager {
 
     public boolean canOpenEarMonitor() {
         AudioRoute audioRoute = mRTCVideo.getAudioRoute();
-        return audioRoute == AudioRoute.AUDIO_ROUTE_HEADSET
-                || audioRoute == AudioRoute.AUDIO_ROUTE_HEADSET_USB;
+        return AudioRouteChangedEvent.canOpenEarMonitor(audioRoute);
     }
 
     public void closeEarMonitor() {

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitStart"
+        android:src="@drawable/ic_chorus_track_info_wave"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/track_disk"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="19dp"
+        android:layout_marginTop="6dp"
+        android:src="@drawable/ic_chorus_track_disk"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/track_cover"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toBottomOf="@id/track_disk"
+        app:layout_constraintEnd_toEndOf="@id/track_disk"
+        app:layout_constraintStart_toStartOf="@id/track_disk"
+        app:layout_constraintTop_toTopOf="@id/track_disk"
+        app:shapeAppearance="@style/circleStyle"
+        tools:src="@drawable/avatar00" />
+
+    <TextView
+        android:id="@+id/track_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:maxLines="1"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/track_disk"
+        app:layout_constraintTop_toTopOf="@id/track_disk"
+        tools:text="Yesterday once more" />
+
+    <TextView
+        android:id="@+id/track_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textColor="#B3C9CDD4"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/track_title"
+        app:layout_constraintTop_toBottomOf="@id/track_title"
+        tools:text="01:23/04:12" />
+</androidx.constraintlayout.widget.ConstraintLayout>

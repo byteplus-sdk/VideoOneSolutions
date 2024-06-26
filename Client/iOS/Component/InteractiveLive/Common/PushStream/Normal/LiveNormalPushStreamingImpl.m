@@ -178,7 +178,7 @@
 
 #pragma mark-- VeLivePusherObserver & VeLivePusherStatisticsObserver
 - (void)onStatusChange:(VeLivePushStatus)status {
-    NSLog(@"VeLivePusher: onStatusChange: %lu", status);
+    VOLogI(VOInteractiveLive,@"VeLivePusher: onStatusChange: %lu", status);
 
     if (status == VeLivePushStatusConnectSuccess) {
         NSDictionary *dic = @{
@@ -194,7 +194,7 @@
 }
 
 - (void)onNetworkQuality:(VeLiveNetworkQuality)quality {
-    NSLog(@"VeLivePusher: onNetworkQuality: %lu", quality);
+    VOLogI(VOInteractiveLive,@"VeLivePusher: onNetworkQuality: %lu", quality);
     if ([self.delegate respondsToSelector:@selector(updateOnNetworkStatusChange:)]) {
         LiveNetworkQualityStatus liveQuality = LiveNetworkQualityStatusBad;
         switch (quality) {

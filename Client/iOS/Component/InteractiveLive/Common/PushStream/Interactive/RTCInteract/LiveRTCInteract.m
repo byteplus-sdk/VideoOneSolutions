@@ -36,13 +36,13 @@
         _playMode = LiveInteractivePlayModeNormal;
         _hasForwardStreamToRooms = NO;
         _hasPublishStream = NO;
-        NSLog(@"aaa init teract roomid%@ %@", params.rtcRoomId, params.rtcToken);
+        VOLogI(VOInteractiveLive,@"aaa init teract roomid%@ %@", params.rtcRoomId, params.rtcToken);
     }
     return self;
 }
 
 - (void)dealloc {
-    NSLog(@"aaa dealloc rtcInteract");
+    VOLogI(VOInteractiveLive,@"aaa dealloc rtcInteract");
 }
 
 - (void)updateStreamParams:(LivePushStreamParams *)params {
@@ -61,7 +61,7 @@
 #pragma mark -- LiveInteractivePushStreaming
 
 - (void)startInteractive {
-    NSLog(@"aaa startInteractive rtc");
+    VOLogI(VOInteractiveLive,@"aaa startInteractive rtc");
     if (![self p_isHost]) {
         [[LiveRTCManager shareRtc] switchVideoCapture:YES];
         [[LiveRTCManager shareRtc] switchAudioCapture:YES];
@@ -81,7 +81,7 @@
 }
 
 - (void)stopInteractive {
-    NSLog(@"aaa stopInteractive");
+    VOLogI(VOInteractiveLive,@"aaa stopInteractive");
     if ([self p_isHost]) {
         NSAssert(self.streamParams.host, @"host does not configured");
         if (self.streamParams.host) {
@@ -117,7 +117,7 @@
 - (void)onUserListChanged:(NSArray<LiveUserModel *> *)userList {
     self.userList = [userList copy];
     [self updateTranscodingIfNeed];
-    NSLog(@"aaa interact users %ld", userList.count);
+    VOLogI(VOInteractiveLive,@"aaa interact users %ld", userList.count);
 }
 
 - (void)startForwardStreamToRooms:(NSString *)roomId token:(NSString *)token {
@@ -155,7 +155,7 @@
 }
 
 - (void)p_publishStream {
-    NSLog(@"aaa p_publishStream");
+    VOLogI(VOInteractiveLive,@"aaa p_publishStream");
     NSAssert(self.streamParams.pushUrl, @"rtc push url is nil");
     [self.rtcMixer startPushMixStreamToCDN];
     self.hasPublishStream = YES;
@@ -225,7 +225,7 @@
     if (joinModel.joinType == 0) {
         if ([self p_isCurrentUser:uid]) {
             self.interactState = RTCInteractStateJoinSuccess;
-            NSLog(@"aaa joinsuccess %@ hostId: %@", uid, self.streamParams.host.uid);
+            VOLogI(VOInteractiveLive,@"aaa joinsuccess %@ hostId: %@", uid, self.streamParams.host.uid);
             if ([self p_supportPublish] && !self.hasPublishStream) {
                 [self p_publishStream];
             }
@@ -234,7 +234,7 @@
             [self.delegate rtcInteract:self didJoinChannel:joinModel.roomId withUid:uid elapsed:joinModel.elapsed];
         }
     } else {
-        NSLog(@"aaa jointype = %ld", joinModel.joinType);
+        VOLogI(VOInteractiveLive, @"aaa jointype = %ld", joinModel.joinType);
     }
 }
 
@@ -253,7 +253,7 @@
 }
 
 - (void)liveRTCManager:(LiveRTCManager *)manager onUserPublishStream:(NSString *)uid {
-    NSLog(@"aaa user publish %@", uid);
+    VOLogI(VOInteractiveLive,@"aaa user publish %@", uid);
     if ([self.delegate respondsToSelector:@selector(rtcInteract:onUserPublishStream:)]) {
         [self.delegate rtcInteract:self onUserPublishStream:uid];
     }

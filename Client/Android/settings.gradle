@@ -11,6 +11,8 @@ include ':solutions:interactivelive'
 
 // KTV
 include ':solutions:ktv'
+// Chorus
+include ':solutions:chorus'
 
 // vod
 include ':solutions:vod:vod-demo'

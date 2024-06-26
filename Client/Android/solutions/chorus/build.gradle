@@ -1,0 +1,53 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdk project.compileSdkVersion
+    namespace 'com.bytedance.chrous'
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion project.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.constraintlayout
+    implementation libs.material
+
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+
+    implementation libs.eventbus
+    implementation libs.gson
+    implementation libs.glide
+    implementation libs.fadingedgelayout
+
+    implementation libs.rtc.sdk
+
+    implementation project(':component:solution-base')
+    implementation project(':component:rtc-toolkit')
+    implementation project(':component:avatars')
+}

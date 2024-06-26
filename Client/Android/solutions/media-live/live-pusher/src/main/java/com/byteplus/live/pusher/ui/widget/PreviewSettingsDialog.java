@@ -3,10 +3,6 @@
 package com.byteplus.live.pusher.ui.widget;
 
 import static com.byteplus.live.pusher.ui.activities.LivePushActivity.REQUEST_CODE_SCAN_URL;
-import static com.byteplus.live.settings.PreferenceUtil.CAPTURE_TYPE_AUDIO;
-import static com.byteplus.live.settings.PreferenceUtil.CAPTURE_TYPE_CAMERA;
-import static com.byteplus.live.settings.PreferenceUtil.CAPTURE_TYPE_FILE;
-import static com.byteplus.live.settings.PreferenceUtil.CAPTURE_TYPE_SCREEN;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -34,6 +30,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import com.byteplus.live.pusher.LivePusher;
 import com.byteplus.live.pusher.LivePusherSettingsHelper;
 import com.byteplus.live.pusher.R;
+import com.byteplus.live.pusher.ui.activities.LiveCaptureType;
 import com.byteplus.live.settings.PreferenceUtil;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.pandora.ttsdk.MonitorLog;
@@ -102,13 +99,13 @@ public class PreviewSettingsDialog extends Dialog {
         super(context);
         mContext = context;
         mObserver = observer;
-        if (captureType == CAPTURE_TYPE_CAMERA) {
+        if (captureType == LiveCaptureType.CAMERA) {
             mSettingsPanelItem = CAMERA_SETTING_ITEMS;
-        } else if (captureType == CAPTURE_TYPE_AUDIO) {
+        } else if (captureType == LiveCaptureType.AUDIO) {
             mSettingsPanelItem = AUDIO_SETTING_ITEMS;
-        } else if (captureType == CAPTURE_TYPE_SCREEN) {
+        } else if (captureType == LiveCaptureType.SCREEN) {
             mSettingsPanelItem = SCREEN_SETTING_ITEMS;
-        } else if (captureType == CAPTURE_TYPE_FILE) {
+        } else if (captureType == LiveCaptureType.FILE) {
             mSettingsPanelItem = FILE_SETTING_ITEMS;
         } else {
             throw new IllegalStateException("Unknown Capture type: " + captureType);

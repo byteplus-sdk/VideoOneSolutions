@@ -47,4 +47,6 @@
     <string name="vevod_tips">Tips</string>
     <string name="vevod_close">Close</string>
 
+    <string name="vevod_video_playback_tab_name">Video player</string>
+
 </resources>

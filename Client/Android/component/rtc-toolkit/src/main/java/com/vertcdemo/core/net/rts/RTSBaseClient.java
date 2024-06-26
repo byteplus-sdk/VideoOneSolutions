@@ -19,7 +19,7 @@ import com.google.gson.JsonObject;
 import com.ss.bytertc.engine.RTCVideo;
 import com.ss.bytertc.engine.type.LoginErrorCode;
 import com.vertcdemo.core.SolutionDataManager;
-import com.vertcdemo.core.eventbus.RTSLogoutEvent;
+import com.vertcdemo.core.event.RTSLogoutEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.ErrorTool;
 
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class RTSBaseClient {
-    private static final String TAG = "RTSBaseClient";
+    private static final String TAG = "RTSClient";
     public static final int ERROR_CODE_DEFAULT = -1;
 
     public static final String MESSAGE_TYPE_RETURN = "return";
@@ -84,12 +84,12 @@ public class RTSBaseClient {
             return;
         }
         mRequestIdCallbackMap.put(REQ_ID_RTS_LOGIN, callback);
-        Log.d(TAG, "login: uid=" + userId);
+        Log.d(TAG, "[Base] login: uid=" + userId);
         mRTCVideo.login(token, userId);
     }
 
     public void onLoginResult(String uid, int code, int elapsed) {
-        Log.d(TAG, "onLoginResult: uid=" + uid);
+        Log.d(TAG, "[Base] onLoginResult: uid=" + uid);
         if (TextUtils.isEmpty(mRTSInfo.serverUrl) || TextUtils.isEmpty(mRTSInfo.serverSignature)) {
             notifyLoginResult(-1, "onLoginResult failed: Info=" + mRTSInfo);
             return;
@@ -102,13 +102,13 @@ public class RTSBaseClient {
     }
 
     public void logout() {
-        Log.d(TAG, "logout");
+        Log.d(TAG, "[Base] logout");
         mInitBizServerCompleted = false;
         mRTCVideo.logout();
     }
 
     public void setServerParams(String signature, String url) {
-        Log.d(TAG, "setServerParams: url=" + url);
+        Log.d(TAG, "[Base] setServerParams: url=" + url);
         if (TextUtils.isEmpty(signature) || TextUtils.isEmpty(url)) {
             notifyLoginResult(-1,
                     "setServerParams failed:\n signature=" + signature + ",\n url=" + url);
@@ -118,7 +118,7 @@ public class RTSBaseClient {
     }
 
     public void onServerParamsSetResult(int error) {
-        Log.d(TAG, "onServerParamsSetResult: error=" + error);
+        Log.d(TAG, "[Base] onServerParamsSetResult: error=" + error);
         if (error != 200) {
             notifyLoginResult(error, "onServerParamsSetResult fail");
             return;
@@ -132,7 +132,7 @@ public class RTSBaseClient {
             notifyRequestFail(ERROR_CODE_DEFAULT, "sendServerMessage: message=" + message, callBack);
             return ERROR_CODE_DEFAULT;
         }
-        Log.e(TAG, "sendServerMessage message:" + message);
+        Log.e(TAG, "[Base] sendServerMessage message:" + message);
         long msgId = mRTCVideo.sendServerMessage(message);
         if (msgId == ERROR_CODE_DEFAULT && callBack != null) {
             notifyRequestFail(ERROR_CODE_DEFAULT, "sendServerMessage fail msgId:" + msgId, callBack);
@@ -158,9 +158,8 @@ public class RTSBaseClient {
 
     public void sendServerMessage(String eventName, String roomId, @NonNull JsonObject content, IRTSCallback callback) {
         if (!mInitBizServerCompleted) {
-            String msg = "sendServerMessage failed mInitBizServerCompleted: false";
-            notifyRequestFail(ERROR_CODE_DEFAULT, msg, callback);
-            Log.e(TAG, msg);
+            notifyRequestFail(ERROR_CODE_DEFAULT, "sendServerMessage failed caused by not initialized", callback);
+            Log.e(TAG, "[Base] sendServerMessage: mInitBizServerCompleted is false");
             return;
         }
         content.addProperty("login_token", SolutionDataManager.ins().getToken());
@@ -182,7 +181,7 @@ public class RTSBaseClient {
     }
 
     public void onMessageReceived(String uid, String message) {
-        Log.e(TAG, "onMessageReceived: message=" + message);
+        Log.e(TAG, "[Base] onMessageReceived: message=" + message);
         try {
             JSONObject messageJson = new JSONObject(message);
             String messageType = messageJson.getString("message_type");
@@ -190,7 +189,7 @@ public class RTSBaseClient {
                 String requestId = messageJson.getString("request_id");
                 final IRTSCallback callback = mRequestIdCallbackMap.remove(requestId);
                 if (callback == null) {
-                    Log.e(TAG, "onMessageReceived callback is null");
+                    Log.e(TAG, "[Base] onMessageReceived callback is null");
                     return;
                 }
 
@@ -210,12 +209,12 @@ public class RTSBaseClient {
                         String dataStr = messageJson.optString("data");
                         eventListener.accept(dataStr);
                     } else {
-                        Log.w(TAG, "onMessageReceived DISCARD broadcast: event: " + event);
+                        Log.w(TAG, "[Base] onMessageReceived DISCARD broadcast: event: " + event);
                     }
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "parse message failed: uid=" + uid + ", message=" + message, e);
+            Log.e(TAG, "[Base] parse message failed: uid=" + uid + ", message=" + message, e);
         }
     }
 

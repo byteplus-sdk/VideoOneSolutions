@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VELPushGLRenderHelper.h"
+#import <ToolKit/ToolKit.h>
 
 #define TTF_STRINGIZE(x) #x
 #define TTF_STRINGIZE2(x) TTF_STRINGIZE(x)
@@ -60,7 +61,7 @@ static float VEL_PUSH_CUBE[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.
         GLint linkSuccess;
         glGetProgramiv(_program, GL_LINK_STATUS, &linkSuccess);
         if (linkSuccess == GL_FALSE){
-            NSLog(@"LiveRenderHelper link shader error");
+            VOLogE(VOMediaLive,@"LiveRenderHelper link shader error");
         }
         
         if (vertexShader) {
@@ -93,7 +94,7 @@ static float VEL_PUSH_CUBE[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.
     glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &success);
     
     if (success == GL_FALSE){
-        NSLog(@"LiverenderHelper compiler shader error: %s", shaderStringUTF8);
+        VOLogI(VOMediaLive,@"LiverenderHelper compiler shader error: %s", shaderStringUTF8);
         return 0;
     }
     return shaderHandle;
@@ -253,7 +254,7 @@ static float VEL_PUSH_CUBE[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.
 - (void)checkGLError {
     int error = glGetError();
     if (error != GL_NO_ERROR) {
-        NSLog(@"checkGLError %d", error);
+        VOLogE(VOMediaLive,@"checkGLError %d", error);
         @throw [NSException exceptionWithName:@"GLError" reason:@"error " userInfo:nil];
     }
 }

@@ -313,7 +313,7 @@
 
 "label_setting_height" = "Height:";
 
-"label_setting_mix" = "Custom Information in pushing mixed streams";
+"label_setting_mix" = "SEI message";
 
 "label_setting_push" = "Configuration";
 

@@ -6,11 +6,13 @@ package com.videoone.app.protocol;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
+import com.vertcdemo.solution.karaoke.KaraokeScenesActivity;
 import com.vertcdemo.solution.ktv.R;
-import com.vertcdemo.solution.ktv.feature.KTVEntryActivity;
 
+@Keep
 public class KTVEntry implements ISceneEntry {
     @Override
     public int getTitle() {
@@ -29,8 +31,7 @@ public class KTVEntry implements ISceneEntry {
 
     @Override
     public void startup(@NonNull Context context) {
-        Intent intent = new Intent();
-        intent.setClass(context, KTVEntryActivity.class);
+        Intent intent = new Intent(context, KaraokeScenesActivity.class);
         context.startActivity(intent);
     }
 }

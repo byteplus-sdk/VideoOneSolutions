@@ -30,7 +30,7 @@
     <string name="button_music_list_waiting">Waiting</string>
     <string name="button_music_list_downloading">Downloading</string>
     <string name="button_karaoke_station_pick_song">Song Queue</string>
-    <string name="button_karaoke_station_pick_song_xxx">Added song (%1$s)</string>
+    <string name="button_karaoke_station_pick_song_xxx">Song Queue(%1$d)</string>
     <string name="button_karaoke_station_title">Song request center</string>
     <string name="button_music_list_title">Song Library</string>
     <string name="label_user_list_empty">No audience</string>
@@ -63,7 +63,6 @@
     <string name="button_create_start">Karaoke now</string>
     <string name="toast_create_time_tip">This demo is for experiential purposes only. Each live session will automatically end after 20 minutes.</string>
     <string name="button_room_list_create">Create a room</string>
-    <string name="toast_false_violates_rules">Room has been closed due to violations of Terms of Service.</string>
     <string name="toast_false_time_out">The duration of this experience has reached  20 minutes.</string>
     <string name="toast_false_live_end">LIVE has ended</string>
     <string name="toast_become_guest">You have become a guest</string>

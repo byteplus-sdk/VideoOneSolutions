@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "NetworkingManager+PlayList.h"
 #import "VEVideoModel.h"
+#import <ToolKit/ToolKit.h>
 
 @implementation NetworkingManager (PlayList)
 
@@ -29,7 +30,7 @@
             } else if ([modeStr isEqualToString:@"loop"]) {
                 mode = PlayListModeLoop;
             } else {
-                NSLog(@"[PlayList] play mode(%lu) is unknown", mode);
+                VOLogI(VOVideoPlayback,@"[PlayList] play mode(%lu) is unknown", mode);
             }
             for (NSDictionary *dic in ary) {
                 VEVideoModel *videoModel = [VEVideoModel yy_modelWithDictionary:dic];

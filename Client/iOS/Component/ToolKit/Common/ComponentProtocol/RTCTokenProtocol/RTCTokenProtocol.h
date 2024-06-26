@@ -17,10 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
              uid:(NSString *)userId
            block:(void (^)(NSString *RTCToken))block;
 
-- (void)protocol:(RTCTokenProtocol *)protocol
-     getRTMPAddr:(NSString *)taskID
-           block:(void (^)(NSString *addr))block;
-
 @end
 
 @interface RTCTokenProtocol : NSObject
@@ -30,9 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
                 roomId:(NSString *)roomId
                    uid:(NSString *)userId
                  block:(nonnull void (^)(NSString * _Nonnull))block;
-
-- (void)getRTMPAddr:(NSString *)taskID
-              block:(void (^)(NSString *addr))block;
 
 @end
 

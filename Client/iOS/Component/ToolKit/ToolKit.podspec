@@ -18,7 +18,7 @@ Pod::Spec.new do |spec|
   
   spec.subspec 'Common' do |ss|
     ss.public_header_files = 'Common/**/*.h'
-    ss.source_files = 'Common/**/*.{h,m}'
+    ss.source_files = 'Common/**/*.{h,m,mm,hpp,cpp}'
     ss.resource_bundles = {
       'ToolKit' => ['Common/Resource/*.{xcassets,bundle}']
     }

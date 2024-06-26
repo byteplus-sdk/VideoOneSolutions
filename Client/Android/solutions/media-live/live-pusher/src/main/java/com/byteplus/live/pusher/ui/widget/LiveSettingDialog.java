@@ -4,7 +4,6 @@ package com.byteplus.live.pusher.ui.widget;
 
 
 import static com.byteplus.live.pusher.ui.activities.LivePushActivity.REQUEST_CODE_SCAN_SEI;
-import static com.byteplus.live.settings.PreferenceUtil.CAPTURE_TYPE_AUDIO;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_MIRROR;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_PREVIEW_MIRROR;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_PUSH_MIRROR;
@@ -34,6 +33,7 @@ import com.byteplus.live.common.dialog.SettingsDialog;
 import com.byteplus.live.pusher.LivePusher;
 import com.byteplus.live.pusher.LivePusherSettingsHelper;
 import com.byteplus.live.pusher.R;
+import com.byteplus.live.pusher.ui.activities.LiveCaptureType;
 import com.byteplus.live.pusher.ui.activities.LivePushActivity;
 import com.byteplus.live.settings.PreferenceUtil;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -63,7 +63,7 @@ public class LiveSettingDialog extends SettingsDialog {
 
     private void initRecordItem(View view) {
         SwitchCompat livingRecordSW = view.findViewById(R.id.record_start);
-        boolean videoMode = mCaptureMode != CAPTURE_TYPE_AUDIO;
+        boolean videoMode = mCaptureMode != LiveCaptureType.AUDIO;
 
         Spinner recordResolution = bindSpinner(
                 view.findViewById(R.id.record_resolution),
@@ -229,7 +229,7 @@ public class LiveSettingDialog extends SettingsDialog {
 
         initAudioSettingsItem(view.findViewById(R.id.audio_settings));
 
-        if (mCaptureMode != CAPTURE_TYPE_AUDIO) {
+        if (mCaptureMode != LiveCaptureType.AUDIO) {
 //            View videoRoot = view.findViewById(R.id.video_settings);
 //            videoRoot.setVisibility(View.VISIBLE);
 //            initVideoItem(videoRoot);

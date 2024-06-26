@@ -53,13 +53,9 @@
 "tip_comment_content"="Comments you post are temporary and will be visible only to you. BytePlus assures that no collection, storage or backups of these comments will be made.";
 "tip_close"="Close";
 "function_title_video_playback"="Video playback demonstration";
-"function_des_video_playback"="Picture-in-picture, Gesture control, and more functions.";
 "function_title_playlist"="Playlist";
-"function_des_playlist"="Multiple video rotating playback component.";
 "function_title_smart_subtitles"="Smart subtitling";
-"function_des_smart_subtitles"="Video multilingual smart subtitle component.";
 "function_title_prevent_recoding"="Prevent recording and screenshot";
-"function_des_prevent_recoding"="Prevent system screen recording and screenshot.";
 "full_screen_video_left_guide_title"="Brightness adjustment";
 "full_screen_video_left_guide_des"="Slide up and down on the left side";
 "full_screen_video_right_guide_title"="Volume adjustment";

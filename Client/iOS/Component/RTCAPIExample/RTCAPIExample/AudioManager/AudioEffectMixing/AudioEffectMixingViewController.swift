@@ -11,6 +11,7 @@
 import UIKit
 import BytePlusRTC
 
+@objc(AudioEffectMixingViewController)
 class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate,ByteRTCAudioEffectPlayerEventHandler {
     
     var rtcVideo: ByteRTCVideo?

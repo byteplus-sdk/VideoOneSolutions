@@ -1,7 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VELGLUtils.h"
-
+#import <ToolKit/ToolKit.h>
 @implementation VELGLUtils
 
 + (EAGLContext *)createContextWithDefaultAPI:(EAGLRenderingAPI)api {
@@ -10,7 +10,7 @@
         if (context != nil) {
             return context;
         }
-        NSLog(@"not support api %lu, use lower api %lu", (unsigned long)api, [self vel_lowerAPI:api]);
+        VOLogI(VOMediaLive,@"not support api %lu, use lower api %lu", (unsigned long)api, [self vel_lowerAPI:api]);
         api = [self vel_lowerAPI:api];
     }
     return nil;
@@ -22,7 +22,7 @@
         if (context != nil) {
             return context;
         }
-        NSLog(@"not support api %lu, use lower api %lu", (unsigned long)api, [self vel_lowerAPI:api]);
+        VOLogI(VOMediaLive,@"not support api %lu, use lower api %lu", (unsigned long)api, [self vel_lowerAPI:api]);
         api = [self vel_lowerAPI:api];
     }
     return nil;

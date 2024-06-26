@@ -12,12 +12,15 @@
 
 @implementation VODFunctionSection
 
-- (NSArray<__kindof BaseFunctionEntrance *> *)items {
+- (NSArray<__kindof BaseFunctionSection *> *)items {
     if (!_items) {
-        _items = @[[VideoPlayback new],
-                   [PlayList new],
-                   [SmartSubtitles new],
-                   [PreventRecording new]];
+        BaseFunctionSection *section = [[BaseFunctionSection alloc] init];
+        section.tableSectionName = nil;
+        section.items = @[[VideoPlayback new],
+                          [PreventRecording new],
+                          [SmartSubtitles new],
+                          [PlayList new]];
+        _items = @[section];
     }
     return _items;
 }

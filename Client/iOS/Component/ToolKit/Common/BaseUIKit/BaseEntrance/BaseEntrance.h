@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *iconName;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *des;
+@property (nonatomic, copy) NSArray<NSString *> *desList;
 
 - (void)enterWithCallback:(void (^)(BOOL result))block;
 
@@ -37,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Default is YES
 @property (nonatomic, assign) BOOL isNeedShow;
+// Default is 8
+@property (nonatomic, assign) NSInteger marginTop;
+@property (nonatomic, assign) NSInteger marginBottom;
+// Default is 58
+@property (nonatomic, assign) NSInteger height;
 
 @end
 
@@ -46,6 +52,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @property (nonatomic, copy, nonnull) NSArray<__kindof BaseFunctionEntrance *> *items;
+@property (nonatomic, copy, nullable) NSString *tableSectionName;
+
+@end
+
+@interface BaseFunctionDataList : NSObject {
+  @protected
+    NSArray<__kindof BaseFunctionSection *> *_items;
+}
+@property (nonatomic, copy, nonnull) NSArray<__kindof BaseFunctionSection *> *items;
 
 @property (nonatomic, copy) NSString *functionSectionName;
 

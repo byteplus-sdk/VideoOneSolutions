@@ -161,6 +161,11 @@ public class MusicLibraryDialog extends BottomDialogFragmentX {
             });
 
             pickedSongsAdapter.setList(items);
+            if (items.isEmpty()) {
+                binding.pickedSongTab.setText(R.string.button_karaoke_station_pick_song);
+            } else {
+                binding.pickedSongTab.setText(getString(R.string.button_karaoke_station_pick_song_xxx, items.size()));
+            }
         });
 
         List<StatusSongItem> songs = mRoomViewModel.songLibrary.getValue();

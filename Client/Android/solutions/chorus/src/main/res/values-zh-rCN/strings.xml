@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="chorus_scene_name">双人合唱</string>
+    <string name="chorus_scenes">双人合唱</string>
+    <string name="chorus_scenes_des">双人合唱，主唱/副唱</string>
+
+    <string name="same_logged_in">相同ID用户已登录，您已被强制下线！</string>
+
+    <string name="net_quality_good">网络良好</string>
+    <string name="net_quality_poor">网络不稳定</string>
+    <string name="net_quality_disconnect">断网</string>
+
+    <string name="label_audio_tuning_title">调音</string>
+    <string name="label_monitor_mix_title">耳返</string>
+    <string name="label_monitor_mix_tip">插入耳机后可使用耳返功能</string>
+    <string name="label_music_volume_title">音乐音量</string>
+    <string name="label_vocal_volume_title">人声音量</string>
+    <string name="label_reverberation_title">混响</string>
+    <string name="reverberation_button_original">原声</string>
+    <string name="reverberation_button_echo">回声</string>
+    <string name="reverberation_button_concert">演唱会</string>
+    <string name="reverberation_button_ethereal">空灵</string>
+    <string name="reverberation_button_ktv">KTV</string>
+    <string name="reverberation_button_recording_studio">录音棚</string>
+
+    <string name="button_music_list_title">在线曲库</string>
+    <string name="button_karaoke_station_pick_song">已点歌曲</string>
+    <string name="button_karaoke_station_pick_song_xxx">已点歌曲(%1$d)</string>
+    <string name="label_music_library_empty">暂无可用歌曲</string>
+    <string name="label_no_singing_host_tip">立即点歌开始体验吧</string>
+
+    <string name="ktv_background_name1">背景 1</string>
+    <string name="ktv_background_name2">背景 2</string>
+    <string name="ktv_background_name3">背景 3</string>
+
+    <string name="im_label_join_room">%1$s 加入了房间</string>
+    <string name="im_label_leave_room">%1$s 退出了房间</string>
+
+    <string name="label_no_lrc">暂无歌词</string>
+
+    <string name="toast_original_vocals_enabled">已开启原唱</string>
+    <string name="toast_backing_track_enabled">已开启伴奏</string>
+    <string name="toast_false_duplicate_song">重复点歌</string>
+
+    <string name="chorus_next_song_hint">播放结束，即将播放《%s》</string>
+    <string name="start_sing_solo">不等了,开始独唱</string>
+    <string name="start_sing_chorus">加入合唱</string>
+    <string name="finish_room_by_overtime">本次体验时间已超过20分钟</string>
+    <string name="toast_chorus_live_is_end">房主已关闭合唱房</string>
+    <string name="label_chorus_room_list_empty">还没有人创建合唱房，快去创建吧</string>
+    <string name="button_room_list_create">创建房间</string>
+    <string name="label_chorus_create_name_xxx">%1$s的合唱房</string>
+    <string name="application_experiencing_xxx_title">本产品仅用于功能体验，单次直播时长不超过 %1$s 分钟。</string>
+    <string name="button_create_start">开启合唱房</string>
+    <string name="label_alert_live_end">是否结束直播？</string>
+    <string name="button_alert_live_end">结束直播</string>
+
+    <string name="toast_cut_off_failed">切歌失败，稍后重试</string>
+
+    <string name="label_input_placeholder">说点什么</string>
+    <string name="label_music_list_singer_xxx">原唱：%1$s</string>
+    <string name="button_music_list_already">已点</string>
+    <string name="button_music_list_request_song">点歌</string>
+    <string name="button_music_list_waiting">等待中</string>
+    <string name="button_music_list_downloading">下载中</string>
+    <string name="label_music_picked_empty">还没有人点歌</string>
+    <string name="label_pick_song_singer_xxx">点唱者：%1$s</string>
+    <string name="label_pick_song_singing">演唱中</string>
+
+    <string name="toast_chorus_need_permission">缺少合唱需要的权限</string>
+    <string name="toast_chorus_no_camera_permission">没有摄像头权限</string>
+    <string name="toast_chorus_no_mic_permission">没有麦克风权限</string>
+
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="karaoke_scene_title">选择你喜欢的唱歌模式</string>
+    <string name="karaoke_scene_solo">独唱</string>
+    <string name="karaoke_scene_solo_desc1">6人语音聊天</string>
+    <string name="karaoke_scene_solo_desc2">延迟 &lt;400毫秒</string>
+    <string name="karaoke_scene_duet">双人合唱</string>
+    <string name="karaoke_scene_duet_desc1">双人合唱</string>
+    <string name="karaoke_scene_duet_desc2">主唱/副唱</string>
+</resources>

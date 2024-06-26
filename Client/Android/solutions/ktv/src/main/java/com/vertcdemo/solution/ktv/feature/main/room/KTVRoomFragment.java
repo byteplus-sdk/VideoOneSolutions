@@ -46,8 +46,11 @@ import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.chat.ChatAdapter;
 import com.vertcdemo.core.dialog.MessageInputDialog;
-import com.vertcdemo.core.eventbus.RTCReconnectToRoomEvent;
-import com.vertcdemo.core.eventbus.RTSLogoutEvent;
+import com.vertcdemo.core.event.AudioRouteChangedEvent;
+import com.vertcdemo.core.event.ClearUserEvent;
+import com.vertcdemo.core.event.JoinRTSRoomErrorEvent;
+import com.vertcdemo.core.event.RTCReconnectToRoomEvent;
+import com.vertcdemo.core.event.RTSLogoutEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.solution.ktv.R;
@@ -67,16 +70,13 @@ import com.vertcdemo.solution.ktv.core.rts.annotation.SongStatus;
 import com.vertcdemo.solution.ktv.databinding.FragmentKtvRoomBinding;
 import com.vertcdemo.solution.ktv.databinding.LayoutKtvBottomOptionsBinding;
 import com.vertcdemo.solution.ktv.event.AudienceApplyBroadcast;
-import com.vertcdemo.solution.ktv.event.AudienceChangedBroadcast;
+import com.vertcdemo.solution.ktv.event.AudienceChangedEvent;
 import com.vertcdemo.solution.ktv.event.AudioMixingStateEvent;
-import com.vertcdemo.solution.ktv.event.AudioRouteChangedEvent;
-import com.vertcdemo.solution.ktv.event.ClearUserBroadcast;
 import com.vertcdemo.solution.ktv.event.DownloadStatusChanged;
 import com.vertcdemo.solution.ktv.event.FinishLiveBroadcast;
 import com.vertcdemo.solution.ktv.event.FinishSingBroadcast;
 import com.vertcdemo.solution.ktv.event.InteractChangedBroadcast;
 import com.vertcdemo.solution.ktv.event.InteractResultBroadcast;
-import com.vertcdemo.solution.ktv.event.JoinRTSRoomErrorEvent;
 import com.vertcdemo.solution.ktv.event.MediaOperateBroadcast;
 import com.vertcdemo.solution.ktv.event.MessageBroadcast;
 import com.vertcdemo.solution.ktv.event.MusicLibraryInitEvent;
@@ -414,7 +414,7 @@ public class KTVRoomFragment extends Fragment {
         }
         boolean isHost = mViewModel.isHost();
         if (event.type == FinishType.BLOCKED) {
-            SolutionToast.show(R.string.toast_false_violates_rules);
+            SolutionToast.show(R.string.closed_terms_service);
         } else if (event.type == FinishType.TIMEOUT && isHost) {
             SolutionToast.show(R.string.toast_false_time_out);
         } else if (!isHost) {
@@ -516,7 +516,7 @@ public class KTVRoomFragment extends Fragment {
 
     // region User Join/Interact/Seat/Media
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAudienceChangedBroadcast(AudienceChangedBroadcast event) {
+    public void onAudienceChangedBroadcast(AudienceChangedEvent event) {
         if (mViewModel.isHost()) {
             String roomId = mViewModel.requireRoomId();
             if (event.isJoin) {
@@ -626,7 +626,7 @@ public class KTVRoomFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onClearUserBroadcast(ClearUserBroadcast event) {
+    public void onClearUserBroadcast(ClearUserEvent event) {
         if (TextUtils.equals(SolutionDataManager.ins().getUserId(), event.userId)) {
             SolutionToast.show(R.string.toast_receive_clear_user);
             isLeaveByKickOut = true;

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "VeLiveSolutionSilentPlayer.h"
 #import <AVFAudio/AVFAudio.h>
+#import <ToolKit/ToolKit.h>
 
 @interface VeLiveSolutionSilentPlayer()<NSURLSessionDownloadDelegate>
 @property (nonatomic, strong) AVAudioPlayer *player;
@@ -34,7 +35,7 @@
             if ([self.player prepareToPlay] && [self.player play]){
                 
             } else {
-                NSLog(@"Failed to play.");
+                VOLogI(VOMediaLive,@"Failed to play.");
             }
         } else {
 
@@ -86,7 +87,7 @@
       downloadTask:(NSURLSessionDownloadTask *)downloadTask
 didFinishDownloadingToURL:(NSURL *)location {
     
-    NSLog(@"downloadTask:%lu didFinishDownloadingToURL:%@", (unsigned long)downloadTask.taskIdentifier, location);
+    VOLogI(VOMediaLive,@"downloadTask:%lu didFinishDownloadingToURL:%@", (unsigned long)downloadTask.taskIdentifier, location);
     NSString *locationString = [location path];
     NSString *finalLocation = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory , NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"%lufile",(unsigned long)downloadTask.taskIdentifier]];
     NSError *error;
@@ -99,7 +100,7 @@ didFinishDownloadingToURL:(NSURL *)location {
  didResumeAtOffset:(int64_t)fileOffset
 expectedTotalBytes:(int64_t)expectedTotalBytes {
     
-    NSLog(@"fileOffset:%lld expectedTotalBytes:%lld",fileOffset,expectedTotalBytes);
+    VOLogI(VOMediaLive,@"fileOffset:%lld expectedTotalBytes:%lld",fileOffset,expectedTotalBytes);
 }
 
 - (void)URLSession:(NSURLSession *)session
@@ -107,10 +108,10 @@ expectedTotalBytes:(int64_t)expectedTotalBytes {
       didWriteData:(int64_t)bytesWritten
  totalBytesWritten:(int64_t)totalBytesWritten
 totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-    NSLog(@"downloadTask:%lu percent:%.2f%%",(unsigned long)downloadTask.taskIdentifier,(CGFloat)totalBytesWritten / totalBytesExpectedToWrite * 100);
+    VOLogI(VOMediaLive,@"downloadTask:%lu percent:%.2f%%",(unsigned long)downloadTask.taskIdentifier,(CGFloat)totalBytesWritten / totalBytesExpectedToWrite * 100);
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
-    NSLog(@"Background URL session %@ finished events.\n", session);
+    VOLogI(VOMediaLive,@"Background URL session %@ finished events.\n", session);
 }
 @end

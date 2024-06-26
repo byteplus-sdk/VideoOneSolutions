@@ -14,7 +14,6 @@
     self = [super init];
     if (self) {
         self.title = LocalizedStringFromBundle(@"function_title_prevent_recoding", @"VEVodApp");
-        self.des = LocalizedStringFromBundle(@"function_des_prevent_recoding", @"VEVodApp");
         self.iconName = @"function_icon_prevent_recoding";
     }
     return self;

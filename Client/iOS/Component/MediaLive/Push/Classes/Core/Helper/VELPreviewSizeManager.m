@@ -1,9 +1,10 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VELPreviewSizeManager.h"
+#import <ToolKit/ToolKit.h>
 #define CHECK_AVAILABLE(RET)\
 if (!_available) {\
-    NSLog(@"invalid state, %f, %f, %f, %f", _viewWidth, _viewHeight, _previewWidth, _previewHeight);\
+    VOLogE(VOMediaLive,@"invalid state, %f, %f, %f, %f", _viewWidth, _viewHeight, _previewWidth, _previewHeight);\
     return RET;\
 }
 
@@ -33,7 +34,6 @@ if (!_available) {\
 }
 
 - (void)updateViewWidth:(float)viewWidth viewHeight:(float)viewHeight previewWidth:(float)previewWidth previewHeight:(float)previewHeight fitCenter:(BOOL)fitCenter {
-//    NSLog(@"update %f, %f, %f, %f, %d", viewWidth, viewHeight, previewWidth, previewHeight, fitCenter);
     _viewWidth = viewWidth;
     _viewHeight = viewHeight;
     _previewWidth = previewWidth;

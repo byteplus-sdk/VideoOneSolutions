@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.vertcdemo.core.eventbus.AppTokenExpiredEvent;
+import com.vertcdemo.core.event.AppTokenExpiredEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.net.rts.RTSInfo;
 import com.vertcdemo.solution.ktv.R;

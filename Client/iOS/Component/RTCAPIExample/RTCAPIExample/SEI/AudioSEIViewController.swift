@@ -11,6 +11,7 @@ import UIKit
 import SnapKit
 import BytePlusRTC
 
+@objc(AudioSEIViewController)
 class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
     
     var rtcVideo: ByteRTCVideo?

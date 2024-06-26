@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_chorus_bottom_dialog"
+    tools:layout_gravity="bottom">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="@string/label_audio_tuning_title"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#33FFFFFF" />
+
+        <TextView
+            android:id="@+id/ear_monitor_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/label_monitor_mix_title"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:drawableEndCompat="@drawable/ic_switch"
+            tools:drawableEnd="@drawable/ic_switch" />
+
+        <TextView
+            android:id="@+id/ear_monitor_switch_tips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/label_monitor_mix_tip"
+            android:textColor="#80838A"
+            android:textSize="14sp" />
+
+        <include
+            android:id="@+id/ear_monitor"
+            layout="@layout/layout_chorus_setting_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="12dp" />
+
+        <include
+            android:id="@+id/music_volume"
+            layout="@layout/layout_chorus_setting_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="12dp" />
+
+        <include
+            android:id="@+id/vocal_volume"
+            layout="@layout/layout_chorus_setting_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/label_reverberation_title"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <HorizontalScrollView
+            android:id="@+id/audio_effect_zone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="10dp"
+            android:scrollbars="none">
+
+            <RadioGroup
+                android:id="@+id/audio_effect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/audio_effect_original"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:button="@null"
+                    android:drawableTop="@drawable/ic_chorus_audio_effect_origin"
+                    android:drawablePadding="9dp"
+                    android:gravity="center"
+                    android:text="@string/reverberation_button_original"
+                    android:textColor="@color/color_chorus_setting_option"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/audio_effect_echo"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:button="@null"
+                    android:drawableTop="@drawable/ic_chorus_audio_effect_echo"
+                    android:drawablePadding="9dp"
+                    android:gravity="center"
+                    android:text="@string/reverberation_button_echo"
+                    android:textColor="@color/color_chorus_setting_option"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/audio_effect_concert"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:button="@null"
+                    android:drawableTop="@drawable/ic_chorus_audio_effect_concert"
+                    android:drawablePadding="9dp"
+                    android:gravity="center"
+                    android:text="@string/reverberation_button_concert"
+                    android:textColor="@color/color_chorus_setting_option"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/audio_effect_ethereal"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:button="@null"
+                    android:drawableTop="@drawable/ic_chorus_audio_effect_ethereal"
+                    android:drawablePadding="9dp"
+                    android:gravity="center"
+                    android:text="@string/reverberation_button_ethereal"
+                    android:textColor="@color/color_chorus_setting_option"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/audio_effect_ktv"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:button="@null"
+                    android:drawableTop="@drawable/ic_chorus_audio_effect_ktv"
+                    android:drawablePadding="9dp"
+                    android:gravity="center"
+                    android:text="@string/reverberation_button_ktv"
+                    android:textColor="@color/color_chorus_setting_option"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/audio_effect_record_studio"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:button="@null"
+                    android:drawableTop="@drawable/ic_chorus_audio_effect_record_studio"
+                    android:drawablePadding="9dp"
+                    android:gravity="center"
+                    android:text="@string/reverberation_button_recording_studio"
+                    android:textColor="@color/color_chorus_setting_option"
+                    android:textSize="12sp" />
+            </RadioGroup>
+        </HorizontalScrollView>
+    </LinearLayout>
+</FrameLayout>

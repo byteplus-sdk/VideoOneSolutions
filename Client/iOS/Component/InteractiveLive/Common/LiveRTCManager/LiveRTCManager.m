@@ -301,7 +301,7 @@
 }
 
 - (void)rtcRoom:(ByteRTCRoom *)rtcRoom onForwardStreamStateChanged:(NSArray<ByteRTCForwardStreamStateInfo *> * _Nonnull)infos {
-    NSLog(@"Manager RTCSDK onForwardStreamStateChanged %@", infos);
+    VOLogI(VOInteractiveLive,@"Manager RTCSDK onForwardStreamStateChanged %@", infos);
 }
 
 - (void)rtcRoom:(ByteRTCRoom *)rtcRoom onUserLeave:(NSString *)uid reason:(ByteRTCUserOfflineReason)reason {
@@ -379,11 +379,11 @@
 - (void)renderPixelBuffer:(CVPixelBufferRef _Nonnull)pixelBuffer
                  rotation:(ByteRTCVideoRotation)rotation
              extendedData:(NSData *_Nullable)extendedData {
-    NSLog(@"video");
+    
 }
 #pragma mark - ByteRTCAudioProcessor
 - (int)processAudioFrame:(ByteRTCAudioFrame *)audioFrame {
-    NSLog(@"audio");
+    
     return 0;
 }
 

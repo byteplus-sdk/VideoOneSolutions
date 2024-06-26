@@ -57,25 +57,10 @@
         android:textSize="14sp"
         app:drawableTopCompat="@drawable/ic_tab_functions"
         app:layout_constraintBottom_toBottomOf="@id/tab_layout"
-        app:layout_constraintEnd_toStartOf="@id/tab_for_developers"
+        app:layout_constraintEnd_toEndOf="@id/tab_layout"
         app:layout_constraintStart_toEndOf="@id/tab_scenes"
         app:layout_constraintTop_toTopOf="@id/tab_layout"
         tools:drawableTopCompat="@drawable/ic_tab_functions" />
-
-    <TextView
-        android:id="@+id/tab_for_developers"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/main_tab_for_developers"
-        android:textColor="@color/tab_text_color"
-        android:textSize="14sp"
-        app:drawableTopCompat="@drawable/ic_tab_for_developers"
-        app:layout_constraintBottom_toBottomOf="@id/tab_layout"
-        app:layout_constraintEnd_toEndOf="@id/tab_layout"
-        app:layout_constraintStart_toEndOf="@id/tab_function"
-        app:layout_constraintTop_toTopOf="@id/tab_layout"
-        tools:drawableTopCompat="@drawable/ic_tab_for_developers" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"

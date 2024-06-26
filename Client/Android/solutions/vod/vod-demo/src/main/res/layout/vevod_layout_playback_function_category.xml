@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/items"
+    android:layout_width="match_parent"
+    android:layout_height="58dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/vevod_playback_function_bg_items_card"
+    android:orientation="vertical"
+    tools:layout_height="58dp" />
+

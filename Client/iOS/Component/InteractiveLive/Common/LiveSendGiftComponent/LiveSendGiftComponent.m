@@ -109,7 +109,7 @@
     [LiveRTSManager sendIMMessage:messageModel
                             block:^(RTSACKModel *_Nonnull model) {
                                 if (!model.result) {
-                                    NSLog(@"send gift failed!!!");
+                                    VOLogE(VOInteractiveLive,@"send gift failed!!!");
                                 }
                             }];
 }

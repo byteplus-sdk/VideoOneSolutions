@@ -72,7 +72,7 @@
 - (void)updatePushMixedStreamToCDN:(NSArray<LiveUserModel *> *)userList
                          mixStatus:(RTCMixStatus)mixStatus
                          rtcRoomId:(NSString *)rtcRoomId {
-    NSLog(@"aaa updateTranscodingLayout %ld status %ld", userList.count, mixStatus);
+    VOLogI(VOInteractiveLive,@"aaa updateTranscodingLayout %ld status %ld", userList.count, mixStatus);
     if (!userList.count) {
         return;
     }

@@ -25,6 +25,9 @@
     self = [super init];
     if (self) {
         self.isNeedShow = YES;
+        self.marginTop = 8;
+        self.marginBottom = 8;
+        self.height = 58;
     }
     return self;
 }
@@ -32,5 +35,11 @@
 @end
 
 @implementation BaseFunctionSection
+
+@end
+
+
+@implementation BaseFunctionDataList
+
 
 @end

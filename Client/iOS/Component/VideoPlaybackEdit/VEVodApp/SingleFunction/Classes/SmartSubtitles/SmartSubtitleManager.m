@@ -12,6 +12,7 @@
 @property (nonatomic, assign) NSInteger currentSubtitleId;
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) SubtitleidType *Off;
+@property (nonatomic, assign) NSInteger defaulSubtitleId;
 
 @property (nonatomic, copy) void (^switchSubtitleBlock)(BOOL result);
 
@@ -29,7 +30,7 @@
 }
 
 - (void)dealloc {
-    NSLog(@"[SmartSubtitle] dealloc");
+    VOLogI(VOVideoPlayback,@"[SmartSubtitle] dealloc");
 }
 - (void)openSubtitle:(NSString *)subtitleAuthToken {
     [self.videoEngine setOptionForKey:VEKKeyPlayerSubEnabled_BOOL value:@(YES)];
@@ -40,7 +41,8 @@
 }
 - (void)showOriginalSubtitle {
     if (self.subtitleList.count > 1) {
-        [self switchSubtitle:self.subtitleList[1].subtitleId withBlock:^(BOOL result) {
+        self.defaulSubtitleId = self.subtitleList[1].subtitleId;
+        [self switchSubtitle:self.defaulSubtitleId withBlock:^(BOOL result) {
             if (!result) {
                 [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"failed_to_obtain_subtitles_toast", @"VEVodApp")];
             }
@@ -78,7 +80,11 @@
         }
     } else {
         if (self.currentSubtitleId == 0) {
-            [self showSubtitle:YES];
+            if (self.isFirstLoad) {
+                self.isFirstLoad = NO;
+            } else {
+                [self showSubtitle:YES];
+            }
         }
         self.switchSubtitleBlock = block;
         [self.videoEngine setOptionForKey:VEKeyPlayerSwitchSubtitleId_NSInteger value:[[NSNumber alloc] initWithInteger:subtitleId]];
@@ -99,6 +105,7 @@
             if (array.count > 1) {
                 [array insertObject:subtitle atIndex:1];
             } else {
+                self.subTitleLabel.hidden = NO;
                 [array addObject:subtitle];
             }
         } else {
@@ -116,9 +123,12 @@
     });
 }
 - (void)videoEngine:(TTVideoEngine *)videoEngine onSubSwitchCompleted:(BOOL)success currentSubtitleId:(NSInteger)currentSubtitleId {
-    NSLog(@"[SmartSubtitle] onSubSwitchCompleted, success: %d, currentSubtitleId: %ld", success, currentSubtitleId);
+    VOLogI(VOVideoPlayback,@"[SmartSubtitle] onSubSwitchCompleted, success: %d, currentSubtitleId: %ld", success, currentSubtitleId);
     __weak __typeof__(self) weak_self = self;
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
+        if (weak_self.defaulSubtitleId == currentSubtitleId) {
+            [weak_self showSubtitle:YES];
+        }
         if (weak_self.switchSubtitleBlock) {
             weak_self.switchSubtitleBlock(success);
             weak_self.switchSubtitleBlock = nil;
@@ -126,7 +136,7 @@
     });
 }
 - (void)videoEngine:(TTVideoEngine *)videoEngine onSubtitleInfoRequested:(id _Nullable)info error:(NSError *_Nullable)error {
-    NSLog(@"[SmartSubtitle] onSubtitleInfoRequested");
+    VOLogI(VOVideoPlayback,@"[SmartSubtitle] onSubtitleInfoRequested");
     __weak __typeof__(self) weak_self = self;
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
         if (info) {
@@ -145,7 +155,7 @@
 }
 
 - (void)videoEngine:(TTVideoEngine *)videoEngine onSubLoadFinished:(BOOL)success info:(TTVideoEngineLoadInfo *_Nullable)info {
-    NSLog(@"[SmartSubtitle] onSubLoadFinished: %d, firstPts: %ld, code: %ld", success, info.firstPts, info.code);
+    VOLogI(VOVideoPlayback,@"[SmartSubtitle] onSubLoadFinished: %d, firstPts: %ld, code: %ld", success, info.firstPts, info.code);
     __weak __typeof__(self) weak_self = self;
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
         if(!success) {
@@ -157,7 +167,6 @@
             return;
         }
         if (weak_self.isFirstLoad) {
-            weak_self.isFirstLoad = NO;
             [weak_self showOriginalSubtitle];
             if (weak_self.openSubtitleBlock) {
                 if (weak_self.subtitleList.count > 1) {
@@ -239,6 +248,7 @@
         _subTitleLabel.numberOfLines = 0;
         _subTitleLabel.textColor = [UIColor whiteColor];
         _subTitleLabel.backgroundColor = [UIColor clearColor];
+        _subTitleLabel.hidden = YES;
     }
     return _subTitleLabel;
 }

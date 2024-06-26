@@ -4,6 +4,7 @@
 #import <Accelerate/Accelerate.h>
 #import "VELPushGLTexture.h"
 #import "VELPushGLRenderHelper.h"
+#import <ToolKit/ToolKit.h>
 
 static const int VEL_PUSH_TEXTURE_CACHE_NUM = 3;
 static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
@@ -86,7 +87,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
     for (NSValue *value in _mallocDict.allValues) {
         unsigned char *pointer = [value pointerValue];
         free(pointer);
-        NSLog(@"release malloced size");
+        VOLogI(VOMediaLive,@"release malloced size");
     }
     [_mallocDict removeAllObjects];
     // release CVPixelBufferPool
@@ -104,7 +105,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
 
 - (VELPushPixelBufferGLTexture *)getOutputPixelBufferGLTextureWithWidth:(int)width height:(int)height format:(VELImageFormatType)format {
     if (format != VELImageFormatType_BGRA) {
-        NSLog(@"this method only supports VELImageFormatType_BRGA format, please use VELImageFormatType_BGRA");
+        VOLogI(VOMediaLive,@"this method only supports VELImageFormatType_BRGA format, please use VELImageFormatType_BGRA");
         return nil;
     }
     
@@ -215,7 +216,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
     VELPushPixelBufferInfo *info = [self getCVPixelBufferInfo:pixelBuffer];
     if (info.format != VELImageFormatType_BGRA) {
         pixelBuffer = [self transforCVPixelBufferToCVPixelBuffer:pixelBuffer outputFormat:VELImageFormatType_BGRA];
-        NSLog(@"this method only supports BRGA format CVPixelBuffer, convert it to BGRA CVPixelBuffer internal");
+        VOLogI(VOMediaLive,@"this method only supports BRGA format CVPixelBuffer, convert it to BGRA CVPixelBuffer internal");
     }
     
     if (_useCacheTexture) {
@@ -376,7 +377,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
         return [self live_rotateRgba:&inputVBuffer outputBuffer: &outputVBuffer rotation:rotation];
     }
     
-    NSLog(@"not support for format %ld to %ld", (long)inputBuffer.format, (long)outputBuffer.format);
+    VOLogI(VOMediaLive,@"not support for format %ld to %ld", (long)inputBuffer.format, (long)outputBuffer.format);
     return NO;
 }
 
@@ -397,7 +398,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
 		return [self live_blendRgba:&inputVBuffer outputBuffer:&outputVBuffer blendColor:color];
 	}
 	
-	NSLog(@"not support for format %ld to %ld", (long)inputBuffer.format, (long)outputBuffer.format);
+	VOLogI(VOMediaLive,@"not support for format %ld to %ld", (long)inputBuffer.format, (long)outputBuffer.format);
 	return NO;
 }
 - (id<VELPushGLTexture>)transforBufferToTexture:(VELPushImageBuffer *)buffer {
@@ -584,7 +585,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
 
 - (VELPushImageBuffer *)transforTextureToBEBuffer:(GLuint)texture width:(int)widht height:(int)height outputFormat:(VELImageFormatType)outputFormat {
     if (![self live_isRgba:outputFormat]) {
-        NSLog(@"only rgba support");
+        VOLogI(VOMediaLive,@"only rgba support");
         return nil;
     }
     
@@ -604,7 +605,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
     [self live_permuteMap:map format:outputFormat];
     vImage_Error error = vImagePermuteChannels_ARGB8888(inputBuffer, outputBuffer, map, kvImageNoFlags);
     if (error != kvImageNoError) {
-        NSLog(@"live_transforRgbaToRgba error: %ld", error);
+        VOLogI(VOMediaLive,@"live_transforRgbaToRgba error: %ld", error);
     }
     return error == kvImageNoError;
 }
@@ -615,7 +616,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
     rotation = 360 - rotation;
     vImage_Error error = vImageRotate90_ARGB8888(inputBuffer, outputBuffer, (rotation / 90), map, kvImageNoFlags);
     if (error != kvImageNoError) {
-        NSLog(@"vImageRotate90_ARGB8888 error: %ld", error);
+        VOLogI(VOMediaLive,@"vImageRotate90_ARGB8888 error: %ld", error);
         return NO;
     }
     
@@ -645,13 +646,13 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
 	vImage_Error b_ret = vImageBufferFill_ARGB8888(&b_buffer, pixel_color , kvImageNoFlags);
 	if (b_ret != kvImageNoError) {
 		free(b_buffer.data);
-		NSLog(@"vImageBufferFill_ARGB8888 error: %ld", b_ret);
+		VOLogI(VOMediaLive,@"vImageBufferFill_ARGB8888 error: %ld", b_ret);
 		return NO;
 	}
 	b_ret = vImageAlphaBlend_ARGB8888(&b_buffer, inputBuffer, outputBuffer, kvImageNoFlags);
 	if (b_ret != kvImageNoError) {
 		free(b_buffer.data);
-		NSLog(@"vImageAlphaBlend_ARGB8888 error: %ld", b_ret);
+		VOLogI(VOMediaLive,@"vImageAlphaBlend_ARGB8888 error: %ld", b_ret);
 		return NO;
 	}
 	free(b_buffer.data);
@@ -673,13 +674,13 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
     
     vImage_Error error = vImageConvert_ARGBToYpCbCr_GenerateConversion(kvImage_ARGBToYpCbCrMatrix_ITU_R_601_4, &pixelRange, &conversionInfo, argbType, yuvType, flags);
     if (error != kvImageNoError) {
-        NSLog(@"vImageConvert_ARGBToYpCbCr_GenerateConversion error: %ld", error);
+        VOLogI(VOMediaLive,@"vImageConvert_ARGBToYpCbCr_GenerateConversion error: %ld", error);
         return NO;
     }
     
     error = vImageConvert_ARGB8888To420Yp8_CbCr8(inputBuffer, yBuffer, uvBuffer, &conversionInfo, map, flags);
     if (error != kvImageNoError) {
-        NSLog(@"vImageConvert_ARGB8888To420Yp8_CbCr8 error: %ld", error);
+        VOLogI(VOMediaLive,@"vImageConvert_ARGB8888To420Yp8_CbCr8 error: %ld", error);
         return NO;
     }
     
@@ -703,13 +704,13 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
     
     vImage_Error error = vImageConvert_YpCbCrToARGB_GenerateConversion(kvImage_YpCbCrToARGBMatrix_ITU_R_601_4, &pixelRange, &conversionInfo, yuvType, argbType, flags);
     if (error != kvImageNoError) {
-        NSLog(@"vImageConvert_YpCbCrToARGB_GenerateConversion error: %ld", error);
+        VOLogI(VOMediaLive,@"vImageConvert_YpCbCrToARGB_GenerateConversion error: %ld", error);
         return NO;
     }
     
     error = vImageConvert_420Yp8_CbCr8ToARGB8888(yBuffer, uvBuffer, rgbaBuffer, &conversionInfo, map, 255, flags);
     if (error != kvImageNoError) {
-        NSLog(@"vImageConvert_420Yp8_CbCr8ToARGB8888 error: %ld", error);
+        VOLogI(VOMediaLive,@"vImageConvert_420Yp8_CbCr8ToARGB8888 error: %ld", error);
         return NO;
     }
     
@@ -807,7 +808,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
     while (_mallocDict.count >= VEL_PUSH_MAX_MALLOC_CACHE) {
         [_mallocDict removeObjectForKey:[_mallocDict.allKeys firstObject]];
     }
-    NSLog(@"malloc size: %d", size);
+    VOLogI(VOMediaLive,@"malloc size: %d", size);
     unsigned char *buffer = malloc(size * sizeof(unsigned char));
     memset(buffer, 0, size);
     _mallocDict[key] = [NSValue valueWithPointer:buffer];
@@ -825,7 +826,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
 //            CVBufferRelease(_cachedPixelBuffer);
 //        }
     }
-//    NSLog(@"create CVPixelBuffer");
+//    VOLogI(VOMediaLive,@"create CVPixelBuffer");
     CVPixelBufferRef pixelBuffer = [self live_createPixelBufferFromPool:[self getOsType:format] heigth:height width:width];
     _cachedPixelBuffer = pixelBuffer;
     return pixelBuffer;
@@ -848,9 +849,9 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
     CVPixelBufferRef buffer = NULL;
     CVReturn ret = CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, pixelBufferPool, &buffer);
     if (ret != kCVReturnSuccess) {
-        NSLog(@"CVPixelBufferCreate error: %d", ret);
+        VOLogI(VOMediaLive,@"CVPixelBufferCreate error: %d", ret);
         if (ret == kCVReturnInvalidPixelFormat) {
-            NSLog(@"only format BGRA and YUV420 can be used");
+            VOLogI(VOMediaLive,@"only format BGRA and YUV420 can be used");
         }
     }
     return buffer;
@@ -871,14 +872,14 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
     CVReturn ret = CVPixelBufferPoolCreate(kCFAllocatorDefault, NULL, (__bridge CFDictionaryRef)attributes, &pool);
     
     if (ret != kCVReturnSuccess){
-        NSLog(@"Create pixbuffer pool failed %d", ret);
+        VOLogI(VOMediaLive,@"Create pixbuffer pool failed %d", ret);
         return NULL;
     }
     
     CVPixelBufferRef buffer;
     ret = CVPixelBufferPoolCreatePixelBuffer(NULL, pool, &buffer);
     if (ret != kCVReturnSuccess){
-        NSLog(@"Create pixbuffer from pixelbuffer pool failed %d", ret);
+        VOLogI(VOMediaLive,@"Create pixbuffer from pixelbuffer pool failed %d", ret);
         return NULL;
     }
 	if (buffer != NULL) {
@@ -893,7 +894,7 @@ static const int VEL_PUSH_MAX_MALLOC_CACHE = 3;
         EAGLContext *context = [EAGLContext currentContext];
         CVReturn ret = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, context, NULL, &_textureCache);
         if (ret != kCVReturnSuccess) {
-            NSLog(@"create CVOpenGLESTextureCacheRef fail: %d", ret);
+            VOLogI(VOMediaLive,@"create CVOpenGLESTextureCacheRef fail: %d", ret);
         }
     }
     return _textureCache;

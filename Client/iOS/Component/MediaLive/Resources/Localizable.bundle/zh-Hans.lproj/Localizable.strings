@@ -1,12 +1,4 @@
-"medialive_entry_title"="直播推流接入指引";
-"medialive_entry_des"="提供直播推流技术指引，帮助您更便捷的集成直播SDK。";
-"medialive_navbar_title"="视频直播";
-"medialive_live_push"="直播推流";
-"medialive_live_pull"="直播拉流";
 "medialive_camera"="摄像头";
-"medialive_external_capture"="外部采集";
-"medialive_voice_darkframe"="语音+黑帧/图片";
-"medialive_screen_capture"="屏幕";
 "medialive_video_file"="视频文件";
 "medialive_camera_flip"="翻转";
 "medialive_flash_light"="闪光灯";
@@ -255,3 +247,11 @@
 "medialive_source_required"="源流必须配置";
 "medialive_resolution_required"="清晰度必选";
 "medialive_abr_config"="ABR 配置";
+"medialive_camera_entry_title" = "摄像头";
+"medialive_screen_entry_title" = "屏幕";
+"medialive_voice_entry_title" = "语音+黑帧/图片";
+"medialive_file_entry_title" = "文件推流";
+"medialive_pull_entry_title" = "直播拉流";
+"medialive_push_section_title" = "直播推流";
+"medialive_pull_section_title" = "直播拉流";
+

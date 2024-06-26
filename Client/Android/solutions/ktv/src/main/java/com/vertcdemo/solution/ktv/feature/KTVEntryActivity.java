@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.vertcdemo.core.SolutionDataManager;
-import com.vertcdemo.core.eventbus.AppTokenExpiredEvent;
+import com.vertcdemo.core.event.AppTokenExpiredEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.joinrtsparams.bean.JoinRTSRequest;
 import com.vertcdemo.core.joinrtsparams.common.JoinRTSManager;
@@ -56,7 +56,7 @@ public class KTVEntryActivity extends AppCompatActivity {
                 }
                 RTSInfo data = response == null ? null : response.getData();
                 if (data == null || !data.isValid()) {
-                    onError(-1, "RTSInfo response not valid.");
+                    onError(-1, "Invalid RTSInfo response.");
                     return;
                 }
                 Intent intent = new Intent(Intent.ACTION_MAIN);

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/chorus_background_0"
+    android:keepScreenOn="true">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp"
+        tools:layout_constraintGuide_begin="25dp" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/room_header"
+        android:name="com.vertcdemo.solution.chorus.feature.room.ChorusRoomHeaderFragment"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_marginHorizontal="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top"
+        tools:layout="@layout/fragment_chorus_room_header" />
+
+    <ImageView
+        android:id="@+id/tips_bg_stage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="120dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_chorus_stage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_header" />
+
+    <TextView
+        android:id="@+id/tips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
+        android:gravity="center_horizontal"
+        android:textColor="#C7CCD6"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/ic_chorus_ring"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_header"
+        tools:drawableTop="@drawable/ic_chorus_ring"
+        tools:text="Request a song now and start experiencing it" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_tips"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:constraint_referenced_ids="tips, tips_bg_stage"
+        tools:visibility="visible" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/room_stage"
+        android:name="com.vertcdemo.solution.chorus.feature.room.ChorusRoomStageFragment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_header"
+        tools:layout="@layout/fragment_chorus_room_stage"
+        tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_stage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="room_stage, tips_bg_stage" />
+
+    <com.vertcdemo.core.widget.TopFadeRecyclerView
+        android:id="@+id/message_panel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="86dp"
+        android:fadingEdge="vertical"
+        android:fadingEdgeLength="24dp"
+        android:requiresFadingEdge="vertical"
+        app:layout_constraintBottom_toTopOf="@id/bottom_options"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/barrier_stage"
+        tools:listitem="@layout/layout_chat_item" />
+
+    <include
+        android:id="@+id/bottom_options"
+        layout="@layout/layout_chorus_bottom_options"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp"
+        tools:layout_constraintGuide_end="48dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

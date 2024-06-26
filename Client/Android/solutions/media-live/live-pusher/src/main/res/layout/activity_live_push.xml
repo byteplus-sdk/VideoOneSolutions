@@ -72,24 +72,6 @@
             android:layout_marginTop="10dp" />
     </LinearLayout>
 
-    <HorizontalScrollView
-        android:id="@+id/tabs_scroll"
-        android:layout_width="0dp"
-        android:layout_height="44dp"
-        android:scrollbars="none"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/close">
-
-        <LinearLayout
-            android:id="@+id/tabs"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp" />
-    </HorizontalScrollView>
-
     <ImageView
         android:id="@+id/close"
         android:layout_width="44dp"
@@ -233,7 +215,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="visible"
-        app:constraint_referenced_ids="tabs_scroll, preview_actions, start_Live" />
+        app:constraint_referenced_ids="preview_actions, start_Live" />
 
     <ImageView
         android:id="@+id/net_state"

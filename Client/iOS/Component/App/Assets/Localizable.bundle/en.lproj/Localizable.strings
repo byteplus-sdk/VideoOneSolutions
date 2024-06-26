@@ -1,6 +1,5 @@
 "menu_scene"="Scene";
-"menu_function"="Product";
-"menu_developers"="Developers";
+"menu_function"="Function";
 "user_name"="Account information";
 "language_info" = "Language";
 "language_name" = "English";
@@ -25,10 +24,11 @@
 
 "home_title" = "VideoOne Center";
 "home_des" = "Welcome to the VideoOne! Please select the scene of interest.";
-"function_title" = "Single function";
-"developers_title" = "Developers guide";
+"function_title" = "Function";
 
 "function_rtc_title" = "Real-time communication";
-"function_vod_title" = "Video playback";
-"developers_rtc_api_title" = "RTC API Example";
+"function_vod_title" = "Video player";
+"function_live_title" = "Live streaming";
+"function_rtc_title" = "RTC";
 "developers_rtc_api_des" = "RTC API function demonstration, including audio, video and other modules";
+"unknown_error" = "unknown error";

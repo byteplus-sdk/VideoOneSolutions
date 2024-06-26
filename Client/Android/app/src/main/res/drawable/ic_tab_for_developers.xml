@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_selected="true">
-        <bitmap android:src="@drawable/ic_tab_for_developers_inactive" android:tint="#1664FF" />
-    </item>
-    <item android:drawable="@drawable/ic_tab_for_developers_inactive" android:state_selected="false" />
-</selector>
