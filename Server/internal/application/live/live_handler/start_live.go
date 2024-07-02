@@ -17,42 +17,32 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_room_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type startLiveReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	LoginToken string `json:"login_token"`
+	RoomID string `json:"room_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
+	AppID  string `json:"app_id" binding:"required"`
 }
 
 type startLiveResp struct {
 	UserInfo *live_return_models.User `json:"user_info"`
 }
 
-func (eh *EventHandler) StartLive(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveStartLive param:%+v", param)
+func StartLive(ctx *gin.Context) (resp interface{}, err error) {
 	var p startLiveReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	//check param
-	if p.RoomID == "" || p.UserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	roomService := live_room_service.GetRoomService()
-	_, host, err := roomService.StartRoom(ctx, param.AppID, p.RoomID, p.UserID)
+	_, host, err := roomService.StartRoom(ctx, p.AppID, p.RoomID, p.UserID)
 	if err != nil {
 		logs.CtxError(ctx, "create room failed,error:%s", err)
 		return nil, err

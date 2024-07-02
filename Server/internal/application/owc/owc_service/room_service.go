@@ -279,23 +279,24 @@ func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID stri
 	return nil
 }
 
-func (rs *RoomService) Disconnect(ctx context.Context, appID, roomID, userID string) {
+func (rs *RoomService) Disconnect(ctx context.Context, appID, roomID, userID string) error {
 	user, err := rs.userFactory.GetActiveUserByRoomIDUserID(ctx, appID, roomID, userID)
-	if err != nil || user == nil {
-		logs.CtxWarn(ctx, "get user failed,error:%s", err)
-		return
+	if err != nil {
+		logs.CtxError(ctx, "get user failed,error:%s", err)
+		return err
 	}
-	logs.CtxInfo(ctx, "owc disconnect user:%#v", user.OwcUser)
+	if user == nil {
+		return errors.New("user not found")
+	}
 
 	user.Disconnect()
 	err = rs.userFactory.Save(ctx, user)
 	if err != nil {
 		logs.CtxError(ctx, "save user failed,error:"+err.Error())
-		return
+		return err
 	}
 
 	go func(ctx context.Context, roomID, userID string) {
-		//time.Sleep(time.Duration(config.Configs().ReconnectTimeout) * time.Second)
 		user, err := rs.userFactory.GetUserByRoomIDUserID(ctx, appID, roomID, userID)
 		if err != nil || user == nil {
 			logs.CtxWarn(ctx, "get user failed,error:%s", err)
@@ -342,6 +343,7 @@ func (rs *RoomService) Disconnect(ctx context.Context, appID, roomID, userID str
 		}
 
 	}(ctx, user.GetRoomID(), user.GetUserID())
+	return nil
 }
 
 var presetSongRepoClient SongInfoRepo

@@ -17,8 +17,7 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
@@ -27,9 +26,9 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_util"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 const (
@@ -39,9 +38,9 @@ const (
 )
 
 type reconnectReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
 }
 
 type reconnectInfo struct {
@@ -58,22 +57,21 @@ type reconnectResp struct {
 	ReconnectInfo *reconnectInfo           `json:"reconnect_info"`
 }
 
-func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveReconnect param:%+v", param)
+func Reconnect(ctx *gin.Context) (resp interface{}, err error) {
 	var p reconnectReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, param.AppID)
+	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, p.AppID)
 
 	roomRepo := live_facade.GetRoomRepo()
 	roomUserRepo := live_facade.GetRoomUserRepo()
-	room, err := roomRepo.GetActiveRoom(ctx, param.AppID, p.RoomID)
+	room, err := roomRepo.GetActiveRoom(ctx, p.AppID, p.RoomID)
 	if err != nil {
-		if err == custom_error.ErrRecordNotFound {
+		if errors.Is(err, custom_error.ErrRecordNotFound) {
 			return nil, custom_error.ErrRoomNotExist
 		}
 		logs.CtxError(ctx, "get room failed,roomID:%s,error:%s", p.RoomID, err)
@@ -83,9 +81,9 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 	if room == nil {
 		return nil, custom_error.ErrRoomNotExist
 	}
-	user, err := roomUserRepo.GetActiveUser(ctx, param.AppID, p.RoomID, p.UserID)
+	user, err := roomUserRepo.GetActiveUser(ctx, p.AppID, p.RoomID, p.UserID)
 	if err != nil {
-		if err == custom_error.ErrRecordNotFound {
+		if errors.Is(err, custom_error.ErrRecordNotFound) {
 			return nil, custom_error.ErrUserIsInactive
 		}
 		logs.CtxError(ctx, "get room failed,roomID:%s,error:%s", p.UserID, err)

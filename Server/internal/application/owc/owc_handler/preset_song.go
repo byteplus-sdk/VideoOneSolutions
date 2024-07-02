@@ -17,12 +17,11 @@
 package owc_handler
 
 import (
-	"context"
 	"strconv"
 
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
 )
 
 type GetPresetSongListResp struct {
@@ -35,8 +34,7 @@ type GetPresetSongListResp struct {
 	SongName     string `json:"song_name"`
 }
 
-func (eh *EventHandler) GetPreSetSongList(ctx context.Context, param *public.EventParam) (interface{}, error) {
-	logs.CtxInfo(ctx, "GetPreSetSongList param:%+v", param)
+func GetPreSetSongList(ctx *gin.Context) (interface{}, error) {
 
 	songList, err := owc_service.GetPresetSongRepo().OwcGetPresetSong(ctx)
 	if err != nil {

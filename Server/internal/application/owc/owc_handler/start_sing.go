@@ -17,40 +17,34 @@
 package owc_handler
 
 import (
-	"context"
-	"encoding/json"
 	"errors"
+
+	"github.com/gin-gonic/gin/binding"
 
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/util"
+	"github.com/gin-gonic/gin"
 )
 
 type startSingReq struct {
-	UserID     string `json:"user_id"`
-	RoomID     string `json:"room_id"`
-	SongID     string `json:"song_id"`
-	Type       string `json:"type"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
+	SongID string `json:"song_id" binding:"required"`
+	Type   string `json:"type"`
 }
 
 type startSingResp struct {
 	Song *owc_service.Song `json:"song"`
 }
 
-func (eh *EventHandler) StartSing(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "owcStartSing param:%+v", param)
+func StartSing(ctx *gin.Context) (resp interface{}, err error) {
 	var p startSingReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.UserID == "" || p.RoomID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	userFactory := owc_service.GetUserFactory()
@@ -69,7 +63,7 @@ func (eh *EventHandler) StartSing(ctx context.Context, param *public.EventParam)
 		return nil, custom_error.InternalError(errors.New("song_id not match current song_id"))
 	}
 
-	user, err := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, p.RoomID, p.UserID)
+	user, err := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, p.RoomID, p.UserID)
 	if err != nil || user == nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, custom_error.ErrUserIsInactive
@@ -79,7 +73,7 @@ func (eh *EventHandler) StartSing(ctx context.Context, param *public.EventParam)
 	if !util.StringInSlice(p.Type, singTypeList) {
 		return nil, custom_error.ErrStartSingType
 	}
-	song, err := songService.StartSing(ctx, param.AppID, p.RoomID, p.UserID, p.Type, curSong)
+	song, err := songService.StartSing(ctx, p.AppID, p.RoomID, p.UserID, p.Type, curSong)
 	if err != nil {
 		return nil, err
 	}

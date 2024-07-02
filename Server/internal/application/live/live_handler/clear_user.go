@@ -17,38 +17,36 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type clearUserReq struct {
-	UserID     string `json:"user_id"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
 }
 
 type clearUserResp struct {
 }
 
-func (eh *EventHandler) ClearUser(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveClearUser param:%+v", param)
+func ClearUser(ctx *gin.Context) (resp interface{}, err error) {
 	var p clearUserReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
-	oldUsers, _ := live_facade.GetRoomUserRepo().GetUsersByUserID(ctx, param.AppID, p.UserID)
+	oldUsers, _ := live_facade.GetRoomUserRepo().GetUsersByUserID(ctx, p.AppID, p.UserID)
 	for _, oldUser := range oldUsers {
-		DisconnectLogic(ctx, param.AppID, oldUser.RoomID, oldUser.UserID)
+		DisconnectLogic(ctx, p.AppID, oldUser.RoomID, oldUser.UserID)
 		// force clean
-		user, err := live_facade.GetRoomUserRepo().GetActiveUser(ctx, param.AppID, oldUser.RoomID, oldUser.UserID)
-		if err != nil && err != custom_error.ErrRecordNotFound {
+		user, err := live_facade.GetRoomUserRepo().GetActiveUser(ctx, p.AppID, oldUser.RoomID, oldUser.UserID)
+		if err != nil && !errors.Is(err, custom_error.ErrRecordNotFound) {
 			logs.CtxInfo(ctx, "get error:%s", err)
 			continue
 		}

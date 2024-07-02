@@ -17,37 +17,29 @@
 package ktv_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type inviteInteractReq struct {
-	RoomID         string `json:"room_id"`
-	UserID         string `json:"user_id"`
-	AudienceUserID string `json:"audience_user_id"`
+	AppID          string `json:"app_id" binding:"required"`
+	RoomID         string `json:"room_id" binding:"required"`
+	UserID         string `json:"user_id" binding:"required"`
+	AudienceUserID string `json:"audience_user_id" binding:"required"`
 	SeatID         int    `json:"seat_id"`
-	LoginToken     string `json:"login_token"`
 }
 
 type inviteInteractResp struct {
 }
 
-func (eh *EventHandler) InviteInteract(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "ktvInviteInteract param:%+v", param)
+func InviteInteract(ctx *gin.Context) (resp interface{}, err error) {
 	var p inviteInteractReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.RoomID == "" || p.UserID == "" || p.AudienceUserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	if p.SeatID < 0 {
@@ -55,7 +47,7 @@ func (eh *EventHandler) InviteInteract(ctx context.Context, param *public.EventP
 	}
 
 	roomFactory := ktv_service.GetRoomFactory()
-	room, err := roomFactory.GetRoomByRoomID(ctx, param.AppID, p.RoomID)
+	room, err := roomFactory.GetRoomByRoomID(ctx, p.AppID, p.RoomID)
 	if err != nil || room == nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		return nil, custom_error.ErrRoomNotExist
@@ -67,7 +59,7 @@ func (eh *EventHandler) InviteInteract(ctx context.Context, param *public.EventP
 
 	interactService := ktv_service.GetInteractService()
 
-	err = interactService.Invite(ctx, param.AppID, p.RoomID, p.UserID, p.AudienceUserID, p.SeatID)
+	err = interactService.Invite(ctx, p.AppID, p.RoomID, p.UserID, p.AudienceUserID, p.SeatID)
 	if err != nil {
 		logs.CtxError(ctx, "invite failed,error:%s", err)
 		return nil, err

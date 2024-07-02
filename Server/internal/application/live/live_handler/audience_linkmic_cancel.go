@@ -17,43 +17,34 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_linker_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_api_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type audienceLinkmicCancelReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	LinkerID   string `json:"linker_id"`
-	LoginToken string `json:"login_token"`
+	AppID    string `json:"app_id" binding:"required"`
+	RoomID   string `json:"room_id" binding:"required"`
+	UserID   string `json:"user_id" binding:"required"`
+	LinkerID string `json:"linker_id" binding:"required"`
 }
 
 type audienceLinkmicCancelResp struct {
 }
 
-func (eh *EventHandler) AudienceLinkmicCancel(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveAudienceLinkmicCancel param:%+v", param)
+func AudienceLinkmicCancel(ctx *gin.Context) (resp interface{}, err error) {
 	var p audienceLinkmicCancelReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	//check param
-	if p.RoomID == "" || p.UserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	roomRepo := live_facade.GetRoomRepo()
-	room, err := roomRepo.GetActiveRoom(ctx, param.AppID, p.RoomID)
+	room, err := roomRepo.GetActiveRoom(ctx, p.AppID, p.RoomID)
 	if err != nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		if custom_error.Equal(err, custom_error.ErrRecordNotFound) {
@@ -62,7 +53,7 @@ func (eh *EventHandler) AudienceLinkmicCancel(ctx context.Context, param *public
 		return nil, err
 	}
 
-	_, err = live_linkmic_api_service.AudienceCancel(ctx, param.AppID, &live_linker_models.ApiAudienceCancelReq{
+	_, err = live_linkmic_api_service.AudienceCancel(ctx, p.AppID, &live_linker_models.ApiAudienceCancelReq{
 		HostRoomID:     room.RoomID,
 		HostUserID:     room.HostUserID,
 		AudienceRoomID: p.RoomID,

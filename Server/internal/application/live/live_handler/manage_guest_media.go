@@ -17,41 +17,37 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_inform_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type manageGuestMediaMediaReq struct {
-	HostRoomID  string `json:"host_room_id"`
-	HostUserID  string `json:"host_user_id"`
-	GuestRoomID string `json:"guest_room_id"`
-	GuestUserID string `json:"guest_user_id"`
+	AppID       string `json:"app_id" binding:"required"`
+	HostRoomID  string `json:"host_room_id" binding:"required"`
+	HostUserID  string `json:"host_user_id" binding:"required"`
+	GuestRoomID string `json:"guest_room_id" binding:"required"`
+	GuestUserID string `json:"guest_user_id" binding:"required"`
 	Mic         int    `json:"mic"`
 	Camera      int    `json:"camera"`
-	LoginToken  string `json:"login_token"`
 }
 
 type manageGuestMediaMediaResp struct {
 }
 
-func (eh *EventHandler) ManageGuestMedia(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveUpdateMediaStatus param:%+v", param)
+func ManageGuestMedia(ctx *gin.Context) (resp interface{}, err error) {
 	var p manageGuestMediaMediaReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	roomRepo := live_facade.GetRoomRepo()
-	room, err := roomRepo.GetActiveRoom(ctx, param.AppID, p.HostRoomID)
+	room, err := roomRepo.GetActiveRoom(ctx, p.AppID, p.HostRoomID)
 	if err != nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		return nil, custom_error.ErrRoomNotExist
@@ -66,7 +62,7 @@ func (eh *EventHandler) ManageGuestMedia(ctx context.Context, param *public.Even
 		Mic:         p.Mic,
 		Camera:      p.Camera,
 	}
-	informer := inform.GetInformService(param.AppID)
+	informer := inform.GetInformService(p.AppID)
 	informer.UnicastRoomUser(ctx, p.GuestRoomID, p.GuestUserID, live_inform_service.OnManageGuestMedia, informData)
 
 	resp = &manageGuestMediaMediaResp{}

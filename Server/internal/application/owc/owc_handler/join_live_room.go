@@ -17,20 +17,18 @@
 package owc_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type joinLiveRoomReq struct {
-	UserID     string `json:"user_id"`
-	UserName   string `json:"user_name"`
-	RoomID     string `json:"room_id"`
-	LoginToken string `json:"login_token"`
+	AppID    string `json:"app_id" binding:"required"`
+	UserID   string `json:"user_id" binding:"required"`
+	UserName string `json:"user_name" binding:"required"`
+	RoomID   string `json:"room_id" binding:"required"`
 }
 
 type joinLiveRoomResp struct {
@@ -46,30 +44,24 @@ type joinLiveRoomResp struct {
 	NextSong      *owc_service.Song             `json:"next_song"`
 }
 
-func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "owcJoinLiveRoom param:%+v", param)
+func JoinLiveRoom(ctx *gin.Context) (resp interface{}, err error) {
 	var p joinLiveRoomReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.UserID == "" || p.UserName == "" || p.RoomID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	roomFactory := owc_service.GetRoomFactory()
 	userFactory := owc_service.GetUserFactory()
 
 	roomService := owc_service.GetRoomService()
-	err = roomService.JoinRoom(ctx, param.AppID, p.RoomID, p.UserID, p.UserName, param.DeviceID)
+	err = roomService.JoinRoom(ctx, p.AppID, p.RoomID, p.UserID, p.UserName, "")
 	if err != nil {
 		logs.CtxError(ctx, "join room failed,error: "+err.Error())
 		return nil, err
 	}
 
-	room, err := roomFactory.GetRoomByRoomID(ctx, param.AppID, p.RoomID)
+	room, err := roomFactory.GetRoomByRoomID(ctx, p.AppID, p.RoomID)
 	if err != nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		return nil, err
@@ -78,8 +70,8 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 		logs.CtxError(ctx, "room is not exist")
 		return nil, custom_error.ErrRoomNotExist
 	}
-	host, _ := userFactory.GetUserByRoomIDUserID(ctx, param.AppID, room.GetRoomID(), room.GetHostUserID())
-	user, _ := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, p.RoomID, p.UserID)
+	host, _ := userFactory.GetUserByRoomIDUserID(ctx, p.AppID, room.GetRoomID(), room.GetHostUserID())
+	user, _ := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, p.RoomID, p.UserID)
 
 	userCountMap, err := roomFactory.GetRoomsAudienceCount(ctx, []string{room.GetRoomID()})
 	if err != nil {
@@ -98,7 +90,7 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 			RoomInfo:      room,
 			HostInfo:      host,
 			UserInfo:      user,
-			RtcToken:      room.GenerateToken(ctx, param.AppID, p.UserID),
+			RtcToken:      room.GenerateToken(ctx, p.AppID, p.UserID),
 			AudienceCount: userCount,
 			CurSong:       curSong,
 			LeaderUser:    nil,
@@ -113,7 +105,7 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 		return nil, err
 	}
 
-	leadUser, err := userFactory.GetActiveUserByUserID(ctx, param.AppID, owcSongSingUser.LeaderUser)
+	leadUser, err := userFactory.GetActiveUserByUserID(ctx, p.AppID, owcSongSingUser.LeaderUser)
 	if err != nil {
 		logs.CtxError(ctx, "get song leadUser error")
 		return nil, err
@@ -122,7 +114,7 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 	if owcSongSingUser.SuccentorUser == "" {
 		succentorUser = nil
 	} else {
-		succentorUser, err = userFactory.GetActiveUserByUserID(ctx, param.AppID, owcSongSingUser.SuccentorUser)
+		succentorUser, err = userFactory.GetActiveUserByUserID(ctx, p.AppID, owcSongSingUser.SuccentorUser)
 		if err != nil {
 			logs.CtxError(ctx, "get song succentorUser error")
 			return nil, err
@@ -135,7 +127,7 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 			RoomInfo:      room,
 			HostInfo:      host,
 			UserInfo:      user,
-			RtcToken:      room.GenerateToken(ctx, param.AppID, p.UserID),
+			RtcToken:      room.GenerateToken(ctx, p.AppID, p.UserID),
 			AudienceCount: userCount,
 			CurSong:       curSong,
 			LeaderUser:    nil,
@@ -148,7 +140,7 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 		RoomInfo:      room,
 		HostInfo:      host,
 		UserInfo:      user,
-		RtcToken:      room.GenerateToken(ctx, param.AppID, p.UserID),
+		RtcToken:      room.GenerateToken(ctx, p.AppID, p.UserID),
 		AudienceCount: userCount,
 		CurSong:       curSong,
 		LeaderUser:    leadUser,
