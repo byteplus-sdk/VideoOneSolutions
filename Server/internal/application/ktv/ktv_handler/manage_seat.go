@@ -17,41 +17,33 @@
 package ktv_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type manageSeatReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	SeatID     int    `json:"seat_id"`
-	Type       int    `json:"type"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
+	SeatID int    `json:"seat_id"`
+	Type   int    `json:"type"`
 }
 
 type manageSeatResp struct {
 }
 
-func (eh *EventHandler) ManageSeat(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveCreateLive param:%+v", param)
+func ManageSeat(ctx *gin.Context) (resp interface{}, err error) {
 	var p manageSeatReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.RoomID == "" || p.UserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	roomFactory := ktv_service.GetRoomFactory()
-	room, err := roomFactory.GetRoomByRoomID(ctx, param.AppID, p.RoomID)
+	room, err := roomFactory.GetRoomByRoomID(ctx, p.AppID, p.RoomID)
 	if err != nil || room == nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		return nil, custom_error.ErrRoomNotExist
@@ -64,16 +56,16 @@ func (eh *EventHandler) ManageSeat(ctx context.Context, param *public.EventParam
 	interactService := ktv_service.GetInteractService()
 	switch p.Type {
 	case ktv_service.InteractManageTypeLockSeat:
-		err = interactService.LockSeat(ctx, param.AppID, p.RoomID, p.SeatID)
+		err = interactService.LockSeat(ctx, p.AppID, p.RoomID, p.SeatID)
 	case ktv_service.InteractManageTypeUnlockSeat:
-		err = interactService.UnlockSeat(ctx, param.AppID, p.RoomID, p.SeatID)
+		err = interactService.UnlockSeat(ctx, p.AppID, p.RoomID, p.SeatID)
 	case ktv_service.InteractManageTypeMute:
-		err = interactService.Mute(ctx, param.AppID, p.RoomID, p.SeatID)
+		err = interactService.Mute(ctx, p.AppID, p.RoomID, p.SeatID)
 
 	case ktv_service.InteractManageTypeUnmute:
-		err = interactService.Unmute(ctx, param.AppID, p.RoomID, p.SeatID)
+		err = interactService.Unmute(ctx, p.AppID, p.RoomID, p.SeatID)
 	case ktv_service.InteractManageTypeKick:
-		err = interactService.FinishInteract(ctx, param.AppID, p.RoomID, p.SeatID, ktv_service.InteractFinishTypeHost)
+		err = interactService.FinishInteract(ctx, p.AppID, p.RoomID, p.SeatID, ktv_service.InteractFinishTypeHost)
 	}
 	if err != nil {
 		logs.CtxError(ctx, "manage failed,error:%s", err)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package api
+package handler
 
 import (
 	"context"
@@ -29,7 +29,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (api *HttpApi) HandleGetRTCJoinRoomToken(httpCtx *gin.Context) {
+func HandleGetRTCJoinRoomToken(httpCtx *gin.Context) {
 	p := &public.RTCJoinRoomTokenParam{}
 	err := httpCtx.BindJSON(p)
 	ctx := context.Background()

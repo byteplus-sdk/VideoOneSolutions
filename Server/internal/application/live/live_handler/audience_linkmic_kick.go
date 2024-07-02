@@ -17,44 +17,35 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_linker_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_api_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type audienceLinkmicKickReq struct {
-	HostRoomID     string `json:"host_room_id"`
-	HostUserID     string `json:"host_user_id"`
-	AudienceRoomID string `json:"audience_room_id"`
-	AudienceUserID string `json:"audience_user_id"`
-	LoginToken     string `json:"login_token"`
+	AppID          string `json:"app_id" binding:"required"`
+	HostRoomID     string `json:"host_room_id" binding:"required"`
+	HostUserID     string `json:"host_user_id" binding:"required"`
+	AudienceRoomID string `json:"audience_room_id" binding:"required"`
+	AudienceUserID string `json:"audience_user_id" binding:"required"`
 }
 
 type audienceLinkmicKickResp struct {
 }
 
-func (eh *EventHandler) AudienceLinkmicKick(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveAudienceLinkmicKick param:%+v", param)
+func AudienceLinkmicKick(ctx *gin.Context) (resp interface{}, err error) {
 	var p audienceLinkmicKickReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	//check param
-	if p.HostRoomID == "" || p.HostUserID == "" || p.AudienceRoomID == "" || p.AudienceUserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	roomRepo := live_facade.GetRoomRepo()
-	room, err := roomRepo.GetActiveRoom(ctx, param.AppID, p.HostRoomID)
+	room, err := roomRepo.GetActiveRoom(ctx, p.AppID, p.HostRoomID)
 	if err != nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		if custom_error.Equal(err, custom_error.ErrRecordNotFound) {
@@ -66,7 +57,7 @@ func (eh *EventHandler) AudienceLinkmicKick(ctx context.Context, param *public.E
 		return nil, custom_error.ErrUserIsNotHost
 	}
 
-	_, err = live_linkmic_api_service.AudienceKick(ctx, param.AppID, &live_linker_models.ApiAudienceKickReq{
+	_, err = live_linkmic_api_service.AudienceKick(ctx, p.AppID, &live_linker_models.ApiAudienceKickReq{
 		HostRoomID:     p.HostRoomID,
 		HostUserID:     p.HostUserID,
 		AudienceRoomID: p.AudienceRoomID,

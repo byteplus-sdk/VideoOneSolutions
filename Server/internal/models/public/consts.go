@@ -42,3 +42,5 @@ var BidMap = map[string]string{
 }
 
 const VideoCommentNum = 10
+
+const HeaderLoginToken = "X-Login-Token"

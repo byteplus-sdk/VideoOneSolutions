@@ -17,293 +17,226 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
-	"strconv"
-	"time"
-
-	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_handler"
 
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_handler"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_handler"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_handler"
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
+	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_handler"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-	"github.com/byteplus/VideoOneServer/internal/pkg/endpoint"
+	"github.com/byteplus/VideoOneServer/internal/models/response"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
-	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli"
-	"github.com/go-redis/redis/v8"
+	"github.com/byteplus/VideoOneServer/internal/pkg/task"
+	"github.com/byteplus/VideoOneServer/internal/pkg/util"
+	"github.com/gin-gonic/gin"
 )
 
-const (
-	interval             = 10 * time.Second
-	requests         int = 10000
-	TrafficKeyPrefix     = "traffic:app_id:"
+type VideoOneHandler func(ctx *gin.Context) (resp interface{}, err error)
+
+var (
+	handlerMap = make(map[string]VideoOneHandler)
 )
 
-type EventHandlerDispatch struct {
-	mws      []endpoint.Middleware
-	eps      endpoint.Endpoint
-	handlers map[string]endpoint.Endpoint
-}
-
-func NewEventHandlerDispatch() *EventHandlerDispatch {
-	ehd := &EventHandlerDispatch{
-		mws:      make([]endpoint.Middleware, 0),
-		handlers: make(map[string]endpoint.Endpoint),
+func HandleHttpCallEvent(httpCtx *gin.Context) {
+	ctx := util.EnsureID(httpCtx)
+	eventName := httpCtx.Query("event_name")
+	if !validEventName(eventName) {
+		logs.CtxInfo(ctx, "event_name is invalid")
+		httpCtx.String(400, response.NewCommonResponse(ctx, "", "", custom_error.NewCustomError(400, errors.New("event_name is invalid"))))
+		return
 	}
-	ehd.init()
-	return ehd
+
+	resp, err := handlerMap[eventName](httpCtx)
+	httpCtx.String(200, response.NewCommonResponse(ctx, "", resp, err))
 }
 
-func (ehd *EventHandlerDispatch) Handle(ctx context.Context, params *public.EventParam) (resp interface{}, err error) {
-	return ehd.eps(ctx, params)
-}
-
-func (ehd *EventHandlerDispatch) init() {
-	ehd.initHandlers()
-	ehd.initMws()
-	ehd.buildInvokeChain()
-}
-
-func (ehd *EventHandlerDispatch) initHandlers() {
-	//disconnect
-	ehd.register("disconnect", disconnectHandler)
-
+func init() {
 	//login
-	loginHandler := login_handler.NewEventHandler()
-	ehd.register("passwordFreeLogin", loginHandler.PasswordFreeLogin)
-	ehd.register("verifyLoginToken", loginHandler.VerifyLoginToken)
-	ehd.register("changeUserName", loginHandler.ChangeUserName)
-	ehd.register("joinRTS", loginHandler.JoinRts)
+	{
+		registerHandler("getAppInfo", login_handler.GetAppInfo)
+	}
 
-	liveHandler := live_handler.NewEventHandler()
-	ehd.register("liveCreateLive", liveHandler.CreateLive)
-	ehd.register("liveStartLive", liveHandler.StartLive)
-	ehd.register("liveFinishLive", liveHandler.FinishLive)
-	ehd.register("liveJoinLiveRoom", liveHandler.JoinLiveRoom)
-	ehd.register("liveLeaveLiveRoom", liveHandler.LeaveLiveRoom)
-	ehd.register("liveGetActiveLiveRoomList", liveHandler.GetActiveLiveRoomList)
-	ehd.register("liveGetActiveAnchorList", liveHandler.GetActiveAnchorList)
-	ehd.register("liveGetAudienceList", liveHandler.GetAudienceList)
-	ehd.register("liveUpdateResolution", liveHandler.UpdateResolution)
-	ehd.register("liveUpdateMediaStatus", liveHandler.UpdateMediaStatus)
-	ehd.register("liveReconnect", liveHandler.Reconnect)
-	ehd.register("liveAudienceLinkmicInvite", liveHandler.AudienceLinkmicInvite)
-	ehd.register("liveAudienceLinkmicPermit", liveHandler.AudienceLinkmicPermit)
-	ehd.register("liveAudienceLinkmicApply", liveHandler.AudienceLinkmicApply)
-	ehd.register("liveAudienceLinkmicReply", liveHandler.AudienceLinkmicReply)
-	ehd.register("liveAudienceLinkmicKick", liveHandler.AudienceLinkmicKick)
-	ehd.register("liveAudienceLinkmicLeave", liveHandler.AudienceLinkmicLeave)
-	ehd.register("liveAudienceLinkmicCancel", liveHandler.AudienceLinkmicCancel)
-	ehd.register("liveAudienceLinkmicFinish", liveHandler.AudienceLinkmicFinish)
-	ehd.register("liveAnchorLinkmicInvite", liveHandler.AnchorLinkmicInvite)
-	ehd.register("liveAnchorLinkmicReply", liveHandler.AnchorLinkmicReply)
-	ehd.register("liveAnchorLinkmicFinish", liveHandler.AnchorLinkmicFinish)
-	ehd.register("liveManageGuestMedia", liveHandler.ManageGuestMedia)
-	ehd.register("liveClearUser", liveHandler.ClearUser)
-	ehd.register("liveSendMessage", liveHandler.SendMessage)
-
-	//ktv
-	ktvHandler := ktv_handler.NewEventHandler()
-	ehd.register("ktvAgreeApply", ktvHandler.AgreeApply)
-	ehd.register("ktvApplyInteract", ktvHandler.ApplyInteract)
-	ehd.register("ktvFinishInteract", ktvHandler.FinishInteract)
-	ehd.register("ktvFinishLive", ktvHandler.FinishLive)
-	ehd.register("ktvGetActiveLiveRoomList", ktvHandler.GetActiveLiveRoomList)
-	ehd.register("ktvGetApplyAudienceList", ktvHandler.GetApplyAudienceList)
-	ehd.register("ktvGetAudienceList", ktvHandler.GetAudienceList)
-	ehd.register("ktvInviteInteract", ktvHandler.InviteInteract)
-	ehd.register("ktvJoinLiveRoom", ktvHandler.JoinLiveRoom)
-	ehd.register("ktvLeaveLiveRoom", ktvHandler.LeaveLiveRoom)
-	ehd.register("ktvManageInteractApply", ktvHandler.ManageInteractApply)
-	ehd.register("ktvManageSeat", ktvHandler.ManageSeat)
-	ehd.register("ktvReplyInvite", ktvHandler.ReplyInvite)
-	ehd.register("ktvSendMessage", ktvHandler.SendMessage)
-	ehd.register("ktvStartLive", ktvHandler.StartLive)
-	ehd.register("ktvUpdateMediaStatus", ktvHandler.UpdateMediaStatus)
-	ehd.register("ktvRequestSong", ktvHandler.RequestSong)
-	ehd.register("ktvCutOffSong", ktvHandler.CutOffSong)
-	ehd.register("ktvFinishSing", ktvHandler.FinishSing)
-	ehd.register("ktvGetRequestSongList", ktvHandler.GetRequestSongList)
-	ehd.register("ktvReconnect", ktvHandler.Reconnect)
-	ehd.register("ktvClearUser", ktvHandler.ClearUser)
-	ehd.register("ktvGetPresetSongList", ktvHandler.GetPreSetSongList)
-
-	//owc
-	owcHandler := owc_handler.NewEventHandler()
-	ehd.register("owcFinishLive", owcHandler.FinishLive)
-	ehd.register("owcGetActiveLiveRoomList", owcHandler.GetActiveLiveRoomList)
-	ehd.register("owcJoinLiveRoom", owcHandler.JoinLiveRoom)
-	ehd.register("owcLeaveLiveRoom", owcHandler.LeaveLiveRoom)
-	ehd.register("owcSendMessage", owcHandler.SendMessage)
-	ehd.register("owcStartLive", owcHandler.StartLive)
-	ehd.register("owcUpdateMediaStatus", owcHandler.UpdateMediaStatus)
-	ehd.register("owcRequestSong", owcHandler.RequestSong)
-	ehd.register("owcCutOffSong", owcHandler.CutOffSong)
-	ehd.register("owcStartSing", owcHandler.StartSing)
-	ehd.register("owcFinishSing", owcHandler.FinishSing)
-	ehd.register("owcGetRequestSongList", owcHandler.GetRequestSongList)
-	ehd.register("owcClearUser", owcHandler.ClearUser)
-	ehd.register("owcReconnect", owcHandler.Reconnect)
-	ehd.register("owcGetPresetSongList", owcHandler.GetPreSetSongList)
-}
-
-func (ehd *EventHandlerDispatch) register(eventName string, handlerFunc endpoint.Endpoint) {
-	ehd.handlers[eventName] = handlerFunc
-}
-
-func (ehd *EventHandlerDispatch) initMws() {
-	ehd.mws = append(ehd.mws, mwCheckParam)
-	ehd.mws = append(ehd.mws, mwCheckLogin)
-	ehd.mws = append(ehd.mws, mwCheckLimitTraffic)
-}
-
-func (ehd *EventHandlerDispatch) buildInvokeChain() {
-	handler := ehd.invokeHandleEndpoint()
-	ehd.eps = endpoint.Chain(ehd.mws...)(handler)
-}
-
-func (ehd *EventHandlerDispatch) invokeHandleEndpoint() endpoint.Endpoint {
-	return func(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-		f, ok := ehd.handlers[param.EventName]
-		if !ok {
-			return nil, custom_error.InternalError(errors.New("event not exist"))
+	// interactive live
+	{
+		{
+			// common
+			registerHandler("liveGetActiveLiveRoomList", live_handler.GetActiveLiveRoomList)
+			registerHandler("liveUpdateMediaStatus", live_handler.UpdateMediaStatus)
+			registerHandler("liveUpdateResolution", live_handler.UpdateResolution)
+			registerHandler("liveReconnect", live_handler.Reconnect)
+			registerHandler("liveClearUser", live_handler.ClearUser)
+			registerHandler("liveSendMessage", live_handler.SendMessage)
 		}
-		return f(ctx, param)
+		{
+			// host
+			registerHandler("liveCreateLive", live_handler.CreateLive)
+			registerHandler("liveStartLive", live_handler.StartLive)
+			registerHandler("liveFinishLive", live_handler.FinishLive)
+			registerHandler("liveGetActiveAnchorList", live_handler.GetActiveAnchorList)
+			registerHandler("liveAnchorLinkmicInvite", live_handler.AnchorLinkmicInvite)
+			registerHandler("liveAnchorLinkmicReply", live_handler.AnchorLinkmicReply)
+			registerHandler("liveAnchorLinkmicFinish", live_handler.AnchorLinkmicFinish)
+			registerHandler("liveGetAudienceList", live_handler.GetAudienceList)
+			registerHandler("liveAudienceLinkmicInvite", live_handler.AudienceLinkmicInvite)
+			registerHandler("liveAudienceLinkmicReply", live_handler.AudienceLinkmicReply)
+			registerHandler("liveAudienceLinkmicKick", live_handler.AudienceLinkmicKick)
+			registerHandler("liveManageGuestMedia", live_handler.ManageGuestMedia)
+		}
+		{
+			// guest
+			registerHandler("liveJoinLiveRoom", live_handler.JoinLiveRoom)
+			registerHandler("liveLeaveLiveRoom", live_handler.LeaveLiveRoom)
+			registerHandler("liveAudienceLinkmicPermit", live_handler.AudienceLinkmicPermit)
+			registerHandler("liveAudienceLinkmicApply", live_handler.AudienceLinkmicApply)
+			registerHandler("liveAudienceLinkmicLeave", live_handler.AudienceLinkmicLeave)
+			registerHandler("liveAudienceLinkmicCancel", live_handler.AudienceLinkmicCancel)
+			registerHandler("liveAudienceLinkmicFinish", live_handler.AudienceLinkmicFinish)
+		}
+	}
+
+	// Online KTV - Duet Singing
+	{
+		{
+			// common
+			registerHandler("ktvGetActiveLiveRoomList", ktv_handler.GetActiveLiveRoomList)
+			registerHandler("ktvSendMessage", ktv_handler.SendMessage)
+			registerHandler("ktvReconnect", ktv_handler.Reconnect)
+			registerHandler("ktvClearUser", ktv_handler.ClearUser)
+			registerHandler("ktvUpdateMediaStatus", ktv_handler.UpdateMediaStatus)
+		}
+		{
+			// host
+			registerHandler("ktvStartLive", ktv_handler.StartLive)
+			registerHandler("ktvFinishLive", ktv_handler.FinishLive)
+			registerHandler("ktvGetAudienceList", ktv_handler.GetAudienceList)
+			registerHandler("ktvGetApplyAudienceList", ktv_handler.GetApplyAudienceList)
+			registerHandler("ktvManageInteractApply", ktv_handler.ManageInteractApply)
+			registerHandler("ktvManageSeat", ktv_handler.ManageSeat)
+			registerHandler("ktvAgreeApply", ktv_handler.AgreeApply)
+		}
+		{
+			// guest
+			registerHandler("ktvApplyInteract", ktv_handler.ApplyInteract)
+			registerHandler("ktvFinishInteract", ktv_handler.FinishInteract)
+			registerHandler("ktvInviteInteract", ktv_handler.InviteInteract)
+			registerHandler("ktvJoinLiveRoom", ktv_handler.JoinLiveRoom)
+			registerHandler("ktvLeaveLiveRoom", ktv_handler.LeaveLiveRoom)
+			registerHandler("ktvReplyInvite", ktv_handler.ReplyInvite)
+		}
+		{
+			// song
+			registerHandler("ktvRequestSong", ktv_handler.RequestSong)
+			registerHandler("ktvCutOffSong", ktv_handler.CutOffSong)
+			registerHandler("ktvFinishSing", ktv_handler.FinishSing)
+			registerHandler("ktvGetRequestSongList", ktv_handler.GetRequestSongList)
+			registerHandler("ktvGetPresetSongList", ktv_handler.GetPreSetSongList)
+		}
+	}
+
+	//online KTV - Solo Singing
+	{
+		{
+			// common
+			registerHandler("owcGetActiveLiveRoomList", owc_handler.GetActiveLiveRoomList)
+			registerHandler("owcSendMessage", owc_handler.SendMessage)
+			registerHandler("owcUpdateMediaStatus", owc_handler.UpdateMediaStatus)
+			registerHandler("owcClearUser", owc_handler.ClearUser)
+			registerHandler("owcReconnect", owc_handler.Reconnect)
+		}
+		{
+			// host
+			registerHandler("owcStartLive", owc_handler.StartLive)
+			registerHandler("owcFinishLive", owc_handler.FinishLive)
+		}
+		{
+			// guest
+			registerHandler("owcJoinLiveRoom", owc_handler.JoinLiveRoom)
+			registerHandler("owcLeaveLiveRoom", owc_handler.LeaveLiveRoom)
+		}
+		{
+			// song
+			registerHandler("owcRequestSong", owc_handler.RequestSong)
+			registerHandler("owcCutOffSong", owc_handler.CutOffSong)
+			registerHandler("owcStartSing", owc_handler.StartSing)
+			registerHandler("owcFinishSing", owc_handler.FinishSing)
+			registerHandler("owcGetRequestSongList", owc_handler.GetRequestSongList)
+			registerHandler("owcGetPresetSongList", owc_handler.GetPreSetSongList)
+		}
 	}
 }
 
-func mwCheckParam(next endpoint.Endpoint) endpoint.Endpoint {
-	return func(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-		sourceApi, _ := ctx.Value(public.CtxSourceApi).(string)
-		switch sourceApi {
-		case "http":
-			if param.EventName == "" || param.Content == "" || param.DeviceID == "" {
-				if param.EventName == "disconnect" || param.EventName == "recordCallBack" || param.EventName == "sendLoginSms" || param.EventName == "verifyLoginSms" {
-					return next(ctx, param)
-				}
-				return nil, custom_error.ErrInput
-			}
-		case "rtm", "rts":
-			if param.AppID == "" || param.UserID == "" || param.EventName == "" || param.Content == "" || param.DeviceID == "" {
-				return nil, custom_error.ErrInput
-			}
-			appInfoService := login_service.GetAppInfoService()
-			_, err := appInfoService.ReadAppInfoByAppId(ctx, param.AppID)
-			if err != nil {
-				return nil, err
-			}
-		case "http_response":
-			if param.AppID == "" || param.UserID == "" || param.EventName == "" || param.Content == "" || param.DeviceID == "" {
-				return nil, custom_error.ErrInput
-			}
-			appInfoService := login_service.GetAppInfoService()
-			_, err := appInfoService.ReadAppInfoByAppId(ctx, param.AppID)
-			if err != nil {
-				return nil, err
-			}
+// nolint
+func registerHandler(eventName string, handler VideoOneHandler) {
+	handlerMap[eventName] = handler
+}
 
-		default:
-			return nil, custom_error.InternalError(errors.New("source api missing"))
-		}
-		logs.CtxInfo(ctx, "check param info pass")
-		return next(ctx, param)
+func validEventName(eventName string) bool {
+	_, exist := handlerMap[eventName]
+	return exist
+}
+
+func DisconnectHandler(ctx *gin.Context, appID, roomID, userID string) (err error) {
+	logs.CtxInfo(ctx, "disconnect, appID %s,roomID:%s,userID:%s", appID, roomID, userID)
+
+	err = live_handler.DisconnectLogic(ctx, appID, roomID, userID)
+	if err == nil {
+		return
 	}
 
+	err = ktv_handler.Disconnect(ctx, appID, roomID, userID)
+	if err == nil {
+		return
+	}
+
+	owc_handler.Disconnect(ctx, appID, roomID, userID)
+
+	return nil
 }
 
-type checkParam struct {
-	LoginToken string `json:"login_token"`
+func PingPong(ctx *gin.Context) {
+	logs.CtxInfo(ctx, "receive ping request")
+	ctx.JSON(200, map[string]string{
+		"message": "pong",
+	})
 }
 
-func mwCheckLimitTraffic(next endpoint.Endpoint) endpoint.Endpoint {
-	return func(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-		if param.EventName == "coFlushTraffic" {
-			return next(ctx, param)
-		}
-		appID := param.AppID
-		if appID == "" {
-			logs.CtxInfo(ctx, "appID is empty:%s", param)
-			return next(ctx, param)
-		}
-		exist, err := ExistTrafficAppID(ctx, appID)
+func HandleRtsCallback(httpCtx *gin.Context) {
+	defer httpCtx.String(200, "ok")
+
+	p := &RtsCallbackParam{}
+	err := httpCtx.BindJSON(p)
+	if err != nil {
+		logs.CtxError(httpCtx, "param error,err:%s", err)
+		return
+	}
+
+	var appID, roomID, userID string
+
+	switch p.EventType {
+	case "UserLeaveRoom", "InvisibleUserLeaveRoom":
+		eventData := &EventDataLeaveRoom{}
+		err = json.Unmarshal([]byte(p.EventData), eventData)
 		if err != nil {
-			logs.CtxError(ctx, "check traffic err:%s", err)
-			return nil, custom_error.ErrCheckTrafficAppID
+			logs.CtxError(httpCtx, "param error,err:%s", err)
+			return
 		}
-		key := TrafficKey(ctx, appID)
-		if exist {
-			val, err := strconv.Atoi(redis_cli.Client.Get(ctx, key).Val())
-			duration := redis_cli.Client.TTL(ctx, key).Val()
-			logs.CtxInfo(ctx, "check appID:%s,duration:%s,traffic:%s", appID, duration.String(), val)
-			if duration.Seconds() == -1 {
-				logs.CtxInfo(ctx, "set key expire")
-				redis_cli.Client.Expire(ctx, key, interval)
-			}
-			if err != nil {
-				logs.CtxError(ctx, "check traffic err:%s", err)
-				return nil, custom_error.ErrCheckTrafficAppID
-			}
-			if val > requests {
-				logs.CtxInfo(ctx, "check traffic up top")
-				return nil, custom_error.ErrCheckTrafficUpLimit
-			} else {
-				redis_cli.Client.Incr(ctx, key)
-			}
-		} else {
-			redis_cli.Client.Set(ctx, key, 0, 0)
-			redis_cli.Client.Expire(ctx, key, interval)
+		if eventData.Reason != LeaveRoomReasonConnectionLost {
+			return
 		}
-		logs.CtxInfo(ctx, "check traffic info pass")
-		return next(ctx, param)
+		appID = p.AppId
+		roomID = eventData.RoomId
+		userID = eventData.UserId
+		if err = DisconnectHandler(httpCtx, appID, roomID, userID); err != nil {
+			logs.CtxError(httpCtx, "handle error,param:%#v,err:%s", p, err)
+		}
 	}
 }
 
-func ExistTrafficAppID(ctx context.Context, appID string) (bool, error) {
-	key := TrafficKey(ctx, appID)
-	val, err := redis_cli.Client.Exists(ctx, key).Result()
-	switch err {
-	case nil:
-		return val == 1, nil
-	case redis.Nil:
-		return false, nil
-	default:
-		return false, err
-	}
-}
-
-func TrafficKey(ctx context.Context, key string) string {
-	return TrafficKeyPrefix + key
-}
-
-func mwCheckLogin(next endpoint.Endpoint) endpoint.Endpoint {
-	return func(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-		userService := login_service.GetUserService()
-		sourceApi, _ := ctx.Value(public.CtxSourceApi).(string)
-		switch sourceApi {
-		case "rtm", "http_response":
-			p := &checkParam{}
-			err = json.Unmarshal([]byte(param.Content), p)
-			if err != nil {
-				logs.CtxError(ctx, "json unmarshal failed,error:%s", err)
-				return nil, custom_error.InternalError(err)
-			}
-			err = userService.CheckLoginToken(ctx, p.LoginToken)
-			if err != nil {
-				logs.CtxError(ctx, "login_token expired")
-				return nil, err
-			}
-			loginUserID := userService.GetUserID(ctx, p.LoginToken)
-			logs.CtxInfo(ctx, "get loginToken userid:%s", loginUserID)
-			if loginUserID != param.UserID {
-				return nil, custom_error.ErrorTokenUserNotMatch
-			}
-			logs.CtxInfo(ctx, "check login info pass")
-		}
-
-		return next(ctx, param)
-	}
+func StartCronJob() {
+	c := task.GetCronTask()
+	live_handler.NewCronJob(c)
+	ktv_handler.NewCronJob(c)
+	owc_handler.NewCronJob(c)
+	c.Start()
 }

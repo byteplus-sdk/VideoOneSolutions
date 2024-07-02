@@ -17,44 +17,34 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_linker_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_api_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type anchorLinkmicInviteReq struct {
-	InviterRoomID string `json:"inviter_room_id"`
-	InviterUserID string `json:"inviter_user_id"`
-	InviteeRoomID string `json:"invitee_room_id"`
-	InviteeUserID string `json:"invitee_user_id"`
+	AppID         string `json:"app_id" binding:"required"`
+	InviterRoomID string `json:"inviter_room_id" binding:"required"`
+	InviterUserID string `json:"inviter_user_id" binding:"required"`
+	InviteeRoomID string `json:"invitee_room_id" binding:"required"`
+	InviteeUserID string `json:"invitee_user_id" binding:"required"`
 	Extra         string `json:"extra"`
-	LoginToken    string `json:"login_token"`
 }
 
 type anchorLinkmicInviteResp struct {
 	LinkerID string `json:"linker_id"`
 }
 
-func (eh *EventHandler) AnchorLinkmicInvite(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveAnchorLinkmicInvite param:%+v", param)
+func AnchorLinkmicInvite(ctx *gin.Context) (resp interface{}, err error) {
 	var p anchorLinkmicInviteReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
-	//check param
-	if p.InviterRoomID == "" || p.InviterUserID == "" || p.InviteeRoomID == "" || p.InviteeUserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
-	}
-
-	inviteResp, err := live_linkmic_api_service.AnchorInvite(ctx, param.AppID, &live_linker_models.ApiAnchorInviteReq{
+	inviteResp, err := live_linkmic_api_service.AnchorInvite(ctx, p.AppID, &live_linker_models.ApiAnchorInviteReq{
 		InviterRoomID: p.InviterRoomID,
 		InviterUserID: p.InviterUserID,
 		InviteeRoomID: p.InviteeRoomID,

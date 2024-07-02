@@ -62,6 +62,7 @@ var (
 	ErrGetBID                          = NewCustomError(806, errors.New("get bid error"))
 	ErrLockRoom                        = NewCustomError(809, errors.New("lock room error"))
 	ErrMissParam                       = NewCustomError(811, errors.New("required parameter missing"))
+	ErrUnknown                         = NewCustomError(999, errors.New("unknown error"))
 )
 
 type CustomError struct {

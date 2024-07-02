@@ -1,8 +1,7 @@
-mysql_dsn: "{user_name}:{password}@tcp([{mysql_address}]:{port})/videoone?parseTime=true&loc=Local"
-redis_addr: "[{redis_address}]:{port}"
-redis_password: "{redis_password}"
-port: "{port_number}"
-server_url: "https://{server_ip}:{port}/videoone_opensource/rts"
+mysql_dsn: "root:123456@tcp(127.0.0.1:3306)/videoone?parseTime=true&loc=Local"
+redis_addr: "127.0.0.1:6379"
+redis_password: ""
+port: "8080"
 live_timer_enable: true
 live_experience_time: 20
 app_id: "{your_vod_appid}"

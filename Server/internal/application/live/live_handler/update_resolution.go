@@ -17,38 +17,37 @@
 package live_handler
 
 import (
-	"context"
 	"encoding/json"
+
+	"github.com/gin-gonic/gin/binding"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
 type updateResolutionReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	Width      int    `json:"width"`
-	Height     int    `json:"height"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
 }
 
 type updateResolutionResp struct {
 }
 
-func (eh *EventHandler) UpdateResolution(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveUpdateResolution param:%+v", param)
+func UpdateResolution(ctx *gin.Context) (resp interface{}, err error) {
 	var p updateResolutionReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	roomUserRepo := live_facade.GetRoomUserRepo()
-	user, err := roomUserRepo.GetActiveUser(ctx, param.AppID, p.RoomID, p.UserID)
+	user, err := roomUserRepo.GetActiveUser(ctx, p.AppID, p.RoomID, p.UserID)
 	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, err

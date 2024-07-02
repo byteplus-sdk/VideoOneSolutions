@@ -17,21 +17,21 @@
 package owc_handler
 
 import (
-	"context"
-	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
 type requestSongReq struct {
-	UserID       string  `json:"user_id"`
-	RoomID       string  `json:"room_id"`
-	SongID       string  `json:"song_id"`
-	SongName     string  `json:"song_name"`
+	AppID        string  `json:"app_id" binding:"required"`
+	UserID       string  `json:"user_id" binding:"required"`
+	RoomID       string  `json:"room_id" binding:"required"`
+	SongID       string  `json:"song_id" binding:"required"`
+	SongName     string  `json:"song_name" binding:"required"`
 	SongDuration float64 `json:"song_duration"`
 	CoverUrl     string  `json:"cover_url"`
 	LoginToken   string  `json:"login_token"`
@@ -40,29 +40,23 @@ type requestSongReq struct {
 type requestSongResp struct {
 }
 
-func (eh *EventHandler) RequestSong(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "owcFinishLive param:%+v", param)
+func RequestSong(ctx *gin.Context) (resp interface{}, err error) {
 	var p requestSongReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.UserID == "" || p.RoomID == "" || p.SongID == "" || p.SongName == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	userFactory := owc_service.GetUserFactory()
 
-	user, err := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, p.RoomID, p.UserID)
+	user, err := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, p.RoomID, p.UserID)
 	if err != nil || user == nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, custom_error.ErrUserIsInactive
 	}
 
 	songService := owc_service.GetSongService()
-	err = songService.RequestSong(ctx, param.AppID, p.RoomID, p.UserID, p.SongID, p.SongName, p.CoverUrl, p.SongDuration)
+	err = songService.RequestSong(ctx, p.AppID, p.RoomID, p.UserID, p.SongID, p.SongName, p.CoverUrl, p.SongDuration)
 	if err != nil {
 		return nil, err
 	}

@@ -18,6 +18,7 @@ package live_implement
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_entity"
@@ -61,7 +62,7 @@ func (impl *RoomRepoImpl) GetActiveRoom(ctx context.Context, appID, roomID strin
 	var rs *live_entity.LiveRoom
 	err := db.Client.WithContext(ctx).Debug().Table(RoomTable).Where("rtc_app_id =? and room_id = ? and status = ?", appID, roomID, live_room_models.RoomStatusStart).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -77,7 +78,7 @@ func (impl *RoomRepoImpl) GetRoom(ctx context.Context, appID, roomID string) (*l
 	var rs *live_entity.LiveRoom
 	err := db.Client.WithContext(ctx).Debug().Table(RoomTable).Where("rtc_app_id =? and room_id = ? and status <> ?", appID, roomID, live_room_models.RoomStatusFinish).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -93,7 +94,7 @@ func (impl *RoomRepoImpl) GetActiveRooms(ctx context.Context, appID string) ([]*
 	var rs []*live_entity.LiveRoom
 	err := db.Client.WithContext(ctx).Debug().Table(RoomTable).Where("rtc_app_id =? and status = ?", appID, live_room_models.RoomStatusStart).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -106,12 +107,12 @@ func (impl *RoomRepoImpl) GetAllActiveRooms(ctx context.Context) ([]*live_entity
 	var rs []*live_entity.LiveRoom
 	err := db.Client.WithContext(ctx).Debug().Table(RoomTable).Where(" status = ?", live_room_models.RoomStatusStart).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
 	}
-
+	logs.Info("=------")
 	return rs, nil
 }
 
@@ -119,7 +120,7 @@ func (impl *RoomRepoImpl) GetRooms(ctx context.Context, appID string) ([]*live_e
 	var rs []*live_entity.LiveRoom
 	err := db.Client.WithContext(ctx).Debug().Table(RoomTable).Where("rtc_app_id=? and status <> ?", appID, live_room_models.RoomStatusFinish).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -194,7 +195,7 @@ func (impl *RoomRepoImpl) GetRoomByRoomID(ctx context.Context, appID, roomID str
 	var rs *live_entity.LiveRoom
 	err := db.Client.WithContext(ctx).Debug().Table(RoomTable).Where("rtc_app_id =? and room_id = ?", appID, roomID).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)

@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package api
+package handler
 
 const (
-	EventTypeUserLeaveRoom = "UserLeaveRoom"
-)
-
-const (
-	LeaveRoomReasonUserLeave      = "userLeave"
 	LeaveRoomReasonConnectionLost = "connectionLost"
 )
-
-type RtsParam struct {
-	Message string `json:"message"`
-}
 
 type RtsCallbackParam struct {
 	EventType string `json:"EventType"`

@@ -17,25 +17,23 @@
 package login_handler
 
 import (
-	"context"
-	"encoding/json"
+	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/models/public"
-	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
-	"github.com/byteplus/VideoOneServer/internal/pkg/token"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
-type joinRtsReq struct {
+type getAppInfoReq struct {
 	AppId           string `json:"app_id"`
 	AppKey          string `json:"app_key"`
 	AccessKey       string `json:"access_key"`
 	SecretAccessKey string `json:"secret_access_key"`
 	VodSpace        string `json:"vod_space"`
-	LoginToken      string `json:"login_token"`
 	ScenesName      string `json:"scenes_name"`
 	LivePullDomain  string `json:"live_pull_domain"`
 	LivePushDomain  string `json:"live_push_domain"`
@@ -43,29 +41,16 @@ type joinRtsReq struct {
 	LiveAppName     string `json:"live_app_name"`
 }
 
-type joinRtsResp struct {
-	AppID           string `json:"app_id"`
-	RtmToken        string `json:"rtm_token"`
-	ServerUrl       string `json:"server_url"`
-	ServerSignature string `json:"server_signature"`
-	BID             string `json:"bid"`
-	Status          string `json:"status"`
+type getAppInfoResp struct {
+	AppID string `json:"app_id"`
+	BID   string `json:"bid"`
 }
 
-func (h *EventHandler) JoinRts(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	var p joinRtsReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		return nil, custom_error.ErrInput
-	}
-
-	if p.AppId == "" || p.AppKey == "" || p.AccessKey == "" || p.SecretAccessKey == "" {
-		return nil, custom_error.ErrInput
-	}
-
-	if p.ScenesName == public.BizIDLive {
-		if p.LiveAppName == "" || p.LivePushKey == "" || p.LivePushDomain == "" || p.LivePullDomain == "" {
-			return nil, custom_error.ErrInput
-		}
+func GetAppInfo(ctx *gin.Context) (resp interface{}, err error) {
+	var p getAppInfoReq
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		logs.CtxError(ctx, "param error,err:"+err.Error())
+		return nil, err
 	}
 
 	appInfo := &login_entity.AppInfo{
@@ -78,46 +63,22 @@ func (h *EventHandler) JoinRts(ctx context.Context, param *public.EventParam) (r
 		LivePullDomain:  p.LivePullDomain,
 		LiveStreamKey:   p.LivePushKey,
 		LiveAppName:     p.LiveAppName,
+		CreateTime:      time.Now(),
 	}
 	appInfoService := login_service.GetAppInfoService()
 	err = appInfoService.WriteAppInfo(ctx, appInfo)
 	if err != nil {
 		return nil, err
 	}
-	if p.ScenesName != "" && p.LoginToken != "" {
-		userService := login_service.GetUserService()
-
-		err = userService.CheckLoginToken(ctx, p.LoginToken)
-		if err != nil {
-			logs.CtxWarn(ctx, "login token expiry")
-			return nil, err
-		}
+	if p.ScenesName != "" {
 		bid, ok := public.BidMap[p.ScenesName]
 		if ok != true || bid == "" {
 			return nil, custom_error.ErrGetBID
 		}
 
-		userID := userService.GetUserID(ctx, p.LoginToken)
-		rtcToken, err := token.GenerateToken(&token.GenerateParam{
-			AppID:        appInfo.AppId,
-			AppKey:       appInfo.AppKey,
-			RoomID:       "",
-			UserID:       userID,
-			ExpireAt:     7 * 24 * 3600,
-			CanPublish:   true,
-			CanSubscribe: true,
-		})
-		if err != nil {
-			logs.CtxError(ctx, "generate token failed,error:%s", err)
-			return nil, custom_error.InternalError(err)
-		}
-		resp = &joinRtsResp{
-			Status:          "success",
-			BID:             bid,
-			AppID:           appInfo.AppId,
-			RtmToken:        rtcToken,
-			ServerUrl:       config.Configs().ServerUrl,
-			ServerSignature: p.LoginToken,
+		resp = &getAppInfoResp{
+			BID:   bid,
+			AppID: appInfo.AppId,
 		}
 		return resp, nil
 	}
