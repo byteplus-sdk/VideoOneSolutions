@@ -18,7 +18,6 @@ package login_facade
 
 import (
 	"context"
-	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_repository/login_implement"
@@ -38,7 +37,4 @@ type LoginTokenRepositoryInterface interface {
 
 	ExistToken(ctx context.Context, token string) (bool, error)
 	GetUserID(ctx context.Context, token string) string
-	GetTokenCreatedAt(ctx context.Context, token string) (int64, error)
-	SetTokenExpiration(ctx context.Context, token string, duration time.Duration)
-	GetTokenExpiration(ctx context.Context, token string) time.Duration
 }

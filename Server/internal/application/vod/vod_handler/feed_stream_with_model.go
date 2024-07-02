@@ -23,7 +23,6 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/models/response"
-	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/util"
 	"github.com/gin-gonic/gin"
@@ -42,11 +41,8 @@ func GetFeedStreamWithVideoModel(httpCtx *gin.Context) {
 	if req.PageSize <= 0 || req.PageSize > 100 {
 		req.PageSize = 100
 	}
-	if req.AppID == "" {
-		req.AppID = config.Configs().AppID
-	}
 
-	resp, err := vod_service.GetFeedStreamWithVideoModel(ctx, req)
+	resp, err := vod_service.GetFeedStreamWithVideoModel(ctx, *req)
 	if err != nil {
 		httpCtx.String(http.StatusInternalServerError, response.NewVodCommonResponse(ctx, "", "", custom_error.InternalError(err)))
 		return

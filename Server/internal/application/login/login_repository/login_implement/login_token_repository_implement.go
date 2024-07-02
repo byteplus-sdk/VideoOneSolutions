@@ -18,6 +18,7 @@ package login_implement
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_entity"
@@ -36,7 +37,6 @@ const (
 type LoginTokenRepositoryImpl struct{}
 
 func (impl *LoginTokenRepositoryImpl) Save(ctx context.Context, token *login_entity.LoginToken) error {
-	logs.CtxInfo(ctx, "redis init login, token: %s, userID: %s", token, token.UserID)
 	key := redisKeyLogin(token.Token)
 
 	redis_cli.Client.Expire(ctx, key, TokenExpiration)
@@ -49,10 +49,10 @@ func (impl *LoginTokenRepositoryImpl) ExistToken(ctx context.Context, token stri
 	key := redisKeyLogin(token)
 
 	val, err := redis_cli.Client.Exists(ctx, key).Result()
-	switch err {
-	case nil:
+	switch {
+	case err == nil:
 		return val == 1, nil
-	case redis.Nil:
+	case errors.Is(err, redis.Nil):
 		return false, nil
 	default:
 		return false, err
@@ -64,31 +64,6 @@ func (impl *LoginTokenRepositoryImpl) GetUserID(ctx context.Context, token strin
 	logs.CtxInfo(ctx, "get login userID: %s", r)
 
 	return r
-}
-
-func (impl *LoginTokenRepositoryImpl) GetTokenCreatedAt(ctx context.Context, token string) (int64, error) {
-	createdAt, err := redis_cli.Client.HGet(ctx, redisKeyLogin(token), fieldCreatedTime).Int64()
-	switch err {
-	case nil:
-		logs.CtxInfo(ctx, "get token created at: %v", createdAt)
-		return createdAt, nil
-	case redis.Nil:
-		return 0, nil
-	default:
-		return 0, err
-	}
-}
-
-func (impl *LoginTokenRepositoryImpl) SetTokenExpiration(ctx context.Context, token string, duration time.Duration) {
-	logs.CtxInfo(ctx, "set token expiration: %v", duration)
-	redis_cli.Client.Expire(ctx, redisKeyLogin(token), duration)
-}
-
-func (impl *LoginTokenRepositoryImpl) GetTokenExpiration(ctx context.Context, token string) time.Duration {
-	duration := redis_cli.Client.TTL(ctx, redisKeyLogin(token)).Val()
-
-	logs.CtxInfo(ctx, "get token expiration: %v", duration)
-	return duration
 }
 
 func redisKeyLogin(token string) string {

@@ -28,14 +28,13 @@ import (
 )
 
 const (
-	PlayModeLinear = "linear" // 播放一次
-	PlayModeLoop   = "loop"   // 循环播放
+	PlayModeLinear = "linear"
+	PlayModeLoop   = "loop"
 )
 
 func GetPlayListDetail(ctx context.Context) (*vod_models.PlayListDetail, error) {
 	result := &vod_models.PlayListDetail{}
-	appID := config.Configs().AppID
-	instance := vod_openapi.GetInstance(ctx, appID)
+	instance := vod_openapi.GetInstance()
 	resp, _, err := instance.GetPlaylists(&request.VodGetPlaylistsRequest{
 		Ids: config.Configs().VodPlayListID,
 	})
@@ -55,7 +54,7 @@ func GetPlayListDetail(ctx context.Context) (*vod_models.PlayListDetail, error) 
 		}
 	}
 
-	videoList, err := getVideoPlayAuthToken(ctx, &vod_models.GetFeedStreamRequest{AppID: appID}, videos)
+	videoList, err := getVideoPlayAuthToken(ctx, vod_models.GetFeedStreamRequest{}, videos)
 	if err != nil {
 		logs.CtxError(ctx, "getVideoPlayAuthToken err: %s", err.Error())
 		return nil, err

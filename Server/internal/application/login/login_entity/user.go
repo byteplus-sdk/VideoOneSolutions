@@ -20,10 +20,8 @@ import "time"
 
 type UserProfile struct {
 	ID        int64     `gorm:"column:id" json:"id"`
-	AppID     int64     `gorm:"column:app_id" json:"app_id"`
 	UserID    string    `gorm:"column:user_id" json:"user_id"`
 	UserName  string    `gorm:"column:user_name" json:"user_name"`
-	PosterUrl string    `gorm:"column:poster_url" json:"poster_url"`
 	CreatedAt time.Time `gorm:"column:created_at" json:"created_at"`
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at"`
 }

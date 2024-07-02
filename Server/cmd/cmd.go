@@ -27,7 +27,6 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/pkg/db"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli"
-	"github.com/byteplus/VideoOneServer/internal/pkg/task"
 )
 
 var conf = flag.String("config", "conf/config.yaml", "server config file path")
@@ -35,21 +34,17 @@ var conf = flag.String("config", "conf/config.yaml", "server config file path")
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	Init()
+	config.InitConfig(*conf)
+	logs.InitLog()
+	db.Open(config.Configs().MysqlDSN)
+	if config.Configs().RedisInit {
+		redis_cli.NewRedis(config.Configs().RedisAddr, config.Configs().RedisPassword)
+	}
+	handler.StartCronJob()
 
-	h := handler.NewEventHandlerDispatch()
-	r := api.NewHttpApi(h)
+	r := api.NewHttpApi()
 	err := r.Run()
 	if err != nil {
 		panic("http server start failed, error:" + err.Error())
 	}
-}
-
-func Init() {
-	config.InitConfig(*conf)
-	logs.InitLog()
-	db.Open(config.Configs().MysqlDSN)
-	redis_cli.NewRedis(config.Configs().RedisAddr, config.Configs().RedisPassword)
-	c := task.GetCronTask()
-	c.Start()
 }

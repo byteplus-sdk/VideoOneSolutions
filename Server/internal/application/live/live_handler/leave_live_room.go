@@ -18,45 +18,32 @@ package live_handler
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_api_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_room_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type leaveLiveRoomReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
 }
 
 type leaveLiveRoomResp struct {
 }
 
-// api leave room
-func (eh *EventHandler) LeaveLiveRoom(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveLeaveLiveRoom param:%+v", param)
+func LeaveLiveRoom(ctx *gin.Context) (resp interface{}, err error) {
 	var p leaveLiveRoomReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
-	//check param
-	if p.RoomID == "" || p.UserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
-	}
-
-	return LeaveRoomLogic(ctx, param.AppID, p)
-
+	return LeaveRoomLogic(ctx, p.AppID, p)
 }
 
-// logic
 func LeaveRoomLogic(ctx context.Context, appID string, p leaveLiveRoomReq) (resp interface{}, err error) {
 	err = live_linkmic_api_service.FinishAudienceLinkmic(ctx, appID, p.RoomID, p.UserID)
 	if err != nil {

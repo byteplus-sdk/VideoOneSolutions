@@ -17,17 +17,13 @@
 package live_handler
 
 import (
-	"context"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_cdn_service"
 )
 
 func ConvertReturnRoom(room *live_entity.LiveRoom) *live_return_models.Room {
-	ctx := context.Background()
 	resp := &live_return_models.Room{
-		LiveAppID:         room.LiveAppID,
 		RtcAppID:          room.RtcAppID,
 		RoomID:            room.RoomID,
 		RoomName:          room.RoomName,
@@ -35,7 +31,7 @@ func ConvertReturnRoom(room *live_entity.LiveRoom) *live_return_models.Room {
 		HostUserName:      room.HostUserName,
 		Status:            room.Status,
 		AudienceCount:     room.AudienceCount,
-		StreamPullUrlList: live_cdn_service.GenPullUrl(ctx, room.RtcAppID, room.StreamID),
+		StreamPullUrlList: live_cdn_service.GenPullUrl(room.StreamID),
 		Extra:             room.Extra,
 	}
 	return resp

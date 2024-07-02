@@ -17,21 +17,19 @@
 package ktv_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
+	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type joinLiveRoomReq struct {
-	UserID     string `json:"user_id"`
-	UserName   string `json:"user_name"`
-	RoomID     string `json:"room_id"`
-	LoginToken string `json:"login_token"`
+	AppID    string `json:"app_id" binding:"required"`
+	UserID   string `json:"user_id" binding:"required"`
+	UserName string `json:"user_name" binding:"required"`
+	RoomID   string `json:"room_id" binding:"required"`
 }
 
 type joinLiveRoomResp struct {
@@ -44,20 +42,9 @@ type joinLiveRoomResp struct {
 	CurSong       *ktv_service.Song             `json:"cur_song"`
 }
 
-func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "ktvJoinLiveRoom param:%+v", param)
+func JoinLiveRoom(ctx *gin.Context) (resp interface{}, err error) {
 	var p joinLiveRoomReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.UserID == "" || p.UserName == "" || p.RoomID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
-	}
-	if err := login_service.GetUserService().CheckUserID(ctx, p.LoginToken, p.UserID); err != nil {
-		logs.CtxInfo(ctx, "check userid error:%s", err)
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
 		return nil, err
 	}
 
@@ -66,13 +53,13 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 	seatFactory := ktv_service.GetSeatFactory()
 
 	roomService := ktv_service.GetRoomService()
-	err = roomService.JoinRoom(ctx, param.AppID, p.RoomID, p.UserID, p.UserName, param.DeviceID)
+	err = roomService.JoinRoom(ctx, p.AppID, p.RoomID, p.UserID, p.UserName, "")
 	if err != nil {
 		logs.CtxError(ctx, "join room failed,error:%s", err)
 		return nil, err
 	}
 
-	room, err := roomFactory.GetRoomByRoomID(ctx, param.AppID, p.RoomID)
+	room, err := roomFactory.GetRoomByRoomID(ctx, p.AppID, p.RoomID)
 	if err != nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		return nil, err
@@ -81,14 +68,14 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 		logs.CtxError(ctx, "room is not exist")
 		return nil, custom_error.ErrRoomNotExist
 	}
-	host, _ := userFactory.GetUserByRoomIDUserID(ctx, param.AppID, room.GetRoomID(), room.GetHostUserID())
-	user, _ := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, p.RoomID, p.UserID)
+	host, _ := userFactory.GetUserByRoomIDUserID(ctx, p.AppID, room.GetRoomID(), room.GetHostUserID())
+	user, _ := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, p.RoomID, p.UserID)
 
 	seats, _ := seatFactory.GetSeatsByRoomID(ctx, p.RoomID)
 	seatList := make(map[int]*ktv_service.SeatInfo)
 	for _, seat := range seats {
 		if seat.GetOwnerUserID() != "" {
-			u, _ := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, seat.GetRoomID(), seat.GetOwnerUserID())
+			u, _ := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, seat.GetRoomID(), seat.GetOwnerUserID())
 			seatList[seat.SeatID] = &ktv_service.SeatInfo{
 				Status:    seat.Status,
 				GuestInfo: u,
@@ -113,15 +100,13 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 		logs.CtxError(ctx, "get cur song failed,error:%s", err)
 		return nil, err
 	}
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, param.AppID)
 
 	resp = &joinLiveRoomResp{
 		RoomInfo:      room,
 		HostInfo:      host,
 		UserInfo:      user,
 		SeatList:      seatList,
-		RtcToken:      room.GenerateToken(ctx, p.UserID, appInfo.AppId, appInfo.AppKey),
+		RtcToken:      room.GenerateToken(ctx, p.UserID, config.Configs().RTCAppID, config.Configs().RTCAppKey),
 		AudienceCount: userCount,
 		CurSong:       curSong,
 	}

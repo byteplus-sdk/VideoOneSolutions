@@ -27,7 +27,6 @@ const (
 )
 
 type Room struct {
-	LiveAppID         string            `json:"live_app_id"`
 	RtcAppID          string            `json:"rtc_app_id"`
 	RoomID            string            `json:"room_id"`
 	RoomName          string            `json:"room_name"`
@@ -49,4 +48,5 @@ type User struct {
 	Extra         string    `json:"extra"`
 	LinkmicStatus int       `json:"linkmic_status"`
 	LinkmicTime   time.Time `json:"linkmic_time"`
+	ApplyLinkTime time.Time `json:"apply_link_time"`
 }

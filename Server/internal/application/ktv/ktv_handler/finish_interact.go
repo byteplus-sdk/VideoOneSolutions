@@ -17,45 +17,35 @@
 package ktv_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type finishInteractReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	SeatID     int    `json:"seat_id"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
+	SeatID int    `json:"seat_id"`
 }
 
 type finishInteractResp struct {
 }
 
-func (eh *EventHandler) FinishInteract(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "ktvFinishInteract param:%+v", param)
+func FinishInteract(ctx *gin.Context) (resp interface{}, err error) {
 	var p finishInteractReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.RoomID == "" || p.UserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
 	interactService := ktv_service.GetInteractService()
 
-	err = interactService.FinishInteract(ctx, param.AppID, p.RoomID, p.SeatID, ktv_service.InteractFinishTypeSelf)
+	err = interactService.FinishInteract(ctx, p.AppID, p.RoomID, p.SeatID, ktv_service.InteractFinishTypeSelf)
 	if err != nil {
 		logs.CtxError(ctx, "finish interact failed,error:%s", err)
 		return nil, err
 	}
 
-	return nil, nil
+	return &finishInteractResp{}, nil
 }

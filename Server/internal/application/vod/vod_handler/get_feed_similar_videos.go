@@ -23,8 +23,6 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/models/response"
-	"github.com/byteplus/VideoOneServer/internal/pkg/config"
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/util"
 	"github.com/gin-gonic/gin"
 )
@@ -34,16 +32,12 @@ func GetFeedSimilarVideos(httpCtx *gin.Context) {
 	req := &vod_models.GetSimilarFeedRequest{}
 	err := httpCtx.ShouldBindJSON(req)
 	if err != nil {
-		logs.CtxError(ctx, "param error,err:%s", err)
 		httpCtx.String(http.StatusBadRequest, response.NewVodCommonResponse(ctx, "", "", custom_error.ErrInput))
 		return
 	}
 
 	if req.PageSize <= 0 || req.PageSize > 100 {
 		req.PageSize = 100
-	}
-	if req.AppID == "" {
-		req.AppID = config.Configs().AppID
 	}
 
 	resp, err := vod_service.GetFeedSimilarVideos(ctx, req.Vid, req.AppID, req.Offset, req.PageSize, *req.VideoType)

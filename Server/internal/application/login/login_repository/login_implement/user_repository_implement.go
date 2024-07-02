@@ -18,12 +18,14 @@ package login_implement
 
 import (
 	"context"
+	"errors"
 	"time"
+
+	"gorm.io/gorm"
 
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_entity"
 	"github.com/byteplus/VideoOneServer/internal/pkg/db"
 	"github.com/byteplus/VideoOneServer/internal/pkg/util"
-	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -50,7 +52,7 @@ func (impl *UserRepositoryImpl) GetUser(ctx context.Context, userID string) (*lo
 	var rs *login_entity.UserProfile
 	err := db.Client.WithContext(ctx).Debug().Table(UserProfileTable).Where("user_id = ?", userID).Order("id desc").First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err

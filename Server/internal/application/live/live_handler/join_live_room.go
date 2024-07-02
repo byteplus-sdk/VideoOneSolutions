@@ -17,26 +17,21 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_api_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_room_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_util"
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type joinLiveRoomReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	UserName   string `json:"user_name"`
-	LoginToken string `json:"login_token"`
+	AppID    string `json:"app_id" binding:"required"`
+	RoomID   string `json:"room_id" binding:"required"`
+	UserID   string `json:"user_id" binding:"required"`
+	UserName string `json:"user_name" binding:"required"`
 }
 
 type joinLiveRoomResp struct {
@@ -46,34 +41,26 @@ type joinLiveRoomResp struct {
 	RtmToken     string                   `json:"rtm_token"`
 }
 
-func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveJoinLiveRoom param:%+v", param)
+func JoinLiveRoom(ctx *gin.Context) (resp interface{}, err error) {
 	var p joinLiveRoomReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	//check param
-	if p.RoomID == "" || p.UserID == "" || p.UserName == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
 	//clear old user
-	oldUsers, _ := live_facade.GetRoomUserRepo().GetUsersByUserID(ctx, param.AppID, p.UserID)
+	oldUsers, _ := live_facade.GetRoomUserRepo().GetUsersByUserID(ctx, p.AppID, p.UserID)
 	for _, oldUser := range oldUsers {
-		DisconnectLogic(ctx, oldUser.RoomID, oldUser.UserID, param.AppID)
+		DisconnectLogic(ctx, oldUser.RoomID, oldUser.UserID, p.AppID)
 	}
 
 	roomService := live_room_service.GetRoomService()
-	room, audience, err := roomService.JoinRoom(ctx, param.AppID, p.RoomID, p.UserID, p.UserName)
+	room, audience, err := roomService.JoinRoom(ctx, p.AppID, p.RoomID, p.UserID, p.UserName)
 	if err != nil {
 		logs.CtxError(ctx, "join room failed,error:%s", err)
 		return nil, err
 	}
 
-	host, err := live_facade.GetRoomUserRepo().GetActiveUser(ctx, param.AppID, room.RoomID, room.HostUserID)
+	host, err := live_facade.GetRoomUserRepo().GetActiveUser(ctx, p.AppID, room.RoomID, room.HostUserID)
 	if err != nil {
 		logs.CtxError(ctx, "get host failed,error:%s", err)
 		return nil, err
@@ -87,7 +74,7 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 	}
 
 	if linkmicInfo != nil {
-		if linkmicInfo.IsAnchorLink == false && linkmicInfo.IsLinked {
+		if !linkmicInfo.IsAnchorLink && linkmicInfo.IsLinked {
 			hostReturn.LinkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicLinked
 		}
 		if linkmicInfo.IsAnchorLink && linkmicInfo.IsLinked {
@@ -95,16 +82,12 @@ func (eh *EventHandler) JoinLiveRoom(ctx context.Context, param *public.EventPar
 		}
 	}
 
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, param.AppID)
-
 	resp = &joinLiveRoomResp{
 		LiveRoomInfo: ConvertReturnRoom(room),
 		UserInfo:     ConvertReturnUser(audience),
 		HostUserInfo: hostReturn,
-		RtmToken:     live_util.GenToken(p.RoomID, p.UserID, appInfo.AppId, appInfo.AppKey),
+		RtmToken:     live_util.GenToken(p.RoomID, p.UserID),
 	}
 
 	return resp, nil
-
 }

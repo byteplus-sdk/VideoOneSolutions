@@ -25,7 +25,6 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_inform_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_core_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_util"
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
@@ -119,9 +118,6 @@ func AnchorReply(ctx context.Context, appID string, r *live_linker_models.ApiAnc
 		DelInvited(ctx, r.InviteeRoomID, r.InviteeUserID)
 	}()
 
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, appID)
-
 	if r.LinkerID == "" {
 		return nil, custom_error.ErrInput
 	}
@@ -189,11 +185,11 @@ func AnchorReply(ctx context.Context, appID string, r *live_linker_models.ApiAnc
 		inviterRtcRoomID := roomRepo.GetRoomRtcRoomID(ctx, r.InviterRoomID)
 		inviteeRtcRoomID := roomRepo.GetRoomRtcRoomID(ctx, r.InviteeRoomID)
 		resp.RtcRoomID = inviterRtcRoomID
-		resp.RtcToken = live_util.GenToken(resp.RtcRoomID, r.InviteeUserID, appInfo.AppId, appInfo.AppKey)
+		resp.RtcToken = live_util.GenToken(resp.RtcRoomID, r.InviteeUserID)
 		resp.RtcUserList = userList
 		resp.LinkedTime = replyResp.Linker.LinkedTime
 		informData.RtcRoomID = inviteeRtcRoomID
-		informData.RtcToken = live_util.GenToken(informData.RtcRoomID, r.InviterUserID, appInfo.AppId, appInfo.AppKey)
+		informData.RtcToken = live_util.GenToken(informData.RtcRoomID, r.InviterUserID)
 		informData.RtcUserList = userList
 
 		linkmicStatusInformData := &live_inform_service.InformLinkmicStatus{
@@ -202,7 +198,6 @@ func AnchorReply(ctx context.Context, appID string, r *live_linker_models.ApiAnc
 		informer := inform.GetInformService(appID)
 		informer.BroadcastRoom(ctx, r.InviterRoomID, live_inform_service.OnLinkmicStatus, linkmicStatusInformData)
 		informer.BroadcastRoom(ctx, r.InviteeRoomID, live_inform_service.OnLinkmicStatus, linkmicStatusInformData)
-
 	}
 	informer := inform.GetInformService(appID)
 	informer.UnicastRoomUser(ctx, r.InviterRoomID, r.InviterUserID, live_inform_service.OnAnchorLinkmicReply, informData)
@@ -238,5 +233,4 @@ func AnchorFinish(ctx context.Context, appID string, r *live_linker_models.ApiAn
 
 	resp := &live_linker_models.ApiAnchorFinishResp{}
 	return resp, nil
-
 }

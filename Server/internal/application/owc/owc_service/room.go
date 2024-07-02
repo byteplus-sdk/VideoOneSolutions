@@ -20,9 +20,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_db"
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_entity"
+	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/token"
 )
@@ -77,12 +77,10 @@ func (r *Room) GetHostUserID() string {
 	return r.HostUserID
 }
 
-func (r *Room) GenerateToken(ctx context.Context, appID, userID string) string {
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, appID)
+func (r *Room) GenerateToken(ctx context.Context, userID string) string {
 	param := &token.GenerateParam{
-		AppID:        appID,
-		AppKey:       appInfo.AppKey,
+		AppID:        config.Configs().RTCAppID,
+		AppKey:       config.Configs().RTCAppKey,
 		RoomID:       r.RoomID,
 		UserID:       userID,
 		ExpireAt:     7 * 24 * 3600,

@@ -29,10 +29,9 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_repository/login_facade"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
+	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/general"
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/lock"
-
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
 const (
@@ -87,23 +86,6 @@ func (s *UserService) GetUserID(ctx context.Context, token string) string {
 	return s.loginTokenRepo.GetUserID(ctx, token)
 }
 
-func (s *UserService) GetUserName(ctx context.Context, userID string) (string, error) {
-	user, err := s.userRepo.GetUser(ctx, userID)
-	if user == nil {
-		logs.CtxWarn(ctx, "user not exist")
-		return "", nil
-	}
-
-	if err != nil {
-		logs.CtxError(ctx, "failed to get user, err: %v", err)
-		return "", custom_error.InternalError(err)
-	}
-
-	logs.CtxInfo(ctx, "get user name: %v", user.UserName)
-
-	return user.UserName, nil
-}
-
 func (s *UserService) SetUserName(ctx context.Context, userID, userName string) error {
 	user := &login_entity.UserProfile{
 		UserID:   userID,
@@ -120,49 +102,21 @@ func (s *UserService) SetUserName(ctx context.Context, userID, userName string) 
 	return nil
 }
 
-func (s *UserService) SetUserInfo(ctx context.Context, userID, userName, posterUrl string) error {
-	user := &login_entity.UserProfile{
-		UserID:    userID,
-		UserName:  userName,
-		PosterUrl: posterUrl,
+func (s *UserService) GetUserName(ctx context.Context, userID string) (string, error) {
+	user, err := s.userRepo.GetUser(ctx, userID)
+	if user == nil {
+		logs.CtxWarn(ctx, "user not exist")
+		return "", nil
 	}
 
-	err := s.userRepo.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "failed to set user name, err: %v", err)
-		return custom_error.InternalError(err)
+		logs.CtxError(ctx, "failed to get user, err: %v", err)
+		return "", custom_error.InternalError(err)
 	}
 
-	logs.CtxInfo(ctx, "set user name: %v", userName)
-	return nil
-}
+	logs.CtxInfo(ctx, "get user name: %v", user.UserName)
 
-func (s *UserService) GetLoginUserName(ctx context.Context, userID string) string {
-	userName, err := s.GetUserName(ctx, userID)
-	if err != nil {
-		return GetRandomUserName()
-	}
-
-	if userName == "" {
-		userName = GetRandomUserName()
-
-		_ = s.SetUserName(ctx, userID, userName)
-	}
-
-	return userName
-}
-
-func (s *UserService) CheckUserID(ctx context.Context, token, userID string) error {
-	err := s.CheckLoginToken(ctx, token)
-	if err != nil {
-		return err
-	}
-	tokenUserID := s.GetUserID(ctx, token)
-	if tokenUserID == userID {
-		return nil
-	} else {
-		return custom_error.ErrorTokenUserNotMatch
-	}
+	return user.UserName, nil
 }
 
 func (s *UserService) CheckLoginToken(ctx context.Context, token string) error {
@@ -195,45 +149,6 @@ func (s *UserService) CheckLoginToken(ctx context.Context, token string) error {
 		logs.CtxWarn(ctx, "login token expiry")
 		return custom_error.ErrorTokenExpiry
 	}
-
-	return nil
-}
-
-// RefreshLoginToken avoid token expiry when user in room.
-func (s *UserService) RefreshLoginToken(ctx context.Context, token string) error {
-	if token == "" {
-		logs.CtxWarn(ctx, "empty token")
-		return custom_error.ErrorTokenEmpty
-	}
-
-	var createdAt int64
-	var err error
-
-	for i := 0; i < maxRetryTimes; i++ {
-		createdAt, err = s.loginTokenRepo.GetTokenCreatedAt(ctx, token)
-		if err == nil {
-			break
-		}
-
-		if i < maxRetryTimes {
-			retryDelay := time.Duration(math.Pow(2, float64(i))) * retryBackOff
-			time.Sleep(retryDelay)
-		}
-	}
-
-	if err != nil {
-		logs.CtxError(ctx, "get token failed, err: %v", err)
-		return custom_error.InternalError(err)
-	}
-
-	now := time.Now().UnixNano()
-
-	if now-createdAt > int64(TokenExpiration) {
-		logs.CtxWarn(ctx, "login token expiry")
-		return custom_error.ErrorTokenExpiry
-	}
-
-	s.loginTokenRepo.SetTokenExpiration(ctx, token, TokenExpiration)
 
 	return nil
 }
@@ -294,18 +209,4 @@ func (s *UserService) GenerateLocalLoginToken(_ context.Context, userID string, 
 	hasher.Write([]byte(text))
 
 	return hex.EncodeToString(hasher.Sum(nil))
-}
-
-func GetRandomUserName() string {
-	return RandString(userNameLen)
-}
-
-func RandString(l uint) string {
-	s := make([]byte, l)
-
-	for i := 0; i < int(l); i++ {
-		s[i] = chars[rand.Intn(len(chars))]
-	}
-
-	return string(s)
 }

@@ -14,37 +14,29 @@
  * limitations under the License.
  */
 
-package login_handler
+package live_feed_service
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/byteplus/VideoOneServer/internal/application/live_feed/live_feed_model"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
+	"github.com/byteplus/VideoOneServer/internal/pkg/config"
+	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
-type verifyTokenParam struct {
-	LoginToken string `json:"login_token"`
-}
-
-func (h *EventHandler) VerifyLoginToken(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	var p verifyTokenParam
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	userService := login_service.GetUserService()
-
-	err = userService.CheckLoginToken(ctx, p.LoginToken)
+func SendMessage(ctx context.Context, roomID, userID, message string) {
+	userName, err := login_service.GetUserService().GetUserName(ctx, userID)
 	if err != nil {
-		logs.CtxWarn(ctx, "login token expiry")
-		return nil, custom_error.ErrInput
+		logs.CtxError(ctx, "get user name error:"+err.Error())
+		userName = "unknown"
 	}
-
-	return nil, nil
+	informer := inform.GetInformService(config.Configs().RTCAppID)
+	data := &live_feed_model.InformMessageSend{
+		UserID:   userID,
+		Message:  message,
+		UserName: userName,
+	}
+	informer.BroadcastRoom(ctx, roomID, live_feed_model.FeedLiveOnMessageSend, data)
 }

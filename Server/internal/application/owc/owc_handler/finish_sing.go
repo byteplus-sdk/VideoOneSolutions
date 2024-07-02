@@ -17,39 +17,31 @@
 package owc_handler
 
 import (
-	"context"
-	"encoding/json"
 	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type finishSingReq struct {
-	UserID     string  `json:"user_id"`
-	RoomID     string  `json:"room_id"`
-	SongID     string  `json:"song_id"`
-	Score      float64 `json:"score"`
-	LoginToken string  `json:"login_token"`
+	AppID  string  `json:"app_id" binding:"required"`
+	UserID string  `json:"user_id" binding:"required"`
+	RoomID string  `json:"room_id" binding:"required"`
+	SongID string  `json:"song_id" binding:"required"`
+	Score  float64 `json:"score"`
 }
 
 type finishSingResp struct {
 	NextSong *owc_service.Song `json:"next_song"`
 }
 
-func (eh *EventHandler) FinishSing(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "owcFinishSing param:%+v", param)
+func FinishSing(ctx *gin.Context) (resp interface{}, err error) {
 	var p finishSingReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.UserID == "" || p.RoomID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
 	userFactory := owc_service.GetUserFactory()
@@ -68,10 +60,13 @@ func (eh *EventHandler) FinishSing(ctx context.Context, param *public.EventParam
 		return nil, custom_error.InternalError(errors.New("song_id not match current song_id"))
 	}
 
-	user, err := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, p.RoomID, p.UserID)
-	if err != nil || user == nil {
+	user, err := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, p.RoomID, p.UserID)
+	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, custom_error.ErrUserIsInactive
+	}
+	if user == nil {
+		return nil, custom_error.InternalError(errors.New("user not found"))
 	}
 
 	if !(user.IsHost() || user.GetUserID() == curSong.OwnerUserID) {
@@ -79,7 +74,7 @@ func (eh *EventHandler) FinishSing(ctx context.Context, param *public.EventParam
 		return nil, custom_error.ErrRequestSongUserRoleNotMatch
 	}
 
-	nextSong, err := songService.FinishSing(ctx, param.AppID, p.RoomID, p.Score)
+	nextSong, err := songService.FinishSing(ctx, p.AppID, p.RoomID, p.Score)
 	if err != nil {
 		return nil, err
 	}
@@ -89,5 +84,4 @@ func (eh *EventHandler) FinishSing(ctx context.Context, param *public.EventParam
 	}
 
 	return resp, nil
-
 }

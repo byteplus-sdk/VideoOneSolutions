@@ -17,13 +17,12 @@
 package live_cdn_service
 
 import (
-	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"strconv"
 	"time"
 
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
+	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 )
 
 const (
@@ -41,28 +40,26 @@ const (
 	postfix1080 = "_uhd"
 )
 
-func GenPushUrl(ctx context.Context, appID, streamID string) string {
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, appID)
-
-	volcTime := strconv.FormatInt(time.Now().Add(12*time.Hour).Unix(), 10)
+func GenPushUrl(streamID string) string {
+	expireTime := strconv.FormatInt(time.Now().Add(12*time.Hour).Unix(), 10)
 	hasher := md5.New()
 
-	hasher.Write([]byte("/" + appInfo.LiveAppName + "/" + streamID + appInfo.LiveStreamKey + volcTime))
-	volcSecret := hex.EncodeToString(hasher.Sum(nil))
+	hasher.Write([]byte("/" + config.Configs().LiveAppName + "/" + streamID + config.Configs().LiveStreamKey + expireTime))
+	secret := hex.EncodeToString(hasher.Sum(nil))
 
-	return appInfo.LivePushDomain + "/" + appInfo.LiveAppName + "/" + streamID + "?expire=" + volcTime + "&sign=" + volcSecret
+	return config.Configs().LivePushDomain + "/" + config.Configs().LiveAppName + "/" + streamID + "?expire=" + expireTime + "&sign=" + secret
 }
 
-func GenPullUrl(ctx context.Context, appID, streamID string) map[string]string {
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, appID)
+const StreamSuffix = ".flv"
+
+func GenPullUrl(streamID string) map[string]string {
+	configs := config.Configs()
 	res := make(map[string]string)
-	res[resolutionOrigin] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + ".flv"
-	res[resolution480] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix480 + ".flv"
-	res[resolution540] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix540 + ".flv"
-	res[resolution720] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix720 + ".flv"
-	res[resolution1080] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix1080 + ".flv"
+	res[resolutionOrigin] = configs.LivePullDomain + "/" + configs.LiveAppName + "/" + streamID + StreamSuffix
+	res[resolution480] = configs.LivePullDomain + "/" + configs.LiveAppName + "/" + streamID + postfix480 + StreamSuffix
+	res[resolution540] = configs.LivePullDomain + "/" + configs.LiveAppName + "/" + streamID + postfix540 + StreamSuffix
+	res[resolution720] = configs.LivePullDomain + "/" + configs.LiveAppName + "/" + streamID + postfix720 + StreamSuffix
+	res[resolution1080] = configs.LivePullDomain + "/" + configs.LiveAppName + "/" + streamID + postfix1080 + StreamSuffix
 
 	return res
 }

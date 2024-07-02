@@ -21,6 +21,7 @@ const (
 	BizIDKtv        = "ktv"
 	BizIDAPIExample = "rtc_api_example"
 	BizIDOwc        = "owc"
+	BizIDLiveFeed   = "livefeed"
 )
 
 const (
@@ -28,10 +29,7 @@ const (
 	BidKTV        = "BytePlusRTC_bid_ktv"
 	BidAPIExample = "BytePlusRTC_bid_api_example"
 	BidOwc        = "BytePlusRTC_bid_owc"
-)
-
-const (
-	CtxSourceApi = "SourceApi"
+	BidLiveFeed   = "BytePlusRTC_bid_live_feed"
 )
 
 var BidMap = map[string]string{
@@ -39,6 +37,9 @@ var BidMap = map[string]string{
 	BizIDKtv:        BidKTV,
 	BizIDAPIExample: BidAPIExample,
 	BizIDOwc:        BidOwc,
+	BizIDLiveFeed:   BidLiveFeed,
 }
 
 const VideoCommentNum = 10
+
+const HeaderLoginToken = "X-Login-Token"

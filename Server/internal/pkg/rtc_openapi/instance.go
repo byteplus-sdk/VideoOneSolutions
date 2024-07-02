@@ -17,33 +17,17 @@
 package rtc_openapi
 
 import (
-	"context"
-
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 )
 
-var instanceMap map[string]*RTC
+var rtcOpenAPIInstance *RTC
 
-func GetInstance(ctx context.Context, appID string) *RTC {
-	logs.CtxInfo(ctx, "get instance appID:%s", appID)
-	logs.CtxInfo(ctx, "instanceMap:%s", instanceMap)
-	if instanceMap == nil {
-		instanceMap = make(map[string]*RTC, 10)
+func GetInstance() *RTC {
+	if rtcOpenAPIInstance == nil {
+		instance := NewInstance()
+		instance.SetAccessKey(config.Configs().AccessKey)
+		instance.SetSecretKey(config.Configs().SecretAccessKey)
+		rtcOpenAPIInstance = instance
 	}
-	instance, ok := instanceMap[appID]
-	logs.CtxInfo(ctx, "instance:%s,%s", instance, ok)
-	if ok {
-		return instance
-	} else {
-		userInfoService := login_service.GetAppInfoService()
-		userInfo, _ := userInfoService.ReadAppInfoByAppId(ctx, appID)
-		logs.CtxInfo(ctx, "userinfo:%s", userInfo)
-		instance = NewInstance()
-		instance.SetAccessKey(userInfo.AccessKey)
-		instance.SetSecretKey(userInfo.SecretAccessKey)
-		instanceMap[appID] = instance
-	}
-	logs.CtxInfo(ctx, "instance:%s", instance)
-	return instance
+	return rtcOpenAPIInstance
 }

@@ -17,37 +17,26 @@
 package owc_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type getRequestSongReq struct {
-	RoomID     string `json:"room_id"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
 }
 
 type getRequestSongResp struct {
 	SongList []*owc_service.Song `json:"song_list"`
 }
 
-func (eh *EventHandler) GetRequestSongList(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "owcFinishLive param:%+v", param)
+func GetRequestSongList(ctx *gin.Context) (resp interface{}, err error) {
 	var p getRequestSongReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
-
-	if p.RoomID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
-	}
-
 	songService := owc_service.GetSongService()
 
 	songList, err := songService.GetRequestSongList(ctx, p.RoomID)
@@ -61,5 +50,4 @@ func (eh *EventHandler) GetRequestSongList(ctx context.Context, param *public.Ev
 	}
 
 	return resp, nil
-
 }

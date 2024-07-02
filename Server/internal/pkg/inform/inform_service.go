@@ -51,7 +51,7 @@ func GetInformService(appID string) *InformService {
 
 // BroadcastRoom Broadcast in Room
 func (is *InformService) BroadcastRoom(ctx context.Context, roomID string, event InformEvent, data interface{}) {
-	instance := rtc_openapi.GetInstance(ctx, is.AppID)
+	instance := rtc_openapi.GetInstance()
 	err := instance.RtsSendBroadcast(ctx, is.AppID, roomID, response.NewInformToClient(string(event), data))
 	if err != nil {
 		logs.CtxError(ctx, "rts send broad cast failed,event:%s,data:%#v,error:%s", event, data, err)
@@ -60,7 +60,7 @@ func (is *InformService) BroadcastRoom(ctx context.Context, roomID string, event
 
 // UnicastRoomUser Unicast to user in Room
 func (is *InformService) UnicastRoomUser(ctx context.Context, roomID, userID string, event InformEvent, data interface{}) {
-	instance := rtc_openapi.GetInstance(ctx, is.AppID)
+	instance := rtc_openapi.GetInstance()
 	err := instance.RtsSendRoomUnicast(ctx, is.AppID, roomID, userID, response.NewInformToClient(string(event), data))
 	if err != nil {
 		logs.CtxError(ctx, "rts send broad cast failed,event:%s,data:%#v,error:%s", event, data, err)
@@ -69,7 +69,7 @@ func (is *InformService) UnicastRoomUser(ctx context.Context, roomID, userID str
 
 // UnicastUser Unicast to User
 func (is *InformService) UnicastUser(ctx context.Context, userID string, event InformEvent, data interface{}) {
-	instance := rtc_openapi.GetInstance(ctx, is.AppID)
+	instance := rtc_openapi.GetInstance()
 	err := instance.RtsSendUnicast(ctx, is.AppID, userID, response.NewInformToClient(string(event), data))
 	if err != nil {
 		logs.CtxError(ctx, "rts send broad cast failed,event:%s,data:%#v,error:%s", event, data, err)

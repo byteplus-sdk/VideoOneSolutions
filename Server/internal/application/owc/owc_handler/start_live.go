@@ -17,22 +17,19 @@
 package owc_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type startLiveReq struct {
-	UserID              string `json:"user_id"`
-	UserName            string `json:"user_name"`
+	AppID               string `json:"app_id" binding:"required"`
+	UserID              string `json:"user_id" binding:"required"`
+	UserName            string `json:"user_name" binding:"required"`
 	RoomName            string `json:"room_name"`
 	BackgroundImageName string `json:"background_image_name"`
-	LoginToken          string `json:"login_token"`
 }
 
 type startLiveResp struct {
@@ -41,21 +38,14 @@ type startLiveResp struct {
 	RtcToken string            `json:"rtc_token"`
 }
 
-func (eh *EventHandler) StartLive(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "owcStartLive param:%+v", param)
+func StartLive(ctx *gin.Context) (resp interface{}, err error) {
 	var p startLiveReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.UserID == "" || p.UserName == "" || p.RoomName == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
 	userFactory := owc_service.GetUserFactory()
-	userOld, err := userFactory.GetActiveUserByUserID(ctx, param.AppID, p.UserID)
+	userOld, err := userFactory.GetActiveUserByUserID(ctx, p.AppID, p.UserID)
 	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, err
@@ -67,13 +57,13 @@ func (eh *EventHandler) StartLive(ctx context.Context, param *public.EventParam)
 
 	roomService := owc_service.GetRoomService()
 
-	room, host, err := roomService.CreateRoom(ctx, param.AppID, p.RoomName, p.BackgroundImageName, p.UserID, p.UserName, param.DeviceID)
+	room, host, err := roomService.CreateRoom(ctx, p.AppID, p.RoomName, p.BackgroundImageName, p.UserID, p.UserName, "")
 	if err != nil {
 		logs.CtxError(ctx, "create room failed,error:%s", err)
 		return nil, err
 	}
 
-	err = roomService.StartLive(ctx, param.AppID, room.GetRoomID())
+	err = roomService.StartLive(ctx, p.AppID, room.GetRoomID())
 	if err != nil {
 		logs.CtxError(ctx, "room start live failed,error:%s", err)
 		return nil, err
@@ -82,7 +72,7 @@ func (eh *EventHandler) StartLive(ctx context.Context, param *public.EventParam)
 	resp = &startLiveResp{
 		RoomInfo: room,
 		UserInfo: host,
-		RtcToken: room.GenerateToken(ctx, param.AppID, host.GetUserID()),
+		RtcToken: room.GenerateToken(ctx, host.GetUserID()),
 	}
 
 	return resp, nil

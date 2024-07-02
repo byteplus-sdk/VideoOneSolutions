@@ -17,19 +17,21 @@
 package ktv_handler
 
 import (
-	"context"
-	"encoding/json"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_redis"
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/models/public"
+	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type reconnectReq struct {
-	LoginToken string `json:"login_token"`
+	AppID string `json:"app_id" binding:"required"`
 }
 
 type reconnectResp struct {
@@ -41,37 +43,34 @@ type reconnectResp struct {
 	CurSong  *ktv_service.Song             `json:"cur_song"`
 }
 
-func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "ktvReconect param:%+v", param)
+func Reconnect(ctx *gin.Context) (resp interface{}, err error) {
 	var p reconnectReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
-
-	loginUserService := login_service.GetUserService()
-	userID := loginUserService.GetUserID(ctx, p.LoginToken)
 
 	roomFactory := ktv_service.GetRoomFactory()
 	userFactory := ktv_service.GetUserFactory()
 	seatFactory := ktv_service.GetSeatFactory()
 
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, param.AppID)
+	loginUserService := login_service.GetUserService()
+	userID := loginUserService.GetUserID(ctx, ctx.GetHeader(public.HeaderLoginToken))
 
-	user, err := userFactory.GetActiveUserByUserID(ctx, param.AppID, userID)
-	if err != nil || user == nil {
+	user, err := userFactory.GetActiveUserByUserID(ctx, p.AppID, userID)
+	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, custom_error.ErrUserIsInactive
 	}
-	user.Reconnect(param.DeviceID)
+	if user == nil {
+		return nil, custom_error.InternalError(errors.New("user is empty"))
+	}
+	user.Reconnect("")
 	err = userFactory.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s")
 		return nil, err
 	}
 
-	room, err := roomFactory.GetRoomByRoomID(ctx, param.AppID, user.GetRoomID())
+	room, err := roomFactory.GetRoomByRoomID(ctx, p.AppID, user.GetRoomID())
 	if err != nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		return nil, err
@@ -87,7 +86,7 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 	}
 	room.AudienceCount = audienceCount
 
-	host, err := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, room.GetRoomID(), room.GetHostUserID())
+	host, err := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, room.GetRoomID(), room.GetHostUserID())
 	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 	}
@@ -99,7 +98,7 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 	seatList := make(map[int]*ktv_service.SeatInfo)
 	for _, seat := range seats {
 		if seat.GetOwnerUserID() != "" {
-			u, _ := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, seat.GetRoomID(), seat.GetOwnerUserID())
+			u, _ := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, seat.GetRoomID(), seat.GetOwnerUserID())
 			seatList[seat.SeatID] = &ktv_service.SeatInfo{
 				Status:    seat.Status,
 				GuestInfo: u,
@@ -124,7 +123,7 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 		HostInfo: host,
 		UserInfo: user,
 		SeatList: seatList,
-		RtcToken: room.GenerateToken(ctx, user.GetUserID(), appInfo.AppId, appInfo.AppKey),
+		RtcToken: room.GenerateToken(ctx, user.GetUserID(), config.Configs().RTCAppID, config.Configs().RTCAppKey),
 		CurSong:  curSong,
 	}
 

@@ -4,26 +4,6 @@ DATABASE IF NOT EXISTS `videoone`;
 USE
 `videoone`;
 
-DROP TABLE IF EXISTS `app_info`;
-CREATE TABLE `app_info`
-(
-    `id`                bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
-    `app_id`            varchar(32)  NOT NULL DEFAULT '' COMMENT 'app id',
-    `app_key`           varchar(128) NOT NULL DEFAULT '' COMMENT 'app key',
-    `access_key`        varchar(128) NOT NULL COMMENT 'access_key',
-    `secret_access_key` varchar(128) NOT NULL COMMENT 'secret_access_key',
-    `vod_space`         varchar(100) NOT NULL DEFAULT '' COMMENT 'vod space',
-    `live_stream_key`   varchar(128) NOT NULL DEFAULT '' COMMENT 'live_stream_key',
-    `live_push_domain`  varchar(256) NOT NULL DEFAULT '' COMMENT 'live_push_domain',
-    `live_pull_domain`  varchar(256) NOT NULL DEFAULT '' COMMENT 'live_pull_domain',
-    `live_app_name`     varchar(256) NOT NULL DEFAULT '' COMMENT 'live_app_name',
-    `create_time`       timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
-    `update_time`       timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `unique_app_id` (`app_id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4 COMMENT ='app information';
-
 DROP TABLE IF EXISTS `live_linker`;
 CREATE TABLE `live_linker`
 (
@@ -55,7 +35,6 @@ DROP TABLE IF EXISTS `live_room`;
 CREATE TABLE `live_room`
 (
     `id`             bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
-    `live_app_id`    varchar(100)       DEFAULT NULL COMMENT 'live_app_id',
     `rtc_app_id`     varchar(100)       DEFAULT NULL COMMENT 'rtc_app_id',
     `room_id`        varchar(100)       DEFAULT NULL COMMENT 'room_id',
     `room_name`      varchar(100)       DEFAULT NULL COMMENT 'room_name',
@@ -101,12 +80,10 @@ DROP TABLE IF EXISTS `user_profile`;
 CREATE TABLE `user_profile`
 (
     `id`         bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-    `user_id`    varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'user id',
-    `user_name`  varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'user name',
-    `app_id`     varchar(64)                                     NOT NULL COMMENT 'app_id',
-    `poster_url` varchar(512)                                    not null DEFAULT '' COMMENT 'url',
-    `created_at` timestamp                                       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
-    `updated_at` timestamp                                       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    `user_id`    varchar(32) NOT NULL DEFAULT '' COMMENT 'user id',
+    `user_name`  varchar(64) NOT NULL DEFAULT '' COMMENT 'user name',
+    `created_at` timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `updated_at` timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
     PRIMARY KEY (`id`),
     UNIQUE KEY `idx_user_id` (`user_id`)
 ) ENGINE = InnoDB
@@ -241,3 +218,17 @@ CREATE TABLE `owc_user`
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_room_id_user_id` (`room_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='user of one-way chorus';
+
+CREATE TABLE `live_feed`
+(
+    `id`          bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
+    `host_name`   varchar(128) NOT NULL DEFAULT '' COMMENT 'host_name',
+    `room_name`   varchar(128) NOT NULL DEFAULT '' COMMENT 'room_name',
+    `room_id`     varchar(64)  NOT NULL DEFAULT '' COMMENT 'room_id',
+    `cover_url`   varchar(512) NOT NULL DEFAULT '' COMMENT 'cover_url',
+    `room_desc`   varchar(256) NOT NULL DEFAULT '' COMMENT 'room_desc',
+    `stream_id`   varchar(64)  NOT NULL DEFAULT '' COMMENT 'stream_id',
+    `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='live feed';

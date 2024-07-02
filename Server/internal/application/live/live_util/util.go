@@ -17,13 +17,14 @@
 package live_util
 
 import (
+	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 	"github.com/byteplus/VideoOneServer/internal/pkg/token"
 )
 
-func GenToken(roomID, userID string, appID, appKey string) string {
+func GenToken(roomID, userID string) string {
 	rtcToken, err := token.GenerateToken(&token.GenerateParam{
-		AppID:        appID,
-		AppKey:       appKey,
+		AppID:        config.Configs().RTCAppID,
+		AppKey:       config.Configs().RTCAppKey,
 		RoomID:       roomID,
 		UserID:       userID,
 		ExpireAt:     7 * 24 * 3600,

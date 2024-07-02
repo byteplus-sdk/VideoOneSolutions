@@ -17,17 +17,10 @@
 package ktv_handler
 
 import (
-	"context"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
 )
 
-func (eh *EventHandler) Disconnect(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "ktv disconnect,param:%#v", param)
-
-	roomService := ktv_service.GetRoomService()
-	roomService.Disconnect(ctx, param.AppID, param.RoomID, param.UserID)
-	return nil, nil
+func Disconnect(ctx *gin.Context, appID, roomID, userID string) (err error) {
+	return ktv_service.GetRoomService().Disconnect(ctx, appID, roomID, userID)
 }
