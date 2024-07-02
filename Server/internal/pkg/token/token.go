@@ -258,14 +258,13 @@ func packString(w io.Writer, s string) error {
 }
 
 func packMapUint32(w io.Writer, extra map[uint16]uint32) error {
-	var keys []int
+	var keys = make([]int, 0)
 	if err := packUint16(w, uint16(len(extra))); err != nil {
 		return err
 	}
 	for k := range extra {
 		keys = append(keys, int(k))
 	}
-	//should sorted keys
 	sort.Ints(keys)
 
 	for _, k := range keys {
@@ -329,13 +328,8 @@ type GenerateParam struct {
 }
 
 func GenerateToken(param *GenerateParam) (string, error) {
-	expiredAt := param.ExpireAt
-	if expiredAt < 1609500000 {
-		expiredAt = time.Now().Unix() + param.ExpireAt
-	}
-
+	expiredAt := time.Now().Unix() + param.ExpireAt
 	token := New(param.AppID, param.AppKey, param.RoomID, param.UserID)
-
 	token.ExpireTime(time.Unix(expiredAt, 0))
 
 	if param.CanPublish {

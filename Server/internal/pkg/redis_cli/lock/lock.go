@@ -72,7 +72,6 @@ func UnLockLocalUserIDAssign(ctx context.Context, lt int64) error {
 	return freeLock(ctx, csLocalUserIDAssignKey, lt)
 }
 
-// getLock attemps to get and locking a lock. It returns whether the lock is free and the expiring time of the lock.
 func getLock(ctx context.Context, key string) (bool, int64) {
 	// lt timestamp microsecond
 	lt := time.Now().Add(lockTimeout*time.Millisecond).UnixNano() / 1000
@@ -84,6 +83,7 @@ func getLock(ctx context.Context, key string) (bool, int64) {
 }
 
 // mustGetLock tries to get the lock every 10 ms util obtaining the lock or util timeout.
+// nolint
 func mustGetLock(ctx context.Context, key string, timeout time.Duration) (bool, int64) {
 	tryTime := timeout / tryPeriod
 	for i := 0; i < int(tryTime); i++ {

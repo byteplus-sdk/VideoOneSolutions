@@ -17,20 +17,19 @@
 package owc_handler
 
 import (
-	"context"
-	"encoding/json"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type reconnectReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
 }
 
 type reconnectResp struct {
@@ -45,17 +44,16 @@ type reconnectResp struct {
 	SuccentorUser *owc_service.User `json:"succentor_user"`
 }
 
-func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "owcReconnect param:%+v", param)
+func Reconnect(ctx *gin.Context) (resp interface{}, err error) {
 	var p reconnectReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
+
 	roomFactory := owc_service.GetRoomFactory()
 	userFactory := owc_service.GetUserFactory()
 
-	room, err := roomFactory.GetRoomByRoomID(ctx, param.AppID, p.RoomID)
+	room, err := roomFactory.GetRoomByRoomID(ctx, p.AppID, p.RoomID)
 	if err != nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		return nil, err
@@ -71,12 +69,15 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 	}
 	userCount := userCountMap[room.GetRoomID()]
 	room.AudienceCount = userCount
-	user, err := userFactory.GetActiveUserByUserID(ctx, param.AppID, p.UserID)
-	if err != nil || user == nil {
+	user, err := userFactory.GetActiveUserByUserID(ctx, p.AppID, p.UserID)
+	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, custom_error.ErrUserIsInactive
 	}
-	host, err := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, room.GetRoomID(), room.GetHostUserID())
+	if user == nil {
+		return nil, custom_error.InternalError(errors.New("user not found"))
+	}
+	host, err := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, room.GetRoomID(), room.GetHostUserID())
 	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 	}
@@ -92,7 +93,7 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 			RoomInfo:      room,
 			HostInfo:      host,
 			UserInfo:      user,
-			RtcToken:      room.GenerateToken(ctx, param.AppID, p.UserID),
+			RtcToken:      room.GenerateToken(ctx, p.UserID),
 			AudienceCount: userCount,
 			CurSong:       curSong,
 			LeaderUser:    nil,
@@ -106,7 +107,7 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 		return nil, err
 	}
 
-	leadUser, err := userFactory.GetActiveUserByUserID(ctx, param.AppID, owcSongSingUser.LeaderUser)
+	leadUser, err := userFactory.GetActiveUserByUserID(ctx, p.AppID, owcSongSingUser.LeaderUser)
 	if err != nil {
 		logs.CtxError(ctx, "get song leadUser error")
 		return nil, err
@@ -115,7 +116,7 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 	if owcSongSingUser.SuccentorUser == "" {
 		succentorUser = nil
 	} else {
-		succentorUser, err = userFactory.GetActiveUserByUserID(ctx, param.AppID, owcSongSingUser.SuccentorUser)
+		succentorUser, err = userFactory.GetActiveUserByUserID(ctx, p.AppID, owcSongSingUser.SuccentorUser)
 		if err != nil {
 			logs.CtxError(ctx, "get song succentorUser error")
 			return nil, err
@@ -128,7 +129,7 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 			RoomInfo:      room,
 			HostInfo:      host,
 			UserInfo:      user,
-			RtcToken:      room.GenerateToken(ctx, param.AppID, p.UserID),
+			RtcToken:      room.GenerateToken(ctx, p.UserID),
 			AudienceCount: userCount,
 			CurSong:       curSong,
 			LeaderUser:    nil,
@@ -140,7 +141,6 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 	user.Reconnect()
 	err = userFactory.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:"+err.Error())
 		return
 	}
 
@@ -148,7 +148,7 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 		RoomInfo:      room,
 		HostInfo:      host,
 		UserInfo:      user,
-		RtcToken:      room.GenerateToken(ctx, param.AppID, p.UserID),
+		RtcToken:      room.GenerateToken(ctx, p.UserID),
 		AudienceCount: userCount,
 		CurSong:       curSong,
 		LeaderUser:    leadUser,

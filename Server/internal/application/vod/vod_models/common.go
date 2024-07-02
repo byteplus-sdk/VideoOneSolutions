@@ -123,7 +123,6 @@ type GetFeedStreamRequest struct {
 	Offset                  int        `json:"offset"`
 	PageSize                int        `json:"pageSize"`
 	VideoType               int        `json:"videoType"`
-	AppID                   string     `json:"AppId" form:"AppId"`
 	Vid                     string     `json:"vid" form:"vid"`
 	Format                  Format     `json:"format" form:"format"`
 	Codec                   Codec      `json:"codec" form:"codec"`

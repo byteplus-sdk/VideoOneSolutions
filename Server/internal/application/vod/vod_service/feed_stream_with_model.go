@@ -30,7 +30,7 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/pkg/vod_openapi"
 )
 
-func GetFeedStreamWithVideoModel(ctx context.Context, req *vod_models.GetFeedStreamRequest) ([]*vod_models.VideoDetail, error) {
+func GetFeedStreamWithVideoModel(ctx context.Context, req vod_models.GetFeedStreamRequest) ([]*vod_models.VideoDetail, error) {
 	repo := vod_repo.GetVodRepo()
 	videos, err := repo.GetVideoInfoListFromTMVideoInfoByUser(ctx, req.Vid, req.Offset, req.PageSize, req.VideoType,
 		req.AntiScreenshotAndRecord, req.SupportSmartSubtitle)
@@ -41,8 +41,8 @@ func GetFeedStreamWithVideoModel(ctx context.Context, req *vod_models.GetFeedStr
 	if len(videos) == 0 {
 		return nil, nil
 	}
-	var resp []*vod_models.VideoDetail
-	instance := vod_openapi.GetInstance(ctx, req.AppID)
+	var resp = make([]*vod_models.VideoDetail, 0)
+	instance := vod_openapi.GetInstance()
 
 	for _, video := range videos {
 		if video == nil {
@@ -61,7 +61,7 @@ func GetFeedStreamWithVideoModel(ctx context.Context, req *vod_models.GetFeedStr
 
 		videoModel, err := json.Marshal(info.Result)
 		if err != nil {
-			logs.CtxError(ctx, "Marshal VideoModel String Error:%v")
+			logs.CtxError(ctx, "Marshal VideoModel String Error:%s", err.Error())
 			continue
 		}
 
@@ -99,8 +99,8 @@ func GetFeedStreamWithVideoModel(ctx context.Context, req *vod_models.GetFeedStr
 			SubtitleAuthToken: subtitleToken,
 			CreateTime:        mediaInfo.Result.MediaInfoList[0].BasicInfo.CreateTime,
 			Subtitle:          mediaInfo.Result.MediaInfoList[0].BasicInfo.Description,
-			PlayTimes:         rand.Int63n(20) + 20,
-			Like:              rand.Int63n(20) + 20,
+			PlayTimes:         rand.Int63n(20) + 20, // nolint
+			Like:              rand.Int63n(20) + 20, // nolint
 			Comment:           public.VideoCommentNum,
 			Height:            mediaInfo.Result.MediaInfoList[0].SourceInfo.Height,
 			Width:             mediaInfo.Result.MediaInfoList[0].SourceInfo.Width,

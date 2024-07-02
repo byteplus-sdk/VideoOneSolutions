@@ -38,7 +38,6 @@ func GetReturnActiveRooms(ctx context.Context, appID string) ([]*live_return_mod
 	})
 	for _, room := range rooms {
 		returnRoom := &live_return_models.Room{
-			LiveAppID:         room.LiveAppID,
 			RtcAppID:          room.RtcAppID,
 			RoomID:            room.RoomID,
 			RoomName:          room.RoomName,
@@ -46,7 +45,7 @@ func GetReturnActiveRooms(ctx context.Context, appID string) ([]*live_return_mod
 			HostUserName:      room.HostUserName,
 			Status:            room.Status,
 			AudienceCount:     room.AudienceCount,
-			StreamPullUrlList: live_cdn_service.GenPullUrl(ctx, room.RtcAppID, room.StreamID),
+			StreamPullUrlList: live_cdn_service.GenPullUrl(room.StreamID),
 			Extra:             room.Extra,
 		}
 		resp = append(resp, returnRoom)

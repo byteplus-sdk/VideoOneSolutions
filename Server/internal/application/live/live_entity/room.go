@@ -24,7 +24,6 @@ import (
 
 type LiveRoom struct {
 	ID                int64             `gorm:"column:id" json:"id"`
-	LiveAppID         string            `gorm:"column:live_app_id" json:"live_app_id"`
 	RtcAppID          string            `gorm:"column:rtc_app_id" json:"rtc_app_id"`
 	RoomID            string            `gorm:"column:room_id" json:"room_id"`
 	RoomName          string            `gorm:"column:room_name" json:"room_name"`

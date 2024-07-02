@@ -34,7 +34,6 @@ func CheckPanic() {
 				f := runtime.FuncForPC(pc)
 				logs.Error("panic error happened, stack:%d, med:%s, file:%s, line:%d, error:%s", i, f.Name(), file, line, err)
 			}
-
 		}
 		logs.Error("panic error happened, error:%s", err)
 	}

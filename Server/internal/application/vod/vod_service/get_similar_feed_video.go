@@ -35,5 +35,5 @@ func GetFeedSimilarVideos(ctx context.Context, vid, appID string, offset, pageSi
 		return nil, nil
 	}
 
-	return getVideoPlayAuthToken(ctx, &vod_models.GetFeedStreamRequest{AppID: appID}, videos)
+	return getVideoPlayAuthToken(ctx, vod_models.GetFeedStreamRequest{}, videos)
 }

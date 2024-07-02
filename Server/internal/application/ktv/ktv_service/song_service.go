@@ -20,13 +20,11 @@ import (
 	"context"
 	"errors"
 
-	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_entity"
-	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/lock"
-
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
+	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/lock"
 )
 
 var songServiceClient *SongService
@@ -136,7 +134,6 @@ func (ss *SongService) start(ctx context.Context, appID, roomID string) error {
 	informer.BroadcastRoom(ctx, roomID, OnStartSing, data)
 
 	return nil
-
 }
 
 func (ss *SongService) FinishSing(ctx context.Context, appID, roomID string, score float64) (*Song, error) {
@@ -147,8 +144,12 @@ func (ss *SongService) FinishSing(ctx context.Context, appID, roomID string, sco
 	}
 
 	song, err := ss.songFactory.Top(ctx, roomID)
-	if err != nil || song == nil {
+	if err != nil {
 		logs.CtxError(ctx, "get song failed,error:%s", err)
+		return nil, custom_error.InternalError(err)
+	}
+	if song == nil {
+		err = errors.New("get empty song")
 		return nil, custom_error.InternalError(err)
 	}
 

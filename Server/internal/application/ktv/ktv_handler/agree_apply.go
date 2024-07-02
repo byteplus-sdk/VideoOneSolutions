@@ -17,41 +17,32 @@
 package ktv_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type agreeApplyReq struct {
-	RoomID         string `json:"room_id"`
-	UserID         string `json:"user_id"`
-	AudienceUserID string `json:"audience_user_id"`
-	LoginToken     string `json:"login_token"`
+	AppID          string `json:"app_id" binding:"required"`
+	RoomID         string `json:"room_id" binding:"required"`
+	UserID         string `json:"user_id" binding:"required"`
+	AudienceUserID string `json:"audience_user_id" binding:"required"`
 }
 
 type agreeApplyResp struct {
 }
 
-func (eh *EventHandler) AgreeApply(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "ktvAgreeApply param:%+v", param)
+func AgreeApply(ctx *gin.Context) (resp interface{}, err error) {
 	var p agreeApplyReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	if p.RoomID == "" || p.UserID == "" || p.AudienceUserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
 	roomFactory := ktv_service.GetRoomFactory()
-	room, err := roomFactory.GetRoomByRoomID(ctx, param.AppID, p.RoomID)
-	if err != nil || room == nil {
+	room, err := roomFactory.GetRoomByRoomID(ctx, p.AppID, p.RoomID)
+	if err != nil {
 		logs.CtxError(ctx, "get room failed,error:%s", err)
 		return nil, custom_error.ErrRoomNotExist
 	}
@@ -62,11 +53,11 @@ func (eh *EventHandler) AgreeApply(ctx context.Context, param *public.EventParam
 
 	interactService := ktv_service.GetInteractService()
 
-	err = interactService.HostReply(ctx, param.AppID, p.RoomID, p.UserID, p.AudienceUserID, ktv_service.InteractReplyTypeAccept)
+	err = interactService.HostReply(ctx, p.AppID, p.RoomID, p.UserID, p.AudienceUserID, ktv_service.InteractReplyTypeAccept)
 	if err != nil {
 		logs.CtxError(ctx, "invite failed,error:%s", err)
 		return nil, err
 	}
 
-	return nil, nil
+	return &agreeApplyResp{}, nil
 }

@@ -51,9 +51,9 @@ func GetRoomService() *RoomService {
 	return roomService
 }
 
-func (rs *RoomService) CreateRoom(ctx context.Context, appID, roomName, hostUserID, hostUserName string, liveCdnAppId string) (*live_entity.LiveRoom, *live_entity.LiveRoomUser, error) {
+func (rs *RoomService) CreateRoom(ctx context.Context, appID, roomName, hostUserID, hostUserName string) (*live_entity.LiveRoom, *live_entity.LiveRoomUser, error) {
 	//create room
-	room, err := rs.roomFactory.NewRoom(ctx, appID, roomName, hostUserID, hostUserName, liveCdnAppId)
+	room, err := rs.roomFactory.NewRoom(ctx, appID, roomName, hostUserID, hostUserName)
 	if err != nil {
 		logs.CtxError(ctx, "new room failed,error:%s", err)
 		return nil, nil, err
@@ -161,7 +161,6 @@ func (rs *RoomService) FinishRoom(ctx context.Context, appID, roomID, hostUserID
 	informer.BroadcastRoom(ctx, room.RoomID, live_inform_service.OnFinishLive, informData)
 
 	return room, nil
-
 }
 
 func (rs *RoomService) JoinRoom(ctx context.Context, appID, roomID, userID, userName string) (*live_entity.LiveRoom, *live_entity.LiveRoomUser, error) {
@@ -211,7 +210,6 @@ func (rs *RoomService) JoinRoom(ctx context.Context, appID, roomID, userID, user
 	informer.BroadcastRoom(ctx, room.RoomID, live_inform_service.OnAudienceJoinRoom, informData)
 
 	return room, audience, nil
-
 }
 
 func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID string) error {
@@ -230,7 +228,6 @@ func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID stri
 	user.Leave()
 	err = rs.roomUserRepo.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s", err)
 		return err
 	}
 
@@ -265,17 +262,13 @@ func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID stri
 	informer.BroadcastRoom(ctx, room.RoomID, live_inform_service.OnAudienceLeaveRoom, informData)
 
 	return nil
-
 }
 
 func (rs *RoomService) HandleMessage(ctx context.Context, appID, roomID, messageStr string) error {
-	message := &live_room_models.Message{}
-	err := json.Unmarshal([]byte(messageStr), message)
+	var message live_room_models.Message
+	err := json.Unmarshal([]byte(messageStr), &message)
 	if err != nil {
 		return err
-	}
-	if message == nil {
-		return nil
 	}
 	if util.IntInSlice(message.MessageType, []int{live_room_models.MessageTypeGift, live_room_models.MessageTypeLike}) {
 		room, err := rs.roomRepo.GetActiveRoom(ctx, appID, roomID)
@@ -309,5 +302,4 @@ func (rs *RoomService) HandleMessage(ctx context.Context, appID, roomID, message
 	}
 
 	return nil
-
 }

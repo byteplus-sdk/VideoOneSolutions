@@ -24,7 +24,6 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_db"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
@@ -58,11 +57,10 @@ func GetRoomService() *RoomService {
 
 func (rs *RoomService) CreateRoom(ctx context.Context, appID, roomName, roomBackgroundImageName, hostUserID, hostUserName, hostDeviceID string) (*Room, *User, error) {
 	room, err := rs.roomFactory.NewRoom(ctx, appID, roomName, roomBackgroundImageName, hostUserID, hostUserName)
-	if err != nil || room == nil {
+	if err != nil {
 		logs.CtxError(ctx, "create room failed,error:%s", err)
 		return nil, nil, custom_error.InternalError(errors.New("create room failed"))
 	}
-	logs.CtxInfo(ctx, "room:%#v", room.GetDbRoom())
 	err = rs.roomFactory.Save(ctx, room)
 	if err != nil {
 		logs.CtxError(ctx, "save room failed,error:%s", err)
@@ -72,7 +70,6 @@ func (rs *RoomService) CreateRoom(ctx context.Context, appID, roomName, roomBack
 	host := rs.userFactory.NewUser(ctx, appID, room.GetRoomID(), hostUserID, hostUserName, hostDeviceID, owc_db.UserRoleHost)
 	err = rs.userFactory.Save(ctx, host)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s", err)
 		return nil, nil, err
 	}
 
@@ -110,7 +107,6 @@ func (rs *RoomService) StartLive(ctx context.Context, appID, roomID string) erro
 	host.StartLive()
 	err = rs.userFactory.Save(ctx, host)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s", err)
 		return err
 	}
 
@@ -188,12 +184,20 @@ func (rs *RoomService) JoinRoom(ctx context.Context, appID, roomID, userID, user
 		logs.CtxError(ctx, "room is not exist")
 		return custom_error.ErrRoomNotExist
 	}
+	user, err := rs.userFactory.GetActiveUserByRoomIDUserID(ctx, appID, roomID, userID)
+	if err != nil {
+		logs.CtxError(ctx, "get user failed,error:%s", err.Error())
+		return err
+	}
+	if user != nil {
+		logs.CtxError(ctx, "user has joined the room")
+		return custom_error.ErrUserInRoom
+	}
 
-	user := rs.userFactory.NewUser(ctx, appID, roomID, userID, userName, userDeviceID, owc_db.UserRoleAudience)
+	user = rs.userFactory.NewUser(ctx, appID, roomID, userID, userName, userDeviceID, owc_db.UserRoleAudience)
 	user.JoinRoom(room.GetRoomID())
 	err = rs.userFactory.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:"+err.Error())
 		return custom_error.InternalError(err)
 	}
 
@@ -229,14 +233,16 @@ func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID stri
 	}
 
 	user, err := rs.userFactory.GetActiveUserByRoomIDUserID(ctx, appID, roomID, userID)
-	if err != nil || user == nil {
+	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
+		return nil
+	}
+	if user == nil {
 		return nil
 	}
 	user.LeaveRoom()
 	err = rs.userFactory.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:"+err.Error())
 		return custom_error.InternalError(err)
 	}
 	songService := GetSongService()
@@ -279,26 +285,29 @@ func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID stri
 	return nil
 }
 
-func (rs *RoomService) Disconnect(ctx context.Context, appID, roomID, userID string) {
+func (rs *RoomService) Disconnect(ctx context.Context, appID, roomID, userID string) error {
 	user, err := rs.userFactory.GetActiveUserByRoomIDUserID(ctx, appID, roomID, userID)
-	if err != nil || user == nil {
-		logs.CtxWarn(ctx, "get user failed,error:%s", err)
-		return
+	if err != nil {
+		logs.CtxError(ctx, "get user failed,error:%s", err)
+		return err
 	}
-	logs.CtxInfo(ctx, "owc disconnect user:%#v", user.OwcUser)
+	if user == nil {
+		return errors.New("user not found")
+	}
 
 	user.Disconnect()
 	err = rs.userFactory.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:"+err.Error())
-		return
+		return err
 	}
 
 	go func(ctx context.Context, roomID, userID string) {
-		//time.Sleep(time.Duration(config.Configs().ReconnectTimeout) * time.Second)
 		user, err := rs.userFactory.GetUserByRoomIDUserID(ctx, appID, roomID, userID)
-		if err != nil || user == nil {
+		if err != nil {
 			logs.CtxWarn(ctx, "get user failed,error:%s", err)
+			return
+		}
+		if user == nil {
 			return
 		}
 		roomService := GetRoomService()
@@ -340,8 +349,8 @@ func (rs *RoomService) Disconnect(ctx context.Context, appID, roomID, userID str
 				}
 			}
 		}
-
 	}(ctx, user.GetRoomID(), user.GetUserID())
+	return nil
 }
 
 var presetSongRepoClient SongInfoRepo

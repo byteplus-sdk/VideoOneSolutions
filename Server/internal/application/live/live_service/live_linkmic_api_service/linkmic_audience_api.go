@@ -18,6 +18,8 @@ package live_linkmic_api_service
 
 import (
 	"context"
+	"sort"
+	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_linker_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
@@ -25,7 +27,6 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_inform_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_core_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_util"
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
@@ -224,8 +225,6 @@ func AudienceReply(ctx context.Context, appID string, r *live_linker_models.ApiA
 		LinkerID:  replyResp.Linker.LinkerID,
 		RtcRoomID: roomRepo.GetRoomRtcRoomID(ctx, replyResp.Linker.FromRoomID),
 	}
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, appID)
 
 	informer := inform.GetInformService(appID)
 	if r.Reply == live_linker_models.ReplyAccept {
@@ -238,11 +237,11 @@ func AudienceReply(ctx context.Context, appID string, r *live_linker_models.ApiA
 		informer.BroadcastRoom(ctx, roomRepo.GetRoomRtcRoomID(ctx, replyResp.Linker.FromRoomID), live_inform_service.OnAudienceLinkmicJoin, informDataBroad)
 
 		informData.RtcRoomID = roomRepo.GetRoomRtcRoomID(ctx, replyResp.Linker.FromRoomID)
-		informData.RtcToken = live_util.GenToken(roomRepo.GetRoomRtcRoomID(ctx, replyResp.Linker.FromRoomID), r.HostUserID, appInfo.AppId, appInfo.AppKey)
+		informData.RtcToken = live_util.GenToken(roomRepo.GetRoomRtcRoomID(ctx, replyResp.Linker.FromRoomID), r.HostUserID)
 		informData.RtcUserList = userList
 
 		resp.LinkedUserList = userList
-		resp.RtcToken = live_util.GenToken(roomRepo.GetRoomRtcRoomID(ctx, replyResp.Linker.FromRoomID), r.AudienceUserID, appInfo.AppId, appInfo.AppKey)
+		resp.RtcToken = live_util.GenToken(roomRepo.GetRoomRtcRoomID(ctx, replyResp.Linker.FromRoomID), r.AudienceUserID)
 
 		if len(userList) == 2 {
 			linkmicStatusInformData := &live_inform_service.InformLinkmicStatus{
@@ -266,9 +265,6 @@ func AudiencePermit(ctx context.Context, appID string, r *live_linker_models.Api
 		logs.CtxError(ctx, "get room linker info failed,error:%s", err)
 		return nil, err
 	}
-
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, appID)
 
 	rules := []Rule{
 		NewAudienceLinkmicHostSceneRule(ctx, hostRoomLinkerInfo),
@@ -318,14 +314,15 @@ func AudiencePermit(ctx context.Context, appID string, r *live_linker_models.Api
 			UserList:  userList,
 			UserID:    r.AudienceUserID,
 		}
-		informer.BroadcastRoom(ctx, rtcRoomID, live_inform_service.OnAudienceLinkmicJoin, informDataBroad)
+		informer.BroadcastRoom(ctx, r.HostRoomID, live_inform_service.OnAudienceLinkmicJoin, informDataBroad)
 
 		informData.RtcRoomID = rtcRoomID
-		informData.RtcToken = live_util.GenToken(rtcRoomID, r.AudienceUserID, appInfo.AppId, appInfo.AppKey)
+		informData.RtcToken = live_util.GenToken(rtcRoomID, r.AudienceUserID)
 		informData.RtcUserList = userList
 
 		resp.LinkedUserList = userList
-		resp.RtcToken = live_util.GenToken(rtcRoomID, r.HostUserID, appInfo.AppId, appInfo.AppKey)
+		resp.RtcToken = live_util.GenToken(rtcRoomID, r.HostUserID)
+		resp.RtcRoomID = rtcRoomID
 
 		if len(userList) == 2 {
 			linkmicStatusInformData := &live_inform_service.InformLinkmicStatus{
@@ -494,11 +491,6 @@ func AudienceFinish(ctx context.Context, appID string, r *live_linker_models.Api
 	}
 	informer.BroadcastRoom(ctx, r.HostRoomID, live_inform_service.OnLinkmicStatus, linkmicStatusInformData)
 
-	//AudienceInit(ctx, appID, &live_linker_models.ApiAudienceInitReq{
-	//	HostRoomID: r.HostRoomID,
-	//	HostUserID: r.HostUserID,
-	//})
-
 	resp := &live_linker_models.ApiAudienceFinishResp{}
 	return resp, nil
 }
@@ -515,15 +507,22 @@ func getLinkedUserList(ctx context.Context, appID, roomID string) ([]*live_retur
 		return resp, nil
 	}
 
-	if activeRoomLinkmicInfo.IsAnchorLink == false {
+	if !activeRoomLinkmicInfo.IsAnchorLink {
 		if len(activeRoomLinkmicInfo.LinkedUsers) == 0 {
 			return resp, nil
 		}
 		var userIDs []string
+		var linkTimeMap = make(map[string]time.Time)
 		for _, linker := range activeRoomLinkmicInfo.LinkedUsers[roomID] {
 			userIDs = append(userIDs, linker.FromUserID)
-			if util.StringInSlice(linker.ToUserID, userIDs) == false {
+			if !util.StringInSlice(linker.ToUserID, userIDs) {
 				userIDs = append(userIDs, linker.ToUserID)
+			}
+			if _, exist := linkTimeMap[linker.FromUserID]; !exist {
+				linkTimeMap[linker.FromUserID] = linker.LinkedTime
+			}
+			if _, exist := linkTimeMap[linker.ToUserID]; !exist {
+				linkTimeMap[linker.ToUserID] = linker.LinkedTime
 			}
 		}
 		roomUsers, err := live_facade.GetRoomUserRepo().GetUsersByRoomIDUserIDs(ctx, appID, roomID, userIDs)
@@ -534,16 +533,22 @@ func getLinkedUserList(ctx context.Context, appID, roomID string) ([]*live_retur
 
 		for _, roomUser := range roomUsers {
 			user := &live_return_models.User{
-				RoomID:   roomUser.RoomID,
-				UserID:   roomUser.UserID,
-				UserName: roomUser.UserName,
-				UserRole: roomUser.UserRole,
-				Mic:      roomUser.Mic,
-				Camera:   roomUser.Camera,
-				Extra:    roomUser.Extra,
+				RoomID:      roomUser.RoomID,
+				UserID:      roomUser.UserID,
+				UserName:    roomUser.UserName,
+				UserRole:    roomUser.UserRole,
+				Mic:         roomUser.Mic,
+				Camera:      roomUser.Camera,
+				Extra:       roomUser.Extra,
+				LinkmicTime: linkTimeMap[roomUser.UserID],
 			}
 			resp = append(resp, user)
 		}
+
+		// sort by LinkmicTime desc
+		sort.SliceStable(resp, func(i, j int) bool {
+			return resp[i].LinkmicTime.Before(resp[j].LinkmicTime)
+		})
 	} else {
 		for _, linker := range activeRoomLinkmicInfo.LinkedUsers[roomID] {
 			fromRoomUser, _ := live_facade.GetRoomUserRepo().GetActiveUser(ctx, appID, linker.FromRoomID, linker.FromUserID)
@@ -570,7 +575,6 @@ func getLinkedUserList(ctx context.Context, appID, roomID string) ([]*live_retur
 					Extra:    toRoomUser.Extra}
 				resp = append(resp, user)
 			}
-
 		}
 	}
 	return resp, nil

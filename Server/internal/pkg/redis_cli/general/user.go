@@ -18,6 +18,7 @@ package general
 
 import (
 	"context"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli"
 	"github.com/go-redis/redis/v8"
@@ -37,7 +38,7 @@ func DelGeneratedUserID(ctx context.Context) {
 
 func GetGeneratedUserID(ctx context.Context) (int64, error) {
 	userID, err := redis_cli.Client.Get(ctx, keyGenerateUserID).Int64()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		return 0, nil
 	}
 	return userID, err

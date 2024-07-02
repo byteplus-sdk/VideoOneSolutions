@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-package login_handler
+package live_feed_repo
 
 import (
-	"github.com/robfig/cron/v3"
+	"context"
+
+	"github.com/byteplus/VideoOneServer/internal/application/live_feed/live_feed_model"
 )
 
-var handler *EventHandler
+var liveFeedRepo liveFeedRepoInterface
 
-type EventHandler struct {
-	c *cron.Cron
+func GetLiveFeedRepo() liveFeedRepoInterface {
+	if liveFeedRepo == nil {
+		liveFeedRepo = &LiveFeedRepoImpl{}
+	}
+	return liveFeedRepo
 }
 
-func NewEventHandler() *EventHandler {
-	if handler == nil {
-		handler = &EventHandler{}
-	}
-	return handler
+type liveFeedRepoInterface interface {
+	GetLiveFeed(ctx context.Context, offset, pageSize int, excludeRoomID string) ([]*live_feed_model.LiveFeed, error)
+	AddRoomAudienceCount(ctx context.Context, roomID string, value int64) (int64, error)
 }

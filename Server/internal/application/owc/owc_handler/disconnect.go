@@ -18,17 +18,9 @@ package owc_handler
 
 import (
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
-	"context"
-
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
 )
 
-func (eh *EventHandler) Disconnect(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "owc disconnect,param:%#v", param)
-
-	roomService := owc_service.GetRoomService()
-	roomService.Disconnect(ctx, param.AppID, param.RoomID, param.UserID)
-	return nil, nil
+func Disconnect(ctx *gin.Context, appID, roomID, userID string) (err error) {
+	return owc_service.GetRoomService().Disconnect(ctx, appID, roomID, userID)
 }

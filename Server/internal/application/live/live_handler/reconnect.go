@@ -17,31 +17,24 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_cdn_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_api_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_util"
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
-)
-
-const (
-	LinkmicStatusOther           = 1
-	LinkmicStatusAudienceLinkmic = 3
-	LinkmicStatusAnchorLinkmic   = 4
+	"github.com/byteplus/VideoOneServer/internal/pkg/util"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type reconnectReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
 }
 
 type reconnectInfo struct {
@@ -50,6 +43,7 @@ type reconnectInfo struct {
 	RtcRoomID       string                     `json:"rtc_room_id"`
 	RtcToken        string                     `json:"rtc_token"`
 	LinkmicUserList []*live_return_models.User `json:"linkmic_user_list"`
+	LinkerID        string                     `json:"linker_id"`
 }
 
 type reconnectResp struct {
@@ -58,22 +52,17 @@ type reconnectResp struct {
 	ReconnectInfo *reconnectInfo           `json:"reconnect_info"`
 }
 
-func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveReconnect param:%+v", param)
+func Reconnect(ctx *gin.Context) (resp interface{}, err error) {
 	var p reconnectReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
-
-	appInfoService := login_service.GetAppInfoService()
-	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, param.AppID)
 
 	roomRepo := live_facade.GetRoomRepo()
 	roomUserRepo := live_facade.GetRoomUserRepo()
-	room, err := roomRepo.GetActiveRoom(ctx, param.AppID, p.RoomID)
+	room, err := roomRepo.GetActiveRoom(ctx, p.AppID, p.RoomID)
 	if err != nil {
-		if err == custom_error.ErrRecordNotFound {
+		if errors.Is(err, custom_error.ErrRecordNotFound) {
 			return nil, custom_error.ErrRoomNotExist
 		}
 		logs.CtxError(ctx, "get room failed,roomID:%s,error:%s", p.RoomID, err)
@@ -83,9 +72,9 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 	if room == nil {
 		return nil, custom_error.ErrRoomNotExist
 	}
-	user, err := roomUserRepo.GetActiveUser(ctx, param.AppID, p.RoomID, p.UserID)
+	user, err := roomUserRepo.GetActiveUser(ctx, p.AppID, p.RoomID, p.UserID)
 	if err != nil {
-		if err == custom_error.ErrRecordNotFound {
+		if errors.Is(err, custom_error.ErrRecordNotFound) {
 			return nil, custom_error.ErrUserIsInactive
 		}
 		logs.CtxError(ctx, "get room failed,roomID:%s,error:%s", p.UserID, err)
@@ -100,17 +89,49 @@ func (eh *EventHandler) Reconnect(ctx context.Context, param *public.EventParam)
 
 	reconnectInfo := &reconnectInfo{
 		LiveRoomInfo:  ConvertReturnRoom(room),
-		StreamPushUrl: live_cdn_service.GenPushUrl(ctx, room.RtcAppID, room.StreamID),
+		StreamPushUrl: live_cdn_service.GenPushUrl(room.StreamID),
 	}
-	linkmicStatus := LinkmicStatusOther
+	linkmicStatus := live_return_models.UserLinkmicStatusUnknown
 	if activeRoomLinkmicInfo.IsLinked {
 		if activeRoomLinkmicInfo.IsAnchorLink {
-			linkmicStatus = LinkmicStatusAnchorLinkmic
+			linkmicStatus = live_return_models.UserLinkmicStatusAnchorLinkmicLinked
+			if len(activeRoomLinkmicInfo.Linkers) != 0 {
+				reconnectInfo.LinkerID = activeRoomLinkmicInfo.Linkers[0].LinkerID
+			}
 		} else {
-			linkmicStatus = LinkmicStatusAudienceLinkmic
+			linkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicLinked
+			var linkmicUserList = make([]*live_return_models.User, 0)
+			if len(activeRoomLinkmicInfo.LinkedUsers) != 0 {
+				var userIDs []string
+				for _, linker := range activeRoomLinkmicInfo.LinkedUsers[p.RoomID] {
+					userIDs = append(userIDs, linker.FromUserID)
+					if !util.StringInSlice(linker.ToUserID, userIDs) {
+						userIDs = append(userIDs, linker.ToUserID)
+					}
+				}
+				roomUsers, err := live_facade.GetRoomUserRepo().GetUsersByRoomIDUserIDs(ctx, p.AppID, p.RoomID, userIDs)
+				if err != nil {
+					logs.CtxError(ctx, "get room users failed,error:%s", err.Error())
+					return nil, err
+				}
+
+				for _, roomUser := range roomUsers {
+					user := &live_return_models.User{
+						RoomID:   roomUser.RoomID,
+						UserID:   roomUser.UserID,
+						UserName: roomUser.UserName,
+						UserRole: roomUser.UserRole,
+						Mic:      roomUser.Mic,
+						Camera:   roomUser.Camera,
+						Extra:    roomUser.Extra,
+					}
+					linkmicUserList = append(linkmicUserList, user)
+				}
+				reconnectInfo.LinkmicUserList = linkmicUserList
+			}
 		}
 		reconnectInfo.RtcRoomID = roomRepo.GetRoomRtcRoomID(ctx, p.RoomID)
-		reconnectInfo.RtcToken = live_util.GenToken(roomRepo.GetRoomRtcRoomID(ctx, p.RoomID), p.UserID, appInfo.AppId, appInfo.AppKey)
+		reconnectInfo.RtcToken = live_util.GenToken(roomRepo.GetRoomRtcRoomID(ctx, p.RoomID), p.UserID)
 	}
 
 	resp = &reconnectResp{

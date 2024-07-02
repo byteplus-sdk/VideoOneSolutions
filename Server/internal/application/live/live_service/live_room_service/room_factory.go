@@ -57,7 +57,7 @@ func GetRoomFactory() *RoomFactory {
 	return roomFactoryClient
 }
 
-func (rf *RoomFactory) NewRoom(ctx context.Context, appID, roomName, hostUserID, hostUserName string, liveCdnAppId string) (*live_entity.LiveRoom, error) {
+func (rf *RoomFactory) NewRoom(ctx context.Context, appID, roomName, hostUserID, hostUserName string) (*live_entity.LiveRoom, error) {
 	roomID, err := ApplyRoomIDWithRetry(ctx, appID)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,6 @@ func (rf *RoomFactory) NewRoom(ctx context.Context, appID, roomName, hostUserID,
 		return nil, err
 	}
 	room := &live_entity.LiveRoom{
-		LiveAppID:     liveCdnAppId,
 		RtcAppID:      appID,
 		RoomID:        roomID,
 		RoomName:      roomName,
@@ -105,7 +104,6 @@ func (rf *RoomFactory) NewRoomUser(ctx context.Context, appID, roomID, userID, u
 	}
 
 	return roomUser
-
 }
 
 func ApplyRoomIDWithRetry(ctx context.Context, appID string) (string, error) {
@@ -158,7 +156,6 @@ func generateRoomID(ctx context.Context, appID, bizID string) (int64, error) {
 			return roomID, nil
 		}
 		return 0, custom_error.InternalError(err)
-
 	}
 
 	return 0, custom_error.ErrRoomAlreadyExist

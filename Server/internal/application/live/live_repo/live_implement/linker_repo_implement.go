@@ -18,6 +18,7 @@ package live_implement
 
 import (
 	"context"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_linker_models"
@@ -38,7 +39,7 @@ func (impl *LinkerRepoImpl) GetAudienceLinkerByRoomIDAndUserID(ctx context.Conte
 	var rs *live_entity.LiveLinker
 	err := db.Client.WithContext(ctx).Debug().Table(LinkerTable).Where("from_room_id = ? and from_user_id=?  and linker_status != ?", roomID, userID, live_linker_models.LinkerStatusNotValid).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -50,7 +51,7 @@ func (impl *LinkerRepoImpl) GetLinkersByRoomIDScene(ctx context.Context, roomID 
 	var rs []*live_entity.LiveLinker
 	err := db.Client.WithContext(ctx).Debug().Table(LinkerTable).Where("( from_room_id=? or to_room_id = ? ) and scene=?  and linker_status != ?", roomID, roomID, scene, live_linker_models.LinkerStatusNotValid).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return make([]*live_entity.LiveLinker, 0), custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -62,7 +63,7 @@ func (impl *LinkerRepoImpl) GetActiveLinkersByRoomIDScene(ctx context.Context, r
 	var rs []*live_entity.LiveLinker
 	err := db.Client.WithContext(ctx).Debug().Table(LinkerTable).Where("( from_room_id=? or to_room_id = ? ) and scene=?  and linker_status = ?", roomID, roomID, scene, live_linker_models.LinkerStatusAudienceLinked).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return make([]*live_entity.LiveLinker, 0), custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -74,7 +75,7 @@ func (impl *LinkerRepoImpl) GetLinkedUsersByLinkerID(ctx context.Context, linker
 	var rs *live_entity.LiveLinker
 	err := db.Client.WithContext(ctx).Debug().Table(LinkerTable).Where("linker_id = ? and linker_status != ?", linkerID, live_linker_models.LinkerStatusNotValid).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -83,7 +84,7 @@ func (impl *LinkerRepoImpl) GetLinkedUsersByLinkerID(ctx context.Context, linker
 	err = db.Client.WithContext(ctx).Debug().Table(RoomUserTable).Where("(user_id = ? and room_id = ?) or (user_id = ? and room_id = ?)",
 		rs.FromUserID, rs.FromRoomID, rs.ToUserID, rs.ToRoomID).Find(&users).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -95,7 +96,7 @@ func (impl *LinkerRepoImpl) GetValidInvitee(ctx context.Context, linkerID, roomI
 	var rs *live_entity.LiveLinker
 	err := db.Client.WithContext(ctx).Debug().Table(LinkerTable).Where("linker_id = ? and linker_status != ?", linkerID, live_linker_models.LinkerStatusNotValid).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -118,9 +119,9 @@ func (impl *LinkerRepoImpl) SaveLinker(ctx context.Context, linker *live_entity.
 
 func (impl *LinkerRepoImpl) GetLinker(ctx context.Context, linkerID string) (*live_entity.LiveLinker, error) {
 	var rs *live_entity.LiveLinker
-	err := db.Client.WithContext(ctx).Debug().Table(LinkerTable).Where("linker_id = ? and linker_status != ?", linkerID, live_linker_models.LinkerStatusNotValid).First(&rs).Error
+	err := db.Client.WithContext(ctx).Debug().Table(LinkerTable).Where("linker_id = ? ", linkerID).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)

@@ -96,7 +96,6 @@ func (is *InteractService) Invite(ctx context.Context, appID, roomID, hostUserID
 	audience.SetInteract(ktv_db.UserInteractStatusInviting, seatID)
 	err = is.userFactory.Save(ctx, audience)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s", err)
 		return err
 	}
 
@@ -138,7 +137,6 @@ func (is *InteractService) Apply(ctx context.Context, appID, roomID, hostUserID,
 	audience.SetInteract(ktv_db.UserInteractStatusApplying, seatID)
 	err = is.userFactory.Save(ctx, audience)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s", err)
 		return err
 	}
 
@@ -190,7 +188,6 @@ func (is *InteractService) AudienceReply(ctx context.Context, appID, roomID, hos
 				audience.SetInteract(ktv_db.UserInteractStatusNormal, 0)
 				err = is.userFactory.Save(ctx, audience)
 				if err != nil {
-					logs.CtxError(ctx, "save user failed,error:%s", err)
 					return err
 				}
 				logs.CtxWarn(ctx, "no seat can be alloc")
@@ -201,7 +198,6 @@ func (is *InteractService) AudienceReply(ctx context.Context, appID, roomID, hos
 		audience.SetInteract(ktv_db.UserInteractStatusInteracting, seat.GetSeatID())
 		err = is.userFactory.Save(ctx, audience)
 		if err != nil {
-			logs.CtxError(ctx, "save user failed,error:%s", err)
 			return err
 		}
 		seat.SetOwnerUserID(audience.GetUserID())
@@ -216,12 +212,10 @@ func (is *InteractService) AudienceReply(ctx context.Context, appID, roomID, hos
 			SeatID:   audience.GetSeatID(),
 		}
 		informer.BroadcastRoom(ctx, roomID, OnJoinInteract, data)
-
 	} else {
 		audience.SetInteract(ktv_db.UserInteractStatusNormal, 0)
 		err = is.userFactory.Save(ctx, audience)
 		if err != nil {
-			logs.CtxError(ctx, "save user failed,error:%s", err)
 			return err
 		}
 	}
@@ -289,7 +283,6 @@ func (is *InteractService) HostReply(ctx context.Context, appID, roomID, hostUse
 				audience.SetInteract(ktv_db.UserInteractStatusNormal, 0)
 				err = is.userFactory.Save(ctx, audience)
 				if err != nil {
-					logs.CtxError(ctx, "save user failed,error:%s", err)
 					return err
 				}
 				logs.CtxWarn(ctx, "no seat can be alloc")
@@ -300,13 +293,11 @@ func (is *InteractService) HostReply(ctx context.Context, appID, roomID, hostUse
 		audience.SetInteract(ktv_db.UserInteractStatusInteracting, seat.GetSeatID())
 		err = is.userFactory.Save(ctx, audience)
 		if err != nil {
-			logs.CtxError(ctx, "save user failed,error:%s", err)
 			return err
 		}
 		seat.SetOwnerUserID(audience.GetUserID())
 		err = is.seatFactory.Save(ctx, seat)
 		if err != nil {
-			logs.CtxError(ctx, "save seat failed,error:%s", err)
 			return err
 		}
 
@@ -319,7 +310,6 @@ func (is *InteractService) HostReply(ctx context.Context, appID, roomID, hostUse
 		audience.SetInteract(ktv_db.UserInteractStatusNormal, 0)
 		err = is.userFactory.Save(ctx, audience)
 		if err != nil {
-			logs.CtxError(ctx, "save user failed,error:%s", err)
 			return err
 		}
 	}
@@ -349,7 +339,6 @@ func (is *InteractService) Mute(ctx context.Context, appID, roomID string, seatI
 	}
 	informer.UnicastRoomUser(ctx, roomID, userID, OnMediaOperate, data)
 	return nil
-
 }
 
 func (is *InteractService) Unmute(ctx context.Context, appID string, roomID string, seatID int) error {
@@ -412,7 +401,6 @@ func (is *InteractService) LockSeat(ctx context.Context, appID, roomID string, s
 	}
 	informer.BroadcastRoom(ctx, roomID, OnSeatStatusChange, data)
 	return nil
-
 }
 
 func (is *InteractService) UnlockSeat(ctx context.Context, appID, roomID string, seatID int) error {
@@ -468,7 +456,6 @@ func (is *InteractService) FinishInteract(ctx context.Context, appID, roomID str
 		user.UnmuteMic()
 		err = is.userFactory.Save(ctx, user)
 		if err != nil {
-			logs.CtxError(ctx, "save user failed,error:%s", err)
 			return err
 		}
 
