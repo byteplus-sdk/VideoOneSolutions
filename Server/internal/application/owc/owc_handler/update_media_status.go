@@ -38,7 +38,6 @@ type updateMediaStatusResp struct {
 func UpdateMediaStatus(ctx *gin.Context) (resp interface{}, err error) {
 	var p updateMediaStatusReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 
@@ -60,7 +59,6 @@ func UpdateMediaStatus(ctx *gin.Context) (resp interface{}, err error) {
 	}
 	err = userFactory.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s", err)
 		return nil, err
 	}
 
@@ -72,6 +70,5 @@ func UpdateMediaStatus(ctx *gin.Context) (resp interface{}, err error) {
 	}
 	informer.BroadcastRoom(ctx, p.RoomID, owc_service.OnMediaStatusChange, data)
 
-	return nil, nil
-
+	return &updateMediaStatusResp{}, nil
 }

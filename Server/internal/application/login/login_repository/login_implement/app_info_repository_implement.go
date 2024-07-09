@@ -60,7 +60,7 @@ func (impl *AppInfoRepositoryImpl) Save(ctx context.Context, appInfo *login_enti
 }
 
 func (impl *AppInfoRepositoryImpl) ExistAppInfo(ctx context.Context, appID string) (bool, error) {
-	key := redisKey(ctx, appID)
+	key := redisKey(appID)
 	val, err := redis_cli.Client.Exists(ctx, key).Result()
 	switch err {
 	case nil:
@@ -73,7 +73,7 @@ func (impl *AppInfoRepositoryImpl) ExistAppInfo(ctx context.Context, appID strin
 }
 
 func (impl *AppInfoRepositoryImpl) GetAppInfoByAppID(ctx context.Context, appID string) (*login_entity.AppInfo, error) {
-	key := redisKey(ctx, appID)
+	key := redisKey(appID)
 	logs.CtxInfo(ctx, "key:%s", key)
 	appKey := redis_cli.Client.HGet(ctx, key, fieldAppKey).Val()
 	volcAk := redis_cli.Client.HGet(ctx, key, fieldAppVolcAk).Val()
@@ -109,12 +109,12 @@ func (impl *AppInfoRepositoryImpl) GetAppInfoByAppID(ctx context.Context, appID 
 	return appInfo, nil
 }
 
-func redisKey(ctx context.Context, key string) string {
+func redisKey(key string) string {
 	return keyPrefixAppInfo + key
 }
 
 func writeRedis(ctx context.Context, appInfo *login_entity.AppInfo) {
-	key := redisKey(ctx, appInfo.AppId)
+	key := redisKey(appInfo.AppId)
 	redis_cli.Client.HSet(ctx, key, fieldAppKey, appInfo.AppKey)
 	redis_cli.Client.HSet(ctx, key, fieldAppVolcAk, appInfo.AccessKey)
 	redis_cli.Client.HSet(ctx, key, fieldAppVolcSk, appInfo.SecretAccessKey)

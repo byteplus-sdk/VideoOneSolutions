@@ -18,7 +18,6 @@ package ktv_handler
 
 import (
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -36,13 +35,7 @@ type getApplyAudienceListResp struct {
 func GetApplyAudienceList(ctx *gin.Context) (resp interface{}, err error) {
 	var p getApplyAudienceListReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
-	}
-
-	if p.RoomID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
 	}
 
 	userFactory := ktv_service.GetUserFactory()

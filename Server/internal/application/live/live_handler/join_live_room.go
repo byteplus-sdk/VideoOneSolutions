@@ -45,7 +45,6 @@ type joinLiveRoomResp struct {
 func JoinLiveRoom(ctx *gin.Context) (resp interface{}, err error) {
 	var p joinLiveRoomReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 
@@ -76,7 +75,7 @@ func JoinLiveRoom(ctx *gin.Context) (resp interface{}, err error) {
 	}
 
 	if linkmicInfo != nil {
-		if linkmicInfo.IsAnchorLink == false && linkmicInfo.IsLinked {
+		if !linkmicInfo.IsAnchorLink && linkmicInfo.IsLinked {
 			hostReturn.LinkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicLinked
 		}
 		if linkmicInfo.IsAnchorLink && linkmicInfo.IsLinked {

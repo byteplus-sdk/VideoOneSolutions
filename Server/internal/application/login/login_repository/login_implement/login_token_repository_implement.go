@@ -36,7 +36,6 @@ const (
 type LoginTokenRepositoryImpl struct{}
 
 func (impl *LoginTokenRepositoryImpl) Save(ctx context.Context, token *login_entity.LoginToken) error {
-	logs.CtxInfo(ctx, "redis init login, token: %s, userID: %s", token, token.UserID)
 	key := redisKeyLogin(token.Token)
 
 	redis_cli.Client.Expire(ctx, key, TokenExpiration)

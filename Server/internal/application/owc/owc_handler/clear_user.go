@@ -35,7 +35,6 @@ type clearUserResp struct {
 func ClearUser(ctx *gin.Context) (resp interface{}, err error) {
 	var p clearUserReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 
@@ -70,5 +69,5 @@ func ClearUser(ctx *gin.Context) (resp interface{}, err error) {
 		userFactory.Save(ctx, user)
 	}
 
-	return nil, nil
+	return &clearUserResp{}, nil
 }

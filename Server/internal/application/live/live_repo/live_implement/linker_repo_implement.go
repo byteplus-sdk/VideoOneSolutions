@@ -119,7 +119,7 @@ func (impl *LinkerRepoImpl) SaveLinker(ctx context.Context, linker *live_entity.
 
 func (impl *LinkerRepoImpl) GetLinker(ctx context.Context, linkerID string) (*live_entity.LiveLinker, error) {
 	var rs *live_entity.LiveLinker
-	err := db.Client.WithContext(ctx).Debug().Table(LinkerTable).Where("linker_id = ? and linker_status != ?", linkerID, live_linker_models.LinkerStatusNotValid).First(&rs).Error
+	err := db.Client.WithContext(ctx).Debug().Table(LinkerTable).Where("linker_id = ? ", linkerID).First(&rs).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound

@@ -54,15 +54,17 @@ func GenPushUrl(ctx context.Context, appID, streamID string) string {
 	return appInfo.LivePushDomain + "/" + appInfo.LiveAppName + "/" + streamID + "?expire=" + volcTime + "&sign=" + volcSecret
 }
 
+const StreamSuffix = ".flv"
+
 func GenPullUrl(ctx context.Context, appID, streamID string) map[string]string {
 	appInfoService := login_service.GetAppInfoService()
 	appInfo, _ := appInfoService.ReadAppInfoByAppId(ctx, appID)
 	res := make(map[string]string)
-	res[resolutionOrigin] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + ".flv"
-	res[resolution480] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix480 + ".flv"
-	res[resolution540] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix540 + ".flv"
-	res[resolution720] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix720 + ".flv"
-	res[resolution1080] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix1080 + ".flv"
+	res[resolutionOrigin] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + StreamSuffix
+	res[resolution480] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix480 + StreamSuffix
+	res[resolution540] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix540 + StreamSuffix
+	res[resolution720] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix720 + StreamSuffix
+	res[resolution1080] = appInfo.LivePullDomain + "/" + appInfo.LiveAppName + "/" + streamID + postfix1080 + StreamSuffix
 
 	return res
 }

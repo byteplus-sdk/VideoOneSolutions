@@ -54,7 +54,7 @@ func newCommonResponse(code int, message, requestID string, response interface{}
 }
 
 func NewCommonResponse(ctx context.Context, requestID string, response interface{}, err error) string {
-	var code = 0
+	var code int
 	if err == nil {
 		return newCommonResponse(200, "ok", requestID, response)
 	}

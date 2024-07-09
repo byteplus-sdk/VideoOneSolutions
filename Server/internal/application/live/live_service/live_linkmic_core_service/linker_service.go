@@ -246,11 +246,8 @@ func (ls *LinkerService) AudienceApply(ctx context.Context, r *live_linker_model
 		logs.CtxError(ctx, "GetDefaultLinker failed,req:%#v,error:%s", r, err)
 		return nil, err
 	}
-	logs.CtxInfo(ctx, "AudienceApply success,req:%#v,linker:%#v,group:%#v", r, linker)
-	resp := &live_linker_models.AudienceApplyResp{
-		Linker: linker,
-	}
-	return resp, nil
+
+	return &live_linker_models.AudienceApplyResp{Linker: linker}, nil
 }
 
 func (ls *LinkerService) AudiencePermit(ctx context.Context, r *live_linker_models.AudiencePermitReq) (*live_linker_models.AudiencePermitResp, error) {
@@ -293,11 +290,7 @@ func (ls *LinkerService) AudiencePermit(ctx context.Context, r *live_linker_mode
 		}
 	}
 
-	logs.CtxInfo(ctx, "AudiencePermit success,req:%#v,linker:%#v,group:%#v", r, linker)
-	resp := &live_linker_models.AudiencePermitResp{
-		Linker: linker,
-	}
-	return resp, nil
+	return &live_linker_models.AudiencePermitResp{Linker: linker}, nil
 }
 
 func (ls *LinkerService) AudienceLeave(ctx context.Context, r *live_linker_models.AudienceLeaveReq) (*live_linker_models.AudienceLeaveResp, error) {

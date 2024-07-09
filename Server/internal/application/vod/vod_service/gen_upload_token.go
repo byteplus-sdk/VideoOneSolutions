@@ -36,6 +36,10 @@ func GenUploadToken(ctx context.Context, appID, expireTime string) (*vod_models.
 
 	appInfoService := login_service.GetAppInfoService()
 	appInfo, err := appInfoService.ReadAppInfoByAppId(ctx, appID)
+	if err != nil {
+		logs.CtxError(ctx, "get app info error: "+err.Error())
+		return nil, err
+	}
 	instance := vod_openapi.GetInstance(ctx, appID)
 	ret2, _ := instance.GetUploadAuthWithExpiredTime(m)
 	return &vod_models.STS2{

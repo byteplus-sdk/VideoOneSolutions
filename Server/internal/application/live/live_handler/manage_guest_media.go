@@ -42,7 +42,6 @@ type manageGuestMediaMediaResp struct {
 func ManageGuestMedia(ctx *gin.Context) (resp interface{}, err error) {
 	var p manageGuestMediaMediaReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 
@@ -65,7 +64,6 @@ func ManageGuestMedia(ctx *gin.Context) (resp interface{}, err error) {
 	informer := inform.GetInformService(p.AppID)
 	informer.UnicastRoomUser(ctx, p.GuestRoomID, p.GuestUserID, live_inform_service.OnManageGuestMedia, informData)
 
-	resp = &manageGuestMediaMediaResp{}
-	return nil, nil
+	return &manageGuestMediaMediaResp{}, nil
 
 }

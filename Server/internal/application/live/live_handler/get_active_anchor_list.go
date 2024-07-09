@@ -38,7 +38,6 @@ type getActiveAnchorListResp struct {
 func GetActiveAnchorList(ctx *gin.Context) (resp interface{}, err error) {
 	var p getActiveAnchorListReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 

@@ -60,7 +60,6 @@ type reconnectResp struct {
 func Reconnect(ctx *gin.Context) (resp interface{}, err error) {
 	var p reconnectReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 

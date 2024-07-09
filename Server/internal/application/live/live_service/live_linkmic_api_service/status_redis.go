@@ -18,10 +18,10 @@ package live_linkmic_api_service
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli"
 	"github.com/go-redis/redis/v8"
 )
@@ -37,7 +37,6 @@ const expireTime = 10 * time.Second
 func SetInviting(ctx context.Context, roomID, userID string, scene int) bool {
 	ok, err := redis_cli.Client.SetNX(ctx, getInvitingKey(roomID, userID), scene, expireTime).Result()
 	if err != nil {
-		logs.CtxError(ctx, "setnx inviting failed,error:%s")
 		return false
 	}
 	return ok
@@ -46,7 +45,7 @@ func SetInviting(ctx context.Context, roomID, userID string, scene int) bool {
 func GetInviting(ctx context.Context, roomID, userID string) (int, error) {
 	scene, err := redis_cli.Client.Get(ctx, getInvitingKey(roomID, userID)).Int64()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			return 0, custom_error.ErrRecordNotFound
 		}
 		return 0, custom_error.InternalError(err)
@@ -61,7 +60,6 @@ func DelInviting(ctx context.Context, roomID, userID string) {
 func SetInvited(ctx context.Context, roomID, userID string, scene int) bool {
 	ok, err := redis_cli.Client.SetNX(ctx, getInvitedKey(roomID, userID), scene, expireTime).Result()
 	if err != nil {
-		logs.CtxError(ctx, "setnx invited failed,error:%s")
 		return false
 	}
 	return ok
@@ -70,7 +68,7 @@ func SetInvited(ctx context.Context, roomID, userID string, scene int) bool {
 func GetInvited(ctx context.Context, roomID, userID string) (int, error) {
 	scene, err := redis_cli.Client.Get(ctx, getInvitedKey(roomID, userID)).Int64()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			return 0, custom_error.ErrRecordNotFound
 		}
 		return 0, custom_error.InternalError(err)
@@ -94,7 +92,6 @@ func getInvitedKey(roomID, userID string) string {
 func SetAudienceApplying(ctx context.Context, roomID, userID string, scene int) bool {
 	ok, err := redis_cli.Client.SetNX(ctx, getAudienceApplyingKey(roomID, userID), scene, expireTime).Result()
 	if err != nil {
-		logs.CtxError(ctx, "setnx applying failed,error:%s")
 		return false
 	}
 	return ok
@@ -103,7 +100,7 @@ func SetAudienceApplying(ctx context.Context, roomID, userID string, scene int) 
 func GetAudienceApplying(ctx context.Context, roomID, userID string) (int, error) {
 	scene, err := redis_cli.Client.Get(ctx, getAudienceApplyingKey(roomID, userID)).Int64()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			return 0, custom_error.ErrRecordNotFound
 		}
 		return 0, custom_error.InternalError(err)

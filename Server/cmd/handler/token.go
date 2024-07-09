@@ -34,7 +34,6 @@ func HandleGetRTCJoinRoomToken(httpCtx *gin.Context) {
 	err := httpCtx.BindJSON(p)
 	ctx := context.Background()
 	if err != nil {
-		logs.CtxError(ctx, "param error,err:%s", err)
 		httpCtx.String(200, response.NewCommonResponse(ctx, "", "", custom_error.ErrMissParam))
 		return
 	}

@@ -23,7 +23,6 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/models/public"
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -49,7 +48,6 @@ type getAppInfoResp struct {
 func GetAppInfo(ctx *gin.Context) (resp interface{}, err error) {
 	var p getAppInfoReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 
@@ -72,7 +70,7 @@ func GetAppInfo(ctx *gin.Context) (resp interface{}, err error) {
 	}
 	if p.ScenesName != "" {
 		bid, ok := public.BidMap[p.ScenesName]
-		if ok != true || bid == "" {
+		if !ok || bid == "" {
 			return nil, custom_error.ErrGetBID
 		}
 

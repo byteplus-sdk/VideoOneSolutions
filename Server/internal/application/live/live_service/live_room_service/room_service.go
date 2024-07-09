@@ -230,7 +230,6 @@ func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID stri
 	user.Leave()
 	err = rs.roomUserRepo.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s", err)
 		return err
 	}
 
@@ -269,13 +268,10 @@ func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID stri
 }
 
 func (rs *RoomService) HandleMessage(ctx context.Context, appID, roomID, messageStr string) error {
-	message := &live_room_models.Message{}
-	err := json.Unmarshal([]byte(messageStr), message)
+	var message live_room_models.Message
+	err := json.Unmarshal([]byte(messageStr), &message)
 	if err != nil {
 		return err
-	}
-	if message == nil {
-		return nil
 	}
 	if util.IntInSlice(message.MessageType, []int{live_room_models.MessageTypeGift, live_room_models.MessageTypeLike}) {
 		room, err := rs.roomRepo.GetActiveRoom(ctx, appID, roomID)

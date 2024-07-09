@@ -38,7 +38,6 @@ type sendMessageResp struct {
 func SendMessage(ctx *gin.Context) (resp interface{}, err error) {
 	var p sendMessageReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 
@@ -61,5 +60,5 @@ func SendMessage(ctx *gin.Context) (resp interface{}, err error) {
 	}
 	informer.BroadcastRoom(ctx, p.RoomID, ktv_service.OnMessage, data)
 
-	return nil, nil
+	return &sendMessageResp{}, nil
 }

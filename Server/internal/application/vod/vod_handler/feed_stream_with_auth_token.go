@@ -34,7 +34,6 @@ func GetFeedStreamWithPlayAuthToken(httpCtx *gin.Context) {
 	req := &vod_models.GetFeedStreamRequest{}
 	err := httpCtx.ShouldBindJSON(req)
 	if err != nil {
-		logs.CtxError(ctx, "param error,err:%s", err)
 		httpCtx.String(http.StatusBadRequest, response.NewVodCommonResponse(ctx, "", "", custom_error.ErrInput))
 		return
 	}

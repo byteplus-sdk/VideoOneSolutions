@@ -72,7 +72,6 @@ func (rs *RoomService) CreateRoom(ctx context.Context, appID, roomName, roomBack
 	host := rs.userFactory.NewUser(ctx, appID, room.GetRoomID(), hostUserID, hostUserName, hostDeviceID, owc_db.UserRoleHost)
 	err = rs.userFactory.Save(ctx, host)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s", err)
 		return nil, nil, err
 	}
 
@@ -110,7 +109,6 @@ func (rs *RoomService) StartLive(ctx context.Context, appID, roomID string) erro
 	host.StartLive()
 	err = rs.userFactory.Save(ctx, host)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:%s", err)
 		return err
 	}
 
@@ -193,7 +191,6 @@ func (rs *RoomService) JoinRoom(ctx context.Context, appID, roomID, userID, user
 	user.JoinRoom(room.GetRoomID())
 	err = rs.userFactory.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:"+err.Error())
 		return custom_error.InternalError(err)
 	}
 
@@ -236,7 +233,6 @@ func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID stri
 	user.LeaveRoom()
 	err = rs.userFactory.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:"+err.Error())
 		return custom_error.InternalError(err)
 	}
 	songService := GetSongService()
@@ -292,7 +288,6 @@ func (rs *RoomService) Disconnect(ctx context.Context, appID, roomID, userID str
 	user.Disconnect()
 	err = rs.userFactory.Save(ctx, user)
 	if err != nil {
-		logs.CtxError(ctx, "save user failed,error:"+err.Error())
 		return err
 	}
 

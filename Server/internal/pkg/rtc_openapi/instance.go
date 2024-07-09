@@ -20,30 +20,24 @@ import (
 	"context"
 
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
 var instanceMap map[string]*RTC
 
 func GetInstance(ctx context.Context, appID string) *RTC {
-	logs.CtxInfo(ctx, "get instance appID:%s", appID)
-	logs.CtxInfo(ctx, "instanceMap:%s", instanceMap)
 	if instanceMap == nil {
 		instanceMap = make(map[string]*RTC, 10)
 	}
 	instance, ok := instanceMap[appID]
-	logs.CtxInfo(ctx, "instance:%s,%s", instance, ok)
 	if ok {
 		return instance
 	} else {
 		userInfoService := login_service.GetAppInfoService()
 		userInfo, _ := userInfoService.ReadAppInfoByAppId(ctx, appID)
-		logs.CtxInfo(ctx, "userinfo:%s", userInfo)
 		instance = NewInstance()
 		instance.SetAccessKey(userInfo.AccessKey)
 		instance.SetSecretKey(userInfo.SecretAccessKey)
 		instanceMap[appID] = instance
 	}
-	logs.CtxInfo(ctx, "instance:%s", instance)
 	return instance
 }

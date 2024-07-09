@@ -515,14 +515,14 @@ func getLinkedUserList(ctx context.Context, appID, roomID string) ([]*live_retur
 		return resp, nil
 	}
 
-	if activeRoomLinkmicInfo.IsAnchorLink == false {
+	if !activeRoomLinkmicInfo.IsAnchorLink {
 		if len(activeRoomLinkmicInfo.LinkedUsers) == 0 {
 			return resp, nil
 		}
 		var userIDs []string
 		for _, linker := range activeRoomLinkmicInfo.LinkedUsers[roomID] {
 			userIDs = append(userIDs, linker.FromUserID)
-			if util.StringInSlice(linker.ToUserID, userIDs) == false {
+			if !util.StringInSlice(linker.ToUserID, userIDs) {
 				userIDs = append(userIDs, linker.ToUserID)
 			}
 		}

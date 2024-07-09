@@ -43,7 +43,7 @@ func NewCronJob(c *cron.Cron) {
 		}
 
 		for _, room := range rooms {
-			if time.Now().Sub(room.CreateTime) >= time.Duration(config.Configs().LiveExperienceTime)*time.Minute {
+			if time.Since(room.CreateTime) >= time.Duration(config.Configs().LiveExperienceTime)*time.Minute {
 				FinishLiveLogic(ctx, room.RtcAppID, finishLiveReq{
 					RoomID:     room.RoomID,
 					UserID:     room.HostUserID,

@@ -61,7 +61,7 @@ func GetFeedStreamWithVideoModel(ctx context.Context, req *vod_models.GetFeedStr
 
 		videoModel, err := json.Marshal(info.Result)
 		if err != nil {
-			logs.CtxError(ctx, "Marshal VideoModel String Error:%v")
+			logs.CtxError(ctx, "Marshal VideoModel String Error:%s", err.Error())
 			continue
 		}
 

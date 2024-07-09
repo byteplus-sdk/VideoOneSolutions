@@ -37,7 +37,6 @@ type anchorLinkmicFinishResp struct {
 func AnchorLinkmicFinish(ctx *gin.Context) (resp interface{}, err error) {
 	var p anchorLinkmicFinishReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 

@@ -38,7 +38,6 @@ type manageSeatResp struct {
 func ManageSeat(ctx *gin.Context) (resp interface{}, err error) {
 	var p manageSeatReq
 	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
-		logs.CtxError(ctx, "param error,err:"+err.Error())
 		return nil, err
 	}
 
@@ -72,5 +71,5 @@ func ManageSeat(ctx *gin.Context) (resp interface{}, err error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return &manageSeatResp{}, nil
 }
