@@ -31,12 +31,6 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
-const (
-	LinkmicStatusOther           = 1
-	LinkmicStatusAudienceLinkmic = 3
-	LinkmicStatusAnchorLinkmic   = 4
-)
-
 type reconnectReq struct {
 	AppID  string `json:"app_id" binding:"required"`
 	RoomID string `json:"room_id" binding:"required"`
@@ -99,12 +93,12 @@ func Reconnect(ctx *gin.Context) (resp interface{}, err error) {
 		LiveRoomInfo:  ConvertReturnRoom(room),
 		StreamPushUrl: live_cdn_service.GenPushUrl(ctx, room.RtcAppID, room.StreamID),
 	}
-	linkmicStatus := LinkmicStatusOther
+	linkmicStatus := live_return_models.UserLinkmicStatusUnknown
 	if activeRoomLinkmicInfo.IsLinked {
 		if activeRoomLinkmicInfo.IsAnchorLink {
-			linkmicStatus = LinkmicStatusAnchorLinkmic
+			linkmicStatus = live_return_models.UserLinkmicStatusAnchorLinkmicLinked
 		} else {
-			linkmicStatus = LinkmicStatusAudienceLinkmic
+			linkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicLinked
 		}
 		reconnectInfo.RtcRoomID = roomRepo.GetRoomRtcRoomID(ctx, p.RoomID)
 		reconnectInfo.RtcToken = live_util.GenToken(roomRepo.GetRoomRtcRoomID(ctx, p.RoomID), p.UserID, appInfo.AppId, appInfo.AppKey)
