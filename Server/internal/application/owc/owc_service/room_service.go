@@ -186,8 +186,17 @@ func (rs *RoomService) JoinRoom(ctx context.Context, appID, roomID, userID, user
 		logs.CtxError(ctx, "room is not exist")
 		return custom_error.ErrRoomNotExist
 	}
+	user, err := rs.userFactory.GetActiveUserByRoomIDUserID(ctx, appID, roomID, userID)
+	if err != nil {
+		logs.CtxError(ctx, "get user failed,error:%s", err.Error())
+		return err
+	}
+	if user != nil {
+		logs.CtxError(ctx, "user has joined the room")
+		return custom_error.ErrUserInRoom
+	}
 
-	user := rs.userFactory.NewUser(ctx, appID, roomID, userID, userName, userDeviceID, owc_db.UserRoleAudience)
+	user = rs.userFactory.NewUser(ctx, appID, roomID, userID, userName, userDeviceID, owc_db.UserRoleAudience)
 	user.JoinRoom(room.GetRoomID())
 	err = rs.userFactory.Save(ctx, user)
 	if err != nil {

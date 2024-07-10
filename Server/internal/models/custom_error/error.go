@@ -22,6 +22,7 @@ var (
 	ErrInput                           = NewCustomError(400, errors.New("input format error"))
 	ErrUserIsInactive                  = NewCustomError(404, errors.New("user is inactive"))
 	ErrUserInUse                       = NewCustomError(413, errors.New("user is in use"))
+	ErrUserInRoom                      = NewCustomError(414, errors.New("user is in room"))
 	ErrUserIsNotHost                   = NewCustomError(416, errors.New("user is not host"))
 	ErrUserIsNotOwner                  = NewCustomError(417, errors.New("user is not room owner"))
 	ErrUserNotExist                    = NewCustomError(419, errors.New("user not exist"))

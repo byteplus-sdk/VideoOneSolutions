@@ -74,7 +74,6 @@ func GetAudienceList(ctx *gin.Context) (resp interface{}, err error) {
 		if audience.LinkmicStatus == live_return_models.UserLinkmicStatusUnknown {
 			scene, err := live_linkmic_api_service.GetInvited(ctx, audience.RoomID, audience.UserID)
 			if err != nil {
-				logs.CtxInfo(ctx, "get err:%s", err)
 				continue
 			}
 			if scene == live_linker_models.LinkerSceneAudience {
