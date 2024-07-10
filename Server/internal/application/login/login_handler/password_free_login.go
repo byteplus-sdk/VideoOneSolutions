@@ -19,9 +19,8 @@ package login_handler
 import (
 	"time"
 
-	"github.com/byteplus/VideoOneServer/internal/models/response"
-
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
+	"github.com/byteplus/VideoOneServer/internal/models/response"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"

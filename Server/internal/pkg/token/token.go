@@ -258,14 +258,13 @@ func packString(w io.Writer, s string) error {
 }
 
 func packMapUint32(w io.Writer, extra map[uint16]uint32) error {
-	var keys []int
+	var keys = make([]int, 0)
 	if err := packUint16(w, uint16(len(extra))); err != nil {
 		return err
 	}
 	for k := range extra {
 		keys = append(keys, int(k))
 	}
-	//should sorted keys
 	sort.Ints(keys)
 
 	for _, k := range keys {

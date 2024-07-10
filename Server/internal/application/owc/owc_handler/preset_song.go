@@ -35,7 +35,6 @@ type GetPresetSongListResp struct {
 }
 
 func GetPreSetSongList(ctx *gin.Context) (interface{}, error) {
-
 	songList, err := owc_service.GetPresetSongRepo().OwcGetPresetSong(ctx)
 	if err != nil {
 		logs.CtxError(ctx, "get song list failed,error:%s", err)

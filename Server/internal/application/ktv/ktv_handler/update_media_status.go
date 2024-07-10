@@ -71,5 +71,4 @@ func UpdateMediaStatus(ctx *gin.Context) (resp interface{}, err error) {
 	informer.BroadcastRoom(ctx, p.RoomID, ktv_service.OnMediaStatusChange, data)
 
 	return &updateMediaStatusResp{}, nil
-
 }

@@ -17,14 +17,13 @@
 package live_handler
 
 import (
-	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_util"
+	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
+	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type getActiveAnchorListReq struct {
@@ -61,5 +60,4 @@ func GetActiveAnchorList(ctx *gin.Context) (resp interface{}, err error) {
 	}
 
 	return resp, nil
-
 }

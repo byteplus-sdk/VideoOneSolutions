@@ -66,5 +66,4 @@ func AudienceLinkmicFinish(ctx *gin.Context) (resp interface{}, err error) {
 
 	resp = &AudienceLinkmicFinishResp{}
 	return resp, nil
-
 }

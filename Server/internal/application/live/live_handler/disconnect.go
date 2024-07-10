@@ -44,7 +44,6 @@ func DisconnectLogic(ctx context.Context, appID, roomID, userID string) error {
 			RoomID: roomID,
 			UserID: userID,
 		})
-
 	}
 
 	if user.UserRole == live_room_models.RoomUserRoleAudience {

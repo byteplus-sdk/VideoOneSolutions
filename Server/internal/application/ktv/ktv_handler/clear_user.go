@@ -43,8 +43,8 @@ func ClearUser(ctx *gin.Context) (resp interface{}, err error) {
 	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, custom_error.ErrInput
-
 	}
+
 	if user == nil {
 		return nil, nil
 	}

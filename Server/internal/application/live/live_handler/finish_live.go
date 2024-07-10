@@ -50,7 +50,6 @@ func FinishLive(ctx *gin.Context) (resp interface{}, err error) {
 	}
 
 	return FinishLiveLogic(ctx, p.AppID, p)
-
 }
 
 func FinishLiveLogic(ctx context.Context, appID string, p finishLiveReq) (resp interface{}, err error) {
@@ -95,5 +94,4 @@ func FinishLiveLogic(ctx context.Context, appID string, p finishLiveReq) (resp i
 	}
 
 	return resp, nil
-
 }

@@ -212,7 +212,6 @@ func (is *InteractService) AudienceReply(ctx context.Context, appID, roomID, hos
 			SeatID:   audience.GetSeatID(),
 		}
 		informer.BroadcastRoom(ctx, roomID, OnJoinInteract, data)
-
 	} else {
 		audience.SetInteract(ktv_db.UserInteractStatusNormal, 0)
 		err = is.userFactory.Save(ctx, audience)
@@ -340,7 +339,6 @@ func (is *InteractService) Mute(ctx context.Context, appID, roomID string, seatI
 	}
 	informer.UnicastRoomUser(ctx, roomID, userID, OnMediaOperate, data)
 	return nil
-
 }
 
 func (is *InteractService) Unmute(ctx context.Context, appID string, roomID string, seatID int) error {
@@ -403,7 +401,6 @@ func (is *InteractService) LockSeat(ctx context.Context, appID, roomID string, s
 	}
 	informer.BroadcastRoom(ctx, roomID, OnSeatStatusChange, data)
 	return nil
-
 }
 
 func (is *InteractService) UnlockSeat(ctx context.Context, appID, roomID string, seatID int) error {

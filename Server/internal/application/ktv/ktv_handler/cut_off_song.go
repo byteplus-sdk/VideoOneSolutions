@@ -70,5 +70,4 @@ func CutOffSong(ctx *gin.Context) (resp interface{}, err error) {
 	}
 
 	return &cutOffSongResp{}, nil
-
 }

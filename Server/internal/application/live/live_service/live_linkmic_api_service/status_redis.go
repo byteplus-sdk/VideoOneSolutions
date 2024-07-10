@@ -78,7 +78,6 @@ func GetInvited(ctx context.Context, roomID, userID string) (int, error) {
 
 func DelInvited(ctx context.Context, roomID, userID string) {
 	redis_cli.Client.Del(ctx, getInvitedKey(roomID, userID))
-
 }
 
 func getInvitingKey(roomID, userID string) string {

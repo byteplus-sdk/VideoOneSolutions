@@ -18,6 +18,7 @@ package login_implement
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_entity"
@@ -48,10 +49,10 @@ func (impl *LoginTokenRepositoryImpl) ExistToken(ctx context.Context, token stri
 	key := redisKeyLogin(token)
 
 	val, err := redis_cli.Client.Exists(ctx, key).Result()
-	switch err {
-	case nil:
+	switch {
+	case err == nil:
 		return val == 1, nil
-	case redis.Nil:
+	case errors.Is(err, redis.Nil):
 		return false, nil
 	default:
 		return false, err
@@ -67,11 +68,11 @@ func (impl *LoginTokenRepositoryImpl) GetUserID(ctx context.Context, token strin
 
 func (impl *LoginTokenRepositoryImpl) GetTokenCreatedAt(ctx context.Context, token string) (int64, error) {
 	createdAt, err := redis_cli.Client.HGet(ctx, redisKeyLogin(token), fieldCreatedTime).Int64()
-	switch err {
-	case nil:
+	switch {
+	case err == nil:
 		logs.CtxInfo(ctx, "get token created at: %v", createdAt)
 		return createdAt, nil
-	case redis.Nil:
+	case errors.Is(err, redis.Nil):
 		return 0, nil
 	default:
 		return 0, err

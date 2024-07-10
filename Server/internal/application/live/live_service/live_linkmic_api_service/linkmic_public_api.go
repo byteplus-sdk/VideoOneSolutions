@@ -74,7 +74,6 @@ func FinishAudienceLinkmic(ctx context.Context, appID, roomID, userID string) er
 					AudienceUserID: userID,
 				})
 			}
-
 		}
 	}
 

@@ -35,7 +35,6 @@ type GetPresetSongListResp struct {
 }
 
 func GetPreSetSongList(ctx *gin.Context) (interface{}, error) {
-
 	songList, err := ktv_service.GetPresetSongRepo().GetPresetSong(ctx)
 	if err != nil {
 		logs.CtxError(ctx, "get song list failed,error:%s", err)

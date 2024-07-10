@@ -58,8 +58,8 @@ func (repo *RedisSongRepo) List(ctx context.Context, roomID string) ([]*owc_enti
 		rs = append(rs, song)
 	}
 	return rs, nil
-
 }
+
 func (repo *RedisSongRepo) Push(ctx context.Context, roomID string, song *owc_entity.OwcSong) error {
 	data, _ := json.Marshal(song)
 	err := redis_cli.Client.RPush(ctx, getSongListKey(roomID), data).Err()
@@ -114,7 +114,6 @@ func (repo *RedisSongRepo) SetUser(ctx context.Context, roomID string, song *owc
 	redis_cli.Client.HSet(ctx, getSongKey(song.OwnerUserID, song.SongID), LeaderSing, song.OwnerUserID)
 	redis_cli.Client.HSet(ctx, getSongKey(song.OwnerUserID, song.SongID), SuccentorUser, userId)
 	return nil
-
 }
 
 func (repo *RedisSongRepo) GetUser(ctx context.Context, roomID string, song *owc_entity.OwcSong) (*OwcSongSingUser, error) {
@@ -125,8 +124,8 @@ func (repo *RedisSongRepo) GetUser(ctx context.Context, roomID string, song *owc
 		} else {
 			return nil, err
 		}
-
 	}
+
 	succentorUser, err := redis_cli.Client.HGet(ctx, getSongKey(song.OwnerUserID, song.SongID), SuccentorUser).Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -134,19 +133,17 @@ func (repo *RedisSongRepo) GetUser(ctx context.Context, roomID string, song *owc
 		} else {
 			return nil, err
 		}
-
 	}
+
 	owcSongSingUser := &OwcSongSingUser{
 		LeaderUser:    leaderUser,
 		SuccentorUser: succentorUser,
 	}
 	return owcSongSingUser, nil
-
 }
 
 func (repo *RedisSongRepo) DelUser(ctx context.Context, roomID string, song *owc_entity.OwcSong) {
 	redis_cli.Client.Del(ctx, getSongKey(song.OwnerUserID, song.SongID))
-
 }
 
 func getSongListKey(roomID string) string {

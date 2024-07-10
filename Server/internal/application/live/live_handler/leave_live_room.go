@@ -42,7 +42,6 @@ func LeaveLiveRoom(ctx *gin.Context) (resp interface{}, err error) {
 	}
 
 	return LeaveRoomLogic(ctx, p.AppID, p)
-
 }
 
 func LeaveRoomLogic(ctx context.Context, appID string, p leaveLiveRoomReq) (resp interface{}, err error) {

@@ -18,6 +18,7 @@ package general
 
 import (
 	"context"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli"
 	"github.com/go-redis/redis/v8"
@@ -33,9 +34,8 @@ func SetGeneratedRoomID(ctx context.Context, bizID string, roomID int64) {
 
 func GetGeneratedRoomID(ctx context.Context, bizID string) (int64, error) {
 	roomID, err := redis_cli.Client.Get(ctx, keyGenerateRoomID+bizID).Int64()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		return 0, nil
 	}
 	return roomID, err
-
 }

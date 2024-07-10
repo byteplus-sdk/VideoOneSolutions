@@ -24,7 +24,6 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_db"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
@@ -345,7 +344,6 @@ func (rs *RoomService) Disconnect(ctx context.Context, appID, roomID, userID str
 				}
 			}
 		}
-
 	}(ctx, user.GetRoomID(), user.GetUserID())
 	return nil
 }

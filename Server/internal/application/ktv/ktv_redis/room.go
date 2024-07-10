@@ -48,7 +48,6 @@ func GetRoomsAudienceCount(ctx context.Context, roomIDs []string) (map[string]in
 		if !errors.Is(err, redis.Nil) {
 			return nil, err
 		}
-
 	}
 
 	res := make(map[string]int)

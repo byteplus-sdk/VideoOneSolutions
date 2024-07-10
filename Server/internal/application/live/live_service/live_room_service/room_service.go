@@ -161,7 +161,6 @@ func (rs *RoomService) FinishRoom(ctx context.Context, appID, roomID, hostUserID
 	informer.BroadcastRoom(ctx, room.RoomID, live_inform_service.OnFinishLive, informData)
 
 	return room, nil
-
 }
 
 func (rs *RoomService) JoinRoom(ctx context.Context, appID, roomID, userID, userName string) (*live_entity.LiveRoom, *live_entity.LiveRoomUser, error) {
@@ -211,7 +210,6 @@ func (rs *RoomService) JoinRoom(ctx context.Context, appID, roomID, userID, user
 	informer.BroadcastRoom(ctx, room.RoomID, live_inform_service.OnAudienceJoinRoom, informData)
 
 	return room, audience, nil
-
 }
 
 func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID string) error {
@@ -264,7 +262,6 @@ func (rs *RoomService) LeaveRoom(ctx context.Context, appID, roomID, userID stri
 	informer.BroadcastRoom(ctx, room.RoomID, live_inform_service.OnAudienceLeaveRoom, informData)
 
 	return nil
-
 }
 
 func (rs *RoomService) HandleMessage(ctx context.Context, appID, roomID, messageStr string) error {
@@ -305,5 +302,4 @@ func (rs *RoomService) HandleMessage(ctx context.Context, appID, roomID, message
 	}
 
 	return nil
-
 }

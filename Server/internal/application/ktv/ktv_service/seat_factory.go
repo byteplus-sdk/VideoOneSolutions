@@ -20,7 +20,6 @@ import (
 	"context"
 
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_entity"
-
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 )
 

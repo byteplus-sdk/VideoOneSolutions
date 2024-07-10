@@ -74,5 +74,4 @@ func AudienceLinkmicInvite(ctx *gin.Context) (resp interface{}, err error) {
 		LinkerID: inviteReply.LinkerID,
 	}
 	return resp, nil
-
 }

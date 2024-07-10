@@ -319,7 +319,6 @@ func (ls *LinkerService) AudienceLeave(ctx context.Context, r *live_linker_model
 		Linker: linker,
 	}
 	return resp, nil
-
 }
 
 func (ls *LinkerService) AudienceCancel(ctx context.Context, r *live_linker_models.ApiAudienceCancelReq) (*live_linker_models.AudienceLeaveResp, error) {
@@ -352,7 +351,6 @@ func (ls *LinkerService) AudienceCancel(ctx context.Context, r *live_linker_mode
 		Linker: linker,
 	}
 	return resp, nil
-
 }
 
 func (ls *LinkerService) AudienceKick(ctx context.Context, r *live_linker_models.AudienceKickReq) (*live_linker_models.AudienceKickResp, error) {
@@ -387,7 +385,6 @@ func (ls *LinkerService) AudienceFinish(ctx context.Context, r *live_linker_mode
 	}
 	var finishLinkers []*live_entity.LiveLinker
 	for _, linker := range linkers {
-
 		if linker.ToUserID != r.HostUserID {
 			return nil, custom_error.ErrUserDoNotHavePermission
 		}
@@ -400,7 +397,6 @@ func (ls *LinkerService) AudienceFinish(ctx context.Context, r *live_linker_mode
 		if linker.LinkerStatus == live_linker_models.LinkerStatusAnchorLinked {
 			finishLinkers = append(finishLinkers, linker)
 		}
-
 	}
 
 	resp := &live_linker_models.AudienceFinishResp{
@@ -504,11 +500,9 @@ func (ls *LinkerService) AnchorFinish(ctx context.Context, r *live_linker_models
 		Linker:   linker,
 		UserList: users,
 	}
-
 	return resp, nil
 }
 
-// info
 func (ls *LinkerService) GetRoomLinkmicInfo(ctx context.Context, r *live_linker_models.GetRoomLinkmicInfoReq) (*live_linker_models.GetRoomLinkmicInfoResp, error) {
 	resp := &live_linker_models.GetRoomLinkmicInfoResp{}
 	resp.Linkers = make([]*live_entity.LiveLinker, 0)

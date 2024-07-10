@@ -67,7 +67,6 @@ func (r *AudienceLinkmicHostSceneRule) Check(ctx context.Context) error {
 		if linker.Scene == live_linker_models.LinkerSceneAnchor && linker.LinkerStatus == live_linker_models.LinkerStatusAnchorLinked {
 			return custom_error.ErrSceneAudienceNotAllowedOrLinked
 		}
-
 	}
 
 	if !isAudienceLinkmic {

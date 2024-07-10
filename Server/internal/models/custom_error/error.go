@@ -16,8 +16,11 @@
 
 package custom_error
 
-import "errors"
+import (
+	"errors"
+)
 
+// nolint
 var (
 	ErrInput                           = NewCustomError(400, errors.New("input format error"))
 	ErrUserIsInactive                  = NewCustomError(404, errors.New("user is inactive"))
@@ -98,7 +101,8 @@ func Equal(src error, trg *CustomError) bool {
 		return false
 	}
 
-	if cerr, ok := src.(*CustomError); ok {
+	var cerr *CustomError
+	if errors.As(src, &cerr) {
 		return cerr.Code() == trg.Code()
 	}
 

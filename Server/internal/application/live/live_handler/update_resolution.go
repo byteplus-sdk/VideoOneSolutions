@@ -19,13 +19,11 @@ package live_handler
 import (
 	"encoding/json"
 
-	"github.com/gin-gonic/gin/binding"
-
-	"github.com/gin-gonic/gin"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type updateResolutionReq struct {
@@ -65,5 +63,4 @@ func UpdateResolution(ctx *gin.Context) (resp interface{}, err error) {
 	}
 
 	return &updateResolutionResp{}, nil
-
 }

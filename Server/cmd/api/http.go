@@ -59,7 +59,6 @@ func (api *HttpApi) Run() error {
 		vod.GET("/v1/getVideoComments", vod_handler.GetVideoComments)
 		vod.POST("/v1/getFeedSimilarVideos", vod_handler.GetFeedSimilarVideos)
 		vod.POST("/v1/getPlayListDetail", vod_handler.GetPlayListDetail)
-
 	}
 	return api.r.Run(fmt.Sprintf("0.0.0.0:%s", api.Port))
 }

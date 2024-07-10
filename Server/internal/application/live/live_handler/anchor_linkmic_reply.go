@@ -70,5 +70,4 @@ func AnchorLinkmicReply(ctx *gin.Context) (resp interface{}, err error) {
 		LinkedTime:  replyResp.LinkedTime,
 	}
 	return resp, nil
-
 }

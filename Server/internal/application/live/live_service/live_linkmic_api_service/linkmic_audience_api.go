@@ -318,7 +318,7 @@ func AudiencePermit(ctx context.Context, appID string, r *live_linker_models.Api
 			UserList:  userList,
 			UserID:    r.AudienceUserID,
 		}
-		informer.BroadcastRoom(ctx, rtcRoomID, live_inform_service.OnAudienceLinkmicJoin, informDataBroad)
+		informer.BroadcastRoom(ctx, r.HostRoomID, live_inform_service.OnAudienceLinkmicJoin, informDataBroad)
 
 		informData.RtcRoomID = rtcRoomID
 		informData.RtcToken = live_util.GenToken(rtcRoomID, r.AudienceUserID, appInfo.AppId, appInfo.AppKey)
@@ -326,6 +326,7 @@ func AudiencePermit(ctx context.Context, appID string, r *live_linker_models.Api
 
 		resp.LinkedUserList = userList
 		resp.RtcToken = live_util.GenToken(rtcRoomID, r.HostUserID, appInfo.AppId, appInfo.AppKey)
+		resp.RtcRoomID = rtcRoomID
 
 		if len(userList) == 2 {
 			linkmicStatusInformData := &live_inform_service.InformLinkmicStatus{
@@ -570,7 +571,6 @@ func getLinkedUserList(ctx context.Context, appID, roomID string) ([]*live_retur
 					Extra:    toRoomUser.Extra}
 				resp = append(resp, user)
 			}
-
 		}
 	}
 	return resp, nil

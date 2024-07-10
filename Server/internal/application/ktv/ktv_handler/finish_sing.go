@@ -81,5 +81,4 @@ func FinishSing(ctx *gin.Context) (resp interface{}, err error) {
 	}
 
 	return resp, nil
-
 }

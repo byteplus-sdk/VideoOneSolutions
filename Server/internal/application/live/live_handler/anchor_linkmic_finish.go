@@ -53,5 +53,4 @@ func AnchorLinkmicFinish(ctx *gin.Context) (resp interface{}, err error) {
 	resp = &anchorLinkmicFinishResp{}
 
 	return resp, nil
-
 }

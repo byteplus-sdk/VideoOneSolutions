@@ -18,6 +18,7 @@ package login_implement
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_entity"
@@ -62,10 +63,10 @@ func (impl *AppInfoRepositoryImpl) Save(ctx context.Context, appInfo *login_enti
 func (impl *AppInfoRepositoryImpl) ExistAppInfo(ctx context.Context, appID string) (bool, error) {
 	key := redisKey(appID)
 	val, err := redis_cli.Client.Exists(ctx, key).Result()
-	switch err {
-	case nil:
+	switch {
+	case err == nil:
 		return val == 1, nil
-	case redis.Nil:
+	case errors.Is(err, redis.Nil):
 		return false, nil
 	default:
 		return false, err
@@ -101,7 +102,6 @@ func (impl *AppInfoRepositoryImpl) GetAppInfoByAppID(ctx context.Context, appID 
 			Where("app_id=?", appID).First(&appInfo).Error
 		if err != nil {
 			return nil, err
-
 		}
 		writeRedis(ctx, appInfo)
 	}

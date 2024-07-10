@@ -70,5 +70,4 @@ func AudienceLinkmicKick(ctx *gin.Context) (resp interface{}, err error) {
 	resp = &audienceLinkmicKickResp{}
 
 	return resp, nil
-
 }

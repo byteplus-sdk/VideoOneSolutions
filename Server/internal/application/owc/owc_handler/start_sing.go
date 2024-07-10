@@ -19,13 +19,12 @@ package owc_handler
 import (
 	"errors"
 
-	"github.com/gin-gonic/gin/binding"
-
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/util"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type startSingReq struct {
@@ -80,5 +79,4 @@ func StartSing(ctx *gin.Context) (resp interface{}, err error) {
 	resp = startSingResp{Song: song}
 
 	return resp, nil
-
 }

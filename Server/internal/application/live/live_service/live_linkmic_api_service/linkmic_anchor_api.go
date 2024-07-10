@@ -202,7 +202,6 @@ func AnchorReply(ctx context.Context, appID string, r *live_linker_models.ApiAnc
 		informer := inform.GetInformService(appID)
 		informer.BroadcastRoom(ctx, r.InviterRoomID, live_inform_service.OnLinkmicStatus, linkmicStatusInformData)
 		informer.BroadcastRoom(ctx, r.InviteeRoomID, live_inform_service.OnLinkmicStatus, linkmicStatusInformData)
-
 	}
 	informer := inform.GetInformService(appID)
 	informer.UnicastRoomUser(ctx, r.InviterRoomID, r.InviterUserID, live_inform_service.OnAnchorLinkmicReply, informData)
@@ -238,5 +237,4 @@ func AnchorFinish(ctx context.Context, appID string, r *live_linker_models.ApiAn
 
 	resp := &live_linker_models.ApiAnchorFinishResp{}
 	return resp, nil
-
 }

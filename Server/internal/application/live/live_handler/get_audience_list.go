@@ -86,5 +86,4 @@ func GetAudienceList(ctx *gin.Context) (resp interface{}, err error) {
 		AudienceList: audiences,
 	}
 	return resp, nil
-
 }

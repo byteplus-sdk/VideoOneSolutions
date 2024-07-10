@@ -41,7 +41,7 @@ func GetFeedStreamWithVideoModel(ctx context.Context, req *vod_models.GetFeedStr
 	if len(videos) == 0 {
 		return nil, nil
 	}
-	var resp []*vod_models.VideoDetail
+	var resp = make([]*vod_models.VideoDetail, 0)
 	instance := vod_openapi.GetInstance(ctx, req.AppID)
 
 	for _, video := range videos {
@@ -99,8 +99,8 @@ func GetFeedStreamWithVideoModel(ctx context.Context, req *vod_models.GetFeedStr
 			SubtitleAuthToken: subtitleToken,
 			CreateTime:        mediaInfo.Result.MediaInfoList[0].BasicInfo.CreateTime,
 			Subtitle:          mediaInfo.Result.MediaInfoList[0].BasicInfo.Description,
-			PlayTimes:         rand.Int63n(20) + 20,
-			Like:              rand.Int63n(20) + 20,
+			PlayTimes:         rand.Int63n(20) + 20, // nolint
+			Like:              rand.Int63n(20) + 20, // nolint
 			Comment:           public.VideoCommentNum,
 			Height:            mediaInfo.Result.MediaInfoList[0].SourceInfo.Height,
 			Width:             mediaInfo.Result.MediaInfoList[0].SourceInfo.Width,

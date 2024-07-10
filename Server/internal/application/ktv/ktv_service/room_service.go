@@ -311,7 +311,6 @@ func (rs *RoomService) Disconnect(ctx context.Context, appID, roomID, userID str
 				logs.CtxError(ctx, "leave room failed,error:%s", err)
 			}
 		}
-
 	}(ctx, user.GetRoomID(), user.GetUserID())
 	return nil
 }

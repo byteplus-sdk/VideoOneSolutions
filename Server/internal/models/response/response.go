@@ -76,7 +76,8 @@ func NewVodCommonResponse(ctx context.Context, requestID string, response interf
 		return newVodCommonResponse(http.StatusOK, "ok", requestID, response)
 	}
 	defer util.CheckPanic()
-	if cerr, ok := err.(*custom_error.CustomError); ok {
+	var cerr *custom_error.CustomError
+	if errors.As(err, &cerr) {
 		return newVodCommonResponse(cerr.Code(), cerr.Error(), requestID, nil)
 	}
 

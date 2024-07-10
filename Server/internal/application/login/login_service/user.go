@@ -29,10 +29,9 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_repository/login_facade"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
+	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/general"
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/lock"
-
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
 const (

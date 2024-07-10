@@ -19,10 +19,9 @@ package owc_handler
 import (
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
+	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
 type reconnectReq struct {

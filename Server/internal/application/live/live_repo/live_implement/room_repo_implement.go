@@ -160,7 +160,7 @@ func (impl *RoomRepoImpl) SubRoomAudienceCount(ctx context.Context, roomID strin
 func (impl *RoomRepoImpl) GetRoomAudienceCount(ctx context.Context, roomID string) (int, error) {
 	count, err := redis_cli.Client.Get(ctx, getRoomAudienceCountKey(roomID)).Int64()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			return 0, nil
 		}
 		return 0, custom_error.InternalError(err)

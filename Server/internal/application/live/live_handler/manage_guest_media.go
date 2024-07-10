@@ -65,5 +65,4 @@ func ManageGuestMedia(ctx *gin.Context) (resp interface{}, err error) {
 	informer.UnicastRoomUser(ctx, p.GuestRoomID, p.GuestUserID, live_inform_service.OnManageGuestMedia, informData)
 
 	return &manageGuestMediaMediaResp{}, nil
-
 }
