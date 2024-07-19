@@ -8,6 +8,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,6 +24,8 @@ import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.PlayerEvent;
 import com.byteplus.playerkit.player.playback.PlaybackController;
 import com.byteplus.playerkit.player.playback.PlaybackEvent;
+import com.byteplus.playerkit.player.playback.VideoView;
+import com.byteplus.playerkit.utils.L;
 import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.vod.scenekit.R;
 import com.byteplus.vod.scenekit.VideoSettings;
@@ -33,6 +36,7 @@ import com.byteplus.vod.scenekit.ui.base.VideoViewExtras;
 import com.byteplus.vod.scenekit.ui.video.layer.FullScreenLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.base.BaseLayer;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
+import com.byteplus.vod.scenekit.ui.video.scene.shortvideo.ShortVideoStrategy;
 import com.byteplus.vod.scenekit.utils.FormatHelper;
 import com.videoone.avatars.Avatars;
 
@@ -248,5 +252,24 @@ public class ShortVideoDetailsLayer extends BaseLayer {
                     .transform(new CenterCrop())
                     .into(binding.displayAnchor);
         });
+    }
+
+    @Override
+    public void onSurfaceAvailable(Surface surface, int width, int height) {
+        final VideoView videoView = videoView();
+        if (videoView == null) return;
+
+        if (player() != null) {
+            return;
+        }
+
+        final boolean rendered = ShortVideoStrategy.renderFrame(videoView);
+        if (rendered) {
+            L.d(this, "onSurfaceAvailable", videoView, surface, "preRender success");
+            dismissCover();
+        } else {
+            L.d(this, "onSurfaceAvailable", videoView, surface, "preRender failed");
+            showCover();
+        }
     }
 }

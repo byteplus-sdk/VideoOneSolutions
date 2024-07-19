@@ -109,8 +109,9 @@ public class ShortVideoPageView {
 
     public void setItems(List<VideoItem> videoItems) {
         mShortVideoAdapter.setItems(videoItems);
-        ShortVideoStrategy.setItems(videoItems);
-
+        if (mLifeCycle != null && mLifeCycle.getCurrentState() == Lifecycle.State.RESUMED) {
+            ShortVideoStrategy.setItems(videoItems);
+        }
         mViewPager.getChildAt(0).post(this::play);
     }
 
@@ -200,9 +201,9 @@ public class ShortVideoPageView {
         public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
             switch (event) {
                 case ON_CREATE:
-                    ShortVideoStrategy.setEnabled(true);
                     break;
                 case ON_RESUME:
+                    ShortVideoStrategy.setEnabled(true);
                     ShortVideoStrategy.setItems(mShortVideoAdapter.getItems());
                     resume();
                     break;

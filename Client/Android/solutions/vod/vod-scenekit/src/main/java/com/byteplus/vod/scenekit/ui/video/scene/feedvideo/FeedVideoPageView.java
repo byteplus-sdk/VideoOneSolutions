@@ -209,9 +209,9 @@ public class FeedVideoPageView extends FrameLayout {
         public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
             switch (event) {
                 case ON_CREATE:
-                    FeedVideoStrategy.setEnabled(true);
                     break;
                 case ON_RESUME:
+                    FeedVideoStrategy.setEnabled(true);
                     FeedVideoStrategy.setItems(mFeedVideoAdapter.getItems());
                     resume();
                     break;
@@ -235,11 +235,13 @@ public class FeedVideoPageView extends FrameLayout {
     public void setItems(List<VideoItem> videoItems) {
         int oldItemCount = mFeedVideoAdapter.getItemCount();
         mFeedVideoAdapter.setItems(videoItems);
-        FeedVideoStrategy.setItems(videoItems);
-        if (oldItemCount != 0 && !videoItems.isEmpty()) {
-            // User trigger refresh
-            // Need post to wait for RecyclerView layout fresh completed
-            post(this::autoplaySomeVideo);
+        if (mLifeCycle != null && mLifeCycle.getCurrentState() == Lifecycle.State.RESUMED) {
+            FeedVideoStrategy.setItems(videoItems);
+            if (oldItemCount != 0 && !videoItems.isEmpty()) {
+                // User trigger refresh
+                // Need post to wait for RecyclerView layout fresh completed
+                post(this::autoplaySomeVideo);
+            }
         }
     }
 
