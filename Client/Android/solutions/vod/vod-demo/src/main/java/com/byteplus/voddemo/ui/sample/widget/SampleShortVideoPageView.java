@@ -215,9 +215,9 @@ public class SampleShortVideoPageView extends FrameLayout implements LifecycleEv
     public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
         switch (event) {
             case ON_CREATE:
-                ShortVideoStrategy.setEnabled(true);
                 break;
             case ON_RESUME:
+                ShortVideoStrategy.setEnabled(true);
                 ShortVideoStrategy.setItems(mShortVideoAdapter.getItems());
                 resume();
                 break;
