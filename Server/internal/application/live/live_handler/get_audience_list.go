@@ -58,17 +58,20 @@ func GetAudienceList(ctx *gin.Context) (resp interface{}, err error) {
 			if audience.UserID == linker.FromUserID {
 				audience.LinkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicLinked
 				audience.LinkmicTime = linker.LinkedTime
+				audience.ApplyLinkTime = linker.CreateTime
 			}
 		}
 		for _, linker := range linkmicInfo.ApplyUsers[p.RoomID] {
 			if audience.UserID == linker.FromUserID {
 				audience.LinkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicApply
+				audience.ApplyLinkTime = linker.CreateTime
 			}
 		}
 
-		for _, user := range linkmicInfo.InviteUsers[p.RoomID] {
-			if audience.UserID == user.FromUserID {
+		for _, linker := range linkmicInfo.InviteUsers[p.RoomID] {
+			if audience.UserID == linker.FromUserID {
 				audience.LinkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicInviting
+				audience.ApplyLinkTime = linker.CreateTime
 			}
 		}
 		if audience.LinkmicStatus == live_return_models.UserLinkmicStatusUnknown {
