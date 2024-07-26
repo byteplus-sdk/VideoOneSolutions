@@ -17,15 +17,13 @@
 package login_handler
 
 import (
-	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
+	"github.com/byteplus/VideoOneServer/internal/models/response"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 const (
@@ -33,7 +31,7 @@ const (
 )
 
 type passwordFreeLoginReq struct {
-	UserName string `json:"user_name"`
+	UserName string `json:"user_name" binding:"required"`
 }
 
 type passwordFreeLoginResp struct {
@@ -43,16 +41,15 @@ type passwordFreeLoginResp struct {
 	CreatedAt  int64  `json:"created_at"`
 }
 
-func (h *EventHandler) PasswordFreeLogin(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	var p passwordFreeLoginReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
+func PasswordFreeLogin(ctx *gin.Context) {
+	resp, err := PasswordFreeLoginLogic(ctx)
+	ctx.String(200, response.NewCommonResponse(ctx, "", resp, err))
+}
 
-	if p.UserName == "" {
-		logs.CtxWarn(ctx, "input format error, params: %v", p)
-		return nil, custom_error.ErrInput
+func PasswordFreeLoginLogic(ctx *gin.Context) (resp interface{}, err error) {
+	var p passwordFreeLoginReq
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
 	userService := login_service.GetUserService()

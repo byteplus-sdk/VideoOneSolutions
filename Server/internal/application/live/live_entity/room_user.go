@@ -29,7 +29,7 @@ type LiveRoomUserExtra struct {
 
 type LiveRoomUser struct {
 	ID         int64     `gorm:"column:id" json:"id"`
-	AppID      string    `gorm:"column:app_id" json:"app_id""`
+	AppID      string    `gorm:"column:app_id" json:"app_id"`
 	RoomID     string    `gorm:"column:room_id" json:"room_id"`
 	UserID     string    `gorm:"column:user_id" json:"user_id"`
 	UserName   string    `gorm:"column:user_name" json:"user_name"`

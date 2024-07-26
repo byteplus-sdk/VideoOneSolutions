@@ -18,6 +18,7 @@ package ktv_db
 
 import (
 	"context"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_entity"
 	"github.com/byteplus/VideoOneServer/internal/pkg/db"
@@ -51,7 +52,7 @@ func (repo *DbRoomRepo) GetRoomByRoomID(ctx context.Context, appID, roomID strin
 	var rs *ktv_entity.KtvRoom
 	err := db.Client.WithContext(ctx).Debug().Table(RoomTable).Where("app_id = ?  and room_id = ? and status <> ?", appID, roomID, RoomStatusFinish).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -64,7 +65,7 @@ func (repo *DbRoomRepo) GetActiveRooms(ctx context.Context, appID string) ([]*kt
 	var rs []*ktv_entity.KtvRoom
 	err := db.Client.WithContext(ctx).Debug().Table(RoomTable).Where("app_id = ? and status = ?", appID, RoomStatusStart).Order("create_time desc").Limit(200).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -77,7 +78,7 @@ func (repo *DbRoomRepo) GetAllActiveRooms(ctx context.Context) ([]*ktv_entity.Kt
 	var rs []*ktv_entity.KtvRoom
 	err := db.Client.WithContext(ctx).Debug().Table(RoomTable).Where(" status = ?", RoomStatusStart).Order("create_time desc").Limit(200).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err

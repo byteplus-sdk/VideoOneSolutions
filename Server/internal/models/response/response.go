@@ -19,6 +19,7 @@ package response
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -53,17 +54,16 @@ func newCommonResponse(code int, message, requestID string, response interface{}
 }
 
 func NewCommonResponse(ctx context.Context, requestID string, response interface{}, err error) string {
+	var code int
 	if err == nil {
 		return newCommonResponse(200, "ok", requestID, response)
 	}
-	defer util.CheckPanic()
-	logs.CtxError(ctx, "find unknown err:%s", err)
-	if cerr, ok := err.(*custom_error.CustomError); ok {
+	var cerr *custom_error.CustomError
+	if errors.As(err, &cerr) {
 		return newCommonResponse(cerr.Code(), cerr.Error(), requestID, nil)
 	}
-
-	logs.CtxError(ctx, "new response failed,requestID:%s,response:%#v,err:%s", requestID, response, err)
-	return ""
+	code = (*custom_error.ErrUnknown).Code()
+	return newCommonResponse(code, err.Error(), requestID, nil)
 }
 
 type VodCommonResponse struct {
@@ -76,7 +76,8 @@ func NewVodCommonResponse(ctx context.Context, requestID string, response interf
 		return newVodCommonResponse(http.StatusOK, "ok", requestID, response)
 	}
 	defer util.CheckPanic()
-	if cerr, ok := err.(*custom_error.CustomError); ok {
+	var cerr *custom_error.CustomError
+	if errors.As(err, &cerr) {
 		return newVodCommonResponse(cerr.Code(), cerr.Error(), requestID, nil)
 	}
 

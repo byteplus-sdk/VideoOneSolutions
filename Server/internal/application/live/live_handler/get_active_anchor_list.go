@@ -17,42 +17,40 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_util"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
+	"github.com/byteplus/VideoOneServer/internal/application/login/login_service"
 	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type getActiveAnchorListReq struct {
-	RoomID     string `json:"room_id"`
-	LoginToken string `json:"login_token"`
+	AppID string `json:"app_id" binding:"required"`
 }
 
 type getActiveAnchorListResp struct {
 	AnchorList []*live_return_models.User `json:"anchor_list"`
 }
 
-func (eh *EventHandler) GetActiveAnchorList(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveGetActiveAnchorList param:%+v", param)
+func GetActiveAnchorList(ctx *gin.Context) (resp interface{}, err error) {
 	var p getActiveAnchorListReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
-	anchors, err := live_util.GetReturnUserAnchors(ctx, param.AppID)
+	anchors, err := live_util.GetReturnUserAnchors(ctx, p.AppID)
 	if err != nil {
 		logs.CtxError(ctx, "get audiences failed,error:%s", err)
 		return nil, err
 	}
+	loginToken := ctx.GetHeader(public.HeaderLoginToken)
+	userID := login_service.GetUserService().GetUserID(ctx, loginToken)
 
 	returnAnchorList := make([]*live_return_models.User, 0)
 	for _, anchor := range anchors {
-		if anchor.UserID != param.UserID {
+		if anchor.UserID != userID {
 			returnAnchorList = append(returnAnchorList, anchor)
 		}
 	}
@@ -62,5 +60,4 @@ func (eh *EventHandler) GetActiveAnchorList(ctx context.Context, param *public.E
 	}
 
 	return resp, nil
-
 }

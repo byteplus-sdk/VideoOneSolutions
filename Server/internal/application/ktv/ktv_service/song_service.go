@@ -20,13 +20,11 @@ import (
 	"context"
 	"errors"
 
-	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_entity"
-	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/lock"
-
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
+	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/lock"
 )
 
 var songServiceClient *SongService
@@ -136,7 +134,6 @@ func (ss *SongService) start(ctx context.Context, appID, roomID string) error {
 	informer.BroadcastRoom(ctx, roomID, OnStartSing, data)
 
 	return nil
-
 }
 
 func (ss *SongService) FinishSing(ctx context.Context, appID, roomID string, score float64) (*Song, error) {

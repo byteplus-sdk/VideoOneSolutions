@@ -17,37 +17,31 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_linker_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_api_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_util"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type getAudienceListReq struct {
-	RoomID     string `json:"room_id"`
-	LoginToken string `json:"login_token"`
+	AppID  string `json:"app_id" binding:"required"`
+	RoomID string `json:"room_id" binding:"required"`
 }
 
 type getAudienceListResp struct {
 	AudienceList []*live_return_models.User `json:"audience_list"`
 }
 
-func (eh *EventHandler) GetAudienceList(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveGetAudienceList param:%+v", param)
+func GetAudienceList(ctx *gin.Context) (resp interface{}, err error) {
 	var p getAudienceListReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
-	audiences, err := live_util.GetReturnUserAudience(ctx, param.AppID, p.RoomID)
+	audiences, err := live_util.GetReturnUserAudience(ctx, p.AppID, p.RoomID)
 	if err != nil {
 		logs.CtxError(ctx, "get audiences failed,error:%s", err)
 		return nil, err
@@ -64,23 +58,25 @@ func (eh *EventHandler) GetAudienceList(ctx context.Context, param *public.Event
 			if audience.UserID == linker.FromUserID {
 				audience.LinkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicLinked
 				audience.LinkmicTime = linker.LinkedTime
+				audience.ApplyLinkTime = linker.CreateTime
 			}
 		}
 		for _, linker := range linkmicInfo.ApplyUsers[p.RoomID] {
 			if audience.UserID == linker.FromUserID {
 				audience.LinkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicApply
+				audience.ApplyLinkTime = linker.CreateTime
 			}
 		}
 
-		for _, user := range linkmicInfo.InviteUsers[p.RoomID] {
-			if audience.UserID == user.FromUserID {
+		for _, linker := range linkmicInfo.InviteUsers[p.RoomID] {
+			if audience.UserID == linker.FromUserID {
 				audience.LinkmicStatus = live_return_models.UserLinkmicStatusAudienceLinkmicInviting
+				audience.ApplyLinkTime = linker.CreateTime
 			}
 		}
 		if audience.LinkmicStatus == live_return_models.UserLinkmicStatusUnknown {
 			scene, err := live_linkmic_api_service.GetInvited(ctx, audience.RoomID, audience.UserID)
 			if err != nil {
-				logs.CtxInfo(ctx, "get err:%s", err)
 				continue
 			}
 			if scene == live_linker_models.LinkerSceneAudience {
@@ -93,5 +89,4 @@ func (eh *EventHandler) GetAudienceList(ctx context.Context, param *public.Event
 		AudienceList: audiences,
 	}
 	return resp, nil
-
 }

@@ -20,7 +20,6 @@ import (
 	"context"
 
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
 
@@ -54,7 +53,6 @@ func (sf *SongFactory) GetSongListByRoomID(ctx context.Context, roomID string) (
 		songs = append(songs, song)
 	}
 	return songs, nil
-
 }
 
 func (sf *SongFactory) Push(ctx context.Context, roomID string, song *Song) error {

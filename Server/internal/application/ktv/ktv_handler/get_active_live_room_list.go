@@ -17,33 +17,28 @@
 package ktv_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type getActiveLiveRoomListReq struct {
-	LoginToken string `json:"login_token"`
+	AppID string `json:"app_id" binding:"required"`
 }
 
 type getActiveLiveRoomListResp struct {
 	RoomList []*ktv_service.Room `json:"room_list"`
 }
 
-func (eh *EventHandler) GetActiveLiveRoomList(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "ktvGetActiveLiveRoomList param:%+v", param)
+func GetActiveLiveRoomList(ctx *gin.Context) (resp interface{}, err error) {
 	var p getActiveLiveRoomListReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
 	roomFactory := ktv_service.GetRoomFactory()
-	roomList, err := roomFactory.GetActiveRoomList(ctx, param.AppID, true)
+	roomList, err := roomFactory.GetActiveRoomList(ctx, p.AppID, true)
 	if err != nil {
 		logs.CtxError(ctx, "get active room list failed,error:%s", err)
 		return nil, err

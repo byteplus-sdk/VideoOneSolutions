@@ -54,7 +54,6 @@ func (r *AudienceLinkmicHostSceneRule) Check(ctx context.Context) error {
 		return custom_error.InternalError(errors.New("room linker info empty"))
 	}
 	isAudienceLinkmic := true
-	isAnchorLinkmic := false
 	isLinkedUserCountLimit := false
 	userCount := 0
 	for _, linker := range r.RoomLinkmicInfo.Linkers {
@@ -66,13 +65,11 @@ func (r *AudienceLinkmicHostSceneRule) Check(ctx context.Context) error {
 			}
 		}
 		if linker.Scene == live_linker_models.LinkerSceneAnchor && linker.LinkerStatus == live_linker_models.LinkerStatusAnchorLinked {
-			isAnchorLinkmic = true
 			return custom_error.ErrSceneAudienceNotAllowedOrLinked
 		}
-
 	}
 
-	if !isAudienceLinkmic || isAnchorLinkmic {
+	if !isAudienceLinkmic {
 		return custom_error.ErrSceneAudienceNotAllowedOrLinked
 	}
 

@@ -18,7 +18,6 @@ package live_handler
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
@@ -27,15 +26,16 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_api_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_room_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/lock"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type finishLiveReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	LoginToken string `json:"login_token"`
+	AppID      string `json:"app_id" binding:"required"`
+	RoomID     string `json:"room_id" binding:"required"`
+	UserID     string `json:"user_id" binding:"required"`
 	FinishType string `json:"finish_type"`
 }
 
@@ -43,22 +43,13 @@ type finishLiveResp struct {
 	LiveRoomInfo *live_return_models.Room `json:"live_room_info"`
 }
 
-func (eh *EventHandler) FinishLive(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveFinishLive param:%+v", param)
+func FinishLive(ctx *gin.Context) (resp interface{}, err error) {
 	var p finishLiveReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
-	//check param
-	if p.RoomID == "" || p.UserID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
-	}
-
-	return FinishLiveLogic(ctx, param.AppID, p)
-
+	return FinishLiveLogic(ctx, p.AppID, p)
 }
 
 func FinishLiveLogic(ctx context.Context, appID string, p finishLiveReq) (resp interface{}, err error) {
@@ -103,5 +94,4 @@ func FinishLiveLogic(ctx context.Context, appID string, p finishLiveReq) (resp i
 	}
 
 	return resp, nil
-
 }

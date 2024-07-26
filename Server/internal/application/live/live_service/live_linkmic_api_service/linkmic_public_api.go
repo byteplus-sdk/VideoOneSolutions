@@ -31,7 +31,7 @@ func FinishHostLinkmic(ctx context.Context, appID, roomID, userID string) error 
 		return err
 	}
 
-	if roomLinkmicInfo.IsLinked == false {
+	if !roomLinkmicInfo.IsLinked {
 		return nil
 	}
 
@@ -63,7 +63,7 @@ func FinishAudienceLinkmic(ctx context.Context, appID, roomID, userID string) er
 		return nil
 	}
 
-	if roomLinkmicInfo.IsAnchorLink == false {
+	if !roomLinkmicInfo.IsAnchorLink {
 		for _, linker := range roomLinkmicInfo.LinkedUsers[roomID] {
 			if linker.FromUserID == userID {
 				AudienceLeave(ctx, appID, &live_linker_models.ApiAudienceLeaveReq{
@@ -74,7 +74,6 @@ func FinishAudienceLinkmic(ctx context.Context, appID, roomID, userID string) er
 					AudienceUserID: userID,
 				})
 			}
-
 		}
 	}
 

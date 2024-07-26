@@ -53,7 +53,6 @@ func (sf *SongFactory) GetSongListByRoomID(ctx context.Context, roomID string) (
 		songs = append(songs, song)
 	}
 	return songs, nil
-
 }
 
 func (sf *SongFactory) Push(ctx context.Context, roomID string, song *Song) error {

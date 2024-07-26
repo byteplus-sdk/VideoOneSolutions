@@ -17,37 +17,33 @@
 package ktv_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type sendMessageReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	Message    string `json:"message"`
-	LoginToken string `json:"login_token"`
+	AppID   string `json:"app_id" binding:"required"`
+	RoomID  string `json:"room_id" binding:"required"`
+	UserID  string `json:"user_id" binding:"required"`
+	Message string `json:"message"`
 }
 
 type sendMessageResp struct {
 }
 
-func (eh *EventHandler) SendMessage(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveCreateLive param:%+v", param)
+func SendMessage(ctx *gin.Context) (resp interface{}, err error) {
 	var p sendMessageReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
 	userFactory := ktv_service.GetUserFactory()
 
-	user, err := userFactory.GetActiveUserByRoomIDUserID(ctx, param.AppID, p.RoomID, p.UserID)
+	user, err := userFactory.GetActiveUserByRoomIDUserID(ctx, p.AppID, p.RoomID, p.UserID)
 	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, err
@@ -57,12 +53,12 @@ func (eh *EventHandler) SendMessage(ctx context.Context, param *public.EventPara
 		return nil, custom_error.ErrUserNotExist
 	}
 
-	informer := inform.GetInformService(param.AppID)
+	informer := inform.GetInformService(p.AppID)
 	data := &ktv_service.InformMessage{
 		UserInfo: user,
 		Message:  p.Message,
 	}
 	informer.BroadcastRoom(ctx, p.RoomID, ktv_service.OnMessage, data)
 
-	return nil, nil
+	return &sendMessageResp{}, nil
 }

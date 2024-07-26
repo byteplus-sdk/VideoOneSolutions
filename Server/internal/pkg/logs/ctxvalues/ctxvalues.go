@@ -20,6 +20,7 @@ import "context"
 
 const CtxLogID = "LogID"
 
+// nolint
 func SetLogID(ctx context.Context, logID string) context.Context {
 	return context.WithValue(ctx, CtxLogID, logID)
 }

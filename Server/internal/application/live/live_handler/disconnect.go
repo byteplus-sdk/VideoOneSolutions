@@ -21,29 +21,8 @@ import (
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_room_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 )
-
-func (eh *EventHandler) Disconnect(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveDisconnect param:%+v", param)
-	//var p reconnectReq
-	//if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-	//	logs.CtxWarn(ctx, "input format error, err: %v", err)
-	//	return nil, custom_error.ErrInput
-	//}
-	if param.AppID == "" || param.RoomID == "" || param.UserID == "" {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
-	}
-
-	DisconnectLogic(ctx, param.AppID, param.RoomID, param.UserID)
-
-	return nil, nil
-
-}
 
 func DisconnectLogic(ctx context.Context, appID, roomID, userID string) error {
 	roomRepo := live_facade.GetRoomRepo()
@@ -65,7 +44,6 @@ func DisconnectLogic(ctx context.Context, appID, roomID, userID string) error {
 			RoomID: roomID,
 			UserID: userID,
 		})
-
 	}
 
 	if user.UserRole == live_room_models.RoomUserRoleAudience {

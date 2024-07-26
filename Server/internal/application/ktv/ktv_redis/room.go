@@ -22,7 +22,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli"
 	"github.com/go-redis/redis/v8"
 )
@@ -49,13 +48,11 @@ func GetRoomsAudienceCount(ctx context.Context, roomIDs []string) (map[string]in
 		if !errors.Is(err, redis.Nil) {
 			return nil, err
 		}
-
 	}
 
 	res := make(map[string]int)
 	for roomID, cmd := range cmdMap {
 		countString, err := cmd.Result()
-		logs.CtxInfo(ctx, "redis cmd result:%s,err:%s", countString, err)
 		if errors.Is(err, redis.Nil) {
 			res[roomID] = 0
 		} else {

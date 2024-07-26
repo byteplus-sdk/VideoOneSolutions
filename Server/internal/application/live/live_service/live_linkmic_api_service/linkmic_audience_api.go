@@ -18,6 +18,8 @@ package live_linkmic_api_service
 
 import (
 	"context"
+	"sort"
+	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_linker_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_return_models"
@@ -318,7 +320,7 @@ func AudiencePermit(ctx context.Context, appID string, r *live_linker_models.Api
 			UserList:  userList,
 			UserID:    r.AudienceUserID,
 		}
-		informer.BroadcastRoom(ctx, rtcRoomID, live_inform_service.OnAudienceLinkmicJoin, informDataBroad)
+		informer.BroadcastRoom(ctx, r.HostRoomID, live_inform_service.OnAudienceLinkmicJoin, informDataBroad)
 
 		informData.RtcRoomID = rtcRoomID
 		informData.RtcToken = live_util.GenToken(rtcRoomID, r.AudienceUserID, appInfo.AppId, appInfo.AppKey)
@@ -326,6 +328,7 @@ func AudiencePermit(ctx context.Context, appID string, r *live_linker_models.Api
 
 		resp.LinkedUserList = userList
 		resp.RtcToken = live_util.GenToken(rtcRoomID, r.HostUserID, appInfo.AppId, appInfo.AppKey)
+		resp.RtcRoomID = rtcRoomID
 
 		if len(userList) == 2 {
 			linkmicStatusInformData := &live_inform_service.InformLinkmicStatus{
@@ -515,15 +518,22 @@ func getLinkedUserList(ctx context.Context, appID, roomID string) ([]*live_retur
 		return resp, nil
 	}
 
-	if activeRoomLinkmicInfo.IsAnchorLink == false {
+	if !activeRoomLinkmicInfo.IsAnchorLink {
 		if len(activeRoomLinkmicInfo.LinkedUsers) == 0 {
 			return resp, nil
 		}
 		var userIDs []string
+		var linkTimeMap = make(map[string]time.Time)
 		for _, linker := range activeRoomLinkmicInfo.LinkedUsers[roomID] {
 			userIDs = append(userIDs, linker.FromUserID)
-			if util.StringInSlice(linker.ToUserID, userIDs) == false {
+			if !util.StringInSlice(linker.ToUserID, userIDs) {
 				userIDs = append(userIDs, linker.ToUserID)
+			}
+			if _, exist := linkTimeMap[linker.FromUserID]; !exist {
+				linkTimeMap[linker.FromUserID] = linker.LinkedTime
+			}
+			if _, exist := linkTimeMap[linker.ToUserID]; !exist {
+				linkTimeMap[linker.ToUserID] = linker.LinkedTime
 			}
 		}
 		roomUsers, err := live_facade.GetRoomUserRepo().GetUsersByRoomIDUserIDs(ctx, appID, roomID, userIDs)
@@ -534,16 +544,22 @@ func getLinkedUserList(ctx context.Context, appID, roomID string) ([]*live_retur
 
 		for _, roomUser := range roomUsers {
 			user := &live_return_models.User{
-				RoomID:   roomUser.RoomID,
-				UserID:   roomUser.UserID,
-				UserName: roomUser.UserName,
-				UserRole: roomUser.UserRole,
-				Mic:      roomUser.Mic,
-				Camera:   roomUser.Camera,
-				Extra:    roomUser.Extra,
+				RoomID:      roomUser.RoomID,
+				UserID:      roomUser.UserID,
+				UserName:    roomUser.UserName,
+				UserRole:    roomUser.UserRole,
+				Mic:         roomUser.Mic,
+				Camera:      roomUser.Camera,
+				Extra:       roomUser.Extra,
+				LinkmicTime: linkTimeMap[roomUser.UserID],
 			}
 			resp = append(resp, user)
 		}
+
+		// sort by LinkmicTime desc
+		sort.SliceStable(resp, func(i, j int) bool {
+			return resp[i].LinkmicTime.Before(resp[j].LinkmicTime)
+		})
 	} else {
 		for _, linker := range activeRoomLinkmicInfo.LinkedUsers[roomID] {
 			fromRoomUser, _ := live_facade.GetRoomUserRepo().GetActiveUser(ctx, appID, linker.FromRoomID, linker.FromUserID)
@@ -570,7 +586,6 @@ func getLinkedUserList(ctx context.Context, appID, roomID string) ([]*live_retur
 					Extra:    toRoomUser.Extra}
 				resp = append(resp, user)
 			}
-
 		}
 	}
 	return resp, nil

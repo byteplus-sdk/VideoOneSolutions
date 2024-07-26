@@ -17,41 +17,30 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_linker_models"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_linkmic_api_service"
-	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type anchorLinkmicFinishReq struct {
-	LinkerID   string `json:"linker_id"`
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	LoginToken string `json:"login_token"`
+	AppID    string `json:"app_id" binding:"required"`
+	LinkerID string `json:"linker_id" binding:"required"`
+	RoomID   string `json:"room_id" binding:"required"`
+	UserID   string `json:"user_id" binding:"required"`
 }
 
 type anchorLinkmicFinishResp struct {
 }
 
-func (eh *EventHandler) AnchorLinkmicFinish(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "liveAnchorLinkmicFinish param:%+v", param)
+func AnchorLinkmicFinish(ctx *gin.Context) (resp interface{}, err error) {
 	var p anchorLinkmicFinishReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
-	//check param
-	if p.RoomID == "" || p.UserID == "" || p.LinkerID == "" {
-		logs.CtxError(ctx, "input error, param:%v", p)
-		return nil, custom_error.ErrInput
-	}
-
-	_, err = live_linkmic_api_service.AnchorFinish(ctx, param.AppID, &live_linker_models.ApiAnchorFinishReq{
+	_, err = live_linkmic_api_service.AnchorFinish(ctx, p.AppID, &live_linker_models.ApiAnchorFinishReq{
 		LinkerID: p.LinkerID,
 		RoomID:   p.RoomID,
 		UserID:   p.UserID,
@@ -64,5 +53,4 @@ func (eh *EventHandler) AnchorLinkmicFinish(ctx context.Context, param *public.E
 	resp = &anchorLinkmicFinishResp{}
 
 	return resp, nil
-
 }

@@ -18,6 +18,7 @@ package login_implement
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_entity"
@@ -60,12 +61,12 @@ func (impl *AppInfoRepositoryImpl) Save(ctx context.Context, appInfo *login_enti
 }
 
 func (impl *AppInfoRepositoryImpl) ExistAppInfo(ctx context.Context, appID string) (bool, error) {
-	key := redisKey(ctx, appID)
+	key := redisKey(appID)
 	val, err := redis_cli.Client.Exists(ctx, key).Result()
-	switch err {
-	case nil:
+	switch {
+	case err == nil:
 		return val == 1, nil
-	case redis.Nil:
+	case errors.Is(err, redis.Nil):
 		return false, nil
 	default:
 		return false, err
@@ -73,7 +74,7 @@ func (impl *AppInfoRepositoryImpl) ExistAppInfo(ctx context.Context, appID strin
 }
 
 func (impl *AppInfoRepositoryImpl) GetAppInfoByAppID(ctx context.Context, appID string) (*login_entity.AppInfo, error) {
-	key := redisKey(ctx, appID)
+	key := redisKey(appID)
 	logs.CtxInfo(ctx, "key:%s", key)
 	appKey := redis_cli.Client.HGet(ctx, key, fieldAppKey).Val()
 	volcAk := redis_cli.Client.HGet(ctx, key, fieldAppVolcAk).Val()
@@ -101,7 +102,6 @@ func (impl *AppInfoRepositoryImpl) GetAppInfoByAppID(ctx context.Context, appID 
 			Where("app_id=?", appID).First(&appInfo).Error
 		if err != nil {
 			return nil, err
-
 		}
 		writeRedis(ctx, appInfo)
 	}
@@ -109,12 +109,12 @@ func (impl *AppInfoRepositoryImpl) GetAppInfoByAppID(ctx context.Context, appID 
 	return appInfo, nil
 }
 
-func redisKey(ctx context.Context, key string) string {
+func redisKey(key string) string {
 	return keyPrefixAppInfo + key
 }
 
 func writeRedis(ctx context.Context, appInfo *login_entity.AppInfo) {
-	key := redisKey(ctx, appInfo.AppId)
+	key := redisKey(appInfo.AppId)
 	redis_cli.Client.HSet(ctx, key, fieldAppKey, appInfo.AppKey)
 	redis_cli.Client.HSet(ctx, key, fieldAppVolcAk, appInfo.AccessKey)
 	redis_cli.Client.HSet(ctx, key, fieldAppVolcSk, appInfo.SecretAccessKey)

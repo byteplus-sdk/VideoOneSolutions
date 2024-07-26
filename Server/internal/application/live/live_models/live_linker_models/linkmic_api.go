@@ -73,7 +73,7 @@ type ApiAudienceApplyResp struct {
 }
 
 type ApiAudiencePermitReq struct {
-	LinkerID       string `json:"linker_id d    "`
+	LinkerID       string `json:"linker_id"`
 	HostRoomID     string `json:"host_room_id"`
 	HostUserID     string `json:"host_user_id"`
 	AudienceRoomID string `json:"audience_room_id"`

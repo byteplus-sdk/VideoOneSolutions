@@ -16,12 +16,16 @@
 
 package custom_error
 
-import "errors"
+import (
+	"errors"
+)
 
+// nolint
 var (
 	ErrInput                           = NewCustomError(400, errors.New("input format error"))
 	ErrUserIsInactive                  = NewCustomError(404, errors.New("user is inactive"))
 	ErrUserInUse                       = NewCustomError(413, errors.New("user is in use"))
+	ErrUserInRoom                      = NewCustomError(414, errors.New("user is in room"))
 	ErrUserIsNotHost                   = NewCustomError(416, errors.New("user is not host"))
 	ErrUserIsNotOwner                  = NewCustomError(417, errors.New("user is not room owner"))
 	ErrUserNotExist                    = NewCustomError(419, errors.New("user not exist"))
@@ -62,6 +66,7 @@ var (
 	ErrGetBID                          = NewCustomError(806, errors.New("get bid error"))
 	ErrLockRoom                        = NewCustomError(809, errors.New("lock room error"))
 	ErrMissParam                       = NewCustomError(811, errors.New("required parameter missing"))
+	ErrUnknown                         = NewCustomError(999, errors.New("unknown error"))
 )
 
 type CustomError struct {
@@ -96,7 +101,8 @@ func Equal(src error, trg *CustomError) bool {
 		return false
 	}
 
-	if cerr, ok := src.(*CustomError); ok {
+	var cerr *CustomError
+	if errors.As(src, &cerr) {
 		return cerr.Code() == trg.Code()
 	}
 

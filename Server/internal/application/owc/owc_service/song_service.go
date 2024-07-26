@@ -24,9 +24,8 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/owc/owc_redis"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
-	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/lock"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli/lock"
 )
 
 const (
@@ -158,7 +157,6 @@ func (ss *SongService) start(ctx context.Context, appID, roomID string, operaUse
 	informer.BroadcastRoom(ctx, roomID, OnStartSing, data)
 
 	return nil
-
 }
 
 func (ss *SongService) StartSing(ctx context.Context, appID, roomID, userID, singType string, curSong *Song) (*Song, error) {
@@ -190,7 +188,6 @@ func (ss *SongService) StartSing(ctx context.Context, appID, roomID, userID, sin
 		}
 		return curSong, nil
 	}
-
 }
 
 func (ss *SongService) FinishSing(ctx context.Context, appID, roomID string, score float64) (*Song, error) {

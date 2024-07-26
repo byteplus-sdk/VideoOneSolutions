@@ -105,7 +105,6 @@ func (rf *RoomFactory) NewRoomUser(ctx context.Context, appID, roomID, userID, u
 	}
 
 	return roomUser
-
 }
 
 func ApplyRoomIDWithRetry(ctx context.Context, appID string) (string, error) {
@@ -158,7 +157,6 @@ func generateRoomID(ctx context.Context, appID, bizID string) (int64, error) {
 			return roomID, nil
 		}
 		return 0, custom_error.InternalError(err)
-
 	}
 
 	return 0, custom_error.ErrRoomAlreadyExist

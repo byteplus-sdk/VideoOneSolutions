@@ -17,12 +17,11 @@
 package ktv_handler
 
 import (
-	"context"
 	"strconv"
 
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
 )
 
 type GetPresetSongListResp struct {
@@ -35,9 +34,7 @@ type GetPresetSongListResp struct {
 	SongName     string `json:"song_name"`
 }
 
-func (eh *EventHandler) GetPreSetSongList(ctx context.Context, param *public.EventParam) (interface{}, error) {
-	logs.CtxInfo(ctx, "GetPreSetSongList param:%+v", param)
-
+func GetPreSetSongList(ctx *gin.Context) (interface{}, error) {
 	songList, err := ktv_service.GetPresetSongRepo().GetPresetSong(ctx)
 	if err != nil {
 		logs.CtxError(ctx, "get song list failed,error:%s", err)

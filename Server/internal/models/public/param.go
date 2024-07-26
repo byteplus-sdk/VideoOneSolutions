@@ -42,17 +42,6 @@ type TagPredict struct {
 	Status         int32   `json:"status"`
 }
 
-type EventParam struct {
-	AppID     string `json:"app_id"`
-	RoomID    string `json:"room_id"`
-	UserID    string `json:"user_id"`
-	EventName string `json:"event_name"`
-	Content   string `json:"content"`
-	RequestID string `json:"request_id"`
-	DeviceID  string `json:"device_id"`
-	Language  string `json:"language"`
-}
-
 type RecordCallbackParam struct {
 	EventType string `json:"EventType"`
 	EventData string `json:"EventData"`

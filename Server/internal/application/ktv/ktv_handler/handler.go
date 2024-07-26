@@ -23,46 +23,32 @@ import (
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_service"
 	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
-	"github.com/byteplus/VideoOneServer/internal/pkg/task"
 	"github.com/robfig/cron/v3"
 )
 
-var handler *EventHandler
-
-type EventHandler struct {
-	c *cron.Cron
-}
-
-func NewEventHandler() *EventHandler {
-	if handler == nil {
-		handler = &EventHandler{
-			c: task.GetCronTask(),
+func NewCronJob(c *cron.Cron) {
+	c.AddFunc("@every 1m", func() {
+		ctx := context.Background()
+		ktvTimerEnable := config.Configs().KtvTimerEnable
+		if !ktvTimerEnable {
+			return
 		}
-		handler.c.AddFunc("@every 1m", func() {
-			ctx := context.Background()
-			ktvTimerEnable := config.Configs().KtvTimerEnable
-			if !ktvTimerEnable {
-				return
-			}
-			roomFactory := ktv_service.GetRoomFactory()
-			rooms, err := roomFactory.GetAllActiveRoomList(ctx, false)
-			if err != nil {
-				logs.CtxError(ctx, "cron: get svc rooms failed,error:%s", err)
-				return
-			}
+		roomFactory := ktv_service.GetRoomFactory()
+		rooms, err := roomFactory.GetAllActiveRoomList(ctx, false)
+		if err != nil {
+			logs.CtxError(ctx, "cron: get svc rooms failed,error:%s", err)
+			return
+		}
 
-			roomService := ktv_service.GetRoomService()
-			for _, room := range rooms {
-				if time.Since(room.GetCreateTime()) >= time.Duration(config.Configs().KtvExperienceTime)*time.Minute {
-					err = roomService.FinishLive(ctx, room.GetAppID(), room.GetRoomID(), ktv_service.FinishTypeTimeout)
-					if err != nil {
-						logs.CtxError(ctx, "cron: finish room failed,error:%s", err)
-						continue
-					}
+		roomService := ktv_service.GetRoomService()
+		for _, room := range rooms {
+			if time.Since(room.GetCreateTime()) >= time.Duration(config.Configs().KtvExperienceTime)*time.Minute {
+				err = roomService.FinishLive(ctx, room.GetAppID(), room.GetRoomID(), ktv_service.FinishTypeTimeout)
+				if err != nil {
+					logs.CtxError(ctx, "cron: finish room failed,error:%s", err)
+					continue
 				}
 			}
-
-		})
-	}
-	return handler
+		}
+	})
 }

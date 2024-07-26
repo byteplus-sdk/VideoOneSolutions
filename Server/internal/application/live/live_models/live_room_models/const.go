@@ -16,20 +16,17 @@
 
 package live_room_models
 
-// room
 const (
 	RoomStatusPrepare = iota
 	RoomStatusStart
 	RoomStatusFinish
 )
 
-// room user
 const (
 	RoomUserRoleAudience = 1
 	RoomUserRoleHost     = 2
 )
 
-// linker
 const (
 	LinkerStatusPrepare = iota
 	LinkerStatusFinish

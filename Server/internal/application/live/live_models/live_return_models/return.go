@@ -49,4 +49,5 @@ type User struct {
 	Extra         string    `json:"extra"`
 	LinkmicStatus int       `json:"linkmic_status"`
 	LinkmicTime   time.Time `json:"linkmic_time"`
+	ApplyLinkTime time.Time `json:"apply_link_time"`
 }

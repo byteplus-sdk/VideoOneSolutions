@@ -50,7 +50,6 @@ func (repo *RedisSongRepo) List(ctx context.Context, roomID string) ([]*ktv_enti
 		rs = append(rs, song)
 	}
 	return rs, nil
-
 }
 func (repo *RedisSongRepo) Push(ctx context.Context, roomID string, song *ktv_entity.KtvSong) error {
 	data, _ := json.Marshal(song)

@@ -27,7 +27,6 @@ type Configuration struct {
 	MysqlDSN           string `yaml:"mysql_dsn"`
 	RedisAddr          string `yaml:"redis_addr"`
 	RedisPassword      string `yaml:"redis_password"`
-	ServerUrl          string `yaml:"server_url"`
 	Port               string `yaml:"port"`
 	LiveTimerEnable    bool   `yaml:"live_timer_enable"`
 	LiveExperienceTime int    `yaml:"live_experience_time"`

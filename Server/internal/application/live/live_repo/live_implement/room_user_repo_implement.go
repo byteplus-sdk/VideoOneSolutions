@@ -17,14 +17,14 @@
 package live_implement
 
 import (
+	"context"
+	"errors"
+
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_models/live_room_models"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
 	"github.com/byteplus/VideoOneServer/internal/pkg/db"
 	"github.com/byteplus/VideoOneServer/internal/pkg/util"
-
-	"context"
-
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -52,7 +52,7 @@ func (impl *RoomUserRepoImpl) GetActiveUser(ctx context.Context, appID, roomID, 
 	var rs *live_entity.LiveRoomUser
 	err := db.Client.WithContext(ctx).Debug().Table(RoomUserTable).Where("app_id=? and room_id = ? and user_id = ? and status = ?", appID, roomID, userID, live_room_models.RoomUserStatusStart).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -66,7 +66,7 @@ func (impl *RoomUserRepoImpl) GetUser(ctx context.Context, appID, roomID, userID
 	var rs *live_entity.LiveRoomUser
 	err := db.Client.WithContext(ctx).Debug().Table(RoomUserTable).Where("app_id=? and room_id = ? and user_id = ? and status <> ?", appID, roomID, userID, live_room_models.RoomUserStatusFinish).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -80,7 +80,7 @@ func (impl *RoomUserRepoImpl) GetUsersByRoomIDUserIDs(ctx context.Context, appID
 	var users []*live_entity.LiveRoomUser
 	err := db.Client.WithContext(ctx).Debug().Table(RoomUserTable).Where("app_id=? and room_id = ? and user_id in ? and status = ?", appID, roomID, userIDs, live_room_models.RoomUserStatusStart).Find(&users).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -100,7 +100,7 @@ func (impl *RoomUserRepoImpl) GetAudiencesByRoomID(ctx context.Context, appID st
 	var rs []*live_entity.LiveRoomUser
 	err := db.Client.WithContext(ctx).Debug().Table(RoomUserTable).Where("app_id=? and room_id = ? and user_role = ?  and status = ?", appID, roomID, live_room_models.RoomUserRoleAudience, live_room_models.RoomUserStatusStart).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -114,7 +114,7 @@ func (impl *RoomUserRepoImpl) GetAnchors(ctx context.Context, appID string) ([]*
 	var rs []*live_entity.LiveRoomUser
 	err := db.Client.WithContext(ctx).Debug().Table(RoomUserTable).Where("app_id=? and user_role = ?  and status = ?", appID, live_room_models.RoomUserRoleHost, live_room_models.RoomUserStatusStart).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)
@@ -128,7 +128,7 @@ func (impl *RoomUserRepoImpl) GetUsersByUserID(ctx context.Context, appID, userI
 	var rs []*live_entity.LiveRoomUser
 	err := db.Client.WithContext(ctx).Debug().Table(RoomUserTable).Where("app_id=? and user_id =  ? and status = ?", appID, userID, live_room_models.RoomUserStatusStart).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, custom_error.ErrRecordNotFound
 		}
 		return nil, custom_error.InternalError(err)

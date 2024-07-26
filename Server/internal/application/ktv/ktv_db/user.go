@@ -18,6 +18,7 @@ package ktv_db
 
 import (
 	"context"
+	"errors"
 
 	"github.com/byteplus/VideoOneServer/internal/application/ktv/ktv_entity"
 	"github.com/byteplus/VideoOneServer/internal/pkg/db"
@@ -67,7 +68,7 @@ func (repo *DbUserRepo) GetActiveUserByRoomIDUserID(ctx context.Context, appID, 
 	var rs *ktv_entity.KtvUser
 	err := db.Client.WithContext(ctx).Debug().Table(UserTable).Where("app_id = ? and room_id = ? and user_id = ? and net_status in ?", appID, roomID, userID, []int{UserNetStatusOnline, UserNetStatusReconnecting}).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -80,7 +81,7 @@ func (repo *DbUserRepo) GetUserByRoomIDUserID(ctx context.Context, appID, roomID
 	var rs *ktv_entity.KtvUser
 	err := db.Client.WithContext(ctx).Debug().Table(UserTable).Where("app_id =? and room_id = ? and user_id = ?", appID, roomID, userID).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -93,7 +94,7 @@ func (repo *DbUserRepo) GetActiveUserByUserID(ctx context.Context, appID, userID
 	var rs *ktv_entity.KtvUser
 	err := db.Client.WithContext(ctx).Debug().Table(UserTable).Where("app_id= ? and user_id = ? and net_status in ?", appID, userID, []int{UserNetStatusOnline, UserNetStatusReconnecting}).First(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -106,7 +107,7 @@ func (repo *DbUserRepo) GetActiveUsersByRoomID(ctx context.Context, appID, roomI
 	var rs []*ktv_entity.KtvUser
 	err := db.Client.WithContext(ctx).Debug().Table(UserTable).Where("app_id = ? and  room_id = ? and net_status = ?", appID, roomID, UserNetStatusOnline).Order("create_time desc").Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -119,7 +120,7 @@ func (repo *DbUserRepo) GetAudiencesWithoutApplyByRoomID(ctx context.Context, ap
 	var rs []*ktv_entity.KtvUser
 	err := db.Client.WithContext(ctx).Debug().Table(UserTable).Where("app_id = ? and room_id = ? and net_status = ? and interact_status <> ? and user_role = ?", appID, roomID, UserNetStatusOnline, UserInteractStatusApplying, UserRoleAudience).Order("create_time desc").Limit(200).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -132,7 +133,7 @@ func (repo *DbUserRepo) GetApplyAudiencesByRoomID(ctx context.Context, appID, ro
 	var rs []*ktv_entity.KtvUser
 	err := db.Client.WithContext(ctx).Debug().Table(UserTable).Where("app_id=? and room_id= ? and net_status = ? and interact_status = ? and user_role = ?", appID, roomID, UserNetStatusOnline, UserInteractStatusApplying, UserRoleAudience).Order("create_time desc").Limit(200).Find(&rs).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err

@@ -17,40 +17,35 @@
 package live_handler
 
 import (
-	"context"
-	"encoding/json"
-
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_repo/live_facade"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_inform_service"
 	"github.com/byteplus/VideoOneServer/internal/application/live/live_service/live_room_service"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
-	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/inform"
-
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type sendMessageReq struct {
-	RoomID     string `json:"room_id"`
-	UserID     string `json:"user_id"`
-	Message    string `json:"message"`
-	LoginToken string `json:"login_token"`
+	RoomID  string `json:"room_id" binding:"required"`
+	UserID  string `json:"user_id" binding:"required"`
+	Message string `json:"message"`
+	AppID   string `json:"app_id" binding:"required"`
 }
 
 type sendMessageResp struct {
 }
 
-func (eh *EventHandler) SendMessage(ctx context.Context, param *public.EventParam) (resp interface{}, err error) {
-	logs.CtxInfo(ctx, "SendMessage param:%+v", param)
+func SendMessage(ctx *gin.Context) (resp interface{}, err error) {
 	var p sendMessageReq
-	if err := json.Unmarshal([]byte(param.Content), &p); err != nil {
-		logs.CtxWarn(ctx, "input format error, err: %v", err)
-		return nil, custom_error.ErrInput
+	if err = ctx.ShouldBindBodyWith(&p, binding.JSON); err != nil {
+		return nil, err
 	}
 
 	userRepo := live_facade.GetRoomUserRepo()
 
-	user, err := userRepo.GetActiveUser(ctx, param.AppID, p.RoomID, p.UserID)
+	user, err := userRepo.GetActiveUser(ctx, p.AppID, p.RoomID, p.UserID)
 	if err != nil {
 		logs.CtxError(ctx, "get user failed,error:%s", err)
 		return nil, err
@@ -60,17 +55,17 @@ func (eh *EventHandler) SendMessage(ctx context.Context, param *public.EventPara
 		return nil, custom_error.ErrUserNotExist
 	}
 	roomService := live_room_service.GetRoomService()
-	err = roomService.HandleMessage(ctx, param.AppID, param.RoomID, p.Message)
+	err = roomService.HandleMessage(ctx, p.AppID, p.RoomID, p.Message)
 	if err != nil {
 		logs.CtxInfo(ctx, "handle message error:%s", err)
 		return nil, err
 	}
-	informer := inform.GetInformService(param.AppID)
+	informer := inform.GetInformService(p.AppID)
 	data := &live_inform_service.InformUserMsg{
 		User:    user,
 		Message: p.Message,
 	}
 	informer.BroadcastRoom(ctx, p.RoomID, live_inform_service.OnMessageSend, data)
 
-	return nil, nil
+	return &sendMessageResp{}, nil
 }

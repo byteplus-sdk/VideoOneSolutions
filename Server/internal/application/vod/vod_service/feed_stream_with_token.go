@@ -21,14 +21,13 @@ import (
 	"math/rand"
 	"strconv"
 
-	"github.com/byteplus/VideoOneServer/internal/models/public"
-	"github.com/byteplus/VideoOneServer/internal/pkg/util"
-
 	"github.com/byteplus-sdk/byteplus-sdk-golang/service/vod/models/request"
 	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_entity"
 	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_models"
 	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_repo"
+	"github.com/byteplus/VideoOneServer/internal/models/public"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
+	"github.com/byteplus/VideoOneServer/internal/pkg/util"
 	"github.com/byteplus/VideoOneServer/internal/pkg/vod_openapi"
 )
 
@@ -47,7 +46,7 @@ func GetFeedStreamWithPlayAuthToken(ctx context.Context, req *vod_models.GetFeed
 }
 
 func getVideoPlayAuthToken(ctx context.Context, req *vod_models.GetFeedStreamRequest, videos []*vod_entity.VideoInfo) ([]*vod_models.VideoDetail, error) {
-	var resp []*vod_models.VideoDetail
+	var resp = make([]*vod_models.VideoDetail, 0)
 	instance := vod_openapi.GetInstance(ctx, req.AppID)
 
 	tokenExpires := 86400
@@ -105,8 +104,8 @@ func getVideoPlayAuthToken(ctx context.Context, req *vod_models.GetFeedStreamReq
 			SubtitleAuthToken: subtitleToken,
 			CreateTime:        mediaInfo.Result.MediaInfoList[0].BasicInfo.CreateTime,
 			Subtitle:          mediaInfo.Result.MediaInfoList[0].BasicInfo.Description,
-			PlayTimes:         rand.Int63n(20) + 20,
-			Like:              rand.Int63n(20) + 20,
+			PlayTimes:         rand.Int63n(20) + 20, // nolint
+			Like:              rand.Int63n(20) + 20, // nolint
 			Comment:           public.VideoCommentNum,
 			Height:            mediaInfo.Result.MediaInfoList[0].SourceInfo.Height,
 			Width:             mediaInfo.Result.MediaInfoList[0].SourceInfo.Width,

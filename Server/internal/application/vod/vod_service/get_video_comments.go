@@ -45,7 +45,7 @@ func GetVideoComments(ctx context.Context, vid string) ([]*vod_models.Comments, 
 			Name:       v.Name,
 			Uid:        util.Hashcode(v.Name),
 			CreateTime: v.CreateTime.Format(time.RFC3339),
-			Like:       rand.Int63n(100) + 800,
+			Like:       rand.Int63n(100) + 800, // nolint
 		})
 	}
 	return res, nil
