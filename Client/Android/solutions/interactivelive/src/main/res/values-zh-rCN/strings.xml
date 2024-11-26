@@ -56,13 +56,8 @@
     <string name="audience_link_reject_message">抱歉，主播拒绝了您的连麦申请。</string>
     <string name="audience_link_cancel">连麦申请已取消</string>
     <string name="receive_a_new_pk_invitation">收到新的PK邀请</string>
-    <string name="gift_like">点赞</string>
-    <string name="gift_sugar">糖果</string>
-    <string name="gift_diamond">钻石</string>
-    <string name="gift_fireworks">烟花</string>
     <string name="co_host_application">连麦申请</string>
     <string name="co_host">连线用户列表</string>
-    <string name="send_gift">送了 %1$s</string>
     <string name="add_guest">添加观众</string>
     <string name="audience_link_manage_tips">麦克风和摄像头仅支持关闭操作，观看端可开启。</string>
     <string name="video_fps">帧率</string>

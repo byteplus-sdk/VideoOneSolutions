@@ -19,8 +19,8 @@ import com.byteplus.vod.scenekit.ui.base.BaseFragment;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.ui.video.scene.shortvideo.ShortVideoSceneView;
 import com.byteplus.voddemo.R;
-import com.byteplus.voddemo.data.remote.RemoteApi;
-import com.byteplus.voddemo.data.remote.api2.GetFeedStreamApi;
+import com.byteplus.vodcommon.data.remote.RemoteApi;
+import com.byteplus.vodcommon.data.remote.api2.GetFeedStreamApi;
 
 import java.util.List;
 

@@ -41,7 +41,7 @@ public abstract class SettingsDialogWithTab extends SettingsDialog {
         viewPager.setAdapter(new TabViewPageAdapter(context, getTabNames(), generateTabViews()));
 
         mContainer.setOrientation(LinearLayout.VERTICAL);
-        mContainer.setBackgroundResource(R.drawable.live_shape_basic_item_r10);
+        mContainer.setBackgroundResource(com.byteplus.live.common.R.drawable.live_shape_basic_item_r10);
         mContainer.addView(createTabLayout(viewPager));
         LinearLayout.LayoutParams viewPagerParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -71,11 +71,13 @@ public abstract class SettingsDialogWithTab extends SettingsDialog {
     private TabLayout createTabLayout(ViewPager viewPager) {
         Context context = getContext();
         TabLayout tabLayout = new TabLayout(context);
-        tabLayout.setTabTextColors(ContextCompat.getColor(context, R.color.live_bg_white), ContextCompat.getColor(context, R.color.live_bg_blue));
+        int normalColor = ContextCompat.getColor(context, com.byteplus.live.common.R.color.live_bg_white);
+        int selectedColor = ContextCompat.getColor(context, com.byteplus.live.common.R.color.live_bg_blue);
+        tabLayout.setTabTextColors(normalColor, selectedColor);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setTabIndicatorFullWidth(false);
         tabLayout.setBackgroundColor(Color.TRANSPARENT);
-        tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(context, R.color.live_bg_blue));
+        tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(context, com.byteplus.live.common.R.color.live_bg_blue));
         tabLayout.setupWithViewPager(viewPager);
         return tabLayout;
     }

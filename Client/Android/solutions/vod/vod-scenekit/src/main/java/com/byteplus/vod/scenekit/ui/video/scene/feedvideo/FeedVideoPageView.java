@@ -8,13 +8,11 @@ import static com.byteplus.vod.scenekit.ui.video.scene.PlayScene.isFullScreenMod
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.widget.FrameLayout;
+import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -28,6 +26,7 @@ import com.byteplus.playerkit.player.playback.PlaybackEvent;
 import com.byteplus.playerkit.player.playback.VideoLayerHost;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.utils.event.Event;
+import com.byteplus.vod.scenekit.R;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
 import com.byteplus.vod.scenekit.ui.video.layer.helper.MiniPlayerHelper;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
@@ -36,8 +35,10 @@ import com.byteplus.vod.scenekit.ui.video.scene.feedvideo.FeedVideoAdapter.OnIte
 import java.util.List;
 
 
-public class FeedVideoPageView extends FrameLayout {
+public class FeedVideoPageView {
     private static final String TAG = "FeedVideoPageView";
+
+    private final IFeedVideoStrategyConfig mStrategyConfig;
 
     private final RecyclerView mRecyclerView;
     private final LinearLayoutManager mLayoutManager;
@@ -65,16 +66,11 @@ public class FeedVideoPageView extends FrameLayout {
         void enterDetail(FeedVideoViewHolder holder);
     }
 
-    public FeedVideoPageView(@NonNull Context context) {
-        this(context, null);
-    }
+    public FeedVideoPageView(@NonNull View view, @NonNull IFeedVideoStrategyConfig config) {
+        this.mStrategyConfig = config;
+        mRecyclerView = view.findViewById(R.id.vevod_recycler_view);
 
-    public FeedVideoPageView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public FeedVideoPageView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        Context context = view.getContext();
 
         mLayoutManager = new LinearLayoutManager(context,
                 LinearLayoutManager.VERTICAL, false) {
@@ -91,7 +87,7 @@ public class FeedVideoPageView extends FrameLayout {
                 startSmoothScroll(linearSmoothScroller);
             }
         };
-        mFeedVideoAdapter = new FeedVideoAdapter(mAdapterListener) {
+        mFeedVideoAdapter = new FeedVideoAdapter(mAdapterListener, mStrategyConfig) {
             @Override
             public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
                 if (!isFullScreen()) {
@@ -112,21 +108,22 @@ public class FeedVideoPageView extends FrameLayout {
             }
         };
 
-        mRecyclerView = new RecyclerView(context);
+
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mFeedVideoAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private boolean isUserInitiated = false;
+
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     Log.d(TAG, "onScrollStateChanged: SCROLL_STATE_IDLE, isUserInitiated=" + isUserInitiated);
-                    if(!isUserInitiated){
+                    if (!isUserInitiated) {
                         return;
                     }
                     isUserInitiated = false;
                     // find a VideoItem to play
-                    Object parent = getParent();
+                    Object parent = mRecyclerView.getParent();
                     boolean isRefreshing = false;
                     if (parent instanceof SwipeRefreshLayout) {
                         isRefreshing = ((SwipeRefreshLayout) parent).isRefreshing();
@@ -142,11 +139,6 @@ public class FeedVideoPageView extends FrameLayout {
                 }
             }
         });
-        addView(mRecyclerView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-    }
-
-    public RecyclerView recyclerView() {
-        return mRecyclerView;
     }
 
     final OnItemViewListener mAdapterListener = new OnItemViewListener() {
@@ -240,7 +232,7 @@ public class FeedVideoPageView extends FrameLayout {
             if (oldItemCount != 0 && !videoItems.isEmpty()) {
                 // User trigger refresh
                 // Need post to wait for RecyclerView layout fresh completed
-                post(this::autoplaySomeVideo);
+                mRecyclerView.post(this::autoplaySomeVideo);
             }
         }
     }

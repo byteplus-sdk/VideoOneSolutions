@@ -5,8 +5,8 @@ package com.vertcdemo.app
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import com.vertcdemo.core.utils.Activities.transparentStatusBar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -25,7 +25,13 @@ class LaunchActivity : AppCompatActivity() {
             finish()
             return
         }
-        transparentStatusBar(this)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.getInsetsController(window, findViewById(android.R.id.content)).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+
         setContentView(R.layout.activity_launch)
         lifecycleScope.launch {
             delay(1000)

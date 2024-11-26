@@ -61,7 +61,7 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 // Join room
                 self?.rtcRoom = self?.rtcVideo?.createRTCRoom(roomId)
@@ -85,7 +85,8 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("video-config-rotate")
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -101,7 +102,7 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     func updateRenderView() {
@@ -141,11 +142,11 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
             config.positionInPortraitMode = position
             config.positionInLandscapeMode = position
             
-            self.rtcVideo?.setVideoWatermark(.main, withImagePath: filePath, withRtcWatermarkConfig: config)
+            self.rtcVideo?.setVideoWatermark(.indexMain, withImagePath: filePath, withRtcWatermarkConfig: config)
         } else {
             addWatermarkButton.setTitle(LocalizedString("button_add_watermark"), for: .normal)
             
-            self.rtcVideo?.clearVideoWatermark(.main)
+            self.rtcVideo?.clearVideoWatermark(.indexMain)
         }
     }
     
@@ -176,7 +177,7 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
         let streamKey = ByteRTCRemoteStreamKey.init()
         streamKey.userId = userId
         streamKey.roomId = roomId;
-        streamKey.streamIndex = .main
+        streamKey.streamIndex = .indexMain
         
         self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
     }
@@ -341,7 +342,7 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
             let streamKey = ByteRTCRemoteStreamKey.init()
             streamKey.userId = userId
             streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .main
+            streamKey.streamIndex = .indexMain
             
             self.users.append(streamKey)
             

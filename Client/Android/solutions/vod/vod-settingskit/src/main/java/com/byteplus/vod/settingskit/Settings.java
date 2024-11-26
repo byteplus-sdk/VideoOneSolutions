@@ -15,16 +15,6 @@ public class Settings {
         sMap.put(key, settings);
     }
 
-    public static synchronized void putAll(String key, List<SettingItem> settings) {
-        List<SettingItem> items = sMap.get(key);
-        if (items != null) {
-            items.addAll(settings);
-        } else {
-            items = settings;
-        }
-        sMap.put(key, items);
-    }
-
     public static synchronized List<SettingItem> get(String key) {
         return sMap.get(key);
     }

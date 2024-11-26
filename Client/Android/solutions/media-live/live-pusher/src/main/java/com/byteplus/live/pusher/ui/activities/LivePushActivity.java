@@ -49,6 +49,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -212,9 +213,15 @@ public class LivePushActivity extends AppCompatActivity
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mLivePusher = LivePusherImpl.createLivePusher(this, mObserver);
-        LivePusher.setLogLevel(LivePusherSettingsHelper.getLogLevel());
         initEffect();
         preparePreview();
+
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Intentional do nothing
+            }
+        });
     }
 
 
@@ -317,7 +324,7 @@ public class LivePushActivity extends AppCompatActivity
             if (!checkPermission()) {
                 return;
             }
-            mLivePusher.startScreenRecording(LivePusherSettingsHelper.getEnableAppAudio(), mScreenIntent);
+            mLivePusher.startScreenRecording(mScreenIntent);
             audioCaptureType = PUSH_AUDIO_CAPTURE_VOICE_COMMUNICATION;
             videoCaptureType = PUSH_VIDEO_CAPTURE_SCREEN;
         } else if (captureMode == LiveCaptureType.FILE) {
@@ -655,10 +662,6 @@ public class LivePushActivity extends AppCompatActivity
             mLivePusher.setMute(true);
             view.setSelected(true);
         }
-    }
-
-    @Override
-    public void onBackPressed() {
     }
 
     @Override

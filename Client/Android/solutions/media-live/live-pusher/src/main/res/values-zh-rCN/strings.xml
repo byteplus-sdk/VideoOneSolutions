@@ -77,5 +77,4 @@
     <string name="medialive_downloaded">下载完成</string>
     <string name="medialive_xxx_downloading">文件 %s 下载中…</string>
     <string name="medialive_effect">美颜</string>
-    <string name="medialive_capture_app_audio">采集应用内声音</string>
 </resources>

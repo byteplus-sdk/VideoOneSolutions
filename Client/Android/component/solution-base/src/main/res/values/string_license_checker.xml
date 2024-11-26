@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="solution_license_uri_path_null">Uri format error\n\e.g. assets:///license/ttsdk.lic</string>
+    <string name="solution_license_uri_schema_unsupported">Uri schema not supported\n\nOnly supports assets; Example assets:///license/ttsdk.lic</string>
+    <string name="solution_license_assets_not_exists">License file does not exist\n\nPlease check if the file exists in app/src/main/assets/ \n and check <b>logcat</b> output for more information</string>
+    <string name="solution_license_parse_error">License file content parsing error</string>
+    <string name="solution_license_package_name_not_match">PackageName error\n\nThe PackageName in the license file does not match the PackageName of the application,\n and check <b>logcat</b> output for more information</string>
+    <string name="solution_license_unknown_error">Unknown error\n\nPlease refer to <b>logcat</b> output</string>
+</resources>

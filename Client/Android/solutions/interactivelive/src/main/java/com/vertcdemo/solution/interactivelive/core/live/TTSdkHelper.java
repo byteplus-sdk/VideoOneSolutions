@@ -3,8 +3,6 @@
 
 package com.vertcdemo.solution.interactivelive.core.live;
 
-import com.vertcdemo.solution.interactivelive.BuildConfig;
-
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 
@@ -15,6 +13,7 @@ import com.pandora.common.env.config.Config;
 import com.pandora.ttlicense2.License;
 import com.pandora.ttlicense2.LicenseManager;
 import com.vertcdemo.core.utils.AppUtil;
+import com.vertcdemo.solution.interactivelive.BuildConfig;
 
 public class TTSdkHelper {
     private static boolean isInitialized = false;

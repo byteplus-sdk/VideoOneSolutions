@@ -22,7 +22,7 @@ static NSString *VEShortVideoCellReuseIDDemo = @"VEShortVideoCellReuseIDDemo";
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initialUI];
-    [self startVideoStategy];
+    [self startVideoStrategy];
 }
 
 - (void)dealloc {
@@ -80,7 +80,7 @@ static NSString *VEShortVideoCellReuseIDDemo = @"VEShortVideoCellReuseIDDemo";
     return _pageContainer;
 }
 
-- (void)startVideoStategy {
+- (void)startVideoStrategy {
     VESettingModel *preRender = [[VESettingManager universalManager] settingForKey:VESettingKeyShortVideoPreRenderStrategy];
     if (preRender.open) {
         [VEVideoPlayerController enableEngineStrategy:TTVideoEngineStrategyTypePreRender scene:TTVEngineStrategySceneSmallVideo];
@@ -101,7 +101,7 @@ static NSString *VEShortVideoCellReuseIDDemo = @"VEShortVideoCellReuseIDDemo";
     }];
 
     BaseButton *backButton = [BaseButton buttonWithType:UIButtonTypeCustom];
-    [backButton setImage:[UIImage imageNamed:@"nav_left"] forState:UIControlStateNormal];
+    [backButton setImage:[UIImage imageNamed:@"nav_left" bundleName:@"VodPlayer"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:backButton];
     [backButton mas_makeConstraints:^(MASConstraintMaker *make) {

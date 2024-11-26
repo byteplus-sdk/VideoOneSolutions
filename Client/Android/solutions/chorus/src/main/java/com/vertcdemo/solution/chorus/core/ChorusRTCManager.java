@@ -8,6 +8,7 @@ import static com.ss.bytertc.engine.data.AudioMixingDualMonoMode.AUDIO_MIXING_DU
 import static com.ss.bytertc.engine.data.AudioMixingDualMonoMode.AUDIO_MIXING_DUAL_MONO_MODE_R;
 import static com.ss.bytertc.engine.data.AudioMixingType.AUDIO_MIXING_TYPE_PLAYOUT_AND_PUBLISH;
 
+import android.app.Application;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.TextureView;
@@ -48,9 +49,9 @@ import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.event.AudioRouteChangedEvent;
 import com.vertcdemo.core.event.NetworkStatusEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.rts.RTCRoomEventHandlerWithRTS;
-import com.vertcdemo.core.net.rts.RTCVideoEventHandlerWithRTS;
-import com.vertcdemo.core.net.rts.RTSInfo;
+import com.vertcdemo.core.rtc.IRTCManager;
+import com.vertcdemo.core.rts.RTCRoomEventHandlerWithRTS;
+import com.vertcdemo.core.rts.RTCVideoEventHandlerWithRTS;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.solution.chorus.event.NetworkTypeChangedEvent;
 import com.vertcdemo.solution.chorus.event.PlayFinishEvent;
@@ -70,7 +71,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class ChorusRTCManager {
+public class ChorusRTCManager implements IRTCManager {
 
     private static final boolean DEBUG = false;
 
@@ -78,7 +79,7 @@ public class ChorusRTCManager {
     private static ChorusRTCManager sInstance;
     private RTCVideo mRTCVideo;
     private RTCRoom mRTCRoom;
-    private ChorusRTSClient mRTSClient;
+    private final ChorusRTSClient mRTSClient = new ChorusRTSClient();
     private String mRoomId;
 
     private volatile String mCurrentMusicId; // 当前混音音乐id
@@ -110,27 +111,14 @@ public class ChorusRTCManager {
         return mHasVideoUids.contains(uid);
     }
 
-
-    @NonNull
-    private volatile StopReason mStopReason = StopReason.NONE;
-
     private final IMediaPlayerEventHandler mPlayerEventHandler = new IMediaPlayerEventHandler() {
         @Override
         public void onMediaPlayerStateChanged(int playerId, PlayerState state, PlayerError error) {
-            Log.d(TAG, "onMediaPlayerStateChanged: " + state + ", reason=" + mStopReason);
+            Log.d(TAG, "onMediaPlayerStateChanged: state=" + state + ", error=" + error);
             guard(() -> {
-                if (state == PlayerState.STOPPED) {
-                    // TODO missing PlayerState.FINISHED
-                    if (mStopReason == StopReason.PLAYING) {
-                        Log.d(TAG, "onMediaPlayerStateChanged: Finished musicId=" + mCurrentMusicId);
-                        // not stopped manually, treat as PlayerState.FINISHED
-                        SolutionEventBus.post(new PlayFinishEvent(mCurrentMusicId));
-                    }
-
-                    mStopReason = StopReason.NONE;
+                if (state == PlayerState.FINISHED) {
+                    SolutionEventBus.post(new PlayFinishEvent(mCurrentMusicId));
                     mCurrentMusicId = null;
-                } else if (state == PlayerState.PLAYING) {
-                    mStopReason = StopReason.PLAYING;
                 }
             });
         }
@@ -146,7 +134,7 @@ public class ChorusRTCManager {
         }
     };
 
-    private final RTCVideoEventHandlerWithRTS mRTCVideoEventHandler = new RTCVideoEventHandlerWithRTS() {
+    private final RTCVideoEventHandlerWithRTS mRTCVideoEventHandler = new RTCVideoEventHandlerWithRTS(mRTSClient) {
 
         @Override
         public void onWarning(int warn) {
@@ -262,7 +250,7 @@ public class ChorusRTCManager {
         }
     };
 
-    private final RTCRoomEventHandlerWithRTS mRTCRoomEventHandler = new RTCRoomEventHandlerWithRTS(true) {
+    private final RTCRoomEventHandlerWithRTS mRTCRoomEventHandler = new RTCRoomEventHandlerWithRTS(mRTSClient, true) {
 
         /**
          *
@@ -317,35 +305,41 @@ public class ChorusRTCManager {
         Log.d(TAG, "RTCVideo sdkVersion: " + RTCVideo.getSDKVersion());
     }
 
-    public static ChorusRTCManager ins() {
+    public synchronized static ChorusRTCManager ins() {
         if (sInstance == null) {
             sInstance = new ChorusRTCManager();
         }
         return sInstance;
     }
 
-    public void initEngine(RTSInfo info) {
-        Log.d(TAG, "initEngine: " + info.appId);
-        destroyEngine();
-        mRTCVideo = RTCVideo.createRTCVideo(AppUtil.getApplicationContext(), info.appId, mRTCVideoEventHandler, null, null);
-        mRTCVideo.setBusinessId(info.bid);
-        mRTSClient = new ChorusRTSClient(mRTCVideo, info);
-        mRTCVideoEventHandler.setBaseClient(mRTSClient);
-        mRTCRoomEventHandler.setBaseClient(mRTSClient);
+    @Override
+    public void createEngine(@NonNull String appId, @Nullable String bid) {
+        Log.d(TAG, "createRTCVideo: appId='" + appId + "'; bid='" + bid + "'");
+        if (mRTCVideo != null) {
+            Log.w(TAG, "createRTCVideo: already created");
+            return;
+        }
 
-        mRTCVideo.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER_AND_ENCODER);
+        final Application context = AppUtil.getApplicationContext();
+        RTCVideo rtcVideo = RTCVideo.createRTCVideo(context, appId, mRTCVideoEventHandler, null, null);
+        if (bid != null) {
+            rtcVideo.setBusinessId(bid);
+        }
 
-        mRTCVideo.setAudioScenario(AudioScenarioType.AUDIO_SCENARIO_MUSIC);
-        mRTCVideo.setAudioProfile(AudioProfileType.AUDIO_PROFILE_HD);
+        rtcVideo.setAudioScenario(AudioScenarioType.AUDIO_SCENARIO_MUSIC);
+        rtcVideo.setAudioProfile(AudioProfileType.AUDIO_PROFILE_HD);
+
         AudioPropertiesConfig config = new AudioPropertiesConfig(300);
-        mRTCVideo.enableAudioPropertiesReport(config);
+        rtcVideo.enableAudioPropertiesReport(config);
+
+        rtcVideo.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER_AND_ENCODER);
+
+        mRTCVideo = rtcVideo;
     }
 
-    public ChorusRTSClient getRTSClient() {
-        return mRTSClient;
-    }
-
+    @Override
     public void destroyEngine() {
+        Log.d(TAG, "destroyEngine");
         if (mRTCRoom != null) {
             Log.d(TAG, "destroyEngine: RTCRoom");
             mRTCRoom.leaveRoom();
@@ -366,7 +360,6 @@ public class ChorusRTCManager {
         Log.d(TAG, String.format("joinRoom: %s %s %s", roomId, userId, token));
         mRTCRoom = mRTCVideo.createRTCRoom(roomId);
         mRTCRoom.setRTCRoomEventHandler(mRTCRoomEventHandler);
-        mRTCRoomEventHandler.setBaseClient(mRTSClient);
         UserInfo userInfo = new UserInfo(userId, null);
         RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_KTV,
                 true, true, true);
@@ -425,13 +418,18 @@ public class ChorusRTCManager {
         player.stop();
         //再播放
         player.setEventHandler(mPlayerEventHandler);
-        mStopReason = StopReason.NONE;
         mCurrentMusicId = musicId;
         mRTCVideo.setVoiceReverbType(VoiceReverbType.VOICE_REVERB_KTV);
-        MediaPlayerConfig config = new MediaPlayerConfig(AUDIO_MIXING_TYPE_PLAYOUT_AND_PUBLISH, 1);
+
+        MediaPlayerConfig config = new MediaPlayerConfig();
+        config.type = AUDIO_MIXING_TYPE_PLAYOUT_AND_PUBLISH;
+        config.playCount = 1;
+        config.callbackOnProgressInterval = 100;
+        config.autoPlay = true;
+
         player.open(filePath, config);
         player.setVolume(volume, AUDIO_MIXING_TYPE_PLAYOUT_AND_PUBLISH);
-        player.setProgressInterval(100);
+
         selectAudioTrack(isAccompanyMode = accompany);
     }
 
@@ -440,7 +438,6 @@ public class ChorusRTCManager {
         if (mRTCVideo == null) {
             return;
         }
-        mStopReason = StopReason.MANUAL;
         IMediaPlayer player = mRTCVideo.getMediaPlayer(RTC_PLAYER_ID);
         player.stop();
     }

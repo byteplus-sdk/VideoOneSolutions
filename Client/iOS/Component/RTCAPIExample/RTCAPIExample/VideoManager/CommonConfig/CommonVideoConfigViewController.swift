@@ -60,7 +60,7 @@ class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate,
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 // Join room
                 self?.rtcRoom = self?.rtcVideo?.createRTCRoom(roomId)
@@ -89,7 +89,8 @@ class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate,
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("video-config-common")
         
         // Set video capture parameters
         let config = ByteRTCVideoCaptureConfig.init()
@@ -123,7 +124,7 @@ class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate,
         self.localView.userId = userSettingItem.text ?? ""
         
         self.rtcVideo?.setLocalVideoMirrorType(.none)
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     func updateRenderView() {
@@ -262,7 +263,7 @@ class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate,
         
         // Set local rendering fill mode
         self.localRenderModeSheetView.didSelectOption = {(value) in
-            weakSelf?.rtcVideo?.updateLocalVideoCanvas(.main, withRenderMode: ByteRTCRenderMode(rawValue: UInt(value)+1)!, withBackgroundColor: 0xffffff)
+            weakSelf?.rtcVideo?.updateLocalVideoCanvas(.indexMain, withRenderMode: ByteRTCRenderMode(rawValue: UInt(value)+1)!, withBackgroundColor: 0xffffff)
         }
         
         // Set local video mirroring mode
@@ -312,7 +313,7 @@ class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate,
         let streamKey = ByteRTCRemoteStreamKey.init()
         streamKey.userId = userId
         streamKey.roomId = roomId;
-        streamKey.streamIndex = .main
+        streamKey.streamIndex = .indexMain
         
         self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
     }
@@ -535,7 +536,7 @@ class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate,
     }()
     
     lazy var captureModeSheetView: ActionSheetView = {
-        let actionSheetView = ActionSheetView.init(title: LocalizedString("label_capture_preference"), optionArray: ["Auto","mannal","autoPerformance"], defaultIndex: 0)
+        let actionSheetView = ActionSheetView.init(title: LocalizedString("label_capture_preference"), optionArray: ["Auto","mannal","autoPerformance"], defaultIndex: 1)
         actionSheetView.presentingViewController = self
         
         return actionSheetView
@@ -634,7 +635,7 @@ class CommonVideoConfigViewController: BaseViewController, ByteRTCVideoDelegate,
             let streamKey = ByteRTCRemoteStreamKey.init()
             streamKey.userId = userId
             streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .main
+            streamKey.streamIndex = .indexMain
             
             self.users.append(streamKey)
             

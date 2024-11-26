@@ -76,7 +76,7 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
 
         initUI();
 
-        rtcVideo = RTCHelper.createRTCVideo(this, videoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, videoEventHandler, "byte-beauty");
         viewModel.init(rtcVideo.getVideoEffectInterface(), new EffectResourceManager(this));
         setLocalRenderView();
         rtcVideo.startVideoCapture();

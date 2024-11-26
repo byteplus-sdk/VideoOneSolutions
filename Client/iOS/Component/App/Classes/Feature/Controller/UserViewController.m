@@ -6,7 +6,6 @@
 #import "NoticeViewController.h"
 #import "UserCell.h"
 #import "UserHeadView.h"
-#import "UserNameViewController.h"
 #import <AppConfig/BuildConfig.h>
 #import <Masonry/Masonry.h>
 #import <ToolKit/LoginComponent.h>

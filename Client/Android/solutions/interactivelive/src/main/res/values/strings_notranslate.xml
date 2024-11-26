@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="label_live" translatable="false">Live</string>
-    <string name="x" translatable="false">x</string>
     <string name="duration_zero" translatable="false">"00:00"</string>
     <string name="fps_15" translatable="false">15</string>
     <string name="fps_20" translatable="false">20</string>

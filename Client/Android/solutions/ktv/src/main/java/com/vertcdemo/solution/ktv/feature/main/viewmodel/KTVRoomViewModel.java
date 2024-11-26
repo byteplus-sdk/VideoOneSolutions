@@ -6,7 +6,6 @@ package com.vertcdemo.solution.ktv.feature.main.viewmodel;
 
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -18,24 +17,19 @@ import com.ss.bytertc.engine.type.VoiceReverbType;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.event.JoinRTSRoomErrorEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.http.callback.OnResponse;
+import com.vertcdemo.core.net.HttpException;
 import com.vertcdemo.core.utils.Streams;
 import com.vertcdemo.solution.ktv.R;
-import com.vertcdemo.solution.ktv.bean.GetAudienceResponse;
-import com.vertcdemo.solution.ktv.bean.GetRequestSongResponse;
-import com.vertcdemo.solution.ktv.bean.JoinRoomResponse;
 import com.vertcdemo.solution.ktv.bean.PickedSongInfo;
-import com.vertcdemo.solution.ktv.bean.ReplyMicOnResponse;
-import com.vertcdemo.solution.ktv.bean.ReplyResponse;
 import com.vertcdemo.solution.ktv.bean.RoomInfo;
 import com.vertcdemo.solution.ktv.bean.SongItem;
 import com.vertcdemo.solution.ktv.bean.StatusSongItem;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
-import com.vertcdemo.solution.ktv.common.SolutionToast;
 import com.vertcdemo.solution.ktv.core.Defaults;
 import com.vertcdemo.solution.ktv.core.ErrorCodes;
 import com.vertcdemo.solution.ktv.core.KTVRTCManager;
-import com.vertcdemo.solution.ktv.core.KTVRTSClient;
 import com.vertcdemo.solution.ktv.core.MusicDownloadManager;
 import com.vertcdemo.solution.ktv.core.rts.annotation.DownloadType;
 import com.vertcdemo.solution.ktv.core.rts.annotation.NeedApplyOption;
@@ -53,6 +47,13 @@ import com.vertcdemo.solution.ktv.event.StartSingBroadcast;
 import com.vertcdemo.solution.ktv.feature.main.state.SingState;
 import com.vertcdemo.solution.ktv.feature.main.state.Singing;
 import com.vertcdemo.solution.ktv.feature.main.state.UserRoleState;
+import com.vertcdemo.solution.ktv.http.KTVService;
+import com.vertcdemo.solution.ktv.http.response.ApplyInteractResponse;
+import com.vertcdemo.solution.ktv.http.response.GetAudienceResponse;
+import com.vertcdemo.solution.ktv.http.response.GetPickedSongListResponse;
+import com.vertcdemo.solution.ktv.http.response.GetPresetSongListResponse;
+import com.vertcdemo.solution.ktv.http.response.JoinRoomResponse;
+import com.vertcdemo.ui.CenteredToast;
 
 import java.io.File;
 import java.util.Collections;
@@ -178,72 +179,70 @@ public class KTVRoomViewModel extends ViewModel {
     }
 
     public void requestJoinLiveRoom(String roomId) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.requestJoinRoom(roomId, new IRequestCallback<JoinRoomResponse>() {
-            @Override
-            public void onSuccess(JoinRoomResponse data) {
-                if (data == null) {
-                    onError(-1, "Invalid JoinRoom response");
-                    return;
-                }
+        KTVService.get()
+                .joinRoom(roomId, new Callback<JoinRoomResponse>() {
+                    @Override
+                    public void onResponse(JoinRoomResponse data) {
+                        if (data == null) {
+                            onFailure(HttpException.unknown("Invalid JoinRoom response"));
+                            return;
+                        }
 
-                setRoomInfo(Objects.requireNonNull(data.roomInfo));
+                        setRoomInfo(Objects.requireNonNull(data.roomInfo));
 
-                setHostInfo(Objects.requireNonNull(data.hostInfo));
-                setMyInfo(Objects.requireNonNull(data.userInfo));
+                        setHostInfo(Objects.requireNonNull(data.hostInfo));
+                        setMyInfo(Objects.requireNonNull(data.userInfo));
 
-                requestAllSongs(roomInfo.roomId);
+                        requestAllSongs(roomInfo.roomId);
 
-                singing.postValue(
-                        data.current == null ? Singing.IDLE : Singing.singing(data.current)
-                );
+                        singing.postValue(
+                                data.current == null ? Singing.IDLE : Singing.singing(data.current)
+                        );
 
-                SolutionEventBus.post(new InitSeatDataEvent(data.seatMap));
+                        SolutionEventBus.post(new InitSeatDataEvent(data.seatMap));
 
-                joinRTCRoom(data.rtcToken);
-            }
+                        joinRTCRoom(data.rtcToken);
+                    }
 
-            @Override
-            public void onError(int errorCode, @Nullable String message) {
-                SolutionEventBus.post(new JoinRTSRoomErrorEvent(errorCode, message));
-            }
-        });
+                    @Override
+                    public void onFailure(HttpException e) {
+                        SolutionEventBus.post(new JoinRTSRoomErrorEvent(e.getCode(), e.getMessage()));
+                    }
+                });
     }
 
     public void reconnectRoom() {
         String roomId = requireRoomId();
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.reconnectToServer(roomId, new IRequestCallback<JoinRoomResponse>() {
-            @Override
-            public void onSuccess(JoinRoomResponse data) {
-                if (data == null) {
-                    onError(-1, "Invalid JoinRoom response");
-                    return;
-                }
-                setRoomInfo(Objects.requireNonNull(data.roomInfo));
+        KTVService.get()
+                .reconnect(roomId, new Callback<JoinRoomResponse>() {
+                    @Override
+                    public void onResponse(JoinRoomResponse data) {
+                        if (data == null) {
+                            onFailure(HttpException.unknown("Invalid JoinRoom response"));
+                            return;
+                        }
+                        setRoomInfo(Objects.requireNonNull(data.roomInfo));
 
-                setHostInfo(Objects.requireNonNull(data.hostInfo));
-                setMyInfo(Objects.requireNonNull(data.userInfo));
+                        setHostInfo(Objects.requireNonNull(data.hostInfo));
+                        setMyInfo(Objects.requireNonNull(data.userInfo));
 
-                requestAllSongs(data.roomInfo.roomId);
+                        requestAllSongs(data.roomInfo.roomId);
 
-                singing.postValue(
-                        data.current == null ? Singing.IDLE : Singing.singing(data.current)
-                );
+                        singing.postValue(
+                                data.current == null ? Singing.IDLE : Singing.singing(data.current)
+                        );
 
-                SolutionEventBus.post(new InitSeatDataEvent(data.seatMap));
+                        SolutionEventBus.post(new InitSeatDataEvent(data.seatMap));
 
-                // Reconnect no need join RTC room
-                // audienceJoinLiveRoom(data.rtcToken);
-            }
+                        // Reconnect no need join RTC room
+                        // audienceJoinLiveRoom(data.rtcToken);
+                    }
 
-            @Override
-            public void onError(int errorCode, @Nullable String message) {
-                SolutionEventBus.post(new JoinRTSRoomErrorEvent(errorCode, message, true));
-            }
-        });
+                    @Override
+                    public void onFailure(HttpException e) {
+                        SolutionEventBus.post(new JoinRTSRoomErrorEvent(e.getCode(), e.getMessage(), true));
+                    }
+                });
     }
 
     void joinRTCRoom(String rtcToken) {
@@ -315,56 +314,46 @@ public class KTVRoomViewModel extends ViewModel {
     }
 
     public void requestAllSongs(String roomId) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.requestPresetSongList(roomId, data -> {
-            List<StatusSongItem> songs = Streams.map(data.getSongs(), item -> {
-                mSongItemMap.put(item.songId, item);
-                return new StatusSongItem(item);
-            });
+        KTVService.get()
+                .getPresetSongList(roomId, OnResponse.of(response -> {
+                    List<SongItem> items = GetPresetSongListResponse.songs(response);
+                    List<StatusSongItem> songs = Streams.map(items, item -> {
+                        mSongItemMap.put(item.songId, item);
+                        return new StatusSongItem(item);
+                    });
 
-            songLibrary.postValue(songs);
+                    songLibrary.postValue(songs);
 
-            SolutionEventBus.post(new MusicLibraryInitEvent());
-        });
+                    SolutionEventBus.post(new MusicLibraryInitEvent());
+                }));
     }
 
     public void requestPickedSongList(String roomId) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.requestPickedSongList(roomId, new IRequestCallback<GetRequestSongResponse>() {
-            @Override
-            public void onSuccess(GetRequestSongResponse data) {
-                List<PickedSongInfo> list = data == null ? Collections.emptyList() : data.songList;
-                pickedSongs.postValue(list);
+        KTVService.get().getPickedSongList(roomId, OnResponse.of(response -> {
+            List<PickedSongInfo> list = GetPickedSongListResponse.songs(response);
+            pickedSongs.postValue(list);
 
-                List<StatusSongItem> songs = songLibrary.getValue();
-                if (songs != null && !songs.isEmpty()) {
-                    Set<String> pickedByMe = Streams.mapToSet(list,
-                            item -> TextUtils.equals(item.ownerUid, myUserId()),
-                            item -> item.songId);
+            List<StatusSongItem> songs = songLibrary.getValue();
+            if (songs != null && !songs.isEmpty()) {
+                Set<String> pickedByMe = Streams.mapToSet(list,
+                        item -> TextUtils.equals(item.ownerUid, myUserId()),
+                        item -> item.songId);
 
-                    List<StatusSongItem> newSongs =
-                            Streams.map(songs, item -> {
-                                        if (pickedByMe.contains(item.getSongId())) {
-                                            return item.copy(SongStatus.PICKED);
-                                        } else if (item.status == SongStatus.PICKED) {
-                                            return item.copy(SongStatus.FINISH);
-                                        } else {
-                                            return item;
-                                        }
+                List<StatusSongItem> newSongs =
+                        Streams.map(songs, item -> {
+                                    if (pickedByMe.contains(item.getSongId())) {
+                                        return item.copy(SongStatus.PICKED);
+                                    } else if (item.status == SongStatus.PICKED) {
+                                        return item.copy(SongStatus.FINISH);
+                                    } else {
+                                        return item;
                                     }
-                            );
+                                }
+                        );
 
-                    songLibrary.postValue(newSongs);
-                }
+                songLibrary.postValue(newSongs);
             }
-
-            @Override
-            public void onError(int errorCode, String message) {
-                //ignore
-            }
-        });
+        }));
     }
 
     public void onRequestSongBroadcast(RequestSongBroadcast event) {
@@ -419,25 +408,22 @@ public class KTVRoomViewModel extends ViewModel {
             return;
         }
 
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
         String roomId = requireRoomId();
-        rtsClient.requestSong(roomId,
+        KTVService.get().requestSong(roomId,
                 myUserId(),
                 item.songId,
                 item.songName,
                 item.duration,
-                item.coverUrl,
-                new IRequestCallback<Void>() {
+                item.coverUrl, new Callback<Void>() {
                     @Override
-                    public void onSuccess(Void data) {
+                    public void onResponse(Void response) {
                         Log.e(TAG, "requestSong: You picked a song: " + item.songName);
                     }
 
                     @Override
-                    public void onError(int errorCode, @Nullable String message) {
-                        Log.e(TAG, "requestSong: errorCode=" + errorCode + "; message=" + message);
-                        SolutionToast.show(ErrorCodes.prettyMessage(errorCode, message));
+                    public void onFailure(HttpException e) {
+                        Log.e(TAG, "requestSong: error=" + e);
+                        CenteredToast.show(ErrorCodes.prettyMessage(e));
                     }
                 });
     }
@@ -482,7 +468,7 @@ public class KTVRoomViewModel extends ViewModel {
                         getMusicVolume(),
                         getVocalVolume()
                 );
-                SolutionToast.show(R.string.toast_start_singing);
+                CenteredToast.show(R.string.toast_start_singing);
             }
         } else {
             mPendingReadyToSing = next;
@@ -505,25 +491,22 @@ public class KTVRoomViewModel extends ViewModel {
     public void nextTrack() {
         PickedSongInfo curSingSong = getCurrentSong();
         if (curSingSong == null) return;
-        UserInfo selfUserInfo = myInfo;
-        boolean pickedBySelf = TextUtils.equals(curSingSong.ownerUid, selfUserInfo.userId);
+        boolean pickedBySelf = TextUtils.equals(curSingSong.ownerUid, myUserId());
         boolean isHost = isHost();
         if (!pickedBySelf && !isHost) {
             Log.d(TAG, "nextTrack: isHost=false; isOwner=false");
             return;
         }
 
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.cutOffSong(roomInfo.roomId, selfUserInfo.userId, new IRequestCallback<Void>() {
+        KTVService.get().cutOffSong(requireRoomId(), new Callback<Void>() {
             @Override
-            public void onSuccess(Void data) {
+            public void onResponse(Void response) {
                 // Success, Wait 'ktvOnStartSing' notify event
             }
 
             @Override
-            public void onError(int errorCode, String message) {
-                SolutionToast.show(R.string.toast_cut_off_failed, Toast.LENGTH_SHORT);
+            public void onFailure(HttpException e) {
+                CenteredToast.show(R.string.toast_cut_off_failed);
             }
         });
     }
@@ -540,14 +523,8 @@ public class KTVRoomViewModel extends ViewModel {
 
         String songId = currentSong.songId;
 
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        if (rtsClient == null) {
-            return;
-        }
-        rtsClient.finishSing(requireRoomId(),
-                myUserId(),
-                songId,
-                0);
+        KTVService.get()
+                .finishSing(requireRoomId(), songId, 100);
     }
     // endregion
 
@@ -572,52 +549,50 @@ public class KTVRoomViewModel extends ViewModel {
     }
 
     public void requestOnlineAudiences(String roomId) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.requestAudienceList(roomId, new IRequestCallback<GetAudienceResponse>() {
-            @Override
-            public void onSuccess(GetAudienceResponse data) {
-                onlineAudiences.postValue(data.audienceList);
-            }
+        KTVService.get()
+                .getAudienceList(roomId, new Callback<GetAudienceResponse>() {
+                    @Override
+                    public void onResponse(GetAudienceResponse response) {
+                        onlineAudiences.postValue(GetAudienceResponse.audiences(response));
+                    }
 
-            @Override
-            public void onError(int errorCode, @Nullable String message) {
-                onlineAudiences.postValue(Collections.emptyList());
-            }
-        });
+                    @Override
+                    public void onFailure(HttpException e) {
+                        onlineAudiences.postValue(Collections.emptyList());
+                    }
+                });
     }
 
     public void requestApplyAudiences(String roomId) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.requestApplyAudienceList(roomId, new IRequestCallback<GetAudienceResponse>() {
-            @Override
-            public void onSuccess(GetAudienceResponse data) {
-                appliedAudiences.postValue(data.audienceList);
-            }
+        KTVService.get()
+                .getApplyAudienceList(roomId, new Callback<GetAudienceResponse>() {
+                    @Override
+                    public void onResponse(GetAudienceResponse response) {
+                        appliedAudiences.postValue(GetAudienceResponse.audiences(response));
+                    }
 
-            @Override
-            public void onError(int errorCode, @Nullable String message) {
-                appliedAudiences.postValue(Collections.emptyList());
-            }
-        });
+                    @Override
+                    public void onFailure(HttpException e) {
+                        appliedAudiences.postValue(Collections.emptyList());
+                    }
+                });
     }
 
     public void updateNeedApply(String roomId, boolean newValue) {
         int type = newValue ? NeedApplyOption.NEED : NeedApplyOption.NO_NEED;
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.manageInteractApply(roomId, type, new IRequestCallback<Void>() {
-            @Override
-            public void onSuccess(Void data) {
-                needApply.postValue(newValue);
-            }
 
-            @Override
-            public void onError(int errorCode, String message) {
-                needApply.postValue(!newValue);
-            }
-        });
+        KTVService.get()
+                .manageInteractApply(roomId, type, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Void response) {
+                        needApply.postValue(newValue);
+                    }
+
+                    @Override
+                    public void onFailure(HttpException e) {
+                        needApply.postValue(!newValue);
+                    }
+                });
     }
 
     public void replyApply(String roomId, String userId, boolean agree) {
@@ -626,97 +601,91 @@ public class KTVRoomViewModel extends ViewModel {
             Log.d(TAG, "Host replayed rejected");
             return;
         }
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.agreeApply(roomId, userId, roomId, new IRequestCallback<Void>() {
+        KTVService.get().agreeApply(roomId, userId, new Callback<Void>() {
             @Override
-            public void onSuccess(Void data) {
-
+            public void onResponse(Void response) {
+                Log.d(TAG, "Host replyApply: success");
             }
 
             @Override
-            public void onError(int errorCode, String message) {
-                SolutionToast.show(ErrorCodes.prettyMessage(errorCode, message));
+            public void onFailure(HttpException e) {
+                CenteredToast.show(ErrorCodes.prettyMessage(e));
             }
         });
     }
 
     public void inviteInteract(String roomId, String userId, int seatId) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.inviteInteract(roomId, userId, seatId, new IRequestCallback<Void>() {
-            @Override
-            public void onSuccess(Void data) {
-                SolutionToast.show(R.string.toast_invitation_audience);
-                requestOnlineAudiences(roomId);
-            }
+        KTVService.get()
+                .inviteInteract(roomId, userId, seatId, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Void response) {
+                        CenteredToast.show(R.string.toast_invitation_audience);
+                        requestOnlineAudiences(roomId);
+                    }
 
-            @Override
-            public void onError(int errorCode, @Nullable String message) {
-                SolutionToast.show(ErrorCodes.prettyMessage(errorCode, message));
-            }
-        });
+                    @Override
+                    public void onFailure(HttpException e) {
+                        CenteredToast.show(ErrorCodes.prettyMessage(e));
+                    }
+                });
     }
 
     public void replyInvite(String roomId, int seatId, @ReplyType int reply) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.replyInvite(roomId, reply, seatId, new IRequestCallback<ReplyResponse>() {
-            @Override
-            public void onSuccess(ReplyResponse data) {
+        KTVService.get()
+                .replyInvite(roomId, seatId, reply, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Void response) {
+                        Log.d(TAG, "replyInvite: success; seatId=" + seatId + "; reply=" + reply);
+                    }
 
-            }
-
-            @Override
-            public void onError(int errorCode, String message) {
-                SolutionToast.show(ErrorCodes.prettyMessage(errorCode, message));
-            }
-        });
+                    @Override
+                    public void onFailure(HttpException e) {
+                        CenteredToast.show(ErrorCodes.prettyMessage(e));
+                    }
+                });
     }
 
     public void updateSelfMediaStatus(String roomId, boolean isMicOn) {
         myInfo.mic = isMicOn ? MediaStatus.ON : MediaStatus.OFF;
         selfMicOn.postValue(isMicOn);
 
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.updateSelfMediaStatus(roomId, isMicOn ? MediaStatus.ON : MediaStatus.OFF);
-
+        KTVService.get().updateSelfMicStatus(roomId, isMicOn);
         KTVRTCManager.ins().startAudioPublish(isMicOn);
     }
 
     public void applySeatRequest(@NonNull String roomId, int seatId) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
         setSelfApply(true);
-        rtsClient.applyInteract(roomId, seatId,
-                new IRequestCallback<ReplyMicOnResponse>() {
-                    @Override
-                    public void onSuccess(ReplyMicOnResponse data) {
-                        if (data.needApply) {
-                            SolutionToast.show(R.string.toast_apply_guest);
-                        }
-                    }
+        KTVService.get()
+                .applyInteract(roomId, seatId,
+                        new Callback<ApplyInteractResponse>() {
+                            @Override
+                            public void onResponse(ApplyInteractResponse response) {
+                                if (response == null) {
+                                    onFailure(HttpException.unknown("Response is null"));
+                                    return;
+                                }
+                                if (response.needApply) {
+                                    CenteredToast.show(R.string.toast_apply_guest);
+                                }
+                            }
 
-                    @Override
-                    public void onError(int errorCode, String message) {
-                        setSelfApply(false);
-                        SolutionToast.show(ErrorCodes.prettyMessage(errorCode, message));
-                        Log.d(TAG, "onError: errorCode=" + errorCode + "; message=" + message);
-                    }
-                });
+                            @Override
+                            public void onFailure(HttpException e) {
+                                Log.d(TAG, "onError: e=" + e);
+                                setSelfApply(false);
+                                CenteredToast.show(ErrorCodes.prettyMessage(e));
+                            }
+                        });
     }
 
     public void managerSeat(String roomId, int seatId, @SeatOption int option) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.managerSeat(roomId, seatId, option, null);
+        KTVService.get()
+                .manageSeat(roomId, seatId, option);
     }
 
     public void finishInteract(String roomId, int seatId) {
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.finishInteract(roomId, seatId);
+        KTVService.get()
+                .finishInteract(roomId, seatId);
     }
     // endregion
 
@@ -805,10 +774,10 @@ public class KTVRoomViewModel extends ViewModel {
     public void switchTrack() {
         boolean playAccompany = KTVRTCManager.ins().toggleAudioAccompanyMode();
         if (playAccompany) {
-            SolutionToast.show(R.string.toast_backing_track_enabled);
+            CenteredToast.show(R.string.toast_backing_track_enabled);
             originTrack.postValue(false);
         } else {
-            SolutionToast.show(R.string.toast_original_vocals_enabled);
+            CenteredToast.show(R.string.toast_original_vocals_enabled);
             originTrack.postValue(true);
         }
     }

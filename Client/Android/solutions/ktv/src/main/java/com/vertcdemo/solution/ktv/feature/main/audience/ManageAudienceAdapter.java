@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,12 +18,13 @@ import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
 import com.vertcdemo.solution.ktv.core.rts.annotation.UserStatus;
 import com.vertcdemo.solution.ktv.databinding.ItemKtvManageAudienceBinding;
+import com.vertcdemo.solution.ktv.utils.BVH;
 import com.videoone.avatars.Avatars;
 
 import java.util.Collections;
 import java.util.List;
 
-public class ManageAudienceAdapter extends RecyclerView.Adapter<ManageAudienceAdapter.AudienceManageViewHolder> {
+public class ManageAudienceAdapter extends RecyclerView.Adapter<BVH<ItemKtvManageAudienceBinding>> {
 
     private List<UserInfo> mItems = Collections.emptyList();
     private final OnOptionSelected mListener;
@@ -40,15 +42,76 @@ public class ManageAudienceAdapter extends RecyclerView.Adapter<ManageAudienceAd
 
     @NonNull
     @Override
-    public ManageAudienceAdapter.AudienceManageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ktv_manage_audience, parent, false);
-        return new ManageAudienceAdapter.AudienceManageViewHolder(view, mIsApplyView);
+    public BVH<ItemKtvManageAudienceBinding> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ItemKtvManageAudienceBinding binding = ItemKtvManageAudienceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        if (mIsApplyView) {
+            binding.cancel.setVisibility(View.GONE);
+            binding.cancel.setText(R.string.button_alert_reject);
+            binding.ok.setText(R.string.button_alert_accept);
+        } else {
+            binding.cancel.setVisibility(View.GONE);
+        }
+        return new BVH<>(binding.getRoot(), binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ManageAudienceAdapter.AudienceManageViewHolder holder, int position) {
-        UserInfo userInfo = mItems.get(position);
-        holder.bind(position, userInfo, mListener);
+    public void onBindViewHolder(@NonNull BVH<ItemKtvManageAudienceBinding> holder, int position) {
+        UserInfo item = mItems.get(position);
+        holder.binding.position.setText(String.valueOf(position + 1));
+        Glide.with(holder.binding.avatar)
+                .load(Avatars.byUserId(item.userId))
+                .into(holder.binding.avatar);
+        holder.binding.name.setText(item.userName);
+
+        if (mIsApplyView) {
+            holder.binding.cancel.setOnClickListener(v -> {
+                UserInfo info = mItems.get(holder.getBindingAdapterPosition());
+                mListener.onOption(OnOptionSelected.ACTION_CANCEL, info);
+            });
+            holder.binding.ok.setOnClickListener(v -> {
+                UserInfo info = mItems.get(holder.getBindingAdapterPosition());
+                mListener.onOption(OnOptionSelected.ACTION_OK, info);
+            });
+        } else {
+            updateStatus(holder, item);
+
+            holder.binding.ok.setOnClickListener(v -> {
+                UserInfo info = mItems.get(holder.getBindingAdapterPosition());
+                mListener.onOption(OnOptionSelected.ACTION_OK, info);
+            });
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull BVH<ItemKtvManageAudienceBinding> holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            Object payload = payloads.get(0);
+            if (PAYLOAD_STATUS == payload) {
+                if (!mIsApplyView) {
+                    UserInfo item = mItems.get(position);
+                    updateStatus(holder, item);
+                }
+            }
+        }
+    }
+
+    private void updateStatus(BVH<ItemKtvManageAudienceBinding> holder, UserInfo item) {
+        int status = item.userStatus;
+        if (status == UserStatus.INTERACT) {
+            holder.binding.ok.setText(R.string.button_user_list_guest);
+            holder.binding.ok.setSelected(true);
+        } else if (status == UserStatus.INVITING) {
+            holder.binding.ok.setText(R.string.button_user_list_invited);
+            holder.binding.ok.setSelected(true);
+        } else if (status == UserStatus.APPLYING) {
+            holder.binding.ok.setText(R.string.button_user_list_accept);
+            holder.binding.ok.setSelected(false);
+        } else {
+            holder.binding.ok.setText(R.string.button_user_list_invited_guest);
+            holder.binding.ok.setSelected(false);
+        }
     }
 
     @Override
@@ -74,65 +137,22 @@ public class ManageAudienceAdapter extends RecyclerView.Adapter<ManageAudienceAd
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
                 UserInfo oldItem = oldItems.get(oldItemPosition);
                 UserInfo newItem = users.get(newItemPosition);
-                return oldItem == newItem;
+                return TextUtils.equals(oldItem.userId, newItem.userId);
             }
 
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                 UserInfo oldItem = oldItems.get(oldItemPosition);
                 UserInfo newItem = users.get(newItemPosition);
-                return TextUtils.equals(oldItem.userId, newItem.userId)
-                        && oldItem.userStatus == newItem.userStatus;
+                return oldItem.userStatus == newItem.userStatus;
+            }
+
+            @Override
+            public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+                return PAYLOAD_STATUS;
             }
         }).dispatchUpdatesTo(this);
     }
 
-    public static class AudienceManageViewHolder extends RecyclerView.ViewHolder {
-        private final ItemKtvManageAudienceBinding mBinding;
-
-        private final boolean mIsApplyView;
-
-        public AudienceManageViewHolder(@NonNull View itemView, boolean isApplyView) {
-            super(itemView);
-            mBinding = ItemKtvManageAudienceBinding.bind(itemView);
-            mIsApplyView = isApplyView;
-            if (mIsApplyView) {
-                mBinding.cancel.setVisibility(View.GONE);
-                mBinding.cancel.setText(R.string.button_alert_reject);
-                mBinding.ok.setText(R.string.button_alert_accept);
-            } else {
-                mBinding.cancel.setVisibility(View.GONE);
-            }
-        }
-
-        void bind(int position, UserInfo userInfo, OnOptionSelected listener) {
-            mBinding.position.setText(String.valueOf(position + 1));
-            Glide.with(mBinding.avatar)
-                    .load(Avatars.byUserId(userInfo.userId))
-                    .into(mBinding.avatar);
-            mBinding.name.setText(userInfo.userName);
-
-            if (mIsApplyView) {
-                mBinding.cancel.setOnClickListener(v -> listener.onOption(OnOptionSelected.ACTION_CANCEL, userInfo));
-                mBinding.ok.setOnClickListener(v -> listener.onOption(OnOptionSelected.ACTION_OK, userInfo));
-            } else {
-                int status = userInfo.userStatus;
-                if (status == UserStatus.INTERACT) {
-                    mBinding.ok.setText(R.string.button_user_list_guest);
-                    mBinding.ok.setSelected(true);
-                } else if (status == UserStatus.INVITING) {
-                    mBinding.ok.setText(R.string.button_user_list_invited);
-                    mBinding.ok.setSelected(true);
-                } else if (status == UserStatus.APPLYING) {
-                    mBinding.ok.setText(R.string.button_user_list_accept);
-                    mBinding.ok.setSelected(false);
-                } else {
-                    mBinding.ok.setText(R.string.button_user_list_invited_guest);
-                    mBinding.ok.setSelected(false);
-                }
-
-                mBinding.ok.setOnClickListener(v -> listener.onOption(OnOptionSelected.ACTION_OK, userInfo));
-            }
-        }
-    }
+    private static final String PAYLOAD_STATUS = "status";
 }

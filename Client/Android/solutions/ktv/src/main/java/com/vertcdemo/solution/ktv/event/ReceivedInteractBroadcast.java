@@ -4,10 +4,8 @@
 package com.vertcdemo.solution.ktv.event;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
 
-@RTSInform
 public class ReceivedInteractBroadcast {
 
     @SerializedName("host_info")

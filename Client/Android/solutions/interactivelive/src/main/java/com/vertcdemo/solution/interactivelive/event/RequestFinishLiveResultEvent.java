@@ -3,16 +3,16 @@
 
 package com.vertcdemo.solution.interactivelive.event;
 
-import com.vertcdemo.solution.interactivelive.bean.LiveFinishResponse;
+import com.vertcdemo.solution.interactivelive.http.response.FinishRoomResponse;
 
 public class RequestFinishLiveResultEvent {
-    public final LiveFinishResponse response;
+    public final FinishRoomResponse response;
 
     public RequestFinishLiveResultEvent() {
         this(null);
     }
 
-    public RequestFinishLiveResultEvent(LiveFinishResponse response) {
+    public RequestFinishLiveResultEvent(FinishRoomResponse response) {
         this.response = response;
     }
 

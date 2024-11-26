@@ -13,13 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.vertcdemo.core.SolutionDataManager;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveLinkedAudienceItemBinding;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkStatusEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
-import com.videoone.avatars.Avatars;
 import com.vertcdemo.solution.interactivelive.util.BVH;
-import com.vertcdemo.core.utils.DebounceClickListener;
+import com.videoone.avatars.Avatars;
 
 import java.util.ArrayList;
 import java.util.List;

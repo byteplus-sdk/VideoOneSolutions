@@ -8,7 +8,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -29,13 +28,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SettingsFragment extends Fragment {
 
     private Adapter mAdapter;
-    private RecyclerView mRecyclerView;
     private List<SettingItem> mItems;
 
     public static final String EXTRA_SETTINGS_KEY = "EXTRA_SETTINGS_KEY";
@@ -69,25 +67,23 @@ public class SettingsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final String key = requireArguments().getString("EXTRA_SETTINGS_KEY");
-        mItems = Settings.get(key);
-        mAdapter = new Adapter();
-        if (mItems != null) {
-            mAdapter.setItems(mItems);
-        }
+        mItems = Objects.requireNonNull(Settings.get(key));
+
+        setHasOptionsMenu(true);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        setHasOptionsMenu(true);
-        mRecyclerView = new RecyclerView(requireContext());
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setBackgroundColor(Color.parseColor("#F7F8FA"));
-        return mRecyclerView;
+        return inflater.inflate(R.layout.vevod_settings_fragment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        RecyclerView recyclerView = view.findViewById(R.id.recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        mAdapter = new Adapter(mItems);
+        recyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -125,12 +121,10 @@ public class SettingsFragment extends Fragment {
     }
 
     private static class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private final List<SettingItem> mItems = new ArrayList<>();
+        private List<SettingItem> mItems;
 
-        public void setItems(List<SettingItem> items) {
-            mItems.clear();
-            mItems.addAll(items);
-            notifyDataSetChanged();
+        public Adapter(List<SettingItem> items) {
+            mItems = items;
         }
 
         @NonNull
@@ -206,12 +200,12 @@ public class SettingsFragment extends Fragment {
                         return SelectableItemsViewHolder.create(parent);
                     case Option.TYPE_EDITABLE_TEXT:
                         return EditableTextViewHolder.create(parent);
-                    case Option.TYPE_ARROW:
-                        return ClickableArrowItemHolder.create(parent);
                     case SettingItem.TYPE_COPYABLE_TEXT:
                         return CopyableTextViewHolder.create(parent);
                     case SettingItem.TYPE_CLICKABLE_ITEM:
                         return ClickableViewHolder.create(parent);
+                    case SettingItem.TYPE_ACTION_ITEM:
+                        return ClickActionItemHolder.create(parent);
                     default:
                         throw new IllegalArgumentException("Unsupported viewType " + viewType);
                 }
@@ -258,12 +252,10 @@ public class SettingsFragment extends Fragment {
         }
 
         static class RatioButtonViewHolder extends ItemViewHolder {
-            private final TextView titleView;
             private final SwitchCompat switchView;
 
             public RatioButtonViewHolder(@NonNull View itemView) {
                 super(itemView);
-                titleView = itemView.findViewById(R.id.itemTitle);
                 switchView = itemView.findViewById(R.id.switchView);
             }
 
@@ -278,14 +270,11 @@ public class SettingsFragment extends Fragment {
                     switchView.setChecked(value);
                     switchView.setEnabled(true);
                 }
-                switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        item.option.userValues().saveValue(item.option, isChecked);
-                    }
+                switchView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    item.option.userValues().saveValue(item.option, isChecked);
                 });
 
-                titleView.setText(item.option.title);
+                switchView.setText(item.option.title);
             }
 
             static RatioButtonViewHolder create(ViewGroup parent) {
@@ -401,31 +390,28 @@ public class SettingsFragment extends Fragment {
             }
         }
 
-        static class ClickableArrowItemHolder extends ItemViewHolder {
+        static class ClickActionItemHolder extends ItemViewHolder {
             private final TextView titleView;
-            private final TextView valueView;
 
-            public ClickableArrowItemHolder(@NonNull View itemView) {
+            public ClickActionItemHolder(@NonNull View itemView) {
                 super(itemView);
                 titleView = itemView.findViewById(R.id.itemTitle);
-                valueView = itemView.findViewById(R.id.valueView);
             }
 
             @Override
             void bind(SettingItem item, int position) {
-                titleView.setText(item.option.title);
-                valueView.setText(item.mapper.toString(item.option.value()));
-                itemView.setOnClickListener(v -> {
-                    if (item.listener != null) {
+                titleView.setText(item.title);
+                if (item.listener != null) {
+                    itemView.setOnClickListener(v -> {
                         item.listener.onEvent(SettingItem.OnEventListener.EVENT_TYPE_CLICK,
-                                v.getContext(), item, ClickableArrowItemHolder.this);
-                    }
-                });
+                                v.getContext(), item, ClickActionItemHolder.this);
+                    });
+                }
             }
 
-            static ClickableArrowItemHolder create(ViewGroup parent) {
-                return new ClickableArrowItemHolder(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.vevod_settings_item_selectable_items, parent, false));
+            static ClickActionItemHolder create(ViewGroup parent) {
+                return new ClickActionItemHolder(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.vevod_settings_item_click_to_next, parent, false));
             }
         }
 

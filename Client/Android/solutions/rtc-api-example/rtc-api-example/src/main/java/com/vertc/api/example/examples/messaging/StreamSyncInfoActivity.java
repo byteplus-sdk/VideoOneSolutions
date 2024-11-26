@@ -58,7 +58,7 @@ public class StreamSyncInfoActivity extends ExampleBaseActivity {
 
         initUI(binding);
 
-        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "stream-sync-info");
         rtcVideo.startAudioCapture();
         rtcVideo.startVideoCapture();
 

@@ -52,7 +52,6 @@
     self.hostInfo.hidden = YES;
     self.tipView.hidden = YES;
     self.navView.hidden = YES;
-    [PublicParameterComponent share].roomId = self.roomInfoModel.roomID;
     __weak __typeof(self) wself = self;
     [self.countdownView start:^{
         __strong __typeof(wself) sself = wself;

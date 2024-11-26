@@ -70,16 +70,17 @@ NS_ASSUME_NONNULL_BEGIN
                        type:(NSInteger)type
                       block:(void(^)(RTSACKModel *model))block;
 + (void)clearUser:(void(^)(RTSACKModel *model))block;
-+ (void)reconnectWithBlock:(void(^)(NSString *RTCToken,
-                                    ChorusRoomModel *roomModel,
-                                    ChorusUserModel *userModel,
-                                    ChorusUserModel *hostUserModel,
-                                    ChorusSongModel *songModel,
-                                    ChorusUserModel *leadSingerUserModel,
-                                    ChorusUserModel *succentorUserModel,
-                                    ChorusSongModel *nextSongModel,
-                                    NSInteger audienceCount,
-                                    RTSACKModel *model))block;
++ (void)reconnect:(NSString *)roomID
+            block:(void(^)(NSString *RTCToken,
+                           ChorusRoomModel *roomModel,
+                           ChorusUserModel *userModel,
+                           ChorusUserModel *hostUserModel,
+                           ChorusSongModel *songModel,
+                           ChorusUserModel *leadSingerUserModel,
+                           ChorusUserModel *succentorUserModel,
+                           ChorusSongModel *nextSongModel,
+                           NSInteger audienceCount,
+                           RTSACKModel *model))block;
 
 #pragma mark - Notification Message
 + (void)onAudienceJoinRoomWithBlock:(void (^)(ChorusUserModel *userModel,

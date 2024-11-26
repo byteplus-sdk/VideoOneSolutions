@@ -9,6 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NetworkingResponse : NSObject
 
+@property (nonatomic, copy) NSString *json;
+
 @property (nonatomic, assign) NSInteger code;
 
 @property (nonatomic, copy) NSString *message;

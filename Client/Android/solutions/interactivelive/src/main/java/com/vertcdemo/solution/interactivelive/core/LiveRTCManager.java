@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.TextureView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
@@ -35,11 +36,11 @@ import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.event.RTCNetworkQualityEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.rts.RTCRoomEventHandlerWithRTS;
-import com.vertcdemo.core.net.rts.RTCVideoEventHandlerWithRTS;
-import com.vertcdemo.core.net.rts.RTSInfo;
-import com.vertcdemo.core.protocol.IEffect;
 import com.vertcdemo.core.protocol.EffectFactory;
+import com.vertcdemo.core.protocol.IEffect;
+import com.vertcdemo.core.rtc.IRTCManager;
+import com.vertcdemo.core.rts.RTCRoomEventHandlerWithRTS;
+import com.vertcdemo.core.rts.RTCVideoEventHandlerWithRTS;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
@@ -56,11 +57,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-
-/**
- * RTC interface encapsulation class
- */
-public class LiveRTCManager extends VideoTranscoding {
+public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
 
     private static final String TAG = "LiveRTCManager";
     // Whether is the front camera
@@ -76,23 +73,20 @@ public class LiveRTCManager extends VideoTranscoding {
     private final LiveSettingConfig mGuestConfig = new LiveSettingConfig(256, 256, 15, 124);
     // RTC room object
     private RTCRoom mRTCRoom;
-    private LiveRTSClient mRTSClient;
+    private final LiveRTSClient mRTSClient = new LiveRTSClient();
     // RTC room id
     private String mRTCRoomId;
 
-    private static LiveRTCManager sInstance = new LiveRTCManager();
+    private static final LiveRTCManager sInstance = new LiveRTCManager();
     // RTS object, used to realize the long link of the business server
     private RTCRoom mRTSRoom = null;
     private String mRTSRoomId = null;
+
+    private final RTCVideoEventHandlerWithRTS mRTCVideoEventHandler = new RTCVideoEventHandlerWithRTS(mRTSClient);
     // RTS object callback
-    private final RTCRoomEventHandlerWithRTS mRTSRoomEventHandler = new RTCRoomEventHandlerWithRTS(true);
-
-    private final RTCVideoEventHandlerWithRTS mRTCVideoEventHandler = new RTCVideoEventHandlerWithRTS();
-
-    /**
-     * RTC room event callback
-     */
-    private final RTCRoomEventHandlerWithRTS mRTCRoomEventHandler = new RTCRoomEventHandlerWithRTS(false) {
+    private final RTCRoomEventHandlerWithRTS mRTSRoomEventHandler = new RTCRoomEventHandlerWithRTS(mRTSClient, true);
+    // RTC room event callback
+    private final RTCRoomEventHandlerWithRTS mRTCRoomEventHandler = new RTCRoomEventHandlerWithRTS(mRTSClient, false) {
 
         @Override
         public void onRoomStateChanged(String roomId, String uid, int state, String extraInfo) {
@@ -151,7 +145,7 @@ public class LiveRTCManager extends VideoTranscoding {
         }
     };
 
-    private LiveRTCManager(){
+    private LiveRTCManager() {
         Log.d(TAG, "RTCVideo sdkVersion: " + RTCVideo.getSDKVersion());
     }
 
@@ -159,42 +153,37 @@ public class LiveRTCManager extends VideoTranscoding {
         return sInstance;
     }
 
-    public void rtcConnect(RTSInfo rtsInfo) {
-        Log.d(TAG, "rtcConnect: appId='" + rtsInfo.appId + "'; bid=" + rtsInfo.bid);
-        destroyEngine();
-        mRTCVideo = createRTCVideo(rtsInfo.appId, rtsInfo.bid);
-        initVideoEffect();
-        mRTSClient = new LiveRTSClient(mRTCVideo, rtsInfo);
-        mRTCVideoEventHandler.setBaseClient(mRTSClient);
-        mRTCRoomEventHandler.setBaseClient(mRTSClient);
-        mRTSRoomEventHandler.setBaseClient(mRTSClient);
-    }
+    @Override
+    public void createEngine(@NonNull String appId, @Nullable String bid) {
+        Log.d(TAG, "createRTCVideo: appId='" + appId + "'; bid='" + bid + "'");
+        if (mRTCVideo != null) {
+            Log.w(TAG, "createRTCVideo: already created");
+            return;
+        }
 
-    private RTCVideo createRTCVideo(String appId, String bid) {
         final Application context = AppUtil.getApplicationContext();
         RTCVideo rtcVideo = RTCVideo.createRTCVideo(context, appId, mRTCVideoEventHandler, null, null);
         rtcVideo.setBusinessId(bid);
-        rtcVideo.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER_AND_ENCODER);
 
+        rtcVideo.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER_AND_ENCODER);
         rtcVideo.setVideoCaptureConfig(mHostConfig.toCaptureConfig());
 
         VideoEncoderConfig config = mHostConfig.toEncoderConfig();
         Log.d(TAG, "setVideoEncoderConfig: " + config);
         rtcVideo.setVideoEncoderConfig(config);
 
-        return rtcVideo;
+        initVideoEffect(rtcVideo);
+
+        mRTCVideo = rtcVideo;
     }
 
+    @Override
     public void destroyEngine() {
         Log.d(TAG, "destroyEngine");
 
         stopLive();
         leaveRTSRoom();
 
-        if (mRTSClient != null) {
-            mRTSClient.logout();
-            mRTSClient = null;
-        }
         destroyEffectDialog();
         if (mRTCVideo != null) {
             RTCVideo.destroyRTCVideo();
@@ -239,7 +228,7 @@ public class LiveRTCManager extends VideoTranscoding {
         stopAllCapture();
         setFrontCamera(true);
 
-         releaseLiveCore();
+        releaseLiveCore();
     }
 
     public void joinRoom(String roomId, String userId, String token) {
@@ -253,7 +242,6 @@ public class LiveRTCManager extends VideoTranscoding {
         mRTCRoom = mRTCVideo.createRTCRoom(roomId);
         assert mRTCRoom != null : "createRTCRoom: failed to createRoom: roomId=" + roomId;
         mRTCRoom.setRTCRoomEventHandler(mRTCRoomEventHandler);
-        mRTCRoomEventHandler.setBaseClient(mRTSClient);
         UserInfo userInfo = new UserInfo(userId, null);
         RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_COMMUNICATION,
                 true,
@@ -390,9 +378,6 @@ public class LiveRTCManager extends VideoTranscoding {
         startCapture(false, false);
     }
 
-    /**
-     * Leave the rtc room
-     */
     public void leaveRoom() {
         Log.d(TAG, "leaveRoom");
         if (mRTCRoom != null) {
@@ -452,12 +437,6 @@ public class LiveRTCManager extends VideoTranscoding {
         mRTCVideo.setRemoteVideoCanvas(streamKey, canvas);
     }
 
-    /**
-     * mute remote audio
-     *
-     * @param uid  user id
-     * @param mute Whether to mute
-     */
     public void muteRemoteAudio(String uid, boolean mute) {
         Log.d(TAG, "muteRemoteAudio uid:" + uid + ",mute:" + mute);
         if (mRTCRoom != null) {
@@ -574,24 +553,13 @@ public class LiveRTCManager extends VideoTranscoding {
 
     private IEffect mEffect;
 
-    /**
-     * Initialize video beauty
-     */
-    private void initVideoEffect() {
-        if (mRTCVideo == null) {
-            return;
-        }
-        IEffect effect = mEffect= EffectFactory.create();
+    private void initVideoEffect(@NonNull RTCVideo video) {
+        IEffect effect = mEffect = EffectFactory.create();
         if (effect != null) {
-            effect.init(mRTCVideo.getVideoEffectInterface());
+            effect.init(video.getVideoEffectInterface());
         }
     }
 
-    /**
-     * Open the beauty dialog
-     *
-     * @param context context object
-     */
     public void openEffectDialog(Context context, FragmentManager fragmentManager) {
         IEffect effect = mEffect;
         if (effect != null) {

@@ -3,7 +3,9 @@ plugins {
 }
 
 android {
+    namespace 'com.vertcdemo.solution.interactivelive'
     compileSdk project.compileSdkVersion
+    namespace "com.vertcdemo.solution.interactivelive"
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
@@ -32,12 +34,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 
     buildFeatures {
+        buildConfig true
         viewBinding true
     }
 }
@@ -50,8 +54,8 @@ dependencies {
     implementation libs.material
     implementation libs.swiperefreshlayout
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
+    implementation libs.bundles.navigation
+    implementation libs.bundles.viewmodel
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
@@ -59,16 +63,18 @@ dependencies {
 
     implementation project(':component:solution-base')
     implementation project(':component:rtc-toolkit')
+    implementation project(':component:rtc-chat-ui')
     implementation project(':component:avatars')
-
-    implementation libs.ttsdk.ttlivepush.rtc
 
     implementation libs.eventbus
     implementation libs.gson
     implementation libs.okhttp
     implementation libs.glide
 
+    // for ttsdk
     implementation libs.commons.net
 
+    implementation libs.rtc.sdk
     implementation libs.ttsdk.ttlivepull
+    implementation libs.ttsdk.ttlivepush.rtc
 }

@@ -4,9 +4,7 @@
 package com.vertcdemo.solution.chorus.bean;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
-@RTSInform
 public class FinishSingInform {
     @SerializedName("score")
     public float score;

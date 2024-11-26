@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+
+        <activity
+            android:name="com.videoone.vod.function.VodFunctionDispatchActivity"
+            android:theme="@style/VEVodAppTheme.Transparent" />
+
+        <activity
+            android:name="com.videoone.vod.function.VodFunctionActivity"
+            android:supportsPictureInPicture="true"
+            android:launchMode="singleTask"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/VEVodAppTheme.Dark"
+            tools:targetApi="n" />
+
+    </application>
+</manifest>

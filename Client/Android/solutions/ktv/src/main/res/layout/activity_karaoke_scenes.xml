@@ -117,6 +117,12 @@
         app:layout_constraintStart_toStartOf="@id/solo"
         tools:drawableStart="@drawable/ic_karaoke_solo_f2" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_solo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="solo, solo_title, solo_f1, solo_f2" />
+
     <ImageView
         android:id="@+id/duet"
         android:layout_width="0dp"
@@ -176,5 +182,11 @@
         app:layout_constraintEnd_toEndOf="@id/duet"
         app:layout_constraintStart_toStartOf="@id/duet"
         tools:drawableStart="@drawable/ic_karaoke_duet_f2" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_duet"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="duet, duet_title, duet_f1, duet_f2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

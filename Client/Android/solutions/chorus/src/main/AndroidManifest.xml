@@ -5,12 +5,19 @@
         <activity
             android:name="com.vertcdemo.solution.chorus.feature.ChorusEntryActivity"
             android:exported="false"
+            android:label="@string/chorus_scene_name"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.Transparent" />
+            android:theme="@style/AppTheme.Transparent">
+            <intent-filter>
+                <action android:name="${applicationId}.action.KTV_SCENE_DUET" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="com.vertcdemo.solution.chorus.feature.ChorusActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion" />
     </application>
 </manifest>

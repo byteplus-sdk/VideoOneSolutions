@@ -104,7 +104,6 @@ public class LivePullActivity extends AppCompatActivity implements LivePlayerLis
         setContentView(R.layout.live_activity_live_pull);
         initUI();
         PreferenceUtil.getInstance().setPullAbrCurrent(PreferenceUtil.getInstance().getPullAbrDefault(PreferenceUtil.PULL_ABR_ORIGIN));
-        onSetLogLevel(PreferenceUtil.getInstance().getPullLogLevel(PreferenceUtil.PULL_LOG_LEVEL_VERBOSE));
         LivePlayerObserver observer = new LivePlayerObserver() {
             @Override
             public void onCycleInfoUpdate(LivePlayerCycleInfo info) {
@@ -322,16 +321,6 @@ public class LivePullActivity extends AppCompatActivity implements LivePlayerLis
                 }
             });
         }
-    }
-
-    @Override
-    public void onSetLogLevel(int logLevel) {
-        if (PreferenceUtil.getInstance().getPullLogLevel(PreferenceUtil.PULL_LOG_LEVEL_VERBOSE) == PreferenceUtil.PULL_LOG_LEVEL_NONE &&
-                logLevel > PreferenceUtil.PULL_LOG_LEVEL_NONE) {
-            Toast.makeText(LivePullActivity.this, "Connect PC/Mac to use 'adb logcat' to view logs", Toast.LENGTH_SHORT).show();
-        }
-        PreferenceUtil.getInstance().setPullLogLevel(logLevel);
-        LivePlayer.setLogLevel(logLevel);
     }
 
     @Override

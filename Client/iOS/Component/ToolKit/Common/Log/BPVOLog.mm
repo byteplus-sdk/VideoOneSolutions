@@ -6,15 +6,17 @@
 #include <os/log.h>
 #include <mutex>
 
-NSString * const VOApp = @"App";
-NSString * const VOBytePlusLoginKit = @"BytePlusLoginKit";
-NSString * const VOEffectUIKit = @"EffectUIKit";
-NSString * const VOInteractiveLive = @"InteractiveLive";
-NSString * const VOKTV = @"KTV";
-NSString * const VORTCExample = @"RTCExample";
-NSString * const VOVideoPlayback = @"VideoPlayback";
-NSString * const VOMediaLive = @"MediaLive";
-NSString * const VOToolKit = @"ToolKit";
+NSString * const VOApp = @"VOApp";
+NSString * const VOBytePlusLoginKit = @"VOBytePlusLoginKit";
+NSString * const VOEffectUIKit = @"VOEffectUIKit";
+NSString * const VOInteractiveLive = @"VOInteractiveLive";
+NSString * const VOKTV = @"VOKTV";
+NSString * const VORTCExample = @"VORTCExample";
+NSString * const VOVideoPlayback = @"VOVideoPlayback";
+NSString * const VOMediaLive = @"VOMediaLive";
+NSString * const VOToolKit = @"VOToolKit";
+NSString * const VOTTProto = @"VOTTProto";
+NSString *const VOVodPlayer = @"VOVodPlayer";
 
 
 void __ios_log_print(int prio, const char * __restrict tag, const char * __restrict log) {

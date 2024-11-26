@@ -22,32 +22,33 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.core.SolutionDataManager;
-import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.ErrorTool;
-import com.vertcdemo.core.net.IRequestCallback;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
-import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
-import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.core.annotation.MediaStatus;
+import com.vertcdemo.core.eventbus.SolutionEventBus;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.http.callback.OnFailure;
+import com.vertcdemo.core.utils.ErrorTool;
+import com.vertcdemo.solution.interactivelive.R;
+import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveAudienceSettingsBinding;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkFinishEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkStatusEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
 import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class AudienceSettingsDialog extends BottomDialogFragmentX {
+public class AudienceSettingsDialog extends BottomSheetDialogFragment {
 
     private static final String REQUEST_KEY = "request_key_confirm_finish_interact";
 
     @Override
     public int getTheme() {
-        return R.style.LiveBottomSheetDialogTheme;
+        return R.style.LiveBottomSheetDialog;
     }
 
     AudienceViewModel mViewModel;
@@ -99,9 +100,9 @@ public class AudienceSettingsDialog extends BottomDialogFragmentX {
     void updateLocalViewStatus() {
         final LiveRTCManager rtcManager = LiveRTCManager.ins();
         mBinding.microphone.setSelected(rtcManager.isMicOn());
-        mBinding.microphoneText.setText(rtcManager.isMicOn() ? com.vertcdemo.core.R.string.microphone : com.vertcdemo.core.R.string.microphone_off);
+        mBinding.microphoneText.setText(rtcManager.isMicOn() ? com.vertcdemo.rtc.toolkit.R.string.microphone : com.vertcdemo.rtc.toolkit.R.string.microphone_off);
         mBinding.camera.setSelected(rtcManager.isCameraOn());
-        mBinding.cameraText.setText(rtcManager.isCameraOn() ? com.vertcdemo.core.R.string.camera : com.vertcdemo.core.R.string.camera_off);
+        mBinding.cameraText.setText(rtcManager.isCameraOn() ? com.vertcdemo.rtc.toolkit.R.string.camera : com.vertcdemo.rtc.toolkit.R.string.camera_off);
 
         mBinding.flip.setEnabled(rtcManager.isCameraOn());
     }
@@ -110,7 +111,7 @@ public class AudienceSettingsDialog extends BottomDialogFragmentX {
         final LiveRTCManager rtcManager = LiveRTCManager.ins();
         int micStatus = rtcManager.isMicOn() ? MediaStatus.ON : MediaStatus.OFF;
         int cameraStatus = rtcManager.isCameraOn() ? MediaStatus.ON : MediaStatus.OFF;
-        LiveRTCManager.rts().updateMediaStatus(roomId, micStatus, cameraStatus, null);
+        LiveService.get().updateMediaStatus(roomId, micStatus, cameraStatus);
     }
 
     void showConfirmFinishInteractDialog() {
@@ -130,7 +131,7 @@ public class AudienceSettingsDialog extends BottomDialogFragmentX {
         public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
             int button = result.getInt(EXTRA_RESULT);
             if (button == DialogInterface.BUTTON_POSITIVE) {
-                LiveRTCManager.rts().finishAudienceLinkByAudience(
+                LiveService.get().leaveAudienceLink(
                         mViewModel.getLinkerId(),
                         mViewModel.getRTSRoomId(),
                         sFinishInteractResponse);
@@ -159,15 +160,7 @@ public class AudienceSettingsDialog extends BottomDialogFragmentX {
         }
     }
     // finish interact callback
-    private static final IRequestCallback<LiveResponse> sFinishInteractResponse = new IRequestCallback<LiveResponse>() {
-        @Override
-        public void onSuccess(LiveResponse data) {
-
-        }
-
-        @Override
-        public void onError(int errorCode, String message) {
-            CenteredToast.show(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
-        }
-    };
+    private static final Callback<Void> sFinishInteractResponse = OnFailure.of(e -> {
+        CenteredToast.show(ErrorTool.getErrorMessage(e));
+    });
 }

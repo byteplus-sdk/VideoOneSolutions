@@ -28,7 +28,4 @@ public final class RebroadcastEventListener<T> implements Consumer<String> {
         return new RebroadcastEventListener<>(type);
     }
 
-    public static <T> RebroadcastEventListener<T> of(@NonNull Class<T> clazz) {
-        return new RebroadcastEventListener<>(clazz);
-    }
 }

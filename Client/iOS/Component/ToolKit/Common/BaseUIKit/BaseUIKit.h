@@ -10,5 +10,4 @@
 #import "BaseEntrance.h"
 #import "BaseIMComponent.h"
 #import "BaseInputView.h"
-
 #endif /* BaseUIKit_h */

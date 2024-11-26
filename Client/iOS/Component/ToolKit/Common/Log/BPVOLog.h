@@ -17,6 +17,9 @@ FOUNDATION_EXPORT NSString * const VORTCExample;
 FOUNDATION_EXPORT NSString * const VOVideoPlayback;
 FOUNDATION_EXPORT NSString * const VOMediaLive;
 FOUNDATION_EXPORT NSString * const VOToolKit;
+FOUNDATION_EXPORT NSString * const VOTTProto;
+FOUNDATION_EXPORT NSString * const VOVodPlayer;
+
 
 #define VOLogD(tag, format, ...) BPVOLog(NO, BPVOLogPriorityDebug, tag, __FILE__, __LINE__, __FUNCTION__, format, ##__VA_ARGS__)
 #define VOLogV(tag, format, ...) BPVOLog(NO, BPVOLogPriorityVerbose, tag, __FILE__, __LINE__, __FUNCTION__, format, ##__VA_ARGS__)

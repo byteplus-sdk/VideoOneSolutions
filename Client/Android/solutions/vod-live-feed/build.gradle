@@ -1,0 +1,80 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+}
+
+android {
+    namespace "com.byteplus.vodlive"
+    compileSdk project.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.constraintlayout
+    implementation libs.material
+    implementation libs.cardview
+    implementation libs.viewpager2
+    implementation libs.swiperefreshlayout
+
+    implementation libs.bundles.viewmodel.ktx
+
+    implementation libs.ttsdk.player.premium
+    implementation libs.ttsdk.ttlivepull
+
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    implementation libs.gson
+    implementation libs.glide
+    implementation libs.glide.transformations
+    implementation libs.retrofit2
+    implementation libs.retrofit2.converter.gson
+    implementation libs.eventbus
+    implementation libs.lottie
+
+    implementation libs.rtc.sdk
+
+    implementation project(':component:rtc-toolkit')
+
+    implementation project(':component:solution-base')
+    implementation project(':component:rtc-chat-ui')
+    implementation project(':component:avatars')
+    implementation project(':solutions:vod:vod-demo')
+    implementation project(':solutions:vod:vod-common')
+    implementation project(':solutions:vod:vod-scenekit')
+    implementation project(':solutions:vod:vod-playerkit:vod-player')
+    implementation project(':solutions:vod:vod-playerkit:vod-player-utils')
+    implementation project(':solutions:vod:vod-playerkit:vod-player-ve')
+}

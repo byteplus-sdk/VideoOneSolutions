@@ -3,13 +3,14 @@
 
 package com.byteplus.vod.scenekit.ui.video.layer.dialog;
 
-import android.app.Dialog;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -20,7 +21,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.byteplus.vod.scenekit.R;
-import com.byteplus.vod.scenekit.utils.InputMethodUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class InputDialog extends BottomSheetDialogFragment {
@@ -38,17 +38,11 @@ public class InputDialog extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSoftInputMode();
-        return inflater.inflate(R.layout.vevod_dialog_input, container, false);
-    }
-
-    private void setSoftInputMode() {
-        final Dialog dialog = getDialog();
-        if (dialog == null) {
-            return;
+        Window window = requireDialog().getWindow();
+        if (window != null) {
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        InputMethodUtils.showInputMethod(getContext());
+        return inflater.inflate(R.layout.vevod_dialog_input, container, false);
     }
 
     @Override
@@ -63,7 +57,6 @@ public class InputDialog extends BottomSheetDialogFragment {
                         mSendCallback.send(content);
                     }
                 }
-                InputMethodUtils.hideInputMethod(getContext(), getView());
                 dismiss();
             }
             return true;
@@ -82,7 +75,11 @@ public class InputDialog extends BottomSheetDialogFragment {
      * Used to Observer IME status
      */
     private final ViewTreeObserver.OnGlobalLayoutListener mLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        // Disable first 300ms to avoid the case that the keyboard is animating popping up.
+        private final static long KEYBOARD_HIDE_DELAY = 300;
+
         private boolean imeVisible = false;
+        private long mShowTime = 0;
 
         @Override
         public void onGlobalLayout() {
@@ -96,9 +93,19 @@ public class InputDialog extends BottomSheetDialogFragment {
             }
             final boolean newValue = windowInsets.isVisible(WindowInsetsCompat.Type.ime());
             if (imeVisible && !newValue) {
-                dismiss();
+                long interval = SystemClock.uptimeMillis() - mShowTime;
+                if (interval > KEYBOARD_HIDE_DELAY) {
+                    onKeyboardHidden(view);
+                }
+            }
+            if (!imeVisible && newValue) {
+                mShowTime = SystemClock.uptimeMillis();
             }
             imeVisible = newValue;
+        }
+
+        private void onKeyboardHidden(View view) {
+            dismiss();
         }
     };
 }

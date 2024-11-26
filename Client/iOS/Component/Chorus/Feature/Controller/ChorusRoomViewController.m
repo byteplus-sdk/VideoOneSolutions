@@ -346,16 +346,19 @@ ChorusMusicComponentDelegate
 
 - (void)reconnectRoom {
     __weak typeof(self) weakSelf = self;
-    [ChorusRTSManager reconnectWithBlock:^(NSString * _Nonnull RTCToken,
-                                           ChorusRoomModel * _Nonnull roomModel,
-                                           ChorusUserModel * _Nonnull userModel,
-                                           ChorusUserModel * _Nonnull hostUserModel,
-                                           ChorusSongModel * _Nonnull songModel,
-                                           ChorusUserModel * _Nonnull leadSingerUserModel,
-                                           ChorusUserModel * _Nonnull succentorUserModel,
-                                           ChorusSongModel * _Nonnull nextSongModel,
-                                           NSInteger audienceCount,
-                                           RTSACKModel * _Nonnull model) {
+    NSString *roomID = self.roomModel.roomID;
+    NSAssert(roomID, @"roomID is nil");
+    [ChorusRTSManager reconnect:roomID
+                          block:^(NSString * _Nonnull RTCToken,
+                                  ChorusRoomModel * _Nonnull roomModel,
+                                  ChorusUserModel * _Nonnull userModel,
+                                  ChorusUserModel * _Nonnull hostUserModel,
+                                  ChorusSongModel * _Nonnull songModel,
+                                  ChorusUserModel * _Nonnull leadSingerUserModel,
+                                  ChorusUserModel * _Nonnull succentorUserModel,
+                                  ChorusSongModel * _Nonnull nextSongModel,
+                                  NSInteger audienceCount,
+                                  RTSACKModel * _Nonnull model) {
         if (model.result) {
             [weakSelf updateRoomViewWithData:RTCToken
                                    roomModel:roomModel

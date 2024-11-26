@@ -17,11 +17,13 @@ import com.bytedance.chrous.R;
 import com.ss.bytertc.engine.type.VoiceReverbType;
 import com.vertcdemo.core.event.JoinRTSRoomErrorEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.net.HttpException;
 import com.vertcdemo.core.utils.Streams;
 import com.vertcdemo.solution.chorus.bean.FinishSingInform;
-import com.vertcdemo.solution.chorus.bean.GetRequestSongResponse;
-import com.vertcdemo.solution.chorus.bean.JoinRoomResponse;
+import com.vertcdemo.solution.chorus.http.response.GetPickedSongListResponse;
+import com.vertcdemo.solution.chorus.http.response.GetPresetSongListResponse;
+import com.vertcdemo.solution.chorus.http.response.JoinRoomResponse;
 import com.vertcdemo.solution.chorus.bean.PickedSongInfo;
 import com.vertcdemo.solution.chorus.bean.PickedSongInform;
 import com.vertcdemo.solution.chorus.bean.RoomInfo;
@@ -30,10 +32,8 @@ import com.vertcdemo.solution.chorus.bean.StartSingInform;
 import com.vertcdemo.solution.chorus.bean.StatusSongItem;
 import com.vertcdemo.solution.chorus.bean.UserInfo;
 import com.vertcdemo.solution.chorus.bean.WaitSingInform;
-import com.vertcdemo.solution.chorus.common.SolutionToast;
 import com.vertcdemo.solution.chorus.core.ChorusInfo;
 import com.vertcdemo.solution.chorus.core.ChorusRTCManager;
-import com.vertcdemo.solution.chorus.core.ChorusRTSClient;
 import com.vertcdemo.solution.chorus.core.ErrorCodes;
 import com.vertcdemo.solution.chorus.core.MusicDownloadManager;
 import com.vertcdemo.solution.chorus.core.rts.annotation.DownloadType;
@@ -49,6 +49,9 @@ import com.vertcdemo.solution.chorus.feature.room.state.SingState;
 import com.vertcdemo.solution.chorus.feature.room.state.SingerRole;
 import com.vertcdemo.solution.chorus.feature.room.state.Singing;
 import com.vertcdemo.solution.chorus.feature.room.state.UserRoleState;
+import com.vertcdemo.solution.chorus.http.ChorusService;
+import com.vertcdemo.core.http.callback.OnResponse;
+import com.vertcdemo.ui.CenteredToast;
 
 import java.io.File;
 import java.util.Collections;
@@ -174,24 +177,23 @@ public class ChorusRoomViewModel extends ViewModel {
     }
 
     public void requestJoinLiveRoom(String roomId) {
-        ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.requestJoinRoom(roomId, new IRequestCallback<JoinRoomResponse>() {
-            @Override
-            public void onSuccess(JoinRoomResponse data) {
-                if (data == null || !data.isValid()) {
-                    onError(-1, "Invalid JoinRoom response");
-                    return;
-                }
+        ChorusService.get()
+                .joinRoom(roomId, new Callback<JoinRoomResponse>() {
+                    @Override
+                    public void onResponse(@Nullable JoinRoomResponse data) {
+                        if (data == null || !data.isValid()) {
+                            onFailure(HttpException.unknown("Invalid JoinRoom response"));
+                            return;
+                        }
 
-                handleJoinRoomResponse(data, false);
-            }
+                        handleJoinRoomResponse(data, false);
+                    }
 
-            @Override
-            public void onError(int errorCode, @Nullable String message) {
-                SolutionEventBus.post(new JoinRTSRoomErrorEvent(errorCode, message));
-            }
-        });
+                    @Override
+                    public void onFailure(HttpException e) {
+                        SolutionEventBus.post(new JoinRTSRoomErrorEvent(e.getCode(), e.getMessage()));
+                    }
+                });
     }
 
     void audienceJoinRTCRoom(String rtcToken) {
@@ -255,23 +257,23 @@ public class ChorusRoomViewModel extends ViewModel {
 
     public void reconnectRoom() {
         String roomId = requireRoomId();
-        ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.reconnectToServer(roomId, new IRequestCallback<JoinRoomResponse>() {
-            @Override
-            public void onSuccess(JoinRoomResponse data) {
-                if (data == null || !data.isValid()) {
-                    onError(-1, "Invalid JoinRoom response");
-                    return;
-                }
-                handleJoinRoomResponse(data, true);
-            }
 
-            @Override
-            public void onError(int errorCode, @Nullable String message) {
-                SolutionEventBus.post(new JoinRTSRoomErrorEvent(errorCode, message, true));
-            }
-        });
+        ChorusService.get()
+                .reconnect(roomId, new Callback<JoinRoomResponse>() {
+                    @Override
+                    public void onResponse(JoinRoomResponse data) {
+                        if (data == null || !data.isValid()) {
+                            onFailure(HttpException.unknown("Invalid JoinRoom response"));
+                            return;
+                        }
+                        handleJoinRoomResponse(data, true);
+                    }
+
+                    @Override
+                    public void onFailure(HttpException e) {
+                        SolutionEventBus.post(new JoinRTSRoomErrorEvent(e.getCode(), e.getMessage(), true));
+                    }
+                });
     }
 
     void handleJoinRoomResponse(@NonNull JoinRoomResponse data, boolean reconnect) {
@@ -331,58 +333,49 @@ public class ChorusRoomViewModel extends ViewModel {
     }
 
     public void requestAllSongs(String roomId) {
-        ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.requestPresetSongList(roomId, data -> {
-            List<StatusSongItem> songs = Streams.map(data.getSongs(), item -> {
-                mSongItemMap.put(item.songId, item);
-                return new StatusSongItem(item);
-            });
+        ChorusService.get()
+                .getPresetSongList(roomId, OnResponse.of(response -> {
+                    List<SongItem> items = GetPresetSongListResponse.songs(response);
+                    List<StatusSongItem> songs = Streams.map(items, item -> {
+                        mSongItemMap.put(item.songId, item);
+                        return new StatusSongItem(item);
+                    });
 
-            songLibrary.postValue(songs);
+                    songLibrary.postValue(songs);
 
-            requestPickedSongList(requireRoomId());
+                    requestPickedSongList(requireRoomId());
 
-            SolutionEventBus.post(new MusicLibraryInitEvent());
-        });
+                    SolutionEventBus.post(new MusicLibraryInitEvent());
+                }));
     }
 
     public void requestPickedSongList(String roomId) {
-        ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.requestPickedSongList(roomId, new IRequestCallback<GetRequestSongResponse>() {
-            @Override
-            public void onSuccess(GetRequestSongResponse data) {
-                List<PickedSongInfo> list = data == null ? Collections.emptyList() : data.songList;
-                pickedSongs.postValue(list);
+        ChorusService.get()
+                .getPickedSongList(roomId, OnResponse.of(response -> {
+                    List<PickedSongInfo> list = GetPickedSongListResponse.songs(response);
+                    pickedSongs.postValue(list);
 
-                List<StatusSongItem> songs = songLibrary.getValue();
-                if (songs != null && !songs.isEmpty()) {
-                    Set<String> pickedByMe = Streams.mapToSet(list,
-                            item -> TextUtils.equals(item.ownerUid, myUserId()),
-                            item -> item.songId);
+                    List<StatusSongItem> songs = songLibrary.getValue();
+                    if (songs != null && !songs.isEmpty()) {
+                        Set<String> pickedByMe = Streams.mapToSet(list,
+                                item -> TextUtils.equals(item.ownerUid, myUserId()),
+                                item -> item.songId);
 
-                    List<StatusSongItem> newSongs =
-                            Streams.map(songs, item -> {
-                                        if (pickedByMe.contains(item.getSongId())) {
-                                            return item.copy(SongStatus.PICKED);
-                                        } else if (item.status == SongStatus.PICKED) {
-                                            return item.copy(SongStatus.FINISH);
-                                        } else {
-                                            return item;
+                        List<StatusSongItem> newSongs =
+                                Streams.map(songs, item -> {
+                                            if (pickedByMe.contains(item.getSongId())) {
+                                                return item.copy(SongStatus.PICKED);
+                                            } else if (item.status == SongStatus.PICKED) {
+                                                return item.copy(SongStatus.FINISH);
+                                            } else {
+                                                return item;
+                                            }
                                         }
-                                    }
-                            );
+                                );
 
-                    songLibrary.postValue(newSongs);
-                }
-            }
-
-            @Override
-            public void onError(int errorCode, String message) {
-                //ignore
-            }
-        });
+                        songLibrary.postValue(newSongs);
+                    }
+                }));
     }
 
     public void onDownloadStatusChanged(DownloadStatusChanged event) {
@@ -410,27 +403,26 @@ public class ChorusRoomViewModel extends ViewModel {
             return;
         }
 
-        ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
         String roomId = requireRoomId();
-        rtsClient.requestSong(roomId,
-                myUserId(),
-                item.songId,
-                item.songName,
-                item.duration,
-                item.coverUrl,
-                new IRequestCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void data) {
-                        Log.e(TAG, "requestSong: You picked a song: " + item.songName);
-                    }
+        ChorusService.get().
+                requestSong(roomId,
+                        myUserId(),
+                        item.songId,
+                        item.songName,
+                        item.duration,
+                        item.coverUrl,
+                        new Callback<Void>() {
+                            @Override
+                            public void onResponse(Void response) {
+                                Log.e(TAG, "requestSong: You picked a song: " + item.songName);
+                            }
 
-                    @Override
-                    public void onError(int errorCode, @Nullable String message) {
-                        Log.e(TAG, "requestSong: errorCode=" + errorCode + "; message=" + message);
-                        SolutionToast.show(ErrorCodes.prettyMessage(errorCode, message));
-                    }
-                });
+                            @Override
+                            public void onFailure(HttpException e) {
+                                Log.e(TAG, "requestSong: error: " + e);
+                                CenteredToast.show(ErrorCodes.prettyMessage(e));
+                            }
+                        });
     }
 
     public void downloadTrack(String songId) {
@@ -481,9 +473,6 @@ public class ChorusRoomViewModel extends ViewModel {
     }
 
     public void startSing() {
-        ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-
         Singing status = Objects.requireNonNull(singing.getValue());
         if (status.state != SingState.WAITING_JOIN) {
             Log.e(TAG, "Error state: state is NOT WAITING: " + status.state);
@@ -492,7 +481,9 @@ public class ChorusRoomViewModel extends ViewModel {
 
         PickedSongInfo song = Objects.requireNonNull(status.song);
         String type = isLeaderSinger() ? SingType.SOLO : SingType.CHORUS;
-        rtsClient.startSing(requireRoomId(), song.songId, type);
+
+        ChorusService.get()
+                .startSing(requireRoomId(), song.songId, type);
     }
 
     private void doStartSinging(StartSingInform event) {
@@ -620,9 +611,9 @@ public class ChorusRoomViewModel extends ViewModel {
         Log.d(TAG, "onPlayFinishEvent: ");
         PickedSongInfo song = getCurrentSong();
         if (song != null && TextUtils.equals(song.songId, event.songId)) {
-            ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-            assert rtsClient != null;
-            rtsClient.finishSing(requireRoomId(), event.songId, 100);
+
+            ChorusService.get()
+                    .finishSing(requireRoomId(), event.songId, 100);
         } else {
             Log.d(TAG, "onPlayFinishEvent: songId mismatch!!!");
         }
@@ -741,10 +732,10 @@ public class ChorusRoomViewModel extends ViewModel {
     public void switchTrack() {
         boolean playAccompany = ChorusRTCManager.ins().toggleAudioAccompanyMode();
         if (playAccompany) {
-            SolutionToast.show(R.string.toast_backing_track_enabled);
+            CenteredToast.show(R.string.toast_backing_track_enabled);
             originTrack.postValue(false);
         } else {
-            SolutionToast.show(R.string.toast_original_vocals_enabled);
+            CenteredToast.show(R.string.toast_original_vocals_enabled);
             originTrack.postValue(true);
         }
     }
@@ -773,18 +764,16 @@ public class ChorusRoomViewModel extends ViewModel {
             }
         }
 
-        ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
-        rtsClient.cutOffSong(requireRoomId(), myUserId(), new IRequestCallback<Void>() {
+        ChorusService.get().cutOffSong(requireRoomId(), myUserId(), new Callback<Void>() {
             @Override
-            public void onSuccess(Void data) {
+            public void onResponse(Void response) {
                 // Success, Wait 'OnStartSing' notify event
                 Log.d(TAG, "nextTrack: onSuccess");
             }
 
             @Override
-            public void onError(int errorCode, String message) {
-                SolutionToast.show(R.string.toast_cut_off_failed, Toast.LENGTH_SHORT);
+            public void onFailure(HttpException e) {
+                CenteredToast.show(R.string.toast_cut_off_failed);
             }
         });
     }

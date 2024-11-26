@@ -4,24 +4,25 @@
 package com.vertcdemo.solution.interactivelive.feature;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.vertcdemo.core.event.AppTokenExpiredEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.rts.RTSInfo;
+import com.vertcdemo.core.http.bean.RTCAppInfo;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.core.live.TTSdkHelper;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Objects;
 
 public class InteractiveLiveActivity extends AppCompatActivity {
     public static final String EXTRA_ROOM_ID = "roomId";
@@ -39,21 +40,19 @@ public class InteractiveLiveActivity extends AppCompatActivity {
         final Window window = getWindow();
         WindowCompat.setDecorFitsSystemWindows(window, false);
 
-        // for HONOR 50, HTH-AN00, MagicOS 7, Android 12
-        // This device need this line to set status bar TRANSPARENT and should called before setStatusBarColor
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, window.getDecorView());
+        controller.setAppearanceLightStatusBars(true);
+        controller.setAppearanceLightNavigationBars(true);
 
-        window.setStatusBarColor(Color.TRANSPARENT);
-        window.setNavigationBarColor(Color.TRANSPARENT);
         setContentView(R.layout.activity_interactive_live);
         SolutionEventBus.register(this);
 
         final InteractiveLiveViewModel viewModel = new ViewModelProvider(this).get(InteractiveLiveViewModel.class);
-        viewModel.rtsStatus.observe(this, status -> {
-            if (status == InteractiveLiveViewModel.RTS_STATUS_NONE) {
+        viewModel.rtcStatus.observe(this, status -> {
+            if (status == InteractiveLiveViewModel.RTC_STATUS_NONE) {
                 final Intent intent = getIntent();
-                viewModel.setRTSInfo(intent.getParcelableExtra(RTSInfo.KEY_RTS));
-                viewModel.loginRTS();
+                RTCAppInfo info = Objects.requireNonNull(intent.getParcelableExtra(RTCAppInfo.KEY_APP_INFO));
+                viewModel.setAppInfo(info);
             }
         });
 

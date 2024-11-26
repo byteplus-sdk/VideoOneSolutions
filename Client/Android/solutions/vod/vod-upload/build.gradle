@@ -5,16 +5,17 @@ plugins {
 
 android {
 
-    compileSdk rootProject.ext.compileSdkVersion
     namespace "com.byteplus.vodupload"
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
 
         buildConfigField('String', 'SERVER_URL', "\"${SERVER_URL}\"")
     }
     buildFeatures {
+        buildConfig true
         viewBinding true
     }
 
@@ -24,9 +25,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
+    }
+    buildFeatures {
+        buildConfig true
     }
 }
 

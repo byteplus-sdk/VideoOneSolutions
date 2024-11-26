@@ -9,13 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-import com.vertcdemo.core.net.ErrorTool;
-import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.http.callback.OnResponse;
+import com.vertcdemo.core.net.HttpException;
+import com.vertcdemo.core.utils.ErrorTool;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.bean.LiveInviteResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
-import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
+import com.vertcdemo.solution.interactivelive.http.response.GetAnchorListResponse;
+import com.vertcdemo.solution.interactivelive.http.response.LinkResponse;
 import com.vertcdemo.ui.CenteredToast;
 
 import java.util.Collections;
@@ -32,31 +35,28 @@ public class InviteHostViewModel extends AndroidViewModel {
     }
 
     public void requestActiveHostList() {
-        LiveRTCManager.ins().getRTSClient().requestActiveHostList(data -> {
-            final List<LiveUserInfo> list = data.anchorList;
-            users.postValue(list == null ? Collections.emptyList() : list);
-        });
+        LiveService.get().getAnchorList(OnResponse.of(data -> {
+            users.postValue(GetAnchorListResponse.anchors(data));
+        }));
     }
 
     public void inviteHostByHost(LiveUserInfo info) {
-        final Application context = getApplication();
-        final IRequestCallback<LiveInviteResponse> callback = new IRequestCallback<LiveInviteResponse>() {
-            @Override
-            public void onSuccess(LiveInviteResponse data) {
-                CenteredToast.show(R.string.anchor_pk_invitation_sent);
-            }
-
-            @Override
-            public void onError(int errorCode, String message) {
-                if (errorCode == 622) {
-                    CenteredToast.show(R.string.anchor_pk_invitation_sent);
-                } else {
-                    CenteredToast.show(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
-                }
-            }
-        };
-        LiveRTCManager.rts().inviteHostByHost(roomInfo.roomId, roomInfo.anchorUserId,
+        LiveService.get().inviteAnchorLink(roomInfo.roomId, roomInfo.anchorUserId,
                 info.roomId,
-                info.userId, "", callback);
+                info.userId, "", new Callback<LinkResponse>() {
+                    @Override
+                    public void onResponse(LinkResponse response) {
+                        CenteredToast.show(R.string.anchor_pk_invitation_sent);
+                    }
+
+                    @Override
+                    public void onFailure(HttpException e) {
+                        if (e.getCode() == 622) {
+                            CenteredToast.show(R.string.anchor_pk_invitation_sent);
+                        } else {
+                            CenteredToast.show(ErrorTool.getErrorMessage(e));
+                        }
+                    }
+                });
     }
 }

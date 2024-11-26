@@ -84,7 +84,7 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
         initUI(binding);
 
         if (viewModel.rtcVideo == null) {
-            viewModel.rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler);
+            viewModel.rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "video-config-rotate");
             getRTCVideo().startVideoCapture();
             getRTCVideo().startAudioCapture();
         }

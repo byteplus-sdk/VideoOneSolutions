@@ -92,13 +92,14 @@
 
 - (void)reconnectKTVRoom {
     __weak typeof(self) weakSelf = self;
-    [KTVRTSManager reconnectWithBlock:^(NSString * _Nonnull RTCToken,
-                                        KTVRoomModel * _Nonnull roomModel,
-                                        KTVUserModel * _Nonnull userModel,
-                                        KTVUserModel * _Nonnull hostUserModel,
-                                        KTVSongModel * _Nonnull songModel,
-                                        NSArray<KTVSeatModel *> * _Nonnull seatList,
-                                        RTSACKModel * _Nonnull model) {
+    [KTVRTSManager reconnect:self.roomModel.roomID
+                       block:^(NSString * _Nonnull RTCToken,
+                               KTVRoomModel * _Nonnull roomModel,
+                               KTVUserModel * _Nonnull userModel,
+                               KTVUserModel * _Nonnull hostUserModel,
+                               KTVSongModel * _Nonnull songModel,
+                               NSArray<KTVSeatModel *> * _Nonnull seatList,
+                               RTSACKModel * _Nonnull model) {
         // Reconnect
         if (model.result) {
             [weakSelf updateRoomViewWithData:RTCToken

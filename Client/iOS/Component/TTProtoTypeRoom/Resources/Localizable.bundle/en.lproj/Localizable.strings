@@ -1,0 +1,6 @@
+"tt_scene_name" = "Media up and down swiping";
+"tt_scene_des" = "Live streamings and videos mixed, with swiping up and down for playback and interaction";
+"tt_live_status" = "LIVE now";
+"tt_live_btn_text" = "Tap to watch LIVE";
+"tt_rtc_initial_failed" = "initial rtcEngine failed";
+"tt_live_license_invalid" = "Invalid license";

@@ -108,7 +108,8 @@ typedef NS_ENUM(NSInteger, LiveInviteReply) {
                                                    NSArray<LiveUserModel *> *_Nullable userList,
                                                    RTSACKModel *model))block;
 
-+ (void)liveAnchorLinkmicFinish:(NSString *)linkerID
++ (void)liveAnchorLinkmicFinish:(NSString *)roomID
+                       linkerID:(NSString *)linkerID
                           block:(void (^)(RTSACKModel *_Nonnull))block;
 
 #pragma mark - Audience Live API
@@ -129,8 +130,9 @@ typedef NS_ENUM(NSInteger, LiveInviteReply) {
                            block:(void (^__nullable)(NSString *_Nullable linkerID,
                                                      RTSACKModel *model))block;
 
-+ (void)liveAudienceCancelApplyLinkerId:(NSString *)LinkerId
-                                  block:(void (^)(RTSACKModel *model))block;
++ (void)liveAudienceLinkmicCancel:(NSString *)roomID
+                         linkerId:(NSString *)linkerId
+                            block:(void (^)(RTSACKModel *model))block;
 
 + (void)liveAudienceLinkmicReply:(NSString *)roomID
                         linkerID:(NSString *)linkerID
@@ -159,9 +161,10 @@ typedef NS_ENUM(NSInteger, LiveInviteReply) {
 + (void)liveClearUserWithBlock:(void (^)(RTSACKModel *model))block;
 
 // Update camera microphone status
-+ (void)liveUpdateMediaMic:(BOOL)mic
-                    camera:(BOOL)camera
-                     block:(void (^)(RTSACKModel *model))block;
++ (void)liveUpdateMediaStatus:(NSString *) roomID
+                          mic:(BOOL)mic
+                       camera:(BOOL)camera
+                        block:(void (^)(RTSACKModel *model))block;
 
 // Reconnect
 + (void)reconnect:(NSString *)roomID
@@ -169,8 +172,9 @@ typedef NS_ENUM(NSInteger, LiveInviteReply) {
                                       RTSACKModel *model))block;
 
 // Send IM message
-+ (void)sendIMMessage:(LiveMessageModel *)message
-                block:(void (^__nullable)(RTSACKModel *model))block;
++ (void)sendMessage:(NSString *)roomID
+            message:(LiveMessageModel *)message
+              block:(void (^__nullable)(RTSACKModel *model))block;
 
 #pragma mark - Global Notification message
 

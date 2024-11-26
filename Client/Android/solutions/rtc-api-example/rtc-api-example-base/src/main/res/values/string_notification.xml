@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rtc_foreground_channel_name">RTC ApiExample foreground</string>
+    <string name="rtc_foreground_channel_description">A channel for notification shows when RTC ApiExample is capturing</string>
+    <string name="rtc_foreground_notification_title">RTC ApiExample is capturing</string>
+    <string name="rtc_foreground_notification_content">RTC ApiExample is capturing</string>
+    <string name="rtc_missing_permission_post_notifications">Permission \'android.permission.POST_NOTIFICATIONS\' not granted, foreground service may not work!</string>
+</resources>

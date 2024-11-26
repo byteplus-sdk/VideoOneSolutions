@@ -56,14 +56,6 @@ public class LivePusherSettingsHelper {
         return PreferenceUtil.getInstance().getPushExternalVideoFrameBufferType(PUSH_EXTERNAL_VIDEO_FRAME_BUFFER_TYPE_BYTE_BUFFER);
     }
 
-    static public boolean getEnableAppAudio() {
-        return PreferenceUtil.getInstance().getPushEnableAppAudio(true);
-    }
-
-    static public int getLogLevel() {
-        return PreferenceUtil.getInstance().getPushLogLevel(PreferenceUtil.PULL_LOG_LEVEL_VERBOSE);
-    }
-
     static public int getFpsVal(int settings) {
         if (settings == FPS_15) {
             return 15;

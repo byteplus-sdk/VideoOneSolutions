@@ -3,25 +3,30 @@
 
 package com.vertcdemo.solution.interactivelive.feature.main.audiencelink;
 
+import static com.vertcdemo.solution.interactivelive.feature.main.audiencelink.IndexedItem.mapIndexed;
+
 import android.annotation.SuppressLint;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.core.annotation.LivePermitType;
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveCoHostItemBinding;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkApplyEvent;
-import com.videoone.avatars.Avatars;
 import com.vertcdemo.solution.interactivelive.util.BVH;
-import com.vertcdemo.core.utils.DebounceClickListener;
+import com.videoone.avatars.Avatars;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ApplicationAdapter extends RecyclerView.Adapter<BVH<LayoutLiveCoHostItemBinding>> {
@@ -33,15 +38,18 @@ public class ApplicationAdapter extends RecyclerView.Adapter<BVH<LayoutLiveCoHos
     }
 
     @NonNull
-    private final List<AudienceLinkRequest> mItems;
+    private List<IndexedItem<AudienceLinkRequest>> mItems;
+    @NonNull
+    private final List<AudienceLinkRequest> mRequests;
 
     @NonNull
     private final OnItemClickedListener2 mListener;
 
     private int mLinkedCount = 0;
 
-    public ApplicationAdapter(List<AudienceLinkRequest> items, @NonNull OnItemClickedListener2 listener) {
-        mItems = new ArrayList<>(items);
+    public ApplicationAdapter(@NonNull List<AudienceLinkRequest> items, @NonNull OnItemClickedListener2 listener) {
+        mRequests = new ArrayList<>(items);
+        mItems = mapIndexed(items);
         mListener = listener;
     }
 
@@ -65,11 +73,12 @@ public class ApplicationAdapter extends RecyclerView.Adapter<BVH<LayoutLiveCoHos
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull BVH<LayoutLiveCoHostItemBinding> holder, int position) {
-        final AudienceLinkRequest request = mItems.get(position);
+        IndexedItem<AudienceLinkRequest> item = mItems.get(position);
+        final AudienceLinkRequest request = item.data;
         final LiveUserInfo info = request.event.applicant;
 
         final LayoutLiveCoHostItemBinding binding = holder.binding;
-        binding.position.setText(Integer.toString(position + 1));
+        binding.position.setText(Integer.toString(item.index + 1));
 
         Glide.with(binding.avatar)
                 .load(Avatars.byUserId(info.userId))
@@ -92,32 +101,71 @@ public class ApplicationAdapter extends RecyclerView.Adapter<BVH<LayoutLiveCoHos
     }
 
     public void addItem(AudienceLinkApplyEvent event) {
-        int oldPosition = -1;
-        for (int i = 0; i < mItems.size(); i++) {
-            final AudienceLinkRequest request = mItems.get(i);
+        Iterator<AudienceLinkRequest> iterator = mRequests.iterator();
+        while (iterator.hasNext()) {
+            final AudienceLinkRequest request = iterator.next();
             if (request.sameUser(event.applicant.userId)) {
-                mItems.remove(i);
-                oldPosition = i;
+                iterator.remove();
                 break;
             }
         }
-        mItems.add(new AudienceLinkRequest(event));
-        if (oldPosition == -1) {
-            notifyItemInserted(mItems.size() - 1);
-        } else {
-            notifyItemMoved(oldPosition, mItems.size() - 1);
-        }
+        mRequests.add(new AudienceLinkRequest(event));
+
+        updateItems(mapIndexed(mRequests));
     }
 
     public void removeItem(String userId) {
-        for (int i = 0; i < mItems.size(); i++) {
-            final AudienceLinkRequest request = mItems.get(i);
+        boolean updated = false;
+        Iterator<AudienceLinkRequest> iterator = mRequests.iterator();
+        while (iterator.hasNext()) {
+            final AudienceLinkRequest request = iterator.next();
             if (request.sameUser(userId)) {
-                mItems.remove(i);
-                notifyItemRemoved(i);
-                return;
+                iterator.remove();
+                updated = true;
+                break;
             }
         }
+
+        if (updated) {
+            updateItems(mapIndexed(mRequests));
+        }
+    }
+
+    private void updateItems(List<IndexedItem<AudienceLinkRequest>> newItems) {
+        List<IndexedItem<AudienceLinkRequest>> oldItems = mItems;
+        mItems = newItems;
+
+        DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return oldItems.size();
+            }
+
+            @Override
+            public int getNewListSize() {
+                return newItems.size();
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                IndexedItem<AudienceLinkRequest> oldItem = oldItems.get(oldItemPosition);
+                IndexedItem<AudienceLinkRequest> newItem = newItems.get(newItemPosition);
+                return oldItem.index == newItem.index && oldItem.data == newItem.data;
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                IndexedItem<AudienceLinkRequest> oldItem = oldItems.get(oldItemPosition);
+                IndexedItem<AudienceLinkRequest> newItem = newItems.get(newItemPosition);
+
+                AudienceLinkRequest oldData = oldItem.data;
+                AudienceLinkRequest newData = newItem.data;
+                return oldItem.index == newItem.index
+                        && oldData == newData
+                        && TextUtils.equals(oldData.event.linkerId, newData.event.linkerId)
+                        && TextUtils.equals(oldData.event.applicant.userId, oldData.event.applicant.userId);
+            }
+        }).dispatchUpdatesTo(this);
     }
 }
 

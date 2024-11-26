@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
 import com.vertcdemo.solution.ktv.core.rts.annotation.UserStatus;
@@ -28,12 +28,12 @@ import com.vertcdemo.solution.ktv.feature.main.viewmodel.TabViewModel;
 import java.util.List;
 import java.util.Objects;
 
-public class ManageAudiencesDialog extends BottomDialogFragmentX {
+public class ManageAudiencesDialog extends BottomSheetDialogFragment {
     private static final String TAG = "ManageAudiencesDialog";
 
     @Override
     public int getTheme() {
-        return R.style.KTVBottomSheetDialogTheme;
+        return R.style.KTVBottomSheetDialog;
     }
 
     public static final int SEAT_ID_BY_SERVER = -1;
@@ -100,12 +100,10 @@ public class ManageAudiencesDialog extends BottomDialogFragmentX {
 
 
         binding.recycler0.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.recycler0.setItemAnimator(null);
         ManageAudienceAdapter onlineAudienceAdapter = new ManageAudienceAdapter(mUserInfoOption);
         binding.recycler0.setAdapter(onlineAudienceAdapter);
 
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.recycler1.setItemAnimator(null);
         ManageAudienceAdapter applyAudienceAdapter = new ManageAudienceAdapter(mUserInfoOption, true);
         binding.recycler1.setAdapter(applyAudienceAdapter);
 

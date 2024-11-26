@@ -1,0 +1,10 @@
+"sent_gift_like" = "发送 点赞";
+"sent_gift_sugar" = "发送 糖果";
+"sent_gift_diamond" = "发送 钻石";
+"sent_gift_fireworks" = "发送 烟花";
+"gift_like"="点赞";
+"gift_sugar"="糖果";
+"gift_diamond"="钻石";
+"gift_fireworks"="烟花";
+"gift_send_button_text" = "发送";
+"send_message_exceeded_limit" = "最多发送 10 次消息，您已超过上限";

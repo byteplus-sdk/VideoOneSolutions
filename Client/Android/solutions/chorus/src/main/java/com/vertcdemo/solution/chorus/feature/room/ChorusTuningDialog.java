@@ -17,20 +17,20 @@ import androidx.annotation.Nullable;
 import com.bytedance.chrous.R;
 import com.bytedance.chrous.databinding.DialogChorusTuningBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.ss.bytertc.engine.type.VoiceReverbType;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.solution.chorus.bean.FinishSingInform;
-import com.vertcdemo.solution.chorus.common.SolutionToast;
 import com.vertcdemo.solution.chorus.core.ChorusRTCManager;
+import com.vertcdemo.ui.CenteredToast;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class ChorusTuningDialog extends BottomDialogFragmentX {
+public class ChorusTuningDialog extends BottomSheetDialogFragment {
     @Override
     public int getTheme() {
-        return R.style.ChorusBottomSheetDialogTheme;
+        return R.style.ChorusBottomSheetDialog;
     }
 
     private ChorusRoomViewModel mRoomViewModel;
@@ -54,7 +54,7 @@ public class ChorusTuningDialog extends BottomDialogFragmentX {
         DialogChorusTuningBinding binding = DialogChorusTuningBinding.bind(view);
         binding.earMonitorSwitch.setOnClickListener(v -> {
             if (!ChorusRTCManager.ins().canOpenEarMonitor()) {
-                SolutionToast.show(v.getContext().getString(R.string.label_monitor_mix_tip));
+                CenteredToast.show(R.string.label_monitor_mix_tip);
                 return;
             }
             boolean newValue = !v.isSelected();

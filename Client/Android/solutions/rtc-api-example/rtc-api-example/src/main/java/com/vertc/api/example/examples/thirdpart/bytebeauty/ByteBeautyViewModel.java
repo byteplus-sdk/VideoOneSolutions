@@ -41,7 +41,7 @@ public class ByteBeautyViewModel extends ViewModel {
             String licPath = resourceManager.getLicensePath();
             String modelPath = resourceManager.getModelPath();
 
-            { // Setup Licence & Model
+            { // Setup License & Model
                 int retValue = videoEffect.initCVResource(licPath, modelPath);
                 Log.i(TAG, "[ByteBeautyViewModel] initCVResource: result=" + retValue);
             }

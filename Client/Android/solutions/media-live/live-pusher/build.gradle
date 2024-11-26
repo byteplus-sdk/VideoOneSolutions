@@ -3,16 +3,14 @@ plugins {
 }
 
 android {
-    compileSdk project.compileSdkVersion
     namespace "com.byteplus.live.pusher"
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
         targetSdkVersion project.targetSdkVersion
 
         consumerProguardFiles "consumer-rules.pro"
-
-        buildConfigField('String', 'SERVER_URL', "\"${project.SERVER_URL}\"")
     }
 
     buildTypes {
@@ -21,9 +19,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 }
 

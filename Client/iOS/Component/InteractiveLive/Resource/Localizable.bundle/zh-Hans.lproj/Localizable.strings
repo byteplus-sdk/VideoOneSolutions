@@ -115,7 +115,6 @@
 "start_live_title" = "直播已开始";
 "live_setting" = "设置";
 "invitation_interception" = "暂不能邀请其他人，因为之前的邀请还未确认回复";
-"gift_send_button_text" = "发送";
 "application_cancel" = "连麦申请已取消";
 "refresh_header_idle_text" = "下拉刷新";
 "refresh_header_pulling_text" = "释放刷新";
@@ -159,14 +158,6 @@
 "ABR" = "开启 ABR";
 "ABR_des" = "有效避免播放过程中的卡顿现象";
 "co_host_request_has_been_sent" = "连麦申请已发送，请耐心等候。";
-"gift_like"="点赞";
-"gift_sugar"="糖果";
-"gift_diamond"="钻石";
-"gift_fireworks"="烟花";
-"sent_gift_like" = "发送 点赞";
-"sent_gift_sugar" = "发送 糖果";
-"sent_gift_diamond" = "发送 钻石";
-"sent_gift_fireworks" = "发送 烟花";
 "%@'s_live_room" = "%@的直播间";
 "during_pk" = "PK进行中";
 "end_all_co-host_session" = "结束全部用户连线";
@@ -175,6 +166,5 @@
 "adaptive_bitrate_normal" = "正常";
 "h264/hardware = 1" = "硬编";
 "h264/hardware = 0" = "软编";
-"send_message_exceeded_limit" = "最多发送 10 次消息，您已超过上限";
 "alert_guests_finish_mic_title" = "结束连麦？";
 "alert_guests_finish_mic_des" = "与主播的连麦将立即结束";

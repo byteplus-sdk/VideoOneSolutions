@@ -56,13 +56,8 @@
     <string name="audience_link_reject_message">Sorry, the host rejected your co-host request</string>
     <string name="audience_link_cancel">Co-host request canceled</string>
     <string name="receive_a_new_pk_invitation">Receive a new PK invitation</string>
-    <string name="gift_like">Like</string>
-    <string name="gift_sugar">Sugar</string>
-    <string name="gift_diamond">Diamond</string>
-    <string name="gift_fireworks">Fireworks</string>
     <string name="co_host_application">Co-host application</string>
     <string name="co_host">CO-host list</string>
-    <string name="send_gift">Send %1$s</string>
     <string name="add_guest">Add guest</string>
     <string name="audience_link_manage_tips">Microphone and camera can only be turned off, the viewing side can be turned on.</string>
     <string name="video_fps">Video FPS</string>

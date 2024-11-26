@@ -7,7 +7,6 @@ import com.byteplus.playerkit.player.playback.DisplayModeHelper;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.player.ve.SceneFeed;
 import com.byteplus.playerkit.player.ve.VEPlayerStatic;
-import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
 
 import java.util.List;
@@ -15,29 +14,18 @@ import java.util.List;
 public class ShortVideoStrategy {
 
     public static void setEnabled(boolean enable) {
-        if (!VideoSettings.booleanValue(VideoSettings.SHORT_VIDEO_ENABLE_STRATEGY)) return;
-
         VEPlayerStatic.setSceneStrategyEnabled(SceneFeed.SCENE_SHORT_VIDEO, enable);
     }
 
     public static void setItems(List<VideoItem> videoItems) {
-        if (!VideoSettings.booleanValue(VideoSettings.SHORT_VIDEO_ENABLE_STRATEGY)) return;
-
-        if (videoItems == null) return;
-
         VEPlayerStatic.setMediaSources(VideoItem.toMediaSources(videoItems, false));
     }
 
     public static void appendItems(List<VideoItem> videoItems) {
-        if (!VideoSettings.booleanValue(VideoSettings.SHORT_VIDEO_ENABLE_STRATEGY)) return;
-
-        if (videoItems == null) return;
-
         VEPlayerStatic.addMediaSources(VideoItem.toMediaSources(videoItems, false));
     }
 
     public static boolean renderFrame(VideoView videoView) {
-        if (!VideoSettings.booleanValue(VideoSettings.SHORT_VIDEO_ENABLE_STRATEGY)) return false;
         if (videoView == null) return false;
 
         int[] frameInfo = new int[2];

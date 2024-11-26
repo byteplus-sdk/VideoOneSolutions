@@ -7,14 +7,12 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 import com.vertcdemo.core.common.GsonUtils;
-import com.vertcdemo.core.net.rts.RTSInform;
-import com.vertcdemo.solution.interactivelive.core.annotation.LiveFinishType;
 import com.vertcdemo.solution.interactivelive.bean.LiveSummary;
+import com.vertcdemo.solution.interactivelive.core.annotation.LiveFinishType;
 
 /**
  * Live end event
  */
-@RTSInform
 public class LiveFinishEvent {
 
     @SerializedName("room_id")

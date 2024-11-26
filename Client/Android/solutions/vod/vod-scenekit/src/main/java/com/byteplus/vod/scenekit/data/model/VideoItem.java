@@ -18,6 +18,7 @@ import com.byteplus.playerkit.player.ve.Mapper;
 import com.byteplus.playerkit.player.ve.PlayerConfig;
 import com.byteplus.playerkit.utils.MD5;
 import com.byteplus.vod.scenekit.VideoSettings;
+import com.byteplus.vod.settingskit.Option;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -173,7 +174,7 @@ public class VideoItem implements Parcelable {
             long duration,
             @Nullable String cover,
             @Nullable String title) {
-        return createVideoModelItem(vid, videoModel, "", duration,cover, title);
+        return createVideoModelItem(vid, videoModel, "", duration, cover, title);
     }
 
     public static VideoItem createVideoModelItem(
@@ -352,6 +353,7 @@ public class VideoItem implements Parcelable {
     public int getPlayScene() {
         return playScene;
     }
+
     @NonNull
     public static MediaSource toMediaSource(VideoItem videoItem) {
         return toMediaSource(videoItem, false);
@@ -400,13 +402,34 @@ public class VideoItem implements Parcelable {
     @NonNull
     public static PlayerConfig createVEConfig(VideoItem videoItem) {
         PlayerConfig playerConfig = new PlayerConfig();
-        playerConfig.codecStrategyType = VideoSettings.intValue(VideoSettings.COMMON_CODEC_STRATEGY);
-        playerConfig.playerDecoderType = VideoSettings.intValue(VideoSettings.COMMON_HARDWARE_DECODE);
-        playerConfig.sourceEncodeType = VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265) ? Track.ENCODER_TYPE_H265 : Track.ENCODER_TYPE_H264;
-        playerConfig.enableSuperResolution = VideoSettings.booleanValue(VideoSettings.COMMON_SUPER_RESOLUTION);
+        playerConfig.codecStrategyType = codecStrategyType();
+        playerConfig.playerDecoderType = playerDecoderType();
+        playerConfig.sourceEncodeType = sourceEncodeType();
+        playerConfig.enableSuperResolution = enableSuperResolution();
         playerConfig.tag = videoItem.tag;
         playerConfig.subTag = videoItem.subTag;
         return playerConfig;
+    }
+
+    private static int codecStrategyType() {
+        Option option = VideoSettings.option(VideoSettings.COMMON_CODEC_STRATEGY);
+        return option == null ? VideoSettings.CodecStrategy.CODEC_STRATEGY_DISABLE : option.intValue();
+    }
+
+    private static int playerDecoderType() {
+        Option option = VideoSettings.option(VideoSettings.COMMON_HARDWARE_DECODE);
+        return option == null ? VideoSettings.DecoderType.AUTO : option.intValue();
+    }
+
+    private static int sourceEncodeType() {
+        Option option = VideoSettings.option(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265);
+        VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265);
+        return (option != null && option.booleanValue()) ? Track.ENCODER_TYPE_H265 : Track.ENCODER_TYPE_H264;
+    }
+
+    private static boolean enableSuperResolution() {
+        Option option = VideoSettings.option(VideoSettings.COMMON_SUPER_RESOLUTION);
+        return option != null && option.booleanValue();
     }
 
     @Nullable

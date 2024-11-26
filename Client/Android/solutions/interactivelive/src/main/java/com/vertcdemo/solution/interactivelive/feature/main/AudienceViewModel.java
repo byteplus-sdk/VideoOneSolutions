@@ -8,14 +8,15 @@ import androidx.lifecycle.ViewModel;
 
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.ErrorTool;
-import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.utils.ErrorTool;
+import com.vertcdemo.core.net.HttpException;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.bean.LiveInviteResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
-import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.core.annotation.InviteReply;
 import com.vertcdemo.solution.interactivelive.event.InviteAudienceEvent;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
+import com.vertcdemo.solution.interactivelive.http.response.LinkResponse;
 import com.vertcdemo.ui.CenteredToast;
 
 public class AudienceViewModel extends ViewModel {
@@ -42,14 +43,15 @@ public class AudienceViewModel extends ViewModel {
     }
 
     public void sendApplyAudienceLinkRequest() {
-        LiveRTCManager.rts().requestLinkByAudience(getRTSRoomId(), mAudienceLinkResponse);
+        LiveService.get()
+                .applyAudienceLink(getRTSRoomId(), mAudienceLinkResponse);
     }
 
     public void sendCancelAudienceLinkRequest() {
-        LiveRTCManager.rts().requestCancelApplyLinkByAudience(
-                getLinkerId(),
-                getRTSRoomId(),
-                mAudienceLinkCancelResponse);
+        LiveService.get()
+                .cancelAudienceLink( getLinkerId(),
+                        getRTSRoomId(),
+                        mAudienceLinkCancelResponse);
     }
 
     void notifyRequestLinkStatus(@InviteReply int reply) {
@@ -57,39 +59,43 @@ public class AudienceViewModel extends ViewModel {
         SolutionEventBus.post(new InviteAudienceEvent(SolutionDataManager.ins().getUserId(), reply, getLinkerId()));
     }
 
-    private final IRequestCallback<LiveInviteResponse> mAudienceLinkResponse = new IRequestCallback<LiveInviteResponse>() {
+    private final Callback<LinkResponse> mAudienceLinkResponse = new Callback<LinkResponse>() {
         @Override
-        public void onSuccess(LiveInviteResponse data) {
+        public void onResponse(LinkResponse data) {
+            if (data == null) {
+                onFailure(HttpException.unknown("Response data is null"));
+                return;
+            }
             setLinkerId(data.linkerId);
             CenteredToast.show(R.string.request_sent_waiting);
             notifyRequestLinkStatus(InviteReply.WAITING);
         }
 
         @Override
-        public void onError(int errorCode, String message) {
-            if (errorCode == 622) {
+        public void onFailure(HttpException e) {
+            if (e.getCode() == 622) {
                 CenteredToast.show(R.string.request_sent_waiting);
                 notifyRequestLinkStatus(InviteReply.WAITING);
             } else {
-                CenteredToast.show(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
+                CenteredToast.show(ErrorTool.getErrorMessage(e));
                 notifyRequestLinkStatus(InviteReply.TIMEOUT);
             }
         }
     };
 
-    private final IRequestCallback<Void> mAudienceLinkCancelResponse = new IRequestCallback<Void>() {
+    private final Callback<Void> mAudienceLinkCancelResponse = new Callback<Void>() {
         @Override
-        public void onSuccess(Void data) {
+        public void onResponse(Void data) {
             CenteredToast.show(R.string.audience_link_cancel);
             notifyRequestLinkStatus(InviteReply.REJECT);
         }
 
         @Override
-        public void onError(int errorCode, String message) {
-            if (errorCode == 560) { // record not found, treat as 'cancel success'
-                onSuccess(null);
+        public void onFailure(HttpException e) {
+            if (e.getCode() == 560) { // record not found, treat as 'cancel success'
+                onResponse(null);
             } else {
-                CenteredToast.show(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
+                CenteredToast.show(ErrorTool.getErrorMessage(e));
             }
         }
     };

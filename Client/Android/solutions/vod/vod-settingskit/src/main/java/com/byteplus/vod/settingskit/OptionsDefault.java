@@ -13,27 +13,23 @@ import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class OptionsDefault implements Options {
     private final Map<String, Option> mMap = new HashMap<>();
 
-    public OptionsDefault(Context context, List<Option> options, Options.RemoteValues remoteGetter) {
-        this(options, new InnerUserValues(context), remoteGetter);
-    }
-
-    public OptionsDefault(List<Option> options, Options.UserValues userProvider, Options.RemoteValues remoteGetter) {
+    public OptionsDefault(Context context, List<Option> options) {
+        Options.UserValues userProvider = new InnerUserValues(context);
         for (Option option : options) {
-            option.setup(userProvider, remoteGetter);
+            option.setup(userProvider);
             mMap.put(option.key, option);
         }
     }
 
     @Override
     public Option option(@NonNull String key) {
-        final Option option = mMap.get(key);
-        if (option != null) return option;
-        throw new IllegalArgumentException("item is not defined! " + key);
+        return Objects.requireNonNull(mMap.get(key), "item is not defined! " + key);
     }
 
     static class InnerUserValues implements Options.UserValues {

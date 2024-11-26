@@ -33,8 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<LiveMediaComponentDelegate> delegate;
 
-- (void)show:(LiveMediaStatus)status
-    userModel:(LiveUserModel *)userModel;
+- (void)show:(NSString *)roomID
+      status:(LiveMediaStatus)status
+   userModel:(LiveUserModel *)userModel;
 
 - (void)close;
 

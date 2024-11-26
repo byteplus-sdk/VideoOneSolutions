@@ -14,6 +14,7 @@
 #import <Masonry/Masonry.h>
 #import <ToolKit/ReportComponent.h>
 #import <ToolKit/ToolKit.h>
+#import <ToolKit/VEInterfaceFactory.h>
 
 @interface VEShortVideoMaskView : VEGradientView
 
@@ -128,6 +129,11 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
     if (self.playerController.isPause) {
         if (!self.isReturnPortrait) {
             [self.playerController play];
+        } else {
+            UIView *playButton = [self.playerControlInterface viewWithTag:VEInterfaceButtonTag];
+            if (playButton) {
+                playButton.hidden = NO;
+            }
         }
         return;
     }
@@ -307,11 +313,13 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
     VEVideoDetailViewController *detailViewController = [[VEVideoDetailViewController alloc] initWithType:self.currentType];
     detailViewController.delegate = self;
     detailViewController.landscapeMode = YES;
+    self.playerController.posterImageView.hidden = YES;
     detailViewController.videoModel = self.videoModel;
     [self.navigationController pushViewController:detailViewController animated:NO];
     __weak __typeof(self) wself = self;
     detailViewController.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
         wself.playerController = playerController;
+        wself.playerController.posterImageView.hidden = NO;
         wself.isReturnPortrait = YES;
         [wself.socialView reloadData];
     };
@@ -357,7 +365,7 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 - (UILabel *)subtitleLabel {
     if (!_subtitleLabel) {
         _subtitleLabel = [[UILabel alloc] init];
-        _subtitleLabel.tag = 3002;
+        _subtitleLabel.tag = VEInterfaceSubtitleTag;
         _subtitleLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightRegular];
         _subtitleLabel.textColor = [UIColor whiteColor];
         _subtitleLabel.numberOfLines = 2;
@@ -390,8 +398,8 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
         _fullScreenButton.titleLabel.font = [UIFont systemFontOfSize:12];
         [_fullScreenButton addTarget:self action:@selector(fullScreenButtonAction) forControlEvents:UIControlEventTouchUpInside];
 
-        UIImage *image = [UIImage imageNamed:@"vod_shortvideo_fullscreen"];
-        NSString *title = LocalizedStringFromBundle(@"shortvideo_fullscreen", @"VEVodApp");
+        UIImage *image = [UIImage imageNamed:@"vod_shortvideo_fullscreen"  bundleName:@"VodPlayer"];
+        NSString *title = LocalizedStringFromBundle(@"shortvideo_fullscreen", @"VodPlayer");
         CGFloat spacing = 4;
         [_fullScreenButton setImage:image forState:UIControlStateNormal];
         [_fullScreenButton setTitle:title forState:UIControlStateNormal];

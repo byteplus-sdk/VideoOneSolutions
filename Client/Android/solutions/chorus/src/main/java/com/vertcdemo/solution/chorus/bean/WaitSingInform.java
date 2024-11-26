@@ -4,9 +4,7 @@
 package com.vertcdemo.solution.chorus.bean;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
-@RTSInform
 public class WaitSingInform {
     @SerializedName("song")
     public PickedSongInfo song;//为空则点歌列表空了

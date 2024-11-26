@@ -28,11 +28,11 @@ import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.utils.L;
 import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.vod.scenekit.R;
-import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
 import com.byteplus.vod.scenekit.databinding.VevodShortVideoDetailsLayerBinding;
 import com.byteplus.vod.scenekit.ui.base.OuterActions;
 import com.byteplus.vod.scenekit.ui.base.VideoViewExtras;
+import com.byteplus.vod.scenekit.ui.config.IImageCoverConfig;
 import com.byteplus.vod.scenekit.ui.video.layer.FullScreenLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.base.BaseLayer;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
@@ -240,18 +240,19 @@ public class ShortVideoDetailsLayer extends BaseLayer {
     }
 
     private void loadCover(VideoItem item) {
-        if (!VideoSettings.booleanValue(VideoSettings.SHORT_VIDEO_ENABLE_IMAGE_COVER)) {
+        IImageCoverConfig config = getConfig();
+        if (config != null && config.enableCover()) {
+            String coverUrl = item.getCover();
+            binding.displayAnchor.post(() -> {
+                // Should use post to wait ImageView re-layout
+                Glide.with(binding.displayAnchor)
+                        .load(coverUrl)
+                        .transform(new CenterCrop())
+                        .into(binding.displayAnchor);
+            });
+        } else {
             binding.displayAnchor.setImageDrawable(null);
-            return;
         }
-        String coverUrl = item.getCover();
-        binding.displayAnchor.post(() -> {
-            // Should use post to wait ImageView re-layout
-            Glide.with(binding.displayAnchor)
-                    .load(coverUrl)
-                    .transform(new CenterCrop())
-                    .into(binding.displayAnchor);
-        });
     }
 
     @Override

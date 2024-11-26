@@ -1,8 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
-#import "KTVRTSManager.h"
 #import "KTVRTCManager.h"
-#import "JoinRTSParams.h"
+#import "KTVRTSManager.h"
 
 @implementation KTVRTSManager
 
@@ -15,10 +14,11 @@
                             KTVRoomModel *roomModel,
                             KTVUserModel *hostUserModel,
                             RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_name" : roomName,
-                          @"background_image_name" : bgImageName,
-                          @"user_name" : userName};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSDictionary *dic = @{
+        @"room_name" : (roomName ?: @""),
+        @"background_image_name" : (bgImageName ?: @""),
+        @"user_name" : (userName ?: @"")
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvStartLive" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
 
@@ -39,9 +39,11 @@
 + (void)getAudienceList:(NSString *)roomID
                   block:(void (^)(NSArray<KTVUserModel *> *userLists,
                                   RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [JoinRTSParams addTokenToParams:dic];
-    
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+            @"room_id": (roomID ?: @"")
+    };
+
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvGetAudienceList" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
         NSMutableArray<KTVUserModel *> *userLists = [[NSMutableArray alloc] init];
@@ -61,8 +63,10 @@
 + (void)getApplyAudienceList:(NSString *)roomID
                        block:(void (^)(NSArray<KTVUserModel *> *userLists,
                                        RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+            @"room_id": (roomID ?: @"")
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvGetApplyAudienceList" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -84,10 +88,12 @@
                    uid:(NSString *)uid
                 seatID:(NSString *)seatID
                  block:(void (^)(RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"audience_user_id" : uid,
-                          @"seat_id" : @(seatID.integerValue)};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+        @"room_id" : (roomID ?: @""),
+        @"audience_user_id" : (uid ?: @""),
+        @"seat_id" : @(seatID.integerValue)
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvInviteInteract" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -100,9 +106,11 @@
 + (void)agreeApply:(NSString *)roomID
                uid:(NSString *)uid
              block:(void (^)(RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"audience_user_id" : uid};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+        @"room_id" : (roomID ?: @""),
+        @"audience_user_id" : (uid ?: @"")
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvAgreeApply" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -115,9 +123,11 @@
 + (void)managerInteractApply:(NSString *)roomID
                         type:(NSInteger)type
                        block:(void (^)(RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"type" : @(type)};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+        @"room_id" : (roomID ?: @""),
+        @"type" : @(type)
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvManageInteractApply" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -131,10 +141,12 @@
              seatID:(NSString *)seatID
                type:(NSInteger)type
               block:(void (^)(RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"seat_id" : @(seatID.integerValue),
-                          @"type" : @(type)};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+        @"room_id" : (roomID ?: @""),
+        @"seat_id" : @(seatID.integerValue),
+        @"type" : @(type)
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvManageSeat" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -148,8 +160,9 @@
     if (IsEmptyStr(roomID)) {
         return;
     }
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSDictionary *dic = @{
+            @"room_id": (roomID ?: @"")
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvFinishLive" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
     }];
@@ -161,8 +174,9 @@
     if (IsEmptyStr(roomID)) {
         return;
     }
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSDictionary *dic = @{
+            @"room_id": (roomID ?: @"")
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvGetRequestSongList" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -179,14 +193,14 @@
 + (void)pickSong:(KTVSongModel *)songModel
           roomID:(NSString *)roomID
            block:(void (^)(RTSACKModel * _Nonnull))complete {
+    NSAssert(roomID, @"roomID is nil");
     NSDictionary *dic = @{
-        @"song_id" : songModel.musicId,
-        @"room_id" : roomID,
-        @"song_name" : songModel.musicName,
+        @"room_id" : (roomID ?: @""),
+        @"song_id" : (songModel.musicId ?: @""),
+        @"song_name" : (songModel.musicName ?: @""),
         @"song_duration" : @(songModel.musicAllTime),
-        @"cover_url" : songModel.coverURL,
+        @"cover_url" : (songModel.coverURL ?: @""),
     };
-    dic = [JoinRTSParams addTokenToParams:dic];
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvRequestSong" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -198,10 +212,10 @@
 
 + (void)cutOffSong:(NSString *)roomID
              block:(void(^)(RTSACKModel *model))complete {
+    NSAssert(roomID, @"roomID is nil");
     NSDictionary *dic = @{
-        @"room_id" : roomID,
+            @"room_id": (roomID ?: @"")
     };
-    dic = [JoinRTSParams addTokenToParams:dic];
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvCutOffSong" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         if (complete) {
@@ -215,12 +229,12 @@
              score:(NSInteger)score
              block:(void(^)(KTVSongModel *songModel,
                             RTSACKModel *model))complete {
+    NSAssert(roomID, @"roomID is nil");
     NSDictionary *dic = @{
-        @"room_id" : roomID,
-        @"song_id" : songID,
-        @"score" : @(score),
+        @"room_id" : (roomID ?: @""),
+        @"song_id" : (songID ?: @""),
+        @"score" : @(score)
     };
-    dic = [JoinRTSParams addTokenToParams:dic];
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvFinishSing" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -238,7 +252,7 @@
 + (void)getPresetSongList:(NSString *)roomID
                     block:(void(^)(NSArray <KTVSongModel *> *songList,
                                    RTSACKModel *model))complete {
-    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
+    NSDictionary *dic = @{};
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvGetPresetSongList" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         NSMutableArray<KTVSongModel *> *songList = [[NSMutableArray alloc] init];
         if ([KTVRTSManager ackModelResponseClass:ackModel]) {
@@ -266,9 +280,11 @@
                                KTVSongModel *songModel,
                                NSArray<KTVSeatModel *> *seatList,
                                RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"user_name" : userName};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+        @"room_id" : (roomID ?: @""),
+        @"user_name" : (userName ?: @"")
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvJoinLiveRoom" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -309,9 +325,11 @@
 + (void)replyInvite:(NSString *)roomID
               reply:(NSInteger)reply
               block:(void (^)(RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"reply" : @(reply)};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+         @"room_id": (roomID ?: @""),
+         @"reply": @(reply)
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvReplyInvite" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -324,9 +342,11 @@
 + (void)finishInteract:(NSString *)roomID
                 seatID:(NSString *)seatID
                  block:(void (^)(RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"seat_id" : @(seatID.integerValue)};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+        @"room_id": (roomID ?: @""),
+        @"seat_id": @(seatID.integerValue)
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvFinishInteract" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
 
@@ -340,9 +360,11 @@
                seatID:(NSString *)seatID
                 block:(void (^)(BOOL isNeedApply,
                                 RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"seat_id" : @(seatID.integerValue)};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+        @"room_id": (roomID ?: @""),
+        @"seat_id": @(seatID.integerValue)
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvApplyInteract" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -358,8 +380,10 @@
 }
 
 + (void)leaveLiveRoom:(NSString *)roomID {
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+            @"room_id": (roomID ?: @"")
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvLeaveLiveRoom" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
     }];
@@ -370,7 +394,7 @@
 
 + (void)getActiveLiveRoomListWithBlock:(void (^)(NSArray<KTVRoomModel *> *roomList,
                                                  RTSACKModel *model))block {
-    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
+    NSDictionary *dic = @{};
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvGetActiveLiveRoomList" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -389,7 +413,7 @@
 }
 
 + (void)clearUser:(void (^)(RTSACKModel *model))block {
-    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
+    NSDictionary *dic = @{};
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvClearUser" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -403,9 +427,11 @@
             message:(NSString *)message
               block:(void (^)(RTSACKModel *model))block {
     NSString *encodedString = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,(CFStringRef)message,NULL,NULL,kCFStringEncodingUTF8));
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"message" : encodedString};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+        @"room_id" : (roomID ?: @""),
+        @"message" : (encodedString ?: @"")
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvSendMessage" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -418,9 +444,11 @@
 + (void)updateMediaStatus:(NSString *)roomID
                       mic:(NSInteger)mic
                     block:(void (^)(RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"mic" : @(mic)};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSAssert(roomID, @"roomID is nil");
+    NSDictionary *dic = @{
+        @"room_id": (roomID ?: @""),
+        @"mic": @(mic)
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvUpdateMediaStatus" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -430,14 +458,17 @@
     }];
 }
 
-+ (void)reconnectWithBlock:(void (^)(NSString *RTCToken,
-                                     KTVRoomModel *roomModel,
-                                     KTVUserModel *userModel,
-                                     KTVUserModel *hostUserModel,
-                                     KTVSongModel *songModel,
-                                     NSArray<KTVSeatModel *> *seatList,
-                                     RTSACKModel *model))block {
-    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
++ (void)reconnect:(NSString *)roomID
+            block:(void (^)(NSString *RTCToken,
+                            KTVRoomModel *roomModel,
+                            KTVUserModel *userModel,
+                            KTVUserModel *hostUserModel,
+                            KTVSongModel *songModel,
+                            NSArray<KTVSeatModel *> *seatList,
+                            RTSACKModel *model))block {
+    NSDictionary *dic = @{
+        @"room_id": (roomID ?: @""),
+    };
     
     [[KTVRTCManager shareRtc] emitWithAck:@"ktvReconnect" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         

@@ -3,40 +3,51 @@
 
 package com.vertcdemo.solution.interactivelive.feature.list;
 
+import android.content.Context;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.vertcdemo.core.net.ErrorTool;
-import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.common.AppExecutors;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.net.HttpException;
+import com.vertcdemo.core.utils.ErrorTool;
+import com.vertcdemo.core.utils.LicenseChecker;
+import com.vertcdemo.core.utils.LicenseResult;
+import com.vertcdemo.solution.interactivelive.BuildConfig;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
-import com.vertcdemo.solution.interactivelive.bean.LiveRoomListResponse;
-import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
+import com.vertcdemo.solution.interactivelive.http.response.GetRoomListResponse;
 import com.vertcdemo.ui.CenteredToast;
 
-import java.util.Collections;
 import java.util.List;
 
 public class LiveRoomListViewModel extends ViewModel {
 
-    public MutableLiveData<List<LiveRoomInfo>> rooms = new MutableLiveData<>();
+    public final MutableLiveData<List<LiveRoomInfo>> rooms = new MutableLiveData<>();
+
+    public final MutableLiveData<LicenseResult> licenseResult = new MutableLiveData<>(LicenseResult.empty);
 
     public void requestRoomList() {
-        LiveRTCManager.rts().requestLiveClearUser(() -> {
-            LiveRTCManager.ins().getRTSClient().requestLiveRoomList(mRequestListRoomList);
-        });
+        LiveService service = LiveService.get();
+        service.clearUser(() -> service.getRoomList(new Callback<GetRoomListResponse>() {
+            @Override
+            public void onResponse(GetRoomListResponse response) {
+                rooms.postValue(GetRoomListResponse.rooms(response));
+            }
+
+            @Override
+            public void onFailure(HttpException e) {
+                CenteredToast.show(ErrorTool.getErrorMessage(e));
+            }
+        }));
     }
 
-
-    private final IRequestCallback<LiveRoomListResponse> mRequestListRoomList = new IRequestCallback<LiveRoomListResponse>() {
-
-        @Override
-        public void onSuccess(LiveRoomListResponse data) {
-            rooms.postValue(data.getRoomList());
-        }
-
-        @Override
-        public void onError(int errorCode, String message) {
-            CenteredToast.show(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
-        }
-    };
+    public void checkLicense(Context context) {
+        AppExecutors.diskIO().execute(() -> {
+            String licenseUri = BuildConfig.LIVE_TTSDK_LICENSE_URI;
+            LicenseResult result = LicenseChecker.check(context, licenseUri);
+            licenseResult.postValue(result);
+        });
+    }
 }

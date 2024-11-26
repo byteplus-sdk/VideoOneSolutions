@@ -183,13 +183,12 @@ class VEPlayer implements PlayerAdapter {
     }
 
     public static void setSceneStrategyEnabled(int veScene) {
-        final int engineScene = Mapper.mapVEScene2EngineScene(veScene);
-        switch (engineScene) {
-            case STRATEGY_SCENE_SMALL_VIDEO:
+        switch (veScene) {
+            case SceneFeed.SCENE_SHORT_VIDEO:
                 TTVideoEngine.enableEngineStrategy(STRATEGY_TYPE_PRELOAD, STRATEGY_SCENE_SMALL_VIDEO);
                 TTVideoEngine.enableEngineStrategy(STRATEGY_TYPE_PRE_RENDER, STRATEGY_SCENE_SMALL_VIDEO);
                 break;
-            case STRATEGY_SCENE_SHORT_VIDEO:
+            case SceneFeed.SCENE_FEED_VIDEO:
                 TTVideoEngine.enableEngineStrategy(STRATEGY_TYPE_PRELOAD, STRATEGY_SCENE_SHORT_VIDEO);
                 break;
         }

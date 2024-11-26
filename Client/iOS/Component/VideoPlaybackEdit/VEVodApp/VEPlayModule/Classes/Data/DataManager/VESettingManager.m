@@ -5,7 +5,6 @@
 #import "VEVideoPlayerController+DebugTool.h"
 #import <ToolKit/Localizator.h>
 #import "ToastComponent.h"
-#import "VEPlayUrlConfigViewController.h"
 #import <ToolKit/DeviceInforTool.h>
 
 static NSString * const shortVideoSectionKey = @"短视频策略";
@@ -48,23 +47,23 @@ static dispatch_once_t onceToken;
     NSMutableArray *shortVideoSection = [NSMutableArray array];
     [shortVideoSection addObject:({
         VESettingModel *model = [VESettingModel new];
-        model.displayText = LocalizedStringFromBundle(@"Preload_strategy", @"VEVodApp");
+        model.displayText = LocalizedStringFromBundle(@"Preload_strategy", @"VodPlayer");
         model.settingKey = VESettingKeyShortVideoPreloadStrategy;
         model.open = YES;
         model.settingType = VESettingTypeSwitcher;
         model.allAreaAction = ^{
-            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"video_strategy_changed", @"VEVodApp")];
+            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"video_strategy_changed", @"VodPlayer")];
         };
         model;
     })];
     [shortVideoSection addObject:({
         VESettingModel *model = [VESettingModel new];
-        model.displayText = LocalizedStringFromBundle(@"Prerender_strategy", @"VEVodApp");
+        model.displayText = LocalizedStringFromBundle(@"Prerender_strategy", @"VodPlayer");
         model.settingKey = VESettingKeyShortVideoPreRenderStrategy;
         model.open = YES;
         model.settingType = VESettingTypeSwitcher;
         model.allAreaAction = ^{
-            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"video_strategy_changed", @"VEVodApp")];
+            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"video_strategy_changed", @"VodPlayer")];
         };
         model;
     })];
@@ -78,18 +77,18 @@ static dispatch_once_t onceToken;
         model.open = YES;
         model.settingType = VESettingTypeSwitcher;
         model.allAreaAction = ^{
-            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"video_strategy_changed", @"VEVodApp")];
+            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"video_strategy_changed", @"VodPlayer")];
         };
         model;
     })];
     [universalSection addObject:({
         VESettingModel *model = [VESettingModel new];
-        model.displayText = LocalizedStringFromBundle(@"hardware_decoding", @"VEVodApp");
+        model.displayText = LocalizedStringFromBundle(@"hardware_decoding", @"VodPlayer");
         model.settingKey = VESettingKeyUniversalHardwareDecode;
         model.open = YES;
         model.settingType = VESettingTypeSwitcher;
         model.allAreaAction = ^{
-            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"video_strategy_changed", @"VEVodApp")];
+            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"video_strategy_changed", @"VodPlayer")];
         };
         model;
     })];
@@ -98,12 +97,12 @@ static dispatch_once_t onceToken;
     NSMutableArray *universalDidSection = [NSMutableArray array];
     [universalDidSection addObject:({
         VESettingModel *model = [VESettingModel new];
-        model.displayText = LocalizedStringFromBundle(@"device_id", @"VEVodApp");
+        model.displayText = LocalizedStringFromBundle(@"device_id", @"VodPlayer");
         model.settingKey = VESettingKeyUniversalDeviceID;
         model.detailText = [VEVideoPlayerController deviceID];
         model.settingType = VESettingTypeDisplayDetail;
         model.allAreaAction = ^{
-            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"copy_did_success", @"VEVodApp")];
+            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"copy_did_success", @"VodPlayer")];
         };
         model;
     })];
@@ -112,12 +111,12 @@ static dispatch_once_t onceToken;
     NSMutableArray *universalActionSection = [NSMutableArray array];
     [universalActionSection addObject:({
         VESettingModel *model = [VESettingModel new];
-        model.displayText = LocalizedStringFromBundle(@"clean_cache", @"VEVodApp");
+        model.displayText = LocalizedStringFromBundle(@"clean_cache", @"VodPlayer");
         model.settingKey = VESettingKeyUniversalActionCleanCache;
         model.settingType = VESettingTypeDisplay;
         model.allAreaAction = ^{
             [VEVideoPlayerController cleanCache];
-            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"clean_cache_success", @"VEVodApp")];
+            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"clean_cache_success", @"VodPlayer")];
         };
         model;
     })];
@@ -127,13 +126,13 @@ static dispatch_once_t onceToken;
     NSMutableArray *videoUrlSection = [NSMutableArray array];
     [videoUrlSection addObject:({
         VESettingModel *model = [VESettingModel new];
-        model.displayText = LocalizedStringFromBundle(@"play_video_url", @"VEVodApp");
+        model.displayText = LocalizedStringFromBundle(@"play_video_url", @"VodPlayer");
         model.settingKey = VESettingKeyUniversalActionPlayVidoeUrl;
         model.settingType = VESettingTypeEntrance;
         
         model.allAreaAction = ^{
             UIViewController *topViewController = [DeviceInforTool topViewController];
-            VEPlayUrlConfigViewController *configViewController = [VEPlayUrlConfigViewController new];
+            UIViewController *configViewController = [[NSClassFromString(@"VEPlayUrlConfigViewController") alloc] init];
             [topViewController.navigationController pushViewController:configViewController animated:YES];
         };
         model;
@@ -171,9 +170,9 @@ static dispatch_once_t onceToken;
 
 - (NSString *)sectionKeyLocalized:(NSString *)key {
     if ([key isEqualToString:shortVideoSectionKey]) {
-        return LocalizedStringFromBundle(@"shortVideo_strategy", @"VEVodApp");
+        return LocalizedStringFromBundle(@"shortVideo_strategy", @"VodPlayer");
     } else if ([key isEqualToString:universalSectionKey]) {
-        return LocalizedStringFromBundle(@"common_settings", @"VEVodApp");
+        return LocalizedStringFromBundle(@"common_settings", @"VodPlayer");
     }
     return @"";
 }

@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.core.live.LiveConfigParams;
@@ -23,12 +23,12 @@ import com.vertcdemo.solution.interactivelive.core.live.LiveCoreHolder;
 import com.vertcdemo.solution.interactivelive.core.live.StatisticsInfo;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveInformationBinding;
 
-public class LiveInfoDialog extends BottomDialogFragmentX {
+public class LiveInfoDialog extends BottomSheetDialogFragment {
     private DialogLiveInformationBinding mBinding;
 
     @Override
     public int getTheme() {
-        return R.style.LiveBottomSheetDialogTheme;
+        return R.style.LiveBottomSheetDialog;
     }
 
     @Nullable

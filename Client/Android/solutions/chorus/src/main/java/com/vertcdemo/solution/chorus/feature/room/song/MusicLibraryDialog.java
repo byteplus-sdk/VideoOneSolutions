@@ -10,7 +10,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,19 +26,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bytedance.chrous.R;
 import com.bytedance.chrous.databinding.DialogChorusMusicLibraryBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.core.utils.Streams;
 import com.vertcdemo.solution.chorus.bean.PickedSongInfo;
 import com.vertcdemo.solution.chorus.bean.StatusPickedSongItem;
 import com.vertcdemo.solution.chorus.bean.StatusSongItem;
-import com.vertcdemo.solution.chorus.common.SolutionToast;
 import com.vertcdemo.solution.chorus.core.rts.annotation.SongStatus;
 import com.vertcdemo.solution.chorus.feature.room.ChorusRoomViewModel;
+import com.vertcdemo.ui.CenteredToast;
 
 import java.util.List;
 import java.util.Objects;
 
-public class MusicLibraryDialog extends BottomDialogFragmentX {
+public class MusicLibraryDialog extends BottomSheetDialogFragment {
     private static final String TAG = "MusicLibraryDialog";
 
     private LibraryViewModel mViewModel;
@@ -67,14 +66,14 @@ public class MusicLibraryDialog extends BottomDialogFragmentX {
                 handleSongItem(item);
             }
         } else {
-            SolutionToast.show(R.string.toast_chorus_no_mic_permission);
+            CenteredToast.show(R.string.toast_chorus_no_mic_permission);
         }
         mViewModel.pending = null;
     });
 
     @Override
     public int getTheme() {
-        return R.style.ChorusBottomSheetDialogTheme;
+        return R.style.ChorusBottomSheetDialog;
     }
 
     @Nullable
@@ -115,12 +114,10 @@ public class MusicLibraryDialog extends BottomDialogFragmentX {
         });
 
         binding.songLibrary.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.songLibrary.setItemAnimator(null);
         binding.songLibrary.setAdapter(musicLibraryAdapter);
 
         PickedSongsAdapter pickedSongsAdapter = new PickedSongsAdapter();
         binding.selectedSongs.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.selectedSongs.setItemAnimator(null);
         binding.selectedSongs.setAdapter(pickedSongsAdapter);
 
         mViewModel.index.observe(getViewLifecycleOwner(), tabIndex -> {
@@ -176,12 +173,12 @@ public class MusicLibraryDialog extends BottomDialogFragmentX {
                 binding.emptyView.setVisibility(songs.isEmpty() ? View.VISIBLE : View.GONE);
             }
 
-            PickedSongInfo playing = mRoomViewModel.getCurrentSong();
-
-            List<StatusPickedSongItem> items = Streams.map(songs, item -> {
-                boolean isPlaying = playing != null && TextUtils.equals(item.ownerUid, playing.ownerUid)
-                        && TextUtils.equals(item.songId, playing.songId);
-                return new StatusPickedSongItem(item, isPlaying);
+            final PickedSongInfo current = mRoomViewModel.getCurrentSong();
+            List<StatusPickedSongItem> items = Streams.map(songs, info -> {
+                boolean isPlaying = current != null
+                        && current.ownerUid.equals(info.ownerUid)
+                        && current.songId.equals(info.songId);
+                return new StatusPickedSongItem(info, isPlaying);
             });
 
             pickedSongsAdapter.setList(items);
@@ -197,5 +194,10 @@ public class MusicLibraryDialog extends BottomDialogFragmentX {
             String roomId = mRoomViewModel.requireRoomId();
             mRoomViewModel.requestAllSongs(roomId);
         }
+
+        mRoomViewModel.singing.observe(getViewLifecycleOwner(), singing -> {
+            PickedSongInfo playing = mRoomViewModel.getCurrentSong();
+            pickedSongsAdapter.updatePlayingState(playing);
+        });
     }
 }

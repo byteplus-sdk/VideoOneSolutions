@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.core.util.Consumer;
 
-import com.videoone.avatars.Avatars;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
@@ -23,6 +22,7 @@ import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveHostAudience
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveHostVideoBinding;
 import com.vertcdemo.solution.interactivelive.event.PublishVideoStreamEvent;
 import com.vertcdemo.solution.interactivelive.util.MutableBoolean;
+import com.videoone.avatars.Avatars;
 
 import java.util.Collections;
 import java.util.HashMap;

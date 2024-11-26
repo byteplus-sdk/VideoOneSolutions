@@ -7,7 +7,7 @@
 #import "Localizator.h"
 
 
-const NSString *VESettingTypeMutilSelectorCellReuseID = @"VESettingTypeMutilSelectorCellReuseID";
+extern NSString *VESettingTypeMutilSelectorCellReuseID;
 
 @interface VESettingTypeMutilSelectorCell ()
 
@@ -32,7 +32,7 @@ const NSString *VESettingTypeMutilSelectorCellReuseID = @"VESettingTypeMutilSele
         self.detailLabel.font = [UIFont systemFontOfSize:12];
         
 //        UIButton *copyBtn = [UIButton new];
-//        [copyBtn setTitle:LocalizedStringFromBundle(@"copy", @"VEVodApp") forState:UIControlStateNormal];
+//        [copyBtn setTitle:LocalizedStringFromBundle(@"copy", @"VodPlayer") forState:UIControlStateNormal];
 //        [copyBtn setTitleColor:[UIColor colorFromHexString:@"#1664FF"] forState:UIControlStateNormal];
         
         

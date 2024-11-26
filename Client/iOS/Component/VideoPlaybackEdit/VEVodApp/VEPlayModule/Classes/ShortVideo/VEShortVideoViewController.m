@@ -34,7 +34,7 @@ static NSInteger VEShortVideoPreloadVideoCount = 3;
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initialUI];
-    [self startVideoStategy];
+    [self startVideoStrategy];
     [self refreshData];
 }
 
@@ -123,7 +123,7 @@ static NSInteger VEShortVideoPreloadVideoCount = 3;
 - (BaseButton *)backButton {
     if (!_backButton) {
         _backButton = [BaseButton buttonWithType:UIButtonTypeCustom];
-        [_backButton setImage:[UIImage imageNamed:@"nav_left"] forState:UIControlStateNormal];
+        [_backButton setImage:[UIImage imageNamed:@"nav_left" bundleName:@"VodPlayer"] forState:UIControlStateNormal];
         [_backButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     }
     return _backButton;
@@ -166,7 +166,7 @@ static NSInteger VEShortVideoPreloadVideoCount = 3;
     }];
 }
 
-- (void)startVideoStategy {
+- (void)startVideoStrategy {
     VESettingModel *preRender = [[VESettingManager universalManager] settingForKey:VESettingKeyShortVideoPreRenderStrategy];
     if (preRender.open) {
         [VEVideoPlayerController enableEngineStrategy:TTVideoEngineStrategyTypePreRender scene:TTVEngineStrategySceneSmallVideo];

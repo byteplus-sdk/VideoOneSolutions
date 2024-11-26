@@ -1,0 +1,74 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace "com.byteplus.vodcommon"
+    compileSdk project.compileSdkVersion
+
+    resourcePrefix 'vevod_'
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField('String', 'VOD_BASE_URL', "\"${SERVER_URL}/vod/v1/\"")
+        buildConfigField('String', 'VOD_APP_ID', "\"$VOD_APP_ID\"")
+        buildConfigField('String', 'VOD_APP_CHANNEL', "\"$VOD_APP_CHANNEL\"")
+        buildConfigField('String', 'VOD_LICENSE_URI', "\"$VOD_LICENSE_URI\"")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        buildConfig true
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.constraintlayout
+    implementation libs.material
+    implementation libs.cardview
+    implementation libs.viewpager2
+    implementation libs.swiperefreshlayout
+
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    implementation libs.gson
+    implementation libs.glide
+    implementation libs.okhttp
+    implementation libs.okhttp.loggingInterceptor
+    implementation libs.retrofit2
+    implementation libs.retrofit2.converter.gson
+
+    implementation project(':component:solution-base')
+    implementation project(':component:avatars')
+
+    implementation project(':solutions:vod:vod-scenekit')
+    implementation project(':solutions:vod:vod-settingskit')
+    implementation project(':solutions:vod:vod-playerkit:vod-player')
+    implementation project(':solutions:vod:vod-playerkit:vod-player-ve')
+    implementation project(':solutions:vod:vod-playerkit:vod-player-utils')
+
+}

@@ -3,10 +3,8 @@
 
 package com.vertcdemo.solution.interactivelive.feature.list;
 
-import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel.RTS_STATUS_FAILED;
-import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel.RTS_STATUS_LOGGED;
-import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel.RTS_STATUS_LOGGING;
-import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel.RTS_STATUS_NONE;
+import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel.RTC_STATUS_DONE;
+import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel.RTC_STATUS_NONE;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -26,19 +24,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.NavGraph;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveRoomsBinding;
 import com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel;
 import com.vertcdemo.ui.CenteredToast;
-import com.vertcdemo.core.utils.DebounceClickListener;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -92,9 +93,9 @@ public class LiveRoomListFragment extends Fragment {
         });
 
         binding.swipeLayout.setOnRefreshListener(() -> {
-            final Integer statusValue = mLiveViewModel.rtsStatus.getValue();
+            final Integer statusValue = mLiveViewModel.rtcStatus.getValue();
             assert statusValue != null;
-            if (statusValue == RTS_STATUS_LOGGED) {
+            if (statusValue == RTC_STATUS_DONE) {
                 mViewModel.requestRoomList();
             }
         });
@@ -103,7 +104,6 @@ public class LiveRoomListFragment extends Fragment {
         binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recycler.addItemDecoration(new LiveRoomItemDecoration());
         binding.recycler.setAdapter(roomListAdapter);
-        binding.recycler.setItemAnimator(null);
 
         binding.goLive.setOnClickListener(
                 DebounceClickListener.create(v -> {
@@ -121,20 +121,24 @@ public class LiveRoomListFragment extends Fragment {
             binding.empty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
-        mLiveViewModel.rtsStatus.observe(getViewLifecycleOwner(), status -> {
+        mLiveViewModel.rtcStatus.observe(getViewLifecycleOwner(), status -> {
             switch (status) {
-                case RTS_STATUS_NONE:
+                case RTC_STATUS_NONE:
                     break;
-                case RTS_STATUS_LOGGING:
-                    // show loading
-                    break;
-                case RTS_STATUS_LOGGED:
+                case RTC_STATUS_DONE:
                     binding.swipeLayout.setRefreshing(true);
                     mViewModel.requestRoomList();
                     break;
-                case RTS_STATUS_FAILED:
-                    // failed
-                    break;
+            }
+        });
+
+        mViewModel.licenseResult.observe(getViewLifecycleOwner(), licenseResult -> {
+            if (licenseResult.isEmpty()) {
+                mViewModel.checkLicense(requireContext().getApplicationContext());
+            } else if (!licenseResult.isOk()) {
+                binding.licenseTips.setText(licenseResult.message);
+                binding.licenseTips.setVisibility(View.VISIBLE);
+                binding.licenseTips.setOnClickListener(v -> {/*consume the click event*/});
             }
         });
     }
@@ -146,6 +150,11 @@ public class LiveRoomListFragment extends Fragment {
                 return;
             }
         }
-        Navigation.findNavController(requireView()).navigate(R.id.create_live_room);
+        NavController navController = Navigation.findNavController(requireView());
+        NavGraph graph = navController.getGraph();
+        NavGraph roomGraph = Objects.requireNonNull((NavGraph) graph.findNode(R.id.room));
+        roomGraph.setStartDestination(R.id.create_live_room);
+
+        navController.navigate(R.id.create_live_room);
     });
 }

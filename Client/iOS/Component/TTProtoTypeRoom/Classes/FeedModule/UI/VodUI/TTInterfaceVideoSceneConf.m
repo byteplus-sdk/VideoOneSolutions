@@ -1,0 +1,49 @@
+//
+//  TTInterfaceVideoSceneConf.m
+//  TTProtoTypeRoom
+//
+//  Created by ByteDance on 2024/9/6.
+//
+
+#import "TTInterfaceVideoSceneConf.h"
+#import "VEEventMessageBus.h"
+#import "VEEventPoster.h"
+#import "VEInterfacePlayElement.h"
+#import "VEInterfaceProgressElement.h"
+
+@interface TTInterfaceVideoSceneConf ()
+
+@property (nonatomic, strong) VEEventMessageBus *eventMessageBus;
+
+@property (nonatomic, strong) VEEventPoster *eventPoster;
+
+@property (nonatomic, strong) NSArray<id<VEInterfaceElementDescription>> *customizedElements;
+
+@end
+
+@implementation TTInterfaceVideoSceneConf
+
+@synthesize deactive;
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.eventMessageBus = [[VEEventMessageBus alloc] init];
+        self.eventPoster = [[VEEventPoster alloc] initWithEventMessageBus:self.eventMessageBus];
+    }
+    return self;
+}
+
+- (NSArray<id<VEInterfaceElementDescription>> *)customizedElements {
+    if (!_customizedElements) {
+        _customizedElements = @[
+            [VEInterfacePlayElement playButtonWithEventPoster:self.eventPoster],
+            [VEInterfacePlayElement playGestureWithEventPoster:self.eventPoster],
+            [VEInterfacePlayElement likeGesture],
+            [VEInterfaceProgressElement progressViewWithEventPoster:self.eventPoster],
+        ];
+    }
+    return _customizedElements;
+}
+
+@end

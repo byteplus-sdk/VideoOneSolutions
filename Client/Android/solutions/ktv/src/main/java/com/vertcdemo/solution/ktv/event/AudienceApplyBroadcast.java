@@ -6,10 +6,8 @@ package com.vertcdemo.solution.ktv.event;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
 
-@RTSInform
 public class AudienceApplyBroadcast {
 
     @SerializedName("user_info")

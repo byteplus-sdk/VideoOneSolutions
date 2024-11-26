@@ -62,7 +62,6 @@
                                             KTVUserModel * _Nonnull hostUserModel,
                                             RTSACKModel * _Nonnull model) {
         if (model.result) {
-            [PublicParameterComponent share].roomId = roomModel.roomID;
             KTVRoomViewController *next = [[KTVRoomViewController alloc]
                                                  initWithRoomModel:roomModel
                                                  rtcToken:RTCToken

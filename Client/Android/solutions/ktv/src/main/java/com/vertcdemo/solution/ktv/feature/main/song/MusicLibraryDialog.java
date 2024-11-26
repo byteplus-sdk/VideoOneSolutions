@@ -19,8 +19,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.core.utils.Streams;
 import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.bean.PickedSongInfo;
@@ -38,7 +38,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 import java.util.Objects;
 
-public class MusicLibraryDialog extends BottomDialogFragmentX {
+public class MusicLibraryDialog extends BottomSheetDialogFragment {
     private static final String TAG = "MusicLibraryDialog";
 
     private TabViewModel mViewModel;
@@ -62,7 +62,7 @@ public class MusicLibraryDialog extends BottomDialogFragmentX {
 
     @Override
     public int getTheme() {
-        return R.style.KTVBottomSheetDialogTheme;
+        return R.style.KTVBottomSheetDialog;
     }
 
     @Nullable
@@ -91,12 +91,10 @@ public class MusicLibraryDialog extends BottomDialogFragmentX {
         });
 
         binding.songLibrary.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.songLibrary.setItemAnimator(null);
         binding.songLibrary.setAdapter(musicLibraryAdapter);
 
         PickedSongsAdapter pickedSongsAdapter = new PickedSongsAdapter();
         binding.selectedSongs.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.selectedSongs.setItemAnimator(null);
         binding.selectedSongs.setAdapter(pickedSongsAdapter);
 
         mViewModel.index.observe(getViewLifecycleOwner(), tabIndex -> {

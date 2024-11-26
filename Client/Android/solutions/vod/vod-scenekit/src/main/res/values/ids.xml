@@ -2,6 +2,7 @@
 <resources>
     <item name="vevod_view_pager" type="id" />
     <item name="vevod_refresh_view" type="id" />
+    <item name="vevod_recycler_view" type="id" />
     <item name="vevod_load_more_progress_bar" type="id" />
 
     <item name="vevod_video_item" type="id" />

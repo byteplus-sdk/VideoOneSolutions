@@ -17,8 +17,6 @@ public interface LivePlayerListener {
 
     void onEnableCycleInfo(boolean enable);
 
-    void onSetLogLevel(int logLevel);
-
     void onEnableCallbackRecord(boolean enable);
 
     int onChangeFillMode(int fillMode);

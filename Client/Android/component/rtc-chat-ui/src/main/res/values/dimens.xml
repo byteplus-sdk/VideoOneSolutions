@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="rtc_chat_message_space">2dp</dimen>
+    <dimen name="live_gift_show_item_width">260dp</dimen>
+    <dimen name="like_base_height">5dp</dimen>
+</resources>

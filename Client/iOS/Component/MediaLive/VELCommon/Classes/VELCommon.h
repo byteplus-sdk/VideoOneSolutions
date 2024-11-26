@@ -40,7 +40,6 @@
 #import <MediaLive/VELMainTabCell.h>
 #import <MediaLive/VELNavigationBar.h>
 #import <MediaLive/VELNetworkQualityView.h>
-#import <MediaLive/VELPageViewController.h>
 #import <MediaLive/VELPixelBufferManager.h>
 #import <MediaLive/VELPopupContainerView.h>
 #import <MediaLive/VELPopupMenuBaseItem.h>

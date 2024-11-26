@@ -72,6 +72,7 @@
 #define VODLicenseName @""
 #define APP_GROUP_ID @""
 #define BROADCASE_EXTENSION_BUNDLE_ID @""
-
+extern NSString *const AppGroupId;
+extern NSString *const ExtensionBundleId;
 
 #endif /* BuildConfig_h */

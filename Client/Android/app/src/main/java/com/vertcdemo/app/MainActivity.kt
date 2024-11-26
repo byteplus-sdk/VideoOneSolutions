@@ -14,11 +14,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import com.vertcdemo.core.SolutionDataManager
 import com.vertcdemo.core.event.AppTokenExpiredEvent
 import com.vertcdemo.core.event.RTSLogoutEvent
 import com.vertcdemo.core.eventbus.SolutionEventBus
-import com.vertcdemo.core.utils.Activities.transparentStatusBar
 import com.vertcdemo.login.ILoginImpl
 import com.videoone.app.protocol.InitializeManager
 import org.greenrobot.eventbus.Subscribe
@@ -30,7 +30,12 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
     private val mLogin = ILoginImpl()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        transparentStatusBar(this)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.getInsetsController(window, findViewById(android.R.id.content)).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
 
         setContentView(R.layout.activity_main)
         SolutionEventBus.register(this)
@@ -41,7 +46,8 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 
         // Fix Android 12 Picture In Picture issue.
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S
-            || Build.VERSION.SDK_INT == Build.VERSION_CODES.S_V2) {
+            || Build.VERSION.SDK_INT == Build.VERSION_CODES.S_V2
+        ) {
             Intent(this, PictureInPictureService::class.java).also { intent ->
                 startService(intent)
                 bindService(intent, this, Context.BIND_AUTO_CREATE)

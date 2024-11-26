@@ -16,10 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *roomName;
 @property (nonatomic, copy) NSString *anchorUserID;
 @property (nonatomic, copy) NSString *anchorUserName;
-@property (nonatomic, assign) LiveRoomStatus status;
 @property (nonatomic, assign) NSInteger audienceCount;
 @property (nonatomic, copy) NSDictionary<NSString *, NSString *> *streamPullStreamList;
-@property (nonatomic, strong) NSString *rtmToken;
+@property (nonatomic, strong) NSString *rtsToken;
 @property (nonatomic, strong) LiveUserModel *hostUserModel;
 @property (nonatomic, strong) NSString *rtcToken;
 @property (nonatomic, strong) NSString *rtcRoomId;

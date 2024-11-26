@@ -7,12 +7,6 @@ package com.byteplus.vod.settingskit;
 import androidx.annotation.Nullable;
 
 public interface Options {
-
-    interface RemoteValues {
-        @Nullable
-        Object getValue(Option option);
-    }
-
     interface UserValues {
 
         @Nullable

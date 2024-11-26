@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:background="#">
+
+    <ImageView
+        android:id="@+id/top_shadow"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:src="@drawable/vevod_short_video_item_details_top_shadow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/bottom_shadow"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:src="@drawable/vevod_short_video_item_details_bottom_shadow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="38dp"
+        android:layout_marginBottom="6dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:shadowColor="#40000000"
+        android:shadowDy="4"
+        android:shadowRadius="4"
+        android:textColor="#FFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/subtitle"
+        app:layout_constraintEnd_toStartOf="@id/comment"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="\@Dawson Joyce" />
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:shadowColor="#33000000"
+        android:shadowDy="1"
+        android:shadowRadius="1"
+        android:textColor="#FFF"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/bottom"
+        app:layout_constraintEnd_toEndOf="@id/title"
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_goneMarginBottom="12dp"
+        tools:text="Before I Say Goodbye: Looking Back at the Films of Hayao Miyazaki" />
+
+    <Space
+        android:id="@+id/bottom"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/display_anchor"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintDimensionRatio="4:3" />
+
+    <TextView
+        android:id="@+id/full_screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/vevod_bg_short_video_fullscreen_button"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="6dp"
+        android:text="@string/vevod_button_fullscreen"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:drawableStartCompat="@drawable/vevod_ic_fullscreen_20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/display_anchor"
+        tools:drawableStart="@drawable/vevod_ic_fullscreen_20" />
+
+    <TextView
+        android:id="@+id/comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="11dp"
+        android:layout_marginBottom="24dp"
+        android:drawablePadding="2dp"
+        android:gravity="center_horizontal"
+        android:shadowColor="#33000000"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="1"
+        android:textColor="#FFF"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/vevod_ic_comment_40"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:drawableTop="@drawable/vevod_ic_comment_40"
+        tools:text="4096" />
+
+    <LinearLayout
+        android:id="@+id/like_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/comment"
+        app:layout_constraintEnd_toEndOf="@id/comment">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/like"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:lottie_autoPlay="false"
+            app:lottie_cacheComposition="true"
+            app:lottie_fileName="like_icondata.json"
+            app:lottie_loop="false"
+            app:lottie_repeatMode="restart" />
+
+        <TextView
+            android:id="@+id/like_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="2dp"
+            android:gravity="center_horizontal"
+            android:shadowColor="#33000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textColor="#FFF"
+            android:textSize="14sp"
+            tools:text="1450" />
+    </LinearLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/avatar_normal"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginBottom="16dp"
+        android:importantForAccessibility="no"
+        android:padding="2dp"
+        app:layout_constraintBottom_toTopOf="@id/like_container"
+        app:layout_constraintEnd_toEndOf="@id/comment"
+        app:shapeAppearanceOverlay="@style/circleStyle"
+        app:strokeColor="#FFF"
+        app:strokeWidth="2dp"
+        tools:src="@drawable/avatar00"
+        tools:visibility="gone" />
+
+    <com.byteplus.vodlive.view.LiveCircleView
+        android:id="@+id/avatar_live_border"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toTopOf="@id/like_container"
+        app:layout_constraintEnd_toEndOf="@id/comment"
+        app:live_radius="23dp"
+        app:live_strokeWidth="1.5dp"
+        app:live_waveWidth="3dp" />
+
+    <FrameLayout
+        android:id="@+id/avatar_live"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:importantForAccessibility="noHideDescendants"
+        app:layout_constraintBottom_toBottomOf="@id/avatar_live_border"
+        app:layout_constraintEnd_toEndOf="@id/avatar_live_border"
+        app:layout_constraintStart_toStartOf="@id/avatar_live_border"
+        app:layout_constraintTop_toTopOf="@id/avatar_live_border">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/avatar_live_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:shapeAppearanceOverlay="@style/circleStyle"
+            tools:src="@drawable/avatar00" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:importantForAccessibility="no"
+            android:src="@drawable/vlive_ic_avatar_live_label" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_avatar_live"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="avatar_live_border, avatar_live" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp"
+        tools:layout_constraintGuide_end="16dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

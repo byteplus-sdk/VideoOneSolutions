@@ -14,12 +14,11 @@ import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.http.callback.OnResponse;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
-import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveEndCoAudienceBinding;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkKickResultEvent;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
 import com.videoone.avatars.Avatars;
 
 public class EndCoAudienceDialog extends DialogFragment {
@@ -52,11 +51,10 @@ public class EndCoAudienceDialog extends DialogFragment {
 
         binding.button1.setOnClickListener(v -> {
             dismiss();
-            IRequestCallback<LiveResponse> callback = o -> SolutionEventBus.post(new AudienceLinkKickResultEvent(audienceId));
-            LiveRTCManager.ins().getRTSClient().kickAudienceByHost(
+            LiveService.get().kickAudienceLink(
                     roomId, hostId,
                     roomId, audienceId,
-                    callback);
+                    OnResponse.of(o -> SolutionEventBus.post(new AudienceLinkKickResultEvent(audienceId))));
         });
 
         binding.button2.setOnClickListener(v -> dismiss());

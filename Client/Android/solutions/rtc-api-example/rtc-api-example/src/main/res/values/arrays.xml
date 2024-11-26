@@ -75,4 +75,13 @@
         <item>AUDIO_MIXING_DUAL_MONO_MODE_R</item>
         <item>AUDIO_MIXING_DUAL_MONO_MODE_MIX</item>
     </string-array>
+    <string-array name="videoType" translatable="false">
+        <item>I420</item>
+        <item>NV12</item>
+        <item>RGBA</item>
+    </string-array>
+    <string-array name="videoFormat">
+        <item>I420</item>
+        <item>RGBA</item>
+    </string-array>
 </resources>

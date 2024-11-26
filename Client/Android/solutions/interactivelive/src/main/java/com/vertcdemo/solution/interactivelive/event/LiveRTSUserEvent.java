@@ -4,13 +4,11 @@
 package com.vertcdemo.solution.interactivelive.event;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
 
 /**
  * User join and leave room events
  */
-@RTSInform
 public abstract class LiveRTSUserEvent {
     @SerializedName("audience_user_id")
     public String audienceUserId;

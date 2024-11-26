@@ -45,7 +45,8 @@
     <string name="camera_flip">Flip</string>
     <string name="experience_time_exceeded_xxx_minutes">The duration of this experience has reached %s minutes.</string>
     <string name="say_something">Add comment</string>
-    <string name="send_empty_message_cannot_be_empty">Add comment</string>
+    <string name="send_message_cannot_be_empty">Add comment</string>
     <string name="send_message_exceeded_limit">The maximum number of messages you can send is 10, you have exceeded this limit.</string>
+    <string name="send_empty_message_cannot_be_empty">Add comment</string>
 
 </resources>

@@ -4,10 +4,8 @@
 package com.vertcdemo.solution.ktv.event;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.ktv.bean.PickedSongInfo;
 
-@RTSInform
 public class RequestSongBroadcast {
     @SerializedName("song")
     public PickedSongInfo song;

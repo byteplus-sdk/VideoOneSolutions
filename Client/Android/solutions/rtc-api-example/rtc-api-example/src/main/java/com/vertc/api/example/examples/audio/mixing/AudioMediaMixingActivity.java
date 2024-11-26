@@ -99,7 +99,7 @@ public class AudioMediaMixingActivity extends ExampleBaseActivity {
 
         initUI(binding);
 
-        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "audio-media-mixing");
         rtcVideo.startAudioCapture();
         rtcVideo.startVideoCapture();
         setLocalRenderView();

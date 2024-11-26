@@ -3,8 +3,8 @@ plugins {
 }
 
 android {
-    compileSdk project.compileSdkVersion
     namespace 'com.bytedance.chrous'
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
@@ -22,9 +22,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
     buildFeatures {
         viewBinding true
@@ -36,18 +37,21 @@ dependencies {
     implementation libs.recyclerview
     implementation libs.constraintlayout
     implementation libs.material
+    implementation libs.swiperefreshlayout
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
+    implementation libs.bundles.navigation
+    implementation libs.bundles.viewmodel
 
     implementation libs.eventbus
     implementation libs.gson
     implementation libs.glide
+    implementation libs.retrofit2
     implementation libs.fadingedgelayout
 
     implementation libs.rtc.sdk
 
     implementation project(':component:solution-base')
     implementation project(':component:rtc-toolkit')
+    implementation project(':component:rtc-chat-ui')
     implementation project(':component:avatars')
 }

@@ -5,6 +5,7 @@ include ':component:avatars'
 include ':component:solution-base'
 
 include ':component:rtc-toolkit'
+include ':component:rtc-chat-ui'
 include ':component:loginkit'
 
 include ':solutions:interactivelive'
@@ -15,7 +16,10 @@ include ':solutions:ktv'
 include ':solutions:chorus'
 
 // vod
+include ':solutions:vod:vod-common'
 include ':solutions:vod:vod-demo'
+include ':solutions:vod:vod-function'
+include ':solutions:vod:vod-input-media'
 // vod-playerkit
 include ':solutions:vod:vod-playerkit'
 include ':solutions:vod:vod-playerkit:vod-player-utils'
@@ -37,3 +41,5 @@ include ':solutions:media-live:live-common'
 include ':solutions:rtc-api-example:rtc-api-example-entry'
 include ':solutions:rtc-api-example:rtc-api-example-base'
 include ':solutions:rtc-api-example:rtc-api-example'
+
+include ':solutions:vod-live-feed'

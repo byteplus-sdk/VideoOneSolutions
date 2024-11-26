@@ -120,8 +120,10 @@ NSTimeInterval const LiveApplyOvertimeInterval = 4.0;
                                   block:^(NSArray<LiveUserModel *> *userList,
                                           RTSACKModel *_Nonnull model) {
                                       if (model.result) {
-                                          NSArray *list = [wself getUserListWithType:1 userList:userList];
-                                          wself.listsView.applicationDataLists = [list copy];
+                                          NSPredicate *predicateApplying = [NSPredicate predicateWithFormat:@"status == %d", LiveInteractStatusApplying];
+                                          NSArray<LiveUserModel *> *list = [userList filteredArrayUsingPredicate:predicateApplying];
+
+                                          [wself.listsView setApplicationDataLists:list];
                                           if (list.count <= 0) {
                                               [wself updateListUnread:NO];
                                               [[NSNotificationCenter defaultCenter] postNotificationName:NotificationReadApplyMessage object:nil];
@@ -315,8 +317,11 @@ NSTimeInterval const LiveApplyOvertimeInterval = 4.0;
                                   block:^(NSArray<LiveUserModel *> *userList,
                                           RTSACKModel *_Nonnull model) {
                                       if (model.result) {
-                                          wself.listsView.onlineDataLists = [wself getUserListWithType:0 userList:userList];
-                                          wself.listsView.applicationDataLists = [wself getUserListWithType:1 userList:userList];
+                                          NSPredicate *predicateLink = [NSPredicate predicateWithFormat:@"status == %d", LiveInteractStatusAudienceLink];
+                                          wself.listsView.onlineDataLists = [userList filteredArrayUsingPredicate:predicateLink];
+
+                                          NSPredicate *predicateApplying = [NSPredicate predicateWithFormat:@"status == %d", LiveInteractStatusApplying];
+                                          [wself.listsView setApplicationDataLists:[userList filteredArrayUsingPredicate:predicateApplying]];
                                           //            [wself.listsView updateCoHostStartTime:wself.fisrtGuestLicMicTime];
                                       }
                                   }];
@@ -408,23 +413,24 @@ NSTimeInterval const LiveApplyOvertimeInterval = 4.0;
         [[ToastComponent shareToastComponent] showLoading];
     }
     WeakSelf;
-    [LiveRTSManager liveAudienceCancelApplyLinkerId:linkerID
-                                              block:^(RTSACKModel *_Nonnull model) {
-                                                  StrongSelf;
-                                                  if (showLoading) {
-                                                      [[ToastComponent shareToastComponent] dismiss];
-                                                      NSString *message = model.result ? LocalizedString(@"application_cancel") : model.message;
-                                                      [[ToastComponent shareToastComponent] showWithMessage:message];
-                                                  }
-                                                  if (model.result) {
-                                                      // Initiate an invitation
-                                                      [sself closePending];
-                                                      [sself updateLiveInteractStatus:LiveInteractStatusOther];
-                                                  } else if (model.code == 560) {
-                                                      [sself closePending];
-                                                      [sself updateLiveInteractStatus:LiveInteractStatusOther];
-                                                  }
-                                              }];
+    [LiveRTSManager liveAudienceLinkmicCancel:self.roomInfoModel.roomID
+                                     linkerId:linkerID
+                                        block:^(RTSACKModel *_Nonnull model) {
+        StrongSelf;
+        if (showLoading) {
+            [[ToastComponent shareToastComponent] dismiss];
+            NSString *message = model.result ? LocalizedString(@"application_cancel") : model.message;
+            [[ToastComponent shareToastComponent] showWithMessage:message];
+        }
+        if (model.result) {
+            // Initiate an invitation
+            [sself closePending];
+            [sself updateLiveInteractStatus:LiveInteractStatusOther];
+        } else if (model.code == 560) {
+            [sself closePending];
+            [sself updateLiveInteractStatus:LiveInteractStatusOther];
+        }
+    }];
 }
 - (void)loadDataWithPermitAudienceLinkmic:(NSString *)audienceRoomID
                            audienceUserID:(NSString *)audienceUserID
@@ -572,25 +578,6 @@ NSTimeInterval const LiveApplyOvertimeInterval = 4.0;
 }
 
 #pragma mark - Private Action
-- (NSArray *)getUserListWithType:(NSInteger)type
-                        userList:(NSArray *)userList {
-    NSMutableArray *list = [[NSMutableArray alloc] init];
-    for (int i = 0; i < userList.count; i++) {
-        LiveUserModel *userModel = userList[i];
-        LiveInteractStatus status = LiveInteractStatusOther;
-        if (type == 0) {
-            status = LiveInteractStatusAudienceLink;
-        } else if (type == 1) {
-            status = LiveInteractStatusApplying;
-        } else {
-            status = LiveInteractStatusOther;
-        }
-        if (userModel.status == status) {
-            [list addObject:userModel];
-        }
-    }
-    return [list copy];
-}
 
 - (void)closeConnectAction {
     [self dismissUserListView:LiveAddGuestsDismissStateCloseConnect];

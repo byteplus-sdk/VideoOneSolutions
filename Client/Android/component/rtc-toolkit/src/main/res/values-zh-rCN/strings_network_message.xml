@@ -22,6 +22,7 @@
     <string name="network_message_506">当前麦位已满</string>
     <string name="network_message_504">移交主持人失败</string>
     <string name="network_message_541">用户角色与当前歌曲不匹配</string>
+    <string name="network_message_560">房间已解散</string>
     <string name="network_message_611">连麦已过期</string>
     <string name="network_message_622">主播正在连线中</string>
     <string name="network_message_632">主播正在发起双主播连线</string>

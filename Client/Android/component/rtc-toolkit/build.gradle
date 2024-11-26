@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace 'com.vertcdemo.rtc.toolkit'
     compileSdk project.compileSdkVersion
 
     defaultConfig {
@@ -25,12 +26,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 
     buildFeatures {
+        buildConfig true
         viewBinding true
     }
 }
@@ -50,4 +53,5 @@ dependencies {
     implementation libs.eventbus
     implementation libs.gson
     implementation libs.okhttp
+    implementation libs.retrofit2
 }

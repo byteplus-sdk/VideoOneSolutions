@@ -9,6 +9,7 @@
 #import <TTSDK/TTSDKManager.h>
 #import <ToolKit/BaseRTCManager.h>
 #import <ToolKit/JoinRTSParams.h>
+#import <ToolKit/ToolKit.h>
 
 @implementation InteractiveLive
 
@@ -32,6 +33,7 @@
 }
 
 - (void)enterWithCallback:(void (^)(BOOL result))block {
+    VOLogD(VOInteractiveLive, @"RTC SDK Version: %@", [BaseRTCManager getSDKVersion]);
     [super enterWithCallback:block];
 
     NSDictionary *inputInfo = [LiveJoinRTSInputModel getLiveJoinRTSInputInfo:self.scenesName];
@@ -52,9 +54,6 @@
         return;
     }
     [[LiveRTCManager shareRtc] connect:model.appId
-                              RTSToken:model.RTSToken
-                             serverUrl:model.serverUrl
-                             serverSig:model.serverSignature
                                    bid:model.bid
                                  block:^(BOOL result) {
                                      if (result) {

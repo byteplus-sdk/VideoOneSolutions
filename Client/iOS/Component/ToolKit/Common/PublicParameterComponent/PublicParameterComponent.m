@@ -18,7 +18,6 @@
 
 + (void)clear {
     [PublicParameterComponent share].appId = @"";
-    [PublicParameterComponent share].roomId = @"";
 }
 
 @end

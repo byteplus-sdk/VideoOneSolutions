@@ -67,7 +67,7 @@ public class QuickStartActivity extends ExampleBaseActivity {
         remoteViewContainer = binding.remoteContainer;
 
         binding.btnCreateEngine.setOnClickListener(v -> {
-            rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler);
+            rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "quick");
         });
 
         binding.btnStartCapture.setOnClickListener(v -> {
@@ -118,7 +118,10 @@ public class QuickStartActivity extends ExampleBaseActivity {
                         isAutoPublish,
                         isAutoSubscribeAudio,
                         isAutoSubscribeVideo);
-                rtcRoom.joinRoom(token, userInfo, roomConfig);
+                int ret = rtcRoom.joinRoom(token, userInfo, roomConfig);
+                if (ret != 0) {
+                    ToastUtil.showToast(this, "joinRoom ret " + ret);
+                }
             });
         });
 

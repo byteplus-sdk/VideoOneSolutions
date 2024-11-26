@@ -57,7 +57,7 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 // Join room
                 self?.rtcRoom = self?.rtcVideo?.createRTCRoom(roomId)
@@ -95,7 +95,8 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("pip")
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -109,7 +110,7 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         canvas.view = self.localView.videoView
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     func updateRenderView() {
@@ -137,7 +138,7 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         let streamKey = ByteRTCRemoteStreamKey.init()
         streamKey.userId = userId
         streamKey.roomId = roomId;
-        streamKey.streamIndex = .main
+        streamKey.streamIndex = .indexMain
         
         // Use external rendering
         // The picture-in-picture function relies on the external rendering function. Using internal rendering will cause a black screen.
@@ -343,7 +344,7 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
             let streamKey = ByteRTCRemoteStreamKey.init()
             streamKey.userId = userId
             streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .main
+            streamKey.streamIndex = .indexMain
             
             self.users.append(streamKey)
             

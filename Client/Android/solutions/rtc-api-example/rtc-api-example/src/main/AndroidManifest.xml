@@ -2,13 +2,14 @@
 
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <application>
         <activity
             android:name="com.vertc.api.example.examples.basic.QuickStartActivity"
             android:exported="false"
             android:icon="@drawable/example_quick_start"
-            android:label="@string/example_quick_start">
+            android:label="@string/example_quick_start"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -19,7 +20,8 @@
             android:name="com.vertc.api.example.examples.room.MultiRoomActivity"
             android:exported="false"
             android:icon="@drawable/example_multi_room"
-            android:label="@string/example_multi_room">
+            android:label="@string/example_multi_room"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -30,7 +32,8 @@
             android:name="com.vertc.api.example.examples.room.CrossRoomPKActivity"
             android:exported="false"
             android:icon="@drawable/example_cross_room_pk"
-            android:label="@string/example_cross_room_pk">
+            android:label="@string/example_cross_room_pk"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -41,7 +44,8 @@
             android:name="com.vertc.api.example.examples.audio.RawAudioDataActivity"
             android:exported="false"
             android:icon="@drawable/example_raw_audio_data"
-            android:label="@string/example_raw_audio_data">
+            android:label="@string/example_raw_audio_data"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -52,7 +56,8 @@
             android:name="com.vertc.api.example.examples.audio.mixing.AudioMediaMixingActivity"
             android:exported="false"
             android:icon="@drawable/example_audio_mixing"
-            android:label="@string/example_audio_mixing">
+            android:label="@string/example_audio_mixing"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -63,7 +68,8 @@
             android:name="com.vertc.api.example.examples.audio.mixing.AudioEffectMixingActivity"
             android:exported="false"
             android:icon="@drawable/example_audio_effect_mixing"
-            android:label="@string/example_audio_effect_mixing">
+            android:label="@string/example_audio_effect_mixing"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -74,7 +80,20 @@
             android:name="com.vertc.api.example.examples.audio.VoiceEffectActivity"
             android:exported="false"
             android:icon="@drawable/example_voice_effect"
-            android:label="@string/example_voice_effect">
+            android:label="@string/example_voice_effect"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.audio.CustomAudioCaptureActivity"
+            android:exported="false"
+            android:icon="@drawable/example_custom_audio_capture"
+            android:label="@string/example_custom_audio_capture"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -85,7 +104,8 @@
             android:name="com.vertc.api.example.examples.video.pip.PictureInPictureActivity"
             android:exported="false"
             android:icon="@drawable/example_picture_in_picture"
-            android:label="@string/example_picture_in_picture">
+            android:label="@string/example_picture_in_picture"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -96,7 +116,8 @@
             android:name="com.vertc.api.example.examples.video.VideoCommonConfigActivity"
             android:exported="false"
             android:icon="@drawable/example_video_config"
-            android:label="@string/example_video_config">
+            android:label="@string/example_video_config"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -115,10 +136,59 @@
         </activity>
 
         <activity
+            android:name="com.vertc.api.example.examples.video.ScreenShareActivity"
+            android:exported="false"
+            android:icon="@drawable/example_screen_sharing"
+            android:label="@string/example_screen_sharing"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.video.customcapture.CustomVideoCaptureActivity"
+            android:exported="false"
+            android:icon="@drawable/example_custom_video_capture"
+            android:label="@string/example_custom_video_capture"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.video.customrender.CustomVideoRenderActivity"
+            android:exported="false"
+            android:icon="@drawable/example_custom_video_rendering"
+            android:label="@string/example_custom_video_rendering"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.vertc.api.example.examples.video.customencode.CustomVideoEncodeActivity"
+            android:exported="false"
+            android:icon="@drawable/example_custom_video_encoding"
+            android:label="@string/example_custom_video_encoding"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name="com.vertc.api.example.examples.video.CDNStreamActivity"
             android:exported="false"
             android:icon="@drawable/example_cdn_stream"
-            android:label="@string/example_cdn_stream">
+            android:label="@string/example_cdn_stream"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -129,7 +199,8 @@
             android:name="com.vertc.api.example.examples.thirdpart.bytebeauty.ByteBeautyActivity"
             android:exported="false"
             android:icon="@drawable/example_third_beauty"
-            android:label="@string/example_third_beauty_byte">
+            android:label="@string/example_third_beauty_byte"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -140,7 +211,8 @@
             android:name="com.vertc.api.example.examples.messaging.SEIMessageActivity"
             android:exported="false"
             android:icon="@drawable/example_sei_messaging"
-            android:label="@string/example_sei_messaging">
+            android:label="@string/example_sei_messaging"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -151,11 +223,18 @@
             android:name="com.vertc.api.example.examples.messaging.StreamSyncInfoActivity"
             android:exported="false"
             android:icon="@drawable/example_stream_sync_info"
-            android:label="@string/example_stream_sync_info">
+            android:label="@string/example_stream_sync_info"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="com.ss.bytertc.base.media.screen.RXScreenCaptureService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
     </application>
 </manifest>

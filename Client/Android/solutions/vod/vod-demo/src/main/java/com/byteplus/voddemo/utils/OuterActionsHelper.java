@@ -7,27 +7,34 @@ import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
 
 import com.byteplus.vod.scenekit.ui.base.OuterActions;
+import com.byteplus.vod.scenekit.ui.video.scene.shortvideo.layer.CommentDialogOpenHelper;
 import com.byteplus.voddemo.ui.video.scene.comment.CommentDialogFragment;
 import com.byteplus.voddemo.ui.video.scene.comment.CommentDialogLFragment;
 
-public class OuterActionsHelper {
+public final class OuterActionsHelper {
+
+    private static final CommentDialogOpenHelper sHelper = (activity, vid, style) -> {
+        DialogFragment fragment;
+        switch (style) {
+            case Portrait:
+                fragment = new CommentDialogFragment();
+                break;
+            case Landscape:
+                fragment = new CommentDialogLFragment();
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown style: " + style);
+        }
+
+        Bundle args = new Bundle();
+        args.putString("vid", vid);
+        fragment.setArguments(args);
+
+        fragment.show(activity.getSupportFragmentManager(), "comment-" + vid);
+    };
+
     public static void setup() {
-        OuterActions.commentDialogOpenHelper = (activity, vid) -> {
-            DialogFragment fragment = new CommentDialogFragment();
-            Bundle args = new Bundle();
-            args.putString("vid", vid);
-            fragment.setArguments(args);
-
-            fragment.show(activity.getSupportFragmentManager(), "comment-" + vid);
-        };
-
-        OuterActions.commentDialogOpenHelperL = (activity, vid) -> {
-            DialogFragment fragment = new CommentDialogLFragment();
-            Bundle args = new Bundle();
-            args.putString("vid", vid);
-            fragment.setArguments(args);
-
-            fragment.show(activity.getSupportFragmentManager(), "comment-" + vid);
-        };
+        OuterActions.setup(sHelper);
     }
 }

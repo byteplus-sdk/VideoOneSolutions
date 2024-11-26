@@ -17,6 +17,7 @@ import android.util.Rational;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.PlayerEvent;
@@ -33,7 +34,6 @@ import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.settingskit.CenteredToast;
 
 import java.util.ArrayList;
-
 
 public class MiniPlayerLayer extends AnimateLayer {
 
@@ -232,7 +232,11 @@ public class MiniPlayerLayer extends AnimateLayer {
             };
             BaseActivity activity = (BaseActivity) context();
             if (activity != null && !activity.isFinishing()) {
-                activity.registerReceiver(mReceiver, new IntentFilter(ACTION_PLAYER_CONTROL));
+                ContextCompat.registerReceiver(
+                        activity,
+                        mReceiver,
+                        new IntentFilter(ACTION_PLAYER_CONTROL),
+                        ContextCompat.RECEIVER_NOT_EXPORTED);
             }
         } else if (mReceiver != null) {
             BaseActivity activity = (BaseActivity) context();
@@ -282,46 +286,68 @@ public class MiniPlayerLayer extends AnimateLayer {
                 context.getString(R.string.vevod_miniplayer_pause), CONTROL_TYPE_PAUSE, REQUEST_PAUSE);
     }
 
-    private void updatePictureInPictureActions (@DrawableRes
-    int iconId, String title, int controlType, int requestCode
+    private void updatePictureInPictureActions(
+            @DrawableRes int iconId,
+            String title,
+            int controlType,
+            int requestCode
     ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return;
         }
+        final Context context = context();
+        if (context == null) {
+            return;
+        }
+
         final ArrayList<RemoteAction> actions = new ArrayList<>();
 
-        final PendingIntent backwardIntent =
-                PendingIntent.getBroadcast(
-                        context(),
-                        REQUEST_REWIND,
-                        new Intent(ACTION_PLAYER_CONTROL).putExtra(EXTRA_CONTROL_TYPE, CONTROL_TYPE_REWIND),
-                        PendingIntent.FLAG_IMMUTABLE);
-        final Icon backwardIcon = Icon.createWithResource(context(), R.drawable.vevod_minplayer_rewind);
-        String backwardTitle = context().getString(R.string.vevod_miniplayer_rewind);
-        actions.add(new RemoteAction(backwardIcon, backwardTitle, backwardTitle, backwardIntent));
+        { // Rewind
+            Intent intent = new Intent(ACTION_PLAYER_CONTROL);
+            intent.setPackage(context.getPackageName());
+            intent.putExtra(EXTRA_CONTROL_TYPE, CONTROL_TYPE_REWIND);
 
+            final PendingIntent backwardIntent = PendingIntent.getBroadcast(
+                    context,
+                    REQUEST_REWIND,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE);
+            final Icon backwardIcon = Icon.createWithResource(context, R.drawable.vevod_minplayer_rewind);
+            String backwardTitle = context.getString(R.string.vevod_miniplayer_rewind);
+            actions.add(new RemoteAction(backwardIcon, backwardTitle, backwardTitle, backwardIntent));
+        }
 
-        final PendingIntent intent =
-                PendingIntent.getBroadcast(
-                        context(),
-                        requestCode,
-                        new Intent(ACTION_PLAYER_CONTROL).putExtra(EXTRA_CONTROL_TYPE, controlType),
-                        PendingIntent.FLAG_IMMUTABLE);
-        final Icon icon = Icon.createWithResource(context(), iconId);
-        actions.add(new RemoteAction(icon, title, title, intent));
+        { // Play/Pause
+            Intent intent = new Intent(ACTION_PLAYER_CONTROL);
+            intent.setPackage(context.getPackageName());
+            intent.putExtra(EXTRA_CONTROL_TYPE, controlType);
 
-        final PendingIntent forwardIntent =
-                PendingIntent.getBroadcast(
-                        context(),
-                        REQUEST_FORWARD,
-                        new Intent(ACTION_PLAYER_CONTROL).putExtra(EXTRA_CONTROL_TYPE, CONTROL_TYPE_FORWARD),
-                        PendingIntent.FLAG_IMMUTABLE);
-        final Icon forwardIcon = Icon.createWithResource(context(), R.drawable.vevod_miniplayer_forward);
-        String forwardTitle = context().getString(R.string.vevod_miniplayer_forward);
-        actions.add(new RemoteAction(forwardIcon, forwardTitle, forwardTitle, forwardIntent));
+            final PendingIntent playPauseIntent = PendingIntent.getBroadcast(
+                    context,
+                    requestCode,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE);
+            final Icon icon = Icon.createWithResource(context, iconId);
+            actions.add(new RemoteAction(icon, title, title, playPauseIntent));
+        }
 
-        BaseActivity activity = (BaseActivity) context();
-        if (activity == null || activity.isFinishing() || mPictureInPictureParamsBuilder == null) {
+        { // Forward
+            Intent intent = new Intent(ACTION_PLAYER_CONTROL);
+            intent.setPackage(context.getPackageName());
+            intent.putExtra(EXTRA_CONTROL_TYPE, CONTROL_TYPE_FORWARD);
+            final PendingIntent forwardIntent =
+                    PendingIntent.getBroadcast(
+                            context,
+                            REQUEST_FORWARD,
+                            intent,
+                            PendingIntent.FLAG_IMMUTABLE);
+            final Icon forwardIcon = Icon.createWithResource(context, R.drawable.vevod_miniplayer_forward);
+            String forwardTitle = context.getString(R.string.vevod_miniplayer_forward);
+            actions.add(new RemoteAction(forwardIcon, forwardTitle, forwardTitle, forwardIntent));
+        }
+
+        BaseActivity activity = (BaseActivity) context;
+        if (activity.isFinishing() || mPictureInPictureParamsBuilder == null) {
             return;
         }
         mPictureInPictureParamsBuilder.setActions(actions);

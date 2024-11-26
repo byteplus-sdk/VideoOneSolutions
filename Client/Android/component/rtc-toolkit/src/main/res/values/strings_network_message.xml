@@ -22,6 +22,7 @@
     <string name="network_message_506">All host seats have been filled up</string>
     <string name="network_message_504">Pass host control failed</string>
     <string name="network_message_541">User role don\'t match current song</string>
+    <string name="network_message_560">LIVE ended</string>
     <string name="network_message_611">Co-hosting has ended</string>
     <string name="network_message_622">Host is busy</string>
     <string name="network_message_632">Host is starting co-hosting</string>

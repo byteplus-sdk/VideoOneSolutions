@@ -266,7 +266,8 @@
 - (void)loadDataWithAnchorLinkmicFinish {
     __weak __typeof(self) wself = self;
     [[ToastComponent shareToastComponent] showLoading];
-    [LiveRTSManager liveAnchorLinkmicFinish:self.linkerID
+    [LiveRTSManager liveAnchorLinkmicFinish:self.roomInfoModel.roomID
+                                   linkerID:self.linkerID
                                       block:^(RTSACKModel *_Nonnull model) {
                                           [[ToastComponent shareToastComponent] dismiss];
                                           if (!model.result) {

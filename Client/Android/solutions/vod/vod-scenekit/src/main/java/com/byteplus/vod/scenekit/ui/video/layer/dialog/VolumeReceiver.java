@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.text.TextUtils;
 
+import androidx.core.content.ContextCompat;
+
 import java.lang.ref.WeakReference;
 
 public class VolumeReceiver extends BroadcastReceiver {
@@ -18,8 +20,8 @@ public class VolumeReceiver extends BroadcastReceiver {
         void syncVolume();
     }
 
-    public static String VOLUME_CHANGED_ACTION = "android.media.VOLUME_CHANGED_ACTION";
-    public static String EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE";
+    public static final String VOLUME_CHANGED_ACTION = "android.media.VOLUME_CHANGED_ACTION";
+    public static final String EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE";
 
     private final WeakReference<SyncVolumeHandler> mRef;
 
@@ -27,11 +29,15 @@ public class VolumeReceiver extends BroadcastReceiver {
 
     void register(Context context) {
         if (mRegistered) return;
-
         mRegistered = true;
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(VOLUME_CHANGED_ACTION);
-        context.getApplicationContext().registerReceiver(this, filter);
+
+        IntentFilter filter = new IntentFilter(VOLUME_CHANGED_ACTION);
+        ContextCompat.registerReceiver(
+                context.getApplicationContext(),
+                this,
+                filter,
+                ContextCompat.RECEIVER_EXPORTED
+        );
     }
 
     void unregister(Context context) {
@@ -48,12 +54,12 @@ public class VolumeReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
         final int volumeStreamType = intent.getIntExtra(EXTRA_VOLUME_STREAM_TYPE, -1);
-        if (TextUtils.equals(action, VOLUME_CHANGED_ACTION) && volumeStreamType == AudioManager.STREAM_MUSIC) {
+        if (VOLUME_CHANGED_ACTION.equals(action) && volumeStreamType == AudioManager.STREAM_MUSIC) {
             SyncVolumeHandler layer = mRef.get();
             if (layer != null) {
                 layer.syncVolume();
             } else {
-                context.getApplicationContext().unregisterReceiver(this);
+                unregister(context);
             }
         }
     }

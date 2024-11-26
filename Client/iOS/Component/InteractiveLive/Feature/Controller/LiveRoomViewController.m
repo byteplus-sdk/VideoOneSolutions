@@ -27,7 +27,7 @@
 #import "LiveTextInputComponent.h"
 #import <ToolKit/ReportComponent.h>
 
-@interface LiveRoomViewController () <LiveRTCManagerReconnectDelegate, LiveRoomBottomViewDelegate, LiveMediaComponentDelegate, LiveAddGuestsComponentDelegate, LivePullStreamComponentDelegate, LiveCoHostComponentDelegate, LiveInteractiveDelegate, LiveRtcLinkSessionNetworkChangeDelegate>
+@interface LiveRoomViewController () <LiveRTCManagerReconnectDelegate, LiveRoomBottomViewDelegate, LiveMediaComponentDelegate, LiveAddGuestsComponentDelegate, LivePullStreamComponentDelegate, LiveCoHostComponentDelegate, LiveInteractiveDelegate, LiveRtcLinkSessionNetworkChangeDelegate, LiveGiftItemComponentDelegate>
 @property (nonatomic, strong) LiveHostAvatarView *hostAvatarView;
 @property (nonatomic, strong) LivePeopleNumView *peopleNumView;
 @property (nonatomic, strong) BaseButton *closeLiveButton;
@@ -85,7 +85,7 @@
         self.linkSession.netwrokDelegate = self;
     }
 
-    [self joinRoom];
+    [self joinRoom:NO];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -137,7 +137,8 @@
 
 - (void)guestsComponent:(LiveAddGuestsComponent *)guestsComponent
         clickMoreButton:(LiveUserModel *)model {
-    [self.mediaComponent show:LiveMediaStatusGuests
+    [self.mediaComponent show:self.liveRoomModel.roomID
+                        status:LiveMediaStatusGuests
                     userModel:self.currentUserModel];
 }
 
@@ -175,14 +176,15 @@
             }];
         }
     } else if (itemButton.currentState == LiveRoomItemButtonStateMore) {
-        [self.mediaComponent show:LiveMediaStatusHost
+        [self.mediaComponent show:self.liveRoomModel.roomID
+                           status:LiveMediaStatusHost
                         userModel:self.currentUserModel];
     } else if (itemButton.currentState == LiveRoomItemButtonStateGift) {
-        [self.sendGifgComponent show];
+        [self.sendGifgComponent showWithRoomID:self.liveRoomModel.roomID];
     } else if (itemButton.currentState == LiveRoomItemButtonStateLike) {
         [self loadDataWithSendLikeMessage];
     } else if (itemButton.currentState == LiveRoomItemButtonStateChat) {
-        [self.inputComponent show];
+        [self.inputComponent showWithRoomID:self.liveRoomModel.roomID];
     } else if (itemButton.currentState == LiveRoomItemButtonStateData) {
         [self.informationComponent show];
     } else if (itemButton.currentState == LiveRoomItemButtonStateReport) {
@@ -236,7 +238,7 @@
                         block:^(LiveReconnectModel *reconnectModel, RTSACKModel *model) {
                             if (model.result) {
                                 // Reconnect successfully, restore the status in the room
-                                [wself joinRoom];
+                                [wself joinRoom:YES];
                             } else if (model.code == RTSStatusCodeUserIsInactive ||
                                        model.code == RTSStatusCodeRoomDisbanded ||
                                        model.code == RTSStatusCodeUserNotFound) {
@@ -250,7 +252,7 @@
 
 #pragma mark - Network request
 
-- (void)loadDataWithJoinLiveRoom {
+- (void)loadDataWithJoinLiveRoom:(BOOL)isReconnect {
     __weak __typeof(self) wself = self;
     [[ToastComponent shareToastComponent] showLoading];
     [LiveRTSManager liveJoinLiveRoom:self.liveRoomModel.roomID
@@ -261,7 +263,8 @@
                                    if (model.result) {
                                        [wself restoreRoomWithRoomInfoModel:roomModel
                                                                  userModel:userModel
-                                                               rtcUserList:@[]];
+                                                               rtcUserList:@[]
+                                                               isReconnect:isReconnect];
                                    } else {
                                        [[ToastComponent shareToastComponent] showWithMessage:LocalizedString(@"joining_room_failed") block:^(BOOL result) {
                                            [wself hangUp];
@@ -313,12 +316,13 @@
         LiveMessageModel *messageModel = [[LiveMessageModel alloc] init];
         messageModel.type = LiveMessageModelStateLike;
         messageModel.content = @"send like";
-        messageModel.user_id = [LocalUserComponent userModel].uid;
-        messageModel.user_name = [LocalUserComponent userModel].name;
-        [LiveRTSManager sendIMMessage:messageModel
-                                block:^(RTSACKModel *_Nonnull model) {
+        messageModel.userId = [LocalUserComponent userModel].uid;
+        messageModel.userName = [LocalUserComponent userModel].name;
+        [LiveRTSManager sendMessage:self.liveRoomModel.roomID
+                            message:messageModel
+                              block:^(RTSACKModel *_Nonnull model) {
             VOLogI(VOInteractiveLive,@"send like");
-                                }];
+        }];
         self.isSendLikeOk = NO;
         [self performSelector:@selector(unlockSendLike) withObject:nil afterDelay:0.1];
     }
@@ -326,6 +330,35 @@
 
 - (void)unlockSendLike {
     self.isSendLikeOk = YES;
+}
+
+- (void)loadDataWithSendeMessage:(NSString *)message {
+    LiveMessageModel *messageModel = [[LiveMessageModel alloc] init];
+    messageModel.content = message;
+    messageModel.userId = [LocalUserComponent userModel].uid;
+    messageModel.userName = [LocalUserComponent userModel].name;
+    messageModel.type = LiveMessageModelStateNormal;
+    [LiveRTSManager sendMessage:self.liveRoomModel.roomID
+                        message:messageModel
+                          block:^(RTSACKModel *_Nonnull model){}];
+}
+
+#pragma mark -- LiveGiftItemComponentDelegate
+- (void)liveGiftItemClickHandler:(GiftType)giftType {
+    LiveMessageModel *messageModel = [[LiveMessageModel alloc] init];
+    messageModel.type = LiveMessageModelStateGift;
+    messageModel.content = @"send gift";
+    messageModel.count = 1;
+    messageModel.giftType = giftType;
+    messageModel.userId = [LocalUserComponent userModel].uid;
+    messageModel.userName = [LocalUserComponent userModel].name;
+    [LiveRTSManager sendMessage:self.liveRoomModel.roomID
+                        message:messageModel
+                          block:^(RTSACKModel *_Nonnull model) {
+        if (!model.result) {
+            VOLogE(VOInteractiveLive,@"send gift failed!!!");
+        }
+    }];
 }
 
 #pragma mark - SocketControl
@@ -351,10 +384,10 @@
             BaseIMModel *imModel = [[BaseIMModel alloc] init];
             if ([sendUserModel.user_id isEqualToString:self.liveRoomModel.hostUserModel.uid]) {
                 NSString *imageName = @"im_host";
-                imModel.iconImage = [UIImage imageNamed:imageName bundleName:HomeBundleName];
+                imModel.iconImage = [UIImage imageNamed:imageName bundleName:@"LiveRoomUI"];
             }
             imModel.userID = sendUserModel.user_id;
-            imModel.userName = sendUserModel.user_name ? sendUserModel.user_name : message.user_name;
+            imModel.userName = sendUserModel.user_name ? sendUserModel.user_name : message.userName;
             imModel.message = message.content;
             [self.imComponent addIM:imModel];
             __weak __typeof(self) wself = self;
@@ -483,12 +516,13 @@
     self.currentUserModel.camera = cameraBool;
     self.currentUserModel.mic = micBool;
     __weak __typeof(self) wself = self;
-    [LiveRTSManager liveUpdateMediaMic:micBool
-                                camera:cameraBool
-                                 block:^(RTSACKModel *_Nonnull model) {
-                                     [wself.linkSession switchVideoCapture:cameraBool];
-                                     [wself.linkSession switchAudioCapture:micBool];
-                                 }];
+    [LiveRTSManager liveUpdateMediaStatus:self.liveRoomModel.roomID
+                                      mic:micBool
+                                   camera:cameraBool
+                                    block:^(RTSACKModel *_Nonnull model) {
+                                        [wself.linkSession switchVideoCapture:cameraBool];
+                                        [wself.linkSession switchAudioCapture:micBool];
+                                    }];
 }
 - (void)receivedAddGuestsSucceedWithUser:(LiveUserModel *)invitee
                                 linkerID:(NSString *)linkerID
@@ -807,7 +841,7 @@
                 self.linkSession = nil;
             }
         }
-        [self.closeLiveButton setImage:[UIImage imageNamed:@"create_live_close" bundleName:HomeBundleName] forState:UIControlStateNormal];
+        [self.closeLiveButton setImage:[UIImage imageNamed:@"create_live_close" bundleName:@"LiveRoomUI"] forState:UIControlStateNormal];
     }
     [self addBeautyEffect:userModel];
 }
@@ -897,7 +931,8 @@
             }
         } else if (roleStatus == BottomRoleStatusGuests) {
             // Guests role
-            [self.mediaComponent show:LiveMediaStatusGuests
+            [self.mediaComponent show:self.liveRoomModel.roomID
+                               status:LiveMediaStatusGuests
                             userModel:self.currentUserModel];
         } else {
             // error
@@ -941,31 +976,35 @@
 //    }
 //}
 
-- (void)joinRoom {
+- (void)joinRoom:(BOOL)isReconnect {
     if ([self isHost]) {
         // The host creates a room, no need to join the room
         [self restoreRoomWithRoomInfoModel:self.liveRoomModel
                                  userModel:self.liveRoomModel.hostUserModel
-                               rtcUserList:@[]];
+                               rtcUserList:@[]
+                               isReconnect:isReconnect];
     } else {
         // Audience need to join the room first
-        [self loadDataWithJoinLiveRoom];
+        [self loadDataWithJoinLiveRoom:isReconnect];
         [self.livePullStreamComponent open:self.liveRoomModel];
     }
 }
 - (void)restoreRoomWithRoomInfoModel:(LiveRoomInfoModel *)roomModel
                            userModel:(LiveUserModel *)userModel
-                         rtcUserList:(NSArray<LiveUserModel *> *)rtcUserList {
+                         rtcUserList:(NSArray<LiveUserModel *> *)rtcUserList
+                         isReconnect:(BOOL)isReconnect{
     self.liveRoomModel = roomModel;
     self.currentUserModel = userModel;
-    // Join RTS room
-
-    [[LiveRTCManager shareRtc] joinLiveRoomByToken:roomModel.rtmToken
-                                            roomID:roomModel.roomID
-                                            userID:[LocalUserComponent userModel].uid];
-    // Update UI layout
-    [self addSubviewAndConstraints];
-    self.hostAvatarView.hostUserModel = roomModel.hostUserModel;
+    if(!isReconnect){
+        // Join RTS room
+        [[LiveRTCManager shareRtc] joinLiveRoomByToken:roomModel.rtsToken
+                                                roomID:roomModel.roomID
+                                                userID:[LocalUserComponent userModel].uid];
+        // Update UI layout
+        [self addSubviewAndConstraints];
+    }
+    self.hostAvatarView.userName = roomModel.hostUserModel.user_name;
+    self.hostAvatarView.avatarName = roomModel.hostUserModel.avatarName;
     [self.peopleNumView updateTitleLabel:roomModel.audienceCount];
     [self updateLayoutToRole:userModel rtcUserList:rtcUserList];
     [self updatePullStatus:roomModel.hostUserModel.status
@@ -1157,6 +1196,10 @@
 - (LiveTextInputComponent *)inputComponent {
     if (!_inputComponent) {
         _inputComponent = [[LiveTextInputComponent alloc] init];
+        __weak __typeof(self) wself = self;
+        _inputComponent.clickSenderBlock = ^(NSString * _Nonnull text) {
+            [wself loadDataWithSendeMessage:text];
+        };
     }
     return _inputComponent;
 }
@@ -1179,6 +1222,7 @@
 - (LiveSendGiftComponent *)sendGifgComponent {
     if (!_sendGifgComponent) {
         _sendGifgComponent = [[LiveSendGiftComponent alloc] initWithView:self.view];
+        _sendGifgComponent.delegate = self;
     }
     return _sendGifgComponent;
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gift_like">Like</string>
+    <string name="gift_sugar">Sugar</string>
+    <string name="gift_diamond">Diamond</string>
+    <string name="gift_fireworks">Fireworks</string>
+
+    <string name="send_gift">Send %1$s</string>
+    <string name="send">Send</string>
+
+    <string name="say_something">Add comment</string>
+</resources>

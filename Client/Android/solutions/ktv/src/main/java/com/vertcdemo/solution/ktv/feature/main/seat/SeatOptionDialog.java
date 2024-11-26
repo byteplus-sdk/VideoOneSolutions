@@ -24,13 +24,12 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.bean.SeatInfo;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
-import com.vertcdemo.solution.ktv.common.SolutionToast;
 import com.vertcdemo.solution.ktv.core.rts.annotation.SeatOption;
 import com.vertcdemo.solution.ktv.core.rts.annotation.SeatStatus;
 import com.vertcdemo.solution.ktv.core.rts.annotation.UserRole;
@@ -41,12 +40,13 @@ import com.vertcdemo.solution.ktv.event.InteractChangedBroadcast;
 import com.vertcdemo.solution.ktv.event.MediaChangedBroadcast;
 import com.vertcdemo.solution.ktv.event.SeatChangedBroadcast;
 import com.vertcdemo.solution.ktv.feature.main.viewmodel.KTVRoomViewModel;
+import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class SeatOptionDialog extends BottomDialogFragmentX {
+public class SeatOptionDialog extends BottomSheetDialogFragment {
     private static final String TAG = "SeatOptionDialog";
 
     public static final String REQUEST_KEY_CONFIRM_LOCK = "confirm-lock-seat";
@@ -57,7 +57,7 @@ public class SeatOptionDialog extends BottomDialogFragmentX {
 
     @Override
     public int getTheme() {
-        return R.style.KTVBottomSheetDialogTheme;
+        return R.style.KTVBottomSheetDialog;
     }
 
     private KTVRoomViewModel mRoomViewModel;
@@ -196,9 +196,9 @@ public class SeatOptionDialog extends BottomDialogFragmentX {
                         .navigate(R.id.action_manage_audience, args, options);
             } else {
                 if (selfStatus == UserStatus.APPLYING) {
-                    SolutionToast.show(R.string.toast_apply_guest);
+                    CenteredToast.show(R.string.toast_apply_guest);
                 } else if (selfStatus == UserStatus.INTERACT) {
-                    SolutionToast.show(R.string.toast_error_switch_seat);
+                    CenteredToast.show(R.string.toast_error_switch_seat);
                 } else if (selfStatus == UserStatus.NORMAL) {
                     if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
                             == PackageManager.PERMISSION_GRANTED) {
@@ -237,8 +237,8 @@ public class SeatOptionDialog extends BottomDialogFragmentX {
             SolutionCommonDialog dialog = new SolutionCommonDialog();
             Bundle args = SolutionCommonDialog.dialogArgs("confirm-lock-seat"
                     , R.string.toast_lock_seat,
-                    R.string.confirm,
-                    R.string.cancel);
+                    com.vertcdemo.base.R.string.confirm,
+                    com.vertcdemo.base.R.string.cancel);
             dialog.setArguments(args);
             dialog.show(getChildFragmentManager(), "confirm-lock-seat");
         }
@@ -289,7 +289,7 @@ public class SeatOptionDialog extends BottomDialogFragmentX {
     final ActivityResultLauncher<String> launcher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {
         if (result != Boolean.TRUE) {
             Log.d(TAG, "No permission: " + Manifest.permission.RECORD_AUDIO);
-            SolutionToast.show(R.string.toast_ktv_no_mic_permission);
+            CenteredToast.show(R.string.toast_ktv_no_mic_permission);
         }
         doApplySeat();
     });

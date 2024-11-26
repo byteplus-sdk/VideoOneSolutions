@@ -20,10 +20,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
-import com.videoone.avatars.Avatars;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveAnchorLinkConfirmInviteBinding;
+import com.videoone.avatars.Avatars;
 
 public final class AnchorLinkConfirmInviteDialog extends DialogFragment {
     public static final int TIMEOUT = 10_000;

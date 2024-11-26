@@ -23,8 +23,9 @@ import com.byteplus.playerkit.player.playback.PlaybackController;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.utils.L;
 import com.byteplus.vod.scenekit.R;
-import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
+import com.byteplus.vod.scenekit.ui.config.ICompleteAction;
+import com.byteplus.vod.scenekit.ui.video.scene.utils.ShortStrategySettingsConfig;
 import com.byteplus.vod.scenekit.ui.widgets.viewpager2.OnPageChangeCallbackCompat;
 
 import java.util.List;
@@ -36,6 +37,8 @@ public class ShortVideoPageView {
      */
     private static final boolean FORCE_RESUME_PLAY = true;
 
+    private final ShortStrategySettingsConfig mStrategyConfig = new ShortStrategySettingsConfig();
+
     private final ViewPager2 mViewPager;
     private final ShortVideoAdapter mShortVideoAdapter;
     private final PlaybackController mController = new PlaybackController();
@@ -46,7 +49,7 @@ public class ShortVideoPageView {
         this.mViewPager = viewPager;
 
         mViewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
-        mShortVideoAdapter = new ShortVideoAdapter(viewPager.getContext());
+        mShortVideoAdapter = new ShortVideoAdapter(viewPager.getContext(), mStrategyConfig);
         mViewPager.setAdapter(mShortVideoAdapter);
         mViewPager.registerOnPageChangeCallback(new OnPageChangeCallbackCompat(mViewPager) {
             @Override
@@ -58,7 +61,7 @@ public class ShortVideoPageView {
             if (event.code() == PlayerEvent.State.COMPLETED) {
                 final Player player = event.owner(Player.class);
                 if (player != null && !player.isLooping() &&
-                        VideoSettings.intValue(VideoSettings.SHORT_VIDEO_PLAYBACK_COMPLETE_ACTION) == 1 /* 1 means PlayNext */) {
+                        mStrategyConfig.completeAction() == ICompleteAction.NEXT) {
                     VideoView videoView = mController.videoView();
                     assert videoView != null;
                     if (isFullScreenMode(videoView.getPlayScene())) {
@@ -73,7 +76,7 @@ public class ShortVideoPageView {
         mShortVideoAdapter.setAfterExitFullScreenListener(() -> {
             final Player player = mController.player();
             if (player != null && !player.isLooping() &&
-                    VideoSettings.intValue(VideoSettings.SHORT_VIDEO_PLAYBACK_COMPLETE_ACTION) == 1 /* 1 means PlayNext */) {
+                    mStrategyConfig.completeAction() == ICompleteAction.NEXT) {
                 if (player.isCompleted()) {
                     VideoView videoView = mController.videoView();
                     if (videoView != null) {
@@ -203,15 +206,19 @@ public class ShortVideoPageView {
                 case ON_CREATE:
                     break;
                 case ON_RESUME:
-                    ShortVideoStrategy.setEnabled(true);
-                    ShortVideoStrategy.setItems(mShortVideoAdapter.getItems());
+                    if (mStrategyConfig.enableStrategy()) {
+                        ShortVideoStrategy.setEnabled(true);
+                        ShortVideoStrategy.setItems(mShortVideoAdapter.getItems());
+                    }
                     resume();
                     break;
                 case ON_PAUSE:
                     pause();
                     break;
                 case ON_DESTROY:
-                    ShortVideoStrategy.setEnabled(false);
+                    if (mStrategyConfig.enableStrategy()) {
+                        ShortVideoStrategy.setEnabled(false);
+                    }
                     mLifeCycle.removeObserver(this);
                     mLifeCycle = null;
                     stop();

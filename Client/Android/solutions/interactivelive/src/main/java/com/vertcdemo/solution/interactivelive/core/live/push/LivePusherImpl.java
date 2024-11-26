@@ -66,7 +66,8 @@ public class LivePusherImpl implements LiveCoreHolder {
 
         VeLivePusherConfiguration config = new VeLivePusherConfiguration()
                 .setContext(AppUtil.getApplicationContext())
-                .setReconnectCount(10);
+                .setReconnectIntervalSeconds(5)
+                .setReconnectCount(12);
         mLivePusher = config.build();
 
         VeLivePusherDef.VeLiveVideoEncoderConfiguration videoEncoderConfig = mLivePusher.getVideoEncoderConfiguration()

@@ -11,5 +11,6 @@
 #define HomeBundleName @"APIExample"
 
 #import <ToolKit/ToolKit.h>
+#import <AppConfig/BuildConfig.h>
 
 #endif /* RTCAPIExampleBridging_h */

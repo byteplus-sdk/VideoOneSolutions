@@ -98,7 +98,8 @@
 - (void)setUserModel:(LiveUserModel *)userModel {
     _userModel = userModel;
 
-    self.hostAvatarView.hostUserModel = userModel;
+    self.hostAvatarView.avatarName = userModel.avatarName;
+    self.hostAvatarView.userName = userModel.user_name;
 
     self.micView.hidden = userModel.mic;
     self.cameraView.hidden = userModel.camera;

@@ -51,11 +51,11 @@ public class AbrSettingsDialog extends DialogFragment {
         Bundle arguments = getArguments();
         boolean isMainStream = arguments == null || arguments.getBoolean("extra_is_main_stream", true);
 
-        ImageView close = view.findViewById(R.id.title_bar_left_iv);
-        close.setImageResource(R.drawable.live_ic_close_black);
+        ImageView close = view.findViewById(com.byteplus.live.common.R.id.title_bar_left_iv);
+        close.setImageResource(com.byteplus.live.common.R.drawable.live_ic_close_black);
         close.setOnClickListener(v -> dismiss());
 
-        TextView tvTitle = view.findViewById(R.id.title_bar_title_tv);
+        TextView tvTitle = view.findViewById(com.byteplus.live.common.R.id.title_bar_title_tv);
         tvTitle.setVisibility(View.VISIBLE);
         tvTitle.setText(R.string.medialive_abr_gear_setting);
 

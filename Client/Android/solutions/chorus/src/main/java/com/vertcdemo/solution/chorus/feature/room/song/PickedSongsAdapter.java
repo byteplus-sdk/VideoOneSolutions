@@ -8,13 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bytedance.chrous.R;
 import com.bytedance.chrous.databinding.ItemChorusPickedSongBinding;
+import com.vertcdemo.solution.chorus.bean.PickedSongInfo;
 import com.vertcdemo.solution.chorus.bean.StatusPickedSongItem;
+import com.vertcdemo.solution.chorus.core.rts.annotation.SongStatus;
 import com.vertcdemo.solution.chorus.utils.BVH;
 
 import java.util.Collections;
@@ -53,6 +56,19 @@ public class PickedSongsAdapter extends RecyclerView.Adapter<BVH<ItemChorusPicke
     }
 
     @Override
+    public void onBindViewHolder(@NonNull BVH<ItemChorusPickedSongBinding> holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            Object payload = payloads.get(0);
+            if (PAYLOAD_STATUS == payload) {
+                StatusPickedSongItem item = mItems.get(position);
+                holder.binding.action.setVisibility(item.isSinging() ? View.VISIBLE : View.GONE);
+            }
+        }
+    }
+
+    @Override
     public int getItemCount() {
         return mItems.size();
     }
@@ -73,17 +89,38 @@ public class PickedSongsAdapter extends RecyclerView.Adapter<BVH<ItemChorusPicke
 
             @Override
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return oldItems.get(oldItemPosition) == newItems.get(newItemPosition);
+                StatusPickedSongItem oldItem = oldItems.get(oldItemPosition);
+                StatusPickedSongItem newItem = newItems.get(newItemPosition);
+                return oldItem.getSongId().equals(newItem.getSongId())
+                        && oldItem.getOwnerUid().equals(newItem.getOwnerUid());
             }
 
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                 StatusPickedSongItem oldItem = oldItems.get(oldItemPosition);
                 StatusPickedSongItem newItem = newItems.get(newItemPosition);
-                return oldItem.getSongId().equals(newItem.getSongId())
-                        && oldItem.getOwnerUid().equals(newItem.getOwnerUid())
-                        && oldItem.status == newItem.status;
+                return oldItem.status == newItem.status;
+            }
+
+            @Override
+            public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+                return PAYLOAD_STATUS;
             }
         }).dispatchUpdatesTo(this);
     }
+
+    public void updatePlayingState(@Nullable PickedSongInfo current) {
+        for (int i = 0; i < mItems.size(); i++) {
+            StatusPickedSongItem item = mItems.get(i);
+            if (item.isSinging() && !item.match(current)) {
+                item.status = SongStatus.PICKED;
+                notifyItemChanged(i, PAYLOAD_STATUS);
+            } else if (!item.isSinging() && item.match(current)) {
+                item.status = SongStatus.SINGING;
+                notifyItemChanged(i, PAYLOAD_STATUS);
+            }
+        }
+    }
+
+    private static final String PAYLOAD_STATUS = "status";
 }

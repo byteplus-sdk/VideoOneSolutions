@@ -137,7 +137,6 @@
 #pragma mark - TableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     LiveRoomInfoModel *model = self.dataArray[indexPath.row];
-    [PublicParameterComponent share].roomId = model.roomID;
     LiveRoomViewController *next = [[LiveRoomViewController alloc]
         initWithRoomModel:model
             streamPushUrl:@""];

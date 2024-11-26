@@ -84,7 +84,7 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     self.title = @"长视频";
     BaseButton *button = [[BaseButton alloc] init];
     button.backgroundColor = [UIColor clearColor];
-    UIImage *image = [UIImage imageNamed:@"nav_left"];
+    UIImage *image = [UIImage imageNamed:@"nav_left" bundleName:@"VodPlayer"];
     button.tintColor = [UIColor whiteColor];
     [button setImage:image forState:UIControlStateNormal];
     [button addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
@@ -243,10 +243,10 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
 
 - (NSDictionary *)sectionKeyLanguageMap {
     return @{
-        VELongSectionTopHeaderKey: LocalizedStringFromBundle(@"longvideo_top", @"VEVodApp"),
-        VELongSectionHotHeaderKey: LocalizedStringFromBundle(@"longvideo_playlist", @"VEVodApp"),
-        VELongSectionRecommendTodayHeaderKey: LocalizedStringFromBundle(@"longvideo_recommended", @"VEVodApp"),
-        VELongSectionRecommendForUHeaderKey: LocalizedStringFromBundle(@"longvideo_recommended_foru", @"VEVodApp"),
+        VELongSectionTopHeaderKey: LocalizedStringFromBundle(@"longvideo_top", @"VodPlayer"),
+        VELongSectionHotHeaderKey: LocalizedStringFromBundle(@"longvideo_playlist", @"VodPlayer"),
+        VELongSectionRecommendTodayHeaderKey: LocalizedStringFromBundle(@"longvideo_recommended", @"VodPlayer"),
+        VELongSectionRecommendForUHeaderKey: LocalizedStringFromBundle(@"longvideo_recommended_foru", @"VodPlayer"),
     };
 }
 

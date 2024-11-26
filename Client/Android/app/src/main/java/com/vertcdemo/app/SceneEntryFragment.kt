@@ -3,6 +3,7 @@
 package com.vertcdemo.app
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,9 +31,13 @@ class SceneEntryFragment : Fragment(R.layout.fragment_scene_entry) {
         }
 
         val context = requireContext()
-        val recyclerView: RecyclerView = view.findViewById(R.id.recycler)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = SceneItemAdapter(context, SceneEntry.entries)
+
+        view.findViewById<RecyclerView>(R.id.recycler)
+            .apply {
+                layoutManager = LinearLayoutManager(context)
+                addItemDecoration(SpaceItemDecoration(resources.getDimensionPixelSize(R.dimen.item_function_spacing)))
+                adapter = SceneItemAdapter(context, SceneEntry.entries)
+            }
     }
 
     class SceneItemHolder(private val binding: ItemSceneEntryBinding) :
@@ -63,5 +68,17 @@ class SceneEntryFragment : Fragment(R.layout.fragment_scene_entry) {
 
         override fun onBindViewHolder(holder: SceneItemHolder, position: Int) =
             holder.bind(entries[position])
+    }
+
+    class SpaceItemDecoration(private val padding: Int) : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            val position = parent.getChildLayoutPosition(view)
+            outRect.top = if (position == 0) 0 else padding
+        }
     }
 }

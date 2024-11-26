@@ -6,6 +6,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.Immersion">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
     <style name="AppDialog" parent="Theme.MaterialComponents.Light.Dialog">
         <item name="dialogCornerRadius">8dp</item>
         <item name="windowNoTitle">true</item>

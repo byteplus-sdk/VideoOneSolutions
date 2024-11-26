@@ -4,6 +4,9 @@
     <string name="vevod_option_debug_enable_log_layer">开启 LogLayer</string>
     <string name="vevod_option_debug_enable_debug_tool">开启 Debug 工具</string>
     <string name="vevod_option_debug_input_media_source">输入播放源</string>
+    <string name="vevod_option_debug_sample_source_enter_short_video">短视频</string>
+    <string name="vevod_option_debug_sample_source_enter_feed_video">中视频</string>
+    <string name="vevod_option_debug_sample_source_clean_cache">清除缓存</string>
 
     <string name="vevod_option_category_short_video">短视频</string>
     <string name="vevod_option_short_video_scene_account_id">短视频账号</string>

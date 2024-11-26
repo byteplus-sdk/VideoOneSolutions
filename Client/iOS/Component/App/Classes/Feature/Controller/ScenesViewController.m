@@ -132,6 +132,7 @@
         for (NSDictionary *scene in [ScenesViewController scenesList]) {
             BaseSceneEntrance *entrance = [[NSClassFromString(scene[@"className"]) alloc] init];
             if (entrance) {
+                [[entrance class] prepareEnvironment];
                 [_dataArray addObject:entrance];
             }
         }
@@ -186,6 +187,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _scenes = @[
+            @{@"className": @"TTProtoTypeRoom"},
             @{@"className": @"OnlineKTV"},
             @{@"className": @"VideoPlaybackEdit"},
             @{@"className": @"InteractiveLive"}

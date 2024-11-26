@@ -11,7 +11,7 @@
 }
 
 + (NSDictionary *)modelCustomPropertyMapper {
-    return @{@"interactStatus": @"interact_status",
+    return @{@"interactStatus": @"linkmic_status",
              @"interactUserList": @"interact_user_list"};
 }
 

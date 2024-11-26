@@ -11,16 +11,6 @@ import Foundation
 // User name & room name regularity
 let inputRegex = "^[a-zA-Z0-9@._-]{1,128}$"
 
-// To obtain the token, it is recommended to obtain it from the server
-func generatorToken(roomId:String, userId:String, completion: @escaping (String?) -> Void) {
-    return RTCTokenProtocol().token(withAppID: kAppID, 
-                                    appKey: kAppKey,
-                                    roomId: roomId,
-                                    uid: userId) { rtcToken in
-        completion(rtcToken)
-    }
-}
-
 // Check whether the user name or room name is legal
 func checkValid(_ string: String) -> Bool {
     do {

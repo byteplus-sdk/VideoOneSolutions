@@ -435,7 +435,7 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
     self.currentDirection = VEPageItemMoveDirectionUnknown;
     self.shouldChangeToNextPage = NO;
     if (_delegateHas.hasDidEndDisplayItem) {
-        [self.delegate pageViewController:self didDisplayItem:lastViewController atIndex:self.currentIndex];
+        [self.delegate pageViewController:self didDisplayItem:self.currentViewController atIndex:self.currentIndex];
     }
 }
 

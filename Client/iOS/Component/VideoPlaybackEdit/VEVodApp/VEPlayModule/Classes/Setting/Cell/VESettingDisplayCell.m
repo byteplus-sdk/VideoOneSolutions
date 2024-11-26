@@ -5,12 +5,11 @@
 #import <ToolKit/ToolKit.h>
 #import "Masonry.h"
 
-const NSString *VESettingDisplayCellReuseID = @"VESettingDisplayCellReuseID";
+extern NSString *VESettingDisplayCellReuseID;
 
 @interface VESettingDisplayCell ()
 
 @property (strong, nonatomic) UIButton *clearButton;
-
 
 @end
 

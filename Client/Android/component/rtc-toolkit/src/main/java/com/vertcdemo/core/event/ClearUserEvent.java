@@ -5,12 +5,10 @@ package com.vertcdemo.core.event;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
 /**
  * User logged on other device, Kick this device out
  */
-@RTSInform
 public class ClearUserEvent {
     @SerializedName("room_id")
     public String roomId;

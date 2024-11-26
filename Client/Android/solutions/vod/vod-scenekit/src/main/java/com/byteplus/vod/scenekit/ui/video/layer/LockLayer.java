@@ -45,11 +45,6 @@ public class LockLayer extends AnimateLayer {
         mImageView.setImageDrawable(ResourcesCompat.getDrawable(parent.getResources(), R.drawable.vevod_lock_layer_ic_selector, null));
         mImageView.setOnClickListener(v -> {
             layerHost().setLocked(!layerHost().isLocked());
-            // locked -> loop playback
-            final Player player = player();
-            if (player != null && player.isInPlaybackState()) {
-                player.setLooping(layerHost().isLocked());
-            }
 
             GestureLayer gestureLayer = layerHost().findLayer(GestureLayer.class);
             if (gestureLayer != null) {

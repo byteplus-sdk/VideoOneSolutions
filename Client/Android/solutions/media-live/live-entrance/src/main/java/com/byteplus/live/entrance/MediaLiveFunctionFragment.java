@@ -1,3 +1,6 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+
 package com.byteplus.live.entrance;
 
 import static com.pandora.common.env.config.LogConfig.LogLevel.Debug;
@@ -5,19 +8,14 @@ import static com.pandora.common.env.config.LogConfig.LogLevel.Debug;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.byteplus.live.player.ui.activity.InputPullUrlActivity;
@@ -32,11 +30,10 @@ import com.pandora.ttlicense2.LicenseManager;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
 
-public class MediaLiveFunctionFragment extends Fragment {
+public class MediaLiveFunctionFragment extends PermissionFragment {
 
     private static final String TAG = "MediaLiveFunction";
 
@@ -51,12 +48,10 @@ public class MediaLiveFunctionFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(MediaLiveViewModel.class);
         mViewModel.prepareResource(requireContext());
-        checkPermission();
         initTTSDK();
     }
 
     public void initTTSDK() {
-        showBuildInfo();
         if (TextUtils.isEmpty(BuildConfig.LIVE_TTSDK_APP_ID)) {
             throw new RuntimeException("Please setup LIVE_TTSDK_APP_ID in gradle.properties!");
         }
@@ -83,34 +78,7 @@ public class MediaLiveFunctionFragment extends Fragment {
                 .setLicenseCallback(new LogLicenseManagerCallback())
                 .setLogConfig(config)
                 .build());
-    }
-
-    final ActivityResultLauncher<String[]> requestPermissionsLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            results -> {
-
-            });
-
-    private void checkPermission() {
-        String[] permissions = new String[]{
-                Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.MODIFY_AUDIO_SETTINGS,
-                Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-        };
-
-        List<String> permissionList = new ArrayList<>();
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                permissionList.add(permission);
-            }
-        }
-        if (permissionList.isEmpty()) {
-            return;
-        }
-        requestPermissionsLauncher.launch(permissionList.toArray(new String[0]));
+        showBuildInfo();
     }
 
     @Override
@@ -139,11 +107,23 @@ public class MediaLiveFunctionFragment extends Fragment {
 
         // Pull stream
         view.findViewById(R.id.live_pull).setOnClickListener(v -> {
-            startActivity(new Intent(requireContext(), InputPullUrlActivity.class));
+            askForPermission(
+                    Arrays.asList(Manifest.permission.CAMERA, Manifest.permission.CAMERA),
+                    () -> startActivity(new Intent(requireContext(), InputPullUrlActivity.class)),
+                    () -> Toast.makeText(requireContext(), "Missing required permission(s)", Toast.LENGTH_LONG).show()
+            );
         });
     }
 
     private void startLivePushPage(Context context, @LiveCaptureType int liveCaptureType) {
+        askForPermission(
+                Arrays.asList(Manifest.permission.CAMERA, Manifest.permission.CAMERA),
+                () -> startLivePushPageImpl(context, liveCaptureType),
+                () -> Toast.makeText(context, "Missing required permission(s)", Toast.LENGTH_LONG).show()
+        );
+    }
+
+    private void startLivePushPageImpl(Context context, @LiveCaptureType int liveCaptureType) {
         if (!mViewModel.isResourceReady()) {
             Toast.makeText(context, "Loading resource...", Toast.LENGTH_SHORT).show();
             return;

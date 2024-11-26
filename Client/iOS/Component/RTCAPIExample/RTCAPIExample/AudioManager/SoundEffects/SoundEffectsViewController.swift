@@ -53,7 +53,7 @@ class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, Byte
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 
                 // Join room
@@ -80,7 +80,8 @@ class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, Byte
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("voice-effect")
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -96,12 +97,17 @@ class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, Byte
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     func buildActions() {
         weak var weakSelf = self
-        
+
+        // Voice changer
+        self.voiceTypeSheetView.didSelectOption = {(value) in
+            weakSelf?.rtcVideo?.setVoiceChangerType(ByteRTCVoiceChangerType(rawValue: Int(value))!)
+        }
+
         // Reverberation
         self.voiceReverbSheetView.didSelectOption = {(value) in
             weakSelf?.rtcVideo?.setVoiceReverbType(ByteRTCVoiceReverbType(rawValue: Int(value))!)
@@ -196,11 +202,18 @@ class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, Byte
             make.left.equalToSuperview().offset(10)
         }
         
+        view.addSubview(voiceTypeSheetView)
         view.addSubview(voiceReverbSheetView)
         view.addSubview(pitchSetting)
 
-        voiceReverbSheetView.snp.makeConstraints { make in
+        voiceTypeSheetView.snp.makeConstraints { make in
             make.top.equalTo(effectLabel.snp.bottom).offset(10)
+            make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
+        }
+
+        voiceReverbSheetView.snp.makeConstraints { make in
+            make.top.equalTo(voiceTypeSheetView.snp.bottom).offset(10)
             make.left.equalToSuperview().offset(10)
             make.right.equalToSuperview().offset(-10)
         }
@@ -321,6 +334,13 @@ class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, Byte
         return label
     }()
     
+    lazy var voiceTypeSheetView: ActionSheetView = {
+        let actionSheetView = ActionSheetView.init(title: LocalizedString("label_voice_changer"), optionArray: ["Original","Giant","Chipmunk","Minionst","Vibrato","Robot"], defaultIndex: 0)
+        actionSheetView.presentingViewController = self
+
+        return actionSheetView
+    }()
+
     lazy var voiceReverbSheetView: ActionSheetView = {
         let actionSheetView = ActionSheetView.init(title: LocalizedString("label_voice_reverb"), optionArray: ["Original","Echo","Concert","Ethereal","KTV","Studio","VirtualStereo","Spacious","3D"], defaultIndex: 0)
         actionSheetView.presentingViewController = self

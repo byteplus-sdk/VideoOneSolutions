@@ -28,10 +28,10 @@ import android.view.SurfaceView;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.byteplus.live.common.FileUtils;
 import com.byteplus.live.common.WriterPCMFile;
 import com.byteplus.live.common.WriterRGBAFile;
 import com.byteplus.live.player.utils.AudioPlayer;
-import com.byteplus.live.common.FileUtils;
 import com.byteplus.live.player.utils.PullerSettings;
 import com.byteplus.live.settings.AbrInfo;
 import com.byteplus.live.settings.PreferenceUtil;
@@ -68,7 +68,7 @@ public class LivePlayerImpl implements LivePlayer {
     private WriterPCMFile mWriterPCMFile;
     private WriterRGBAFile mWriterRGBAFile;
     private boolean mEnableAudioRendering;
-    private final VeLivePlayerObserver mLivePlayerObserver = new VeLivePlayerObserver() {
+    private final VeLivePlayerObserver mLivePlayerObserver = new VeLivePlayerObserverAdapter() {
         @Override
         public void onError(VeLivePlayer player, VeLivePlayerError error) {
             String info = "[" + getTimestamp() + "] onError: " + format(error);
@@ -262,7 +262,10 @@ public class LivePlayerImpl implements LivePlayer {
                     + ", bitDepth:" + audioFrame.bitDepth
                     + ", channels:" + audioFrame.channels
                     + ", bufferSize:" + audioFrame.buffer.length);
-            mWriterPCMFile.writeBytes(audioFrame.buffer);
+
+            byte[] buffer = VideoLiveManager.bytebuffer2ByteArray(audioFrame.buffer, audioFrame.samples);
+
+            mWriterPCMFile.writeBytes(buffer);
             if (!mEnableAudioRendering) {
                 if (PreferenceUtil.getInstance().getPullEnableAudioSelfRender(false) && mAudioPlayer == null) {
                     mAudioPlayer = new AudioPlayer();
@@ -272,7 +275,7 @@ public class LivePlayerImpl implements LivePlayer {
                             bitDepth);
                 }
                 if (mAudioPlayer != null) {
-                    mAudioPlayer.write(audioFrame.buffer);
+                    mAudioPlayer.write(buffer);
                 }
             }
         }
@@ -349,27 +352,27 @@ public class LivePlayerImpl implements LivePlayer {
 
             if (!TextUtils.isEmpty(abrOrigin)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrOrigin, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeMain);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionOrigin;
+                stream.resolution = LivePlayerResolution.Origin;
                 streamList.add(stream);
             }
             if (!TextUtils.isEmpty(abrUhd)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrUhd, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeMain);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionUHD;
+                stream.resolution = LivePlayerResolution.UHD;
                 streamList.add(stream);
             }
             if (!TextUtils.isEmpty(abrHd)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrHd, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeMain);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionHD;
+                stream.resolution = LivePlayerResolution.HD;
                 streamList.add(stream);
             }
             if (!TextUtils.isEmpty(abrLd)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrLd, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeMain);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionLD;
+                stream.resolution = LivePlayerResolution.LD;
                 streamList.add(stream);
             }
             if (!TextUtils.isEmpty(abrSd)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrSd, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeMain);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionSD;
+                stream.resolution = LivePlayerResolution.SD;
                 streamList.add(stream);
             }
         } else {
@@ -378,7 +381,7 @@ public class LivePlayerImpl implements LivePlayer {
                 for (String url : urls) {
                     VeLivePlayerStreamData.VeLivePlayerStream main = new VeLivePlayerStreamData.VeLivePlayerStream();
                     main.url = url;
-                    main.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionOrigin;
+                    main.resolution = LivePlayerResolution.Origin;
                     main.streamType = VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeMain;
                     main.format = PullerSettings.guessUrlFormat(url);
                     streamList.add(main);
@@ -399,27 +402,27 @@ public class LivePlayerImpl implements LivePlayer {
 
             if (!TextUtils.isEmpty(abrOrigin)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrOrigin, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeBackup);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionOrigin;
+                stream.resolution = LivePlayerResolution.Origin;
                 streamList.add(stream);
             }
             if (!TextUtils.isEmpty(abrUhd)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrUhd, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeBackup);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionUHD;
+                stream.resolution = LivePlayerResolution.UHD;
                 streamList.add(stream);
             }
             if (!TextUtils.isEmpty(abrHd)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrHd, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeBackup);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionHD;
+                stream.resolution = LivePlayerResolution.HD;
                 streamList.add(stream);
             }
             if (!TextUtils.isEmpty(abrLd)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrLd, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeBackup);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionLD;
+                stream.resolution = LivePlayerResolution.LD;
                 streamList.add(stream);
             }
             if (!TextUtils.isEmpty(abrSd)) {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = getAbrStream(abrSd, VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeBackup);
-                stream.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionSD;
+                stream.resolution = LivePlayerResolution.SD;
                 streamList.add(stream);
             }
         } else {
@@ -429,7 +432,7 @@ public class LivePlayerImpl implements LivePlayer {
                 for (String url : urls) {
                     VeLivePlayerStreamData.VeLivePlayerStream backup = new VeLivePlayerStreamData.VeLivePlayerStream();
                     backup.url = url;
-                    backup.resolution = VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionOrigin;
+                    backup.resolution = LivePlayerResolution.Origin;
                     backup.streamType = VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeBackup;
                     backup.format = PullerSettings.guessUrlFormat(url);
                     streamList.add(backup);
@@ -442,29 +445,29 @@ public class LivePlayerImpl implements LivePlayer {
 
     private static VeLivePlayerDef.VeLivePlayerResolution transAbrResolution(String abrDefault) {
         if (abrDefault.contains(PULL_ABR_ORIGIN)) {
-            return VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionOrigin;
+            return LivePlayerResolution.Origin;
         } else if (abrDefault.contains(PULL_ABR_UHD)) {
-            return VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionUHD;
+            return LivePlayerResolution.UHD;
         } else if (abrDefault.contains(PULL_ABR_HD)) {
-            return VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionHD;
+            return LivePlayerResolution.HD;
         } else if (abrDefault.contains(PULL_ABR_LD)) {
-            return VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionLD;
+            return LivePlayerResolution.LD;
         } else if (abrDefault.contains(PULL_ABR_SD)) {
-            return VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionSD;
+            return LivePlayerResolution.SD;
         }
         return null;
     }
 
     private static String transResolution(VeLivePlayerDef.VeLivePlayerResolution resolution) {
-        if (resolution == VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionOrigin) {
+        if (LivePlayerResolution.equals(LivePlayerResolution.Origin, resolution)) {
             return PULL_ABR_ORIGIN;
-        } else if (resolution == VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionUHD) {
+        } else if (LivePlayerResolution.equals(LivePlayerResolution.UHD, resolution)) {
             return PULL_ABR_UHD;
-        } else if (resolution == VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionHD) {
+        } else if (LivePlayerResolution.equals(LivePlayerResolution.HD, resolution)) {
             return PULL_ABR_HD;
-        } else if (resolution == VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionLD) {
+        } else if (LivePlayerResolution.equals(LivePlayerResolution.LD, resolution)) {
             return PULL_ABR_LD;
-        } else if (resolution == VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionSD) {
+        } else if (LivePlayerResolution.equals(LivePlayerResolution.SD, resolution)) {
             return PULL_ABR_SD;
         }
         return null;
@@ -625,7 +628,7 @@ public class LivePlayerImpl implements LivePlayer {
         Log.i(TAG, "enableAudioFrameObserver: enable: " + enable
                 + ", enableRendering:" + enableRendering);
         if (mLivePlayer != null) {
-            mLivePlayer.enableAudioFrameObserver(enable, enableRendering);
+            mLivePlayer.enableAudioFrameObserver(enable, enableRendering, VeLivePlayerDef.VeLivePlayerAudioBufferType.VeLivePlayerAudioBufferTypeByteBuffer);
         }
         mEnableAudioRendering = enableRendering;
         if (!enable) {

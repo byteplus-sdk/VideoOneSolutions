@@ -4,10 +4,8 @@
 package com.vertcdemo.solution.ktv.event;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.ktv.core.rts.annotation.SeatStatus;
 
-@RTSInform
 public class SeatChangedBroadcast {
 
     @SerializedName("seat_id")

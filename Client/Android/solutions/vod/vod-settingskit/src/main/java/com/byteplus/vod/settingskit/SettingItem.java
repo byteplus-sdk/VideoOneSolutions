@@ -15,6 +15,7 @@ public class SettingItem {
     public static final int TYPE_OPTION = 10000;
     public static final int TYPE_COPYABLE_TEXT = 10001;
     public static final int TYPE_CLICKABLE_ITEM = 10002;
+    public static final int TYPE_ACTION_ITEM = 10003;
 
     public final int type;
     public String category;
@@ -34,11 +35,6 @@ public class SettingItem {
 
     public static SettingItem createOptionItem(String category, Option option) {
         return createOptionItem(category, option, null);
-    }
-    public static SettingItem createOptionClickableItem(String category,
-                                                        Option option,
-                                                        OnEventListener eventListener) {
-        return createOptionItem(category, option, null, eventListener);
     }
 
     public static SettingItem createOptionItem(String category, Option option, ValueMapper mapper) {
@@ -68,6 +64,16 @@ public class SettingItem {
         item.category = category;
         item.title = title;
         item.getter = getter;
+        item.listener = listener;
+        return item;
+    }
+
+    public static SettingItem createActionItem(String category,
+                                               @StringRes int title,
+                                               OnEventListener listener) {
+        SettingItem item = new SettingItem(SettingItem.TYPE_ACTION_ITEM);
+        item.category = category;
+        item.title = title;
         item.listener = listener;
         return item;
     }

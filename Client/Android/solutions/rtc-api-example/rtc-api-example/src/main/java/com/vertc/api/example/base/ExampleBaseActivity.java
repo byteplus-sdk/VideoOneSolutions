@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -14,7 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Consumer;
 
+import com.vertc.api.example.R;
 import com.vertc.api.example.utils.ExampleExecutor;
+import com.vertc.api.example.utils.ToastUtil;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -22,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class ExampleBaseActivity extends AppCompatActivity {
+    private static final String TAG = "ExampleBaseActivity";
     private static final Random random = new SecureRandom();
 
     protected final String localUid = "user_" + random.nextInt(1000);
@@ -80,8 +84,12 @@ public class ExampleBaseActivity extends AppCompatActivity {
                         dismissLoadingDialog();
                         consumer.accept(result);
                     });
-                } catch (ExecutionException | InterruptedException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    Log.e(TAG, "Network error: ", e);
+                    runOnUiThread(() -> {
+                        dismissLoadingDialog();
+                        ToastUtil.showLongToast(this, getString(R.string.example_network_error) + " " + e.getLocalizedMessage());
+                    });
                 }
             });
         }

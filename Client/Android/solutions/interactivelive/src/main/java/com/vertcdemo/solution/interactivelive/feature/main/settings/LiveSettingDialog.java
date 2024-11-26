@@ -21,14 +21,14 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveVideoSettingsBinding;
 
-public class LiveSettingDialog extends BottomDialogFragmentX {
+public class LiveSettingDialog extends BottomSheetDialogFragment {
     @Override
     public int getTheme() {
-        return R.style.LiveBottomSheetDialogTheme;
+        return R.style.LiveBottomSheetDialog;
     }
 
     SettingsViewModel mViewModel;

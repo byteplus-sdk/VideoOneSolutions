@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vertcdemo.solution.ktv">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
         <activity
             android:name="com.vertcdemo.solution.karaoke.KaraokeScenesActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion" />
 
         <activity
             android:name="com.vertcdemo.solution.ktv.feature.KTVEntryActivity"
             android:exported="false"
+            android:label="@string/ktv_scenes"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.Transparent" />
+            android:theme="@style/AppTheme.Transparent">
+            <intent-filter>
+                <action android:name="${applicationId}.action.KTV_SCENE_SOLO" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="com.vertcdemo.solution.ktv.feature.KTVActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion" />
     </application>
 </manifest>

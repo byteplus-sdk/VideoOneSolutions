@@ -1,0 +1,10 @@
+"gift_like" = "Like";
+"gift_sugar" = "Sugar";
+"gift_diamond" = "Diamond";
+"gift_fireworks" = "Fireworks";
+"sent_gift_like" = "sent Like";
+"sent_gift_sugar" = "sent Sugar";
+"sent_gift_diamond" = "sent Diamond";
+"sent_gift_fireworks" = "sent Fireworks";
+"gift_send_button_text" = "Send";
+"send_message_exceeded_limit" = "The maximum number of messages you can send is 10, you have exceeded this limit.";

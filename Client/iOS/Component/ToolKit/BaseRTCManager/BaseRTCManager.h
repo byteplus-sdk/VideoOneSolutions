@@ -33,9 +33,6 @@ typedef void (^RTCRoomMessageBlock)(RTSNoticeModel *noticeModel);
  */
 
 - (void)connect:(NSString *)appID
-       RTSToken:(NSString *)RTSToken
-      serverUrl:(NSString *)serverUrl
-      serverSig:(NSString *)serverSig
             bid:(NSString *)bid
           block:(void (^)(BOOL result))block;
 

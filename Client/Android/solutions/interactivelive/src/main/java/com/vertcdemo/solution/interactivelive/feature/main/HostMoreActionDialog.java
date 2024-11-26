@@ -12,21 +12,22 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveMoreActionBinding;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
 
-public class HostMoreActionDialog extends BottomDialogFragmentX {
+public class HostMoreActionDialog extends BottomSheetDialogFragment {
 
     @Nullable
     private String mRoomId;
 
     @Override
     public int getTheme() {
-        return R.style.LiveBottomSheetDialogTheme;
+        return R.style.LiveBottomSheetDialog;
     }
 
     @Nullable
@@ -44,13 +45,13 @@ public class HostMoreActionDialog extends BottomDialogFragmentX {
 
         {
             boolean isCameraOn = manager.isCameraOn();
-            binding.camera.setText(isCameraOn ? com.vertcdemo.core.R.string.camera : com.vertcdemo.core.R.string.camera_off);
+            binding.camera.setText(isCameraOn ? com.vertcdemo.rtc.toolkit.R.string.camera : com.vertcdemo.rtc.toolkit.R.string.camera_off);
             binding.camera.setSelected(isCameraOn);
 
             binding.flip.setEnabled(isCameraOn);
 
             boolean isMicrophoneOn = manager.isMicOn();
-            binding.microphone.setText(isMicrophoneOn ? com.vertcdemo.core.R.string.microphone : com.vertcdemo.core.R.string.microphone_off);
+            binding.microphone.setText(isMicrophoneOn ? com.vertcdemo.rtc.toolkit.R.string.microphone : com.vertcdemo.rtc.toolkit.R.string.microphone_off);
             binding.microphone.setSelected(isMicrophoneOn);
         }
 
@@ -60,14 +61,14 @@ public class HostMoreActionDialog extends BottomDialogFragmentX {
         });
         binding.microphone.setOnClickListener(DebounceClickListener.create(v -> {
             boolean isMicrophoneOn = manager.toggleMicrophone();
-            binding.microphone.setText(isMicrophoneOn ? com.vertcdemo.core.R.string.microphone : com.vertcdemo.core.R.string.microphone_off);
+            binding.microphone.setText(isMicrophoneOn ? com.vertcdemo.rtc.toolkit.R.string.microphone : com.vertcdemo.rtc.toolkit.R.string.microphone_off);
             binding.microphone.setSelected(isMicrophoneOn);
             updateMediaStatus();
         }));
         binding.camera.setOnClickListener(DebounceClickListener.create(v -> {
             boolean isCameraOn = manager.toggleCamera();
             binding.flip.setEnabled(isCameraOn);
-            binding.camera.setText(isCameraOn ? com.vertcdemo.core.R.string.camera : com.vertcdemo.core.R.string.camera_off);
+            binding.camera.setText(isCameraOn ? com.vertcdemo.rtc.toolkit.R.string.camera : com.vertcdemo.rtc.toolkit.R.string.camera_off);
             binding.camera.setSelected(isCameraOn);
             updateMediaStatus();
         }));
@@ -85,7 +86,7 @@ public class HostMoreActionDialog extends BottomDialogFragmentX {
             final LiveRTCManager ins = LiveRTCManager.ins();
             int microphoneStatus = ins.isMicOn() ? MediaStatus.ON : MediaStatus.OFF;
             int cameraStatus = ins.isCameraOn() ? MediaStatus.ON : MediaStatus.OFF;
-            LiveRTCManager.rts().updateMediaStatus(mRoomId, microphoneStatus, cameraStatus, null);
+            LiveService.get().updateMediaStatus(mRoomId, microphoneStatus, cameraStatus);
         }
     }
 }

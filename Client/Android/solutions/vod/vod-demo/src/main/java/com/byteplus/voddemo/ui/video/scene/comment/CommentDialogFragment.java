@@ -6,6 +6,7 @@ import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_BUTTON_NEGATIVE
 import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_MESSAGE;
 import static com.vertcdemo.ui.dialog.SolutionCommonDialog.EXTRA_TITLE;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,9 +19,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.byteplus.vod.scenekit.ui.video.layer.dialog.InputDialog;
+import com.byteplus.vodcommon.ui.video.scene.comment.model.CommentItem;
 import com.byteplus.voddemo.R;
 import com.byteplus.voddemo.databinding.VevodDialogCommentBinding;
-import com.byteplus.voddemo.ui.video.scene.comment.model.CommentItem;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
@@ -38,6 +41,18 @@ public class CommentDialogFragment extends BottomSheetDialogFragment {
         super.onCreate(savedInstanceState);
         mViewMode = new ViewModelProvider(this).get(CommentViewModel.class);
         mViewMode.vid = requireArguments().getString("vid");
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+        dialog.setOnShowListener(source -> {
+            View view = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            assert view != null;
+            BottomSheetBehavior.from(view).setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
+        return dialog;
     }
 
     @Nullable

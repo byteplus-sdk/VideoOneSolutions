@@ -28,17 +28,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.bean.CreateLiveRoomResponse;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveCreateRoomBinding;
 import com.vertcdemo.solution.interactivelive.feature.main.settings.LiveSettingDialog;
+import com.vertcdemo.solution.interactivelive.http.response.CreateRoomResponse;
 import com.vertcdemo.ui.CenteredToast;
 import com.videoone.avatars.Avatars;
 
@@ -177,7 +176,7 @@ public class CreateLiveRoomFragment extends Fragment {
 
     void requestStartLive() {
         mRequestStartLive = true;
-        if (mViewModel.response != null) {
+        if (mViewModel.createResult != null) {
             mViewModel.requestStartLive();
         } else {
             mViewModel.requestCreateLiveRoom();
@@ -194,7 +193,7 @@ public class CreateLiveRoomFragment extends Fragment {
 
     void jumpToHostView() {
         mKeepVideoCapture = true;
-        final CreateLiveRoomResponse response = mViewModel.response;
+        final CreateRoomResponse response = mViewModel.createResult;
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_ROOM_INFO, response.liveRoomInfo);
         args.putSerializable(EXTRA_USER_INFO, response.userInfo);
@@ -202,10 +201,6 @@ public class CreateLiveRoomFragment extends Fragment {
         args.putString(EXTRA_RTS_TOKEN, response.rtsToken);
         args.putString(EXTRA_RTC_TOKEN, response.rtcToken);
         args.putString(EXTRA_RTC_ROOM_ID, response.rtcRoomId);
-
-        final NavOptions options = new NavOptions.Builder()
-                .setPopUpTo(R.id.create_live_room, true)
-                .build();
-        Navigation.findNavController(requireView()).navigate(R.id.host_view, args, options);
+        Navigation.findNavController(requireView()).navigate(R.id.host_view, args);
     }
 }

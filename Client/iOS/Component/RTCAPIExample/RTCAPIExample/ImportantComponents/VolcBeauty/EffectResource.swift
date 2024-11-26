@@ -11,11 +11,42 @@ import Foundation
 class EffectResource {
     
     static func licensePath() -> String {
-        let bundleID: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as! String
-        let licensePath = Bundle.main.path(forResource: bundleID, ofType: "licbag") ?? ""
-        checkPathExist(path: licensePath)
-        
-        return licensePath
+        let bundleId: String = Bundle.main.bundleIdentifier!
+        let underlineBundleId = bundleId.replacingOccurrences(of: ".", with: "_")
+
+        let locations = [
+            Bundle.main.resourceURL,
+            Bundle.main.url(forResource: "LicenseBag", withExtension: "bundle"),
+        ]
+
+        for location in locations {
+            guard let location = location else {
+                continue
+            }
+
+            do {
+                let directoryContents = try FileManager.default.contentsOfDirectory(at: location, includingPropertiesForKeys: nil)
+
+                let licenseUrl = directoryContents.first {
+                    let pathExtension = $0.pathExtension
+                    let lastPathComponent = $0.lastPathComponent
+
+                    return pathExtension == "licbag"
+                        && (lastPathComponent.contains(bundleId) || lastPathComponent.contains(underlineBundleId))
+                }
+
+                if let licenseUrl = licenseUrl {
+                    return licenseUrl.path
+                }
+            } catch {
+                NSLog("Find license path exception: \(error)")
+            }
+        }
+
+        NSLog("EffectResource path does not exists in all locations")
+        let message = "\(LocalizedString("toast_resource_exist")): Not found in all locations"
+        ToastComponents.shared.show(withMessage: message)
+        return ""
     }
     
     static func modelPath() -> String {

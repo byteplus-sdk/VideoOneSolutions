@@ -290,9 +290,12 @@ public abstract class VideoTranscoding {
                 .setRoomID(roomId)
                 .setPushURL(pushUrl)
                 .setExpectedMixingType(STREAM_MIXING_TYPE);
+
+        final int videoWidth = myConfig.width;
+        final int videoHeight = myConfig.height;
         streamConfig.getVideoConfig()
-                .setWidth(myConfig.width)
-                .setHeight(myConfig.height)
+                .setWidth(videoWidth)
+                .setHeight(videoHeight)
                 .setFps(myConfig.frameRate)
                 .setBitrate(myConfig.bitRate);
         // Set the live transcoding audio parameters, the specific parameters depend on the situation
@@ -306,8 +309,8 @@ public abstract class VideoTranscoding {
                 .setRoomID(roomId)
                 .setLocationX(0)
                 .setLocationY(0)
-                .setWidthProportion(1)
-                .setHeightProportion(1)
+                .setWidth(videoWidth)
+                .setHeight(videoHeight)
                 .setAlpha(1)
                 .setZOrder(0)
                 .setRenderMode(MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
@@ -332,9 +335,12 @@ public abstract class VideoTranscoding {
                 .setPushURL(pushUrl)
                 .setExpectedMixingType(STREAM_MIXING_TYPE);
 
+        final int videoWidth = myConfig.width;
+        final int videoHeight = myConfig.height;
+
         streamConfig.getVideoConfig()
-                .setWidth(myConfig.width)
-                .setHeight(myConfig.height)
+                .setWidth(videoWidth)
+                .setHeight(videoHeight)
                 .setFps(myConfig.frameRate)
                 .setBitrate(myConfig.bitRate);
 
@@ -347,9 +353,9 @@ public abstract class VideoTranscoding {
                 .setIsLocalUser(true)
                 .setRoomID(roomId)
                 .setLocationX(0)
-                .setLocationY(0.25)
-                .setWidthProportion(0.5)
-                .setHeightProportion(0.5)
+                .setLocationY((int) (videoWidth * 0.25))
+                .setWidth((int) (videoWidth * 0.5))
+                .setHeight((int) (videoHeight * 0.5))
                 .setAlpha(1)
                 .setZOrder(0)
                 .setRenderMode(MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
@@ -358,10 +364,10 @@ public abstract class VideoTranscoding {
                 .setUserID(coHostUserId)
                 .setIsLocalUser(false)
                 .setRoomID(roomId)
-                .setLocationX(0.5)
-                .setLocationY(0.25)
-                .setWidthProportion(0.5)
-                .setHeightProportion(0.5)
+                .setLocationX((int) (videoWidth * 0.5))
+                .setLocationY((int) (videoHeight * 0.25))
+                .setWidth((int) (videoWidth * 0.5))
+                .setHeight((int) (videoHeight * 0.5))
                 .setAlpha(1)
                 .setZOrder(0)
                 .setRenderMode(MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
@@ -385,9 +391,12 @@ public abstract class VideoTranscoding {
                 .setPushURL(pushUrl)
                 .setExpectedMixingType(STREAM_MIXING_TYPE);
 
+        final int videoWidth = myConfig.width;
+        final int videoHeight = myConfig.height;
+
         streamConfig.getVideoConfig()
-                .setWidth(myConfig.width)
-                .setHeight(myConfig.height)
+                .setWidth(videoWidth)
+                .setHeight(videoHeight)
                 .setFps(myConfig.frameRate)
                 .setBitrate(myConfig.bitRate);
 
@@ -403,8 +412,8 @@ public abstract class VideoTranscoding {
                 .setRoomID(roomId)
                 .setLocationX(0)
                 .setLocationY(0)
-                .setWidthProportion(1)
-                .setHeightProportion(1)
+                .setWidth(videoWidth)
+                .setHeight(videoHeight)
                 .setAlpha(1)
                 .setZOrder(0);
         regions.add(selfRegion);
@@ -428,10 +437,10 @@ public abstract class VideoTranscoding {
             MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig()
                     .setUserID(audienceIds.get(index))
                     .setRoomID(roomId)
-                    .setLocationX(regionX)
-                    .setLocationY(regionY)
-                    .setWidthProportion(regionWidth)
-                    .setHeightProportion(regionHeight)
+                    .setLocationX((int) (videoWidth * regionX))
+                    .setLocationY((int) (videoHeight * regionY))
+                    .setWidth((int) (videoWidth * regionWidth))
+                    .setHeight((int) (videoHeight * regionHeight))
                     .setCornerRadius(cornerRadius)
                     .setAlpha(1)
                     .setZOrder(1);
@@ -457,18 +466,18 @@ public abstract class VideoTranscoding {
                 .setPushURL(pushUrl)
                 .setExpectedMixingType(STREAM_MIXING_TYPE);
 
+        final int videoWidth = myConfig.width;
+        final int videoHeight = myConfig.height;
+
         streamConfig.getVideoConfig()
-                .setWidth(myConfig.width)
-                .setHeight(myConfig.height)
+                .setWidth(videoWidth)
+                .setHeight(videoHeight)
                 .setFps(myConfig.frameRate)
                 .setBitrate(myConfig.bitRate);
 
         streamConfig.getAudioConfig()
                 .setSampleRate(44100)
                 .setChannels(2);
-
-        final int videoWidth = myConfig.width;
-        final int videoHeight = myConfig.height;
 
         final int edgePixels = 4;
 
@@ -482,8 +491,8 @@ public abstract class VideoTranscoding {
                 .setRoomID(roomId)
                 .setLocationX(0)
                 .setLocationY(0)
-                .setWidthProportion((double) (videoWidth - itemWidthPixels - edgePixels) / videoWidth)
-                .setHeightProportion(1.0)
+                .setWidth(videoWidth - itemWidthPixels - edgePixels)
+                .setHeight(videoHeight)
                 .setAlpha(1)
                 .setZOrder(0);
         regions.add(selfRegion);
@@ -499,10 +508,10 @@ public abstract class VideoTranscoding {
             MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig()
                     .setUserID(audienceIds.get(index))
                     .setRoomID(roomId)
-                    .setLocationX(itemX)
-                    .setLocationY((itemHeight + edgeHeight) * index)
-                    .setWidthProportion(itemWidth)
-                    .setHeightProportion(itemHeight)
+                    .setLocationX((int) (videoWidth * itemX))
+                    .setLocationY((int) (videoHeight * (itemHeight + edgeHeight) * index))
+                    .setWidth((int) (videoWidth * itemWidth))
+                    .setHeight((int) (videoHeight * itemHeight))
                     .setAlpha(1)
                     .setZOrder(1);
             regions.add(region);
@@ -575,8 +584,11 @@ public abstract class VideoTranscoding {
         assert mMyLiveInfo != null;
 
         final LiveSettingConfig myConfig = getLiveConfig();
-        mHolder.changeConfig(myConfig.width,
-                myConfig.height,
+        int videoWidth = myConfig.width;
+        int videoHeight = myConfig.height;
+
+        mHolder.changeConfig(videoWidth,
+                videoHeight,
                 myConfig.frameRate,
                 myConfig.bitRate); // RTC bitrate Kbps
 

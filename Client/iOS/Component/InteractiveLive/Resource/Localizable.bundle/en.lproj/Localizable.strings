@@ -115,7 +115,6 @@
 "start_live_title" = "LIVE has started.";
 "live_setting" = "Setting";
 "invitation_interception" = "You can't invite others for the time being, because the previous invitation has not been confirmed and replied yet.";
-"gift_send_button_text" = "Send";
 "application_cancel" = "Co-host request cancelled";
 "refresh_header_idle_text" = "Pull down to refresh";
 "refresh_header_pulling_text" = "Release to refresh";
@@ -159,14 +158,6 @@
 "ABR" = "ABR";
 "ABR_des" = "Prevent users from getting stuck during playback";
 "co_host_request_has_been_sent" = "The co-host request has been sent.\nPlease be patient.";
-"gift_like" = "Like";
-"gift_sugar" = "Sugar";
-"gift_diamond" = "Diamond";
-"gift_fireworks" = "Fireworks";
-"sent_gift_like" = "sent Like";
-"sent_gift_sugar" = "sent Sugar";
-"sent_gift_diamond" = "sent Diamond";
-"sent_gift_fireworks" = "sent Fireworks";
 "%@'s_live_room" = "%@'s Live room";
 "during_pk" = "During PK";
 "end_all_co-host_session" = "End all co-host session?";
@@ -175,6 +166,5 @@
 "adaptive_bitrate_normal" = "Normal";
 "h264/hardware = 1" = "Hardcoding";
 "h264/hardware = 0" = "Softcoding";
-"send_message_exceeded_limit" = "The maximum number of messages you can send is 10, you have exceeded this limit.";
 "alert_guests_finish_mic_title" = "End co-host?";
 "alert_guests_finish_mic_des" = "Co-host with host will end immediately";

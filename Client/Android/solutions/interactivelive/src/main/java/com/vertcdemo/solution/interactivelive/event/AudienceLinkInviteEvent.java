@@ -4,13 +4,11 @@
 package com.vertcdemo.solution.interactivelive.event;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 
 /**
  * audience apply for connection events
  */
-@RTSInform
 public class AudienceLinkInviteEvent {
 
     @SerializedName("inviter")

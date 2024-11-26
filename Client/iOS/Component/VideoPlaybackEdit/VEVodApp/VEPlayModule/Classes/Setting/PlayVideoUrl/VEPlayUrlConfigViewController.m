@@ -5,7 +5,10 @@
 #import "VEVideoUrlParser.h"
 #import "VEShortVideoDemoViewController.h"
 #import "VEFeedVideoDemoViewController.h"
+#import "VEVideoPlayerController.h"
 #import "ToastComponent.h"
+#import <ToolKit/ToolKit.h>
+#import <ToolKit/Localizator.h>
 
 @interface VEPlayUrlConfigViewController ()
 
@@ -26,7 +29,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIButton *closeButton = [UIButton new];
-    [closeButton setImage:[UIImage imageNamed:@"black_back"] forState:UIControlStateNormal];
+    [closeButton setImage:[UIImage imageNamed:@"black_back" bundleName:@"VodPlayer"] forState:UIControlStateNormal];
     [self.view addSubview:closeButton];
     [closeButton addTarget:self action:@selector(onClose) forControlEvents:UIControlEventTouchUpInside];
     [closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -101,7 +104,8 @@
 
 - (void)onButtonClick:(UIButton *)sender {
     if (sender.tag == 2) {
-        self.inputView.text = nil;
+        [VEVideoPlayerController cleanCache];
+        [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"clean_cache_success", @"VodPlayer")];
         return;
     }
     NSString *url = [self.inputView text];

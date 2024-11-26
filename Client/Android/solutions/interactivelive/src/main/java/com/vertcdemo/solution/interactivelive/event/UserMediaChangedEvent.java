@@ -6,13 +6,11 @@ package com.vertcdemo.solution.interactivelive.event;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.core.annotation.MediaStatus;
 
 /**
  * Media state change event
  */
-@RTSInform
 public class UserMediaChangedEvent {
 
     @SerializedName("rtc_room_id")

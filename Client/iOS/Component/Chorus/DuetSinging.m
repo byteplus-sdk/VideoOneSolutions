@@ -4,9 +4,9 @@
 // 
 
 #import "DuetSinging.h"
-#import "JoinRTSParams.h"
 #import "ChorusRTCManager.h"
 #import "ChorusRoomListsViewController.h"
+#import "JoinRTSParams.h"
 
 @implementation DuetSinging
 
@@ -25,21 +25,21 @@
 
 - (void)enterWithCallback:(void (^)(BOOL result))block {
     [super enterWithCallback:block];
-    
-    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
-    [dic setValue:self.scenesName forKey:@"scenes_name"];
-    [dic setValue:[LocalUserComponent userModel].loginToken forKey:@"login_token"];
-    
+
+    NSDictionary *params = @{
+            @"scenes_name": self.scenesName
+    };
+
     [[ToastComponent shareToastComponent] showLoading];
     __weak __typeof(self) wself = self;
-    [JoinRTSParams getJoinRTSParams:[dic copy]
+    [JoinRTSParams getJoinRTSParams:params
                               block:^(JoinRTSParamsModel *_Nonnull model) {
         [[ToastComponent shareToastComponent] dismiss];
         [wself joinRTS:model block:block];
     }];
 }
-- (void)joinRTS:(JoinRTSParamsModel * _Nonnull)model
-          block:(void (^)(BOOL result))block{
+- (void)joinRTS:(JoinRTSParamsModel *_Nonnull)model
+          block:(void (^)(BOOL result))block {
     if (!model) {
         [[ToastComponent shareToastComponent] showWithMessage:LocalizedString(@"connection_failed")];
         if (block) {
@@ -49,9 +49,6 @@
     }
     // Connect RTS
     [[ChorusRTCManager shareRtc] connect:model.appId
-                                RTSToken:model.RTSToken
-                               serverUrl:model.serverUrl
-                               serverSig:model.serverSignature
                                      bid:model.bid
                                    block:^(BOOL result) {
         if (result) {

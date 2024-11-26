@@ -262,6 +262,7 @@ static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
 }
 
 - (void)feedVideoCellDidRotate:(VEFeedVideoNormalCell *)cell {
+    VOLogD(VOVideoPlayback, @"feedVideoCellDidRotate");
     [cell playerControlInterfaceDestory];
     VEVideoDetailViewController *detailViewController = [[VEVideoDetailViewController alloc] initWithType:VEVideoPlayerTypeFeed];
     detailViewController.landscapeMode = YES;
@@ -322,7 +323,7 @@ static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
 
         BaseButton *button = [[BaseButton alloc] init];
         button.backgroundColor = [UIColor clearColor];
-        UIImage *image = [UIImage imageNamed:@"nav_left"];
+        UIImage *image = [UIImage imageNamed:@"nav_left" bundleName:@"VodPlayer"];
         button.tintColor = [UIColor whiteColor];
         [button setImage:image forState:UIControlStateNormal];
         [button addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
@@ -334,7 +335,7 @@ static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
         }];
 
         UILabel *label = [[UILabel alloc] init];
-        label.text = LocalizedStringFromBundle(@"vod_entry_feed", @"VEVodApp");
+        label.text = LocalizedStringFromBundle(@"vod_entry_feed", @"VodPlayer");
         label.textColor = [UIColor whiteColor];
         label.font = [UIFont systemFontOfSize:16 weight:UIFontWeightBold];
         [_navView addSubview:label];

@@ -1,10 +1,17 @@
 package com.vertc.api.example.examples.messaging;
 
 
+import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.TextureView;
+
+import androidx.annotation.NonNull;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageInfo;
+import androidx.camera.core.ImageProxy;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
@@ -14,6 +21,9 @@ import com.ss.bytertc.engine.VideoCanvas;
 import com.ss.bytertc.engine.data.RemoteStreamKey;
 import com.ss.bytertc.engine.data.SEICountPerFrame;
 import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.VideoPixelFormat;
+import com.ss.bytertc.engine.data.VideoRotation;
+import com.ss.bytertc.engine.data.VideoSourceType;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
 import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
 import com.ss.bytertc.engine.live.ByteRTCStreamMixingEvent;
@@ -24,11 +34,13 @@ import com.ss.bytertc.engine.live.MixedStreamType;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.RTCRoomStats;
 import com.ss.bytertc.engine.video.VideoFrame;
+import com.ss.bytertc.engine.video.builder.CpuBufferVideoFrameBuilder;
 import com.vertc.api.example.R;
 import com.vertc.api.example.base.ExampleBaseActivity;
 import com.vertc.api.example.base.ExampleCategory;
 import com.vertc.api.example.base.annotation.ApiExample;
 import com.vertc.api.example.databinding.ActivitySeimessageBinding;
+import com.vertc.api.example.examples.video.customcapture.CameraHelper;
 import com.vertc.api.example.utils.IMEUtils;
 import com.vertc.api.example.utils.RTCHelper;
 import com.vertc.api.example.utils.RTMPLinkGenerator;
@@ -38,6 +50,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * <pre>
@@ -62,6 +76,12 @@ public class SEIMessageActivity extends ExampleBaseActivity {
 
     ActivitySeimessageBinding binding;
 
+    private ExecutorService executor;
+    private CameraHelper cameraHelper;
+
+    private boolean isPushingCustomVideo;
+    private String customMessage = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,13 +93,20 @@ public class SEIMessageActivity extends ExampleBaseActivity {
 
         initUI();
 
-        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "sei-messaging");
         rtcVideo.startAudioCapture();
         rtcVideo.startVideoCapture();
 
         mixedStreamConfig = MixedStreamConfig.defaultMixedStreamConfig();
 
         setLocalRenderView();
+
+        executor = Executors.newSingleThreadExecutor();
+        cameraHelper = new CameraHelper(
+                ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888,
+                executor,
+                new RTCVideoFrameConsumer()
+        );
     }
 
     private void initUI() {
@@ -104,7 +131,7 @@ public class SEIMessageActivity extends ExampleBaseActivity {
         });
 
         binding.btnSendSeiMsg.setOnClickListener(v -> {
-            String msg =  binding.seiMsgInput.getText().toString();
+            String msg = binding.seiMsgInput.getText().toString();
             if (TextUtils.isEmpty(msg)) {
                 ToastUtil.showToast(this, R.string.toast_message_is_empty);
             }
@@ -121,6 +148,13 @@ public class SEIMessageActivity extends ExampleBaseActivity {
         });
         binding.btnStopPush.setOnClickListener(v -> {
             stopPushCDNStream();
+        });
+
+        binding.btnStartPushFrame.setOnClickListener(v -> {
+            startPushCustomVideo();
+        });
+        binding.btnStopPushFrame.setOnClickListener(v -> {
+            stopPushCustomVideo();
         });
     }
 
@@ -162,12 +196,20 @@ public class SEIMessageActivity extends ExampleBaseActivity {
     }
 
     IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+        private String previousMessage;
+        private long previousTime = 0;
+
         @Override
         public void onSEIMessageReceived(RemoteStreamKey remoteStreamKey, ByteBuffer message) {
             super.onSEIMessageReceived(remoteStreamKey, message);
             Charset charset = Charset.defaultCharset();
             String dataString = charset.decode(message).toString();
-            ToastUtil.showLongToast(SEIMessageActivity.this, "onSEIMessageReceived：" + dataString);
+            long currentTime = SystemClock.uptimeMillis();
+            if (!TextUtils.equals(previousMessage, dataString) || (currentTime - previousTime > 1000)) {
+                previousMessage = dataString;
+                previousTime = currentTime;
+                ToastUtil.showLongToast(SEIMessageActivity.this, "onSEIMessageReceived：" + dataString);
+            }
         }
     };
 
@@ -207,14 +249,16 @@ public class SEIMessageActivity extends ExampleBaseActivity {
     }
 
     private MixedStreamConfig.MixedStreamLayoutRegionConfig[] getLayoutRegions() {
+        int regionWidth = mixedStreamConfig.getVideoConfig().getWidth();
+        int regionHeight = mixedStreamConfig.getVideoConfig().getHeight();
         MixedStreamConfig.MixedStreamLayoutRegionConfig[] regions = new MixedStreamConfig.MixedStreamLayoutRegionConfig[1];
         MixedStreamConfig.MixedStreamLayoutRegionConfig region = new MixedStreamConfig.MixedStreamLayoutRegionConfig();
         region.setRoomID(roomID);
         region.setUserID(localUid);
-        region.setLocationX(0.0);
-        region.setLocationY(0.0);
-        region.setWidthProportion(1.0);
-        region.setHeightProportion(1.0);
+        region.setLocationX(0);
+        region.setLocationY(0);
+        region.setWidth(regionWidth);
+        region.setHeight(regionHeight);
         region.setAlpha(1);
         region.setZOrder(0);
         region.setRenderMode(MixedStreamConfig.MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
@@ -245,6 +289,88 @@ public class SEIMessageActivity extends ExampleBaseActivity {
 
     private void stopPushCDNStream() {
         rtcVideo.stopPushStreamToCDN(CDN_TASK_ID);
+    }
+
+    private void startPushCustomVideo() {
+        String customMessage = binding.videoFrameMsgInput.getText().toString();
+        if (TextUtils.isEmpty(customMessage)) {
+            ToastUtil.showToast(this, R.string.msg_empty_sei_message);
+            return;
+        }
+
+        this.customMessage = customMessage;
+
+        if (isPushingCustomVideo) {
+            Log.w(TAG, "CameraHelper already started");
+            return;
+        }
+        isPushingCustomVideo = true;
+
+        rtcVideo.stopVideoCapture();
+        rtcVideo.setVideoSourceType(StreamIndex.STREAM_INDEX_MAIN, VideoSourceType.VIDEO_SOURCE_TYPE_EXTERNAL);
+
+        cameraHelper.bind(this);
+    }
+
+    class RTCVideoFrameConsumer implements ImageAnalysis.Analyzer {
+        @Override
+        public void analyze(@NonNull ImageProxy image) {
+            final ImageInfo info = image.getImageInfo();
+            final int width = image.getWidth();
+            final int height = image.getHeight();
+            final int degrees = info.getRotationDegrees();
+
+            final int imageFormat = image.getFormat();
+
+            assert imageFormat == PixelFormat.RGBA_8888;
+
+            ByteBuffer data = image.getPlanes()[0].getBuffer();
+            pushRGBAToRTC(data, width, height, degrees);
+
+            image.close();
+        }
+
+        /**
+         * Push RGBA to RTC
+         *
+         * @param source  RGBA buffer
+         * @param width   image width
+         * @param height  image height
+         * @param degrees image rotation degrees
+         */
+        private void pushRGBAToRTC(ByteBuffer source, int width, int height, int degrees) {
+            CpuBufferVideoFrameBuilder builder = new CpuBufferVideoFrameBuilder(VideoPixelFormat.RGBA)
+                    .setWidth(width)
+                    .setHeight(height)
+                    .setRotation(toRotation(degrees))
+                    .setTimeStampUs(System.nanoTime())
+                    .setPlaneData(0, source)
+                    .setPlaneStride(0, width * 4)
+                    // Set Frame Custom SEI message
+                    .setExternalDataInfo(ByteBuffer.wrap(customMessage.getBytes(StandardCharsets.UTF_8)));
+
+            rtcVideo.pushExternalVideoFrame(builder.build());
+        }
+
+        private static VideoRotation toRotation(int degrees) {
+            return switch (degrees) {
+                case 90 -> VideoRotation.VIDEO_ROTATION_90;
+                case 180 -> VideoRotation.VIDEO_ROTATION_180;
+                case 270 -> VideoRotation.VIDEO_ROTATION_270;
+                default -> VideoRotation.VIDEO_ROTATION_0;
+            };
+        }
+    }
+
+    private void stopPushCustomVideo() {
+        if (isPushingCustomVideo) {
+            isPushingCustomVideo = false;
+
+            cameraHelper.unbind(this);
+
+            rtcVideo.setVideoSourceType(StreamIndex.STREAM_INDEX_MAIN, VideoSourceType.VIDEO_SOURCE_TYPE_INTERNAL);
+            rtcVideo.startVideoCapture();
+        }
     }
 
     IMixedStreamObserver mixedStreamObserver = new IMixedStreamObserver() {
@@ -293,12 +419,17 @@ public class SEIMessageActivity extends ExampleBaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        executor.shutdown();
+
         leaveRoom();
+
         if (rtcVideo != null) {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
         }
-        RTCVideo.destroyRTCVideo();
+
         rtcVideo = null;
+        RTCVideo.destroyRTCVideo();
     }
 }

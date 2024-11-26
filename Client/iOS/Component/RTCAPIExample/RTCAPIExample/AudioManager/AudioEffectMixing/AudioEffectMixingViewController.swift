@@ -63,7 +63,7 @@ class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate,
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 
                 // Join the room.
@@ -196,7 +196,8 @@ class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate,
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("audio-effect-mixing")
         
         // Start local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -223,7 +224,7 @@ class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate,
          canvas.renderMode = .hidden
         self.localView.userId = userTextField.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     func createUI() -> Void {

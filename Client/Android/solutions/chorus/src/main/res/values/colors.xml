@@ -11,4 +11,6 @@
     <color name="white_50">#7FFFFFFF</color>
     <color name="color_000463">#000463</color>
 
+    <color name="chorus_bottom_sheet_color">#BF000000</color>
+
 </resources>

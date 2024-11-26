@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.NavGraph;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +28,7 @@ import com.videoone.avatars.Avatars;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class LiveRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutLiveRoomItemBinding>> {
     @NonNull
@@ -48,17 +51,24 @@ public class LiveRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutLiveRoom
 
     @Override
     public void onBindViewHolder(@NonNull BVH<LayoutLiveRoomItemBinding> holder, int position) {
-        final LiveRoomInfo info = mItems.get(position);
-        holder.binding.userName.setText(mContext.getString(R.string.live_show_suffix, info.anchorUserName));
+        LiveRoomInfo item = mItems.get(position);
+        holder.binding.userName.setText(mContext.getString(R.string.live_show_suffix, item.anchorUserName));
         Glide.with(holder.binding.userAvatar)
-                .load(Avatars.byUserId(info.anchorUserId))
+                .load(Avatars.byUserId(item.anchorUserId))
                 .into(holder.binding.userAvatar);
 
         holder.itemView.setOnClickListener(DebounceClickListener.create(v -> {
+            LiveRoomInfo info = mItems.get(holder.getBindingAdapterPosition());
             Bundle args = new Bundle();
             args.putString(EXTRA_ROOM_ID, info.roomId);
             args.putString(EXTRA_HOST_ID, info.anchorUserId);
-            Navigation.findNavController(v).navigate(R.id.audience_view, args);
+
+            NavController navController = Navigation.findNavController(v);
+            NavGraph graph = navController.getGraph();
+            NavGraph roomGraph = Objects.requireNonNull((NavGraph) graph.findNode(R.id.room));
+            roomGraph.setStartDestination(R.id.audience_view);
+
+            navController.navigate(R.id.audience_view, args);
         }));
     }
 
@@ -84,16 +94,15 @@ public class LiveRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutLiveRoom
 
             @Override
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return false;
+                final LiveRoomInfo o = oldItems.get(oldItemPosition);
+                final LiveRoomInfo n = newItems.get(newItemPosition);
+                return o.anchorUserId.equals(n.anchorUserId)
+                        && o.anchorUserName.equals(n.anchorUserName);
             }
 
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                final LiveRoomInfo o = oldItems.get(oldItemPosition);
-                final LiveRoomInfo n = newItems.get(newItemPosition);
-                return o.roomId.equals(n.roomId)
-                        && o.anchorUserId.equals(n.anchorUserId)
-                        && o.anchorUserName.equals(n.anchorUserName);
+                return true;
             }
         }).dispatchUpdatesTo(this);
     }

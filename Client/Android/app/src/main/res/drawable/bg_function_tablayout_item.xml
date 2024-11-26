@@ -7,6 +7,6 @@
         </shape>
     </item>
     <item>
-        <color android:color="@color/transparent" />
+        <color android:color="@android:color/transparent" />
     </item>
 </selector>

@@ -6,7 +6,6 @@ package com.vertcdemo.solution.interactivelive.bean;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.solution.interactivelive.feature.main.RoomStatus;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -24,9 +23,6 @@ public class LiveRoomInfo implements Serializable {
     public String anchorUserId;
     @SerializedName("host_user_name")
     public String anchorUserName;
-    @RoomStatus
-    @SerializedName("status")
-    public int status;
     @SerializedName("audience_count")
     public int audienceCount;
     @SerializedName("start_time")
@@ -45,7 +41,6 @@ public class LiveRoomInfo implements Serializable {
                 ", roomName='" + roomName + '\'' +
                 ", anchorUserId='" + anchorUserId + '\'' +
                 ", anchorUserName='" + anchorUserName + '\'' +
-                ", status=" + status +
                 ", audienceCount=" + audienceCount +
                 ", startTime=" + startTime +
                 ", streamPullStreamList=" + streamPullStreamList +

@@ -24,6 +24,7 @@ public class CenteredToast {
         toast.show();
     }
 
+    @MainThread
     public static void show(@NonNull Context context, @StringRes int message) {
         show(context, message, Toast.LENGTH_SHORT);
     }

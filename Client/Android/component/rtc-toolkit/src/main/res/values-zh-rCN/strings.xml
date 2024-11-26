@@ -45,7 +45,7 @@
     <string name="camera_flip">镜头翻转</string>
     <string name="experience_time_exceeded_xxx_minutes">本次体验时间已超过%s分钟</string>
     <string name="say_something">说点什么</string>
-    <string name="send_empty_message_cannot_be_empty">发送空消息不能为空</string>
+    <string name="send_message_cannot_be_empty">发送空消息不能为空</string>
     <string name="send_message_exceeded_limit">最多发送 10 次消息，您已超过上限</string>
-
+    <string name="send_empty_message_cannot_be_empty">发送空消息不能为空</string>
 </resources>

@@ -111,7 +111,7 @@
 
 - (void)prepareEnvironment {
     [self.userEntry reloadData];
-    Class impVodClass = NSClassFromString(@"VideoPlaybackEdit");
+    Class impVodClass = NSClassFromString(@"VodSingleFunction");
     if (impVodClass && [impVodClass conformsToProtocol:@protocol(EntranceProtocol)]) {
         [(Class<EntranceProtocol>)impVodClass prepareEnvironment];
     }

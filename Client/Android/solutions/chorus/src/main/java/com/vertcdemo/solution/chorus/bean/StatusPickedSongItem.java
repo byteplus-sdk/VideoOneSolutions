@@ -4,11 +4,16 @@
 package com.vertcdemo.solution.chorus.bean;
 
 
+import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
+
 import com.vertcdemo.solution.chorus.core.rts.annotation.SongStatus;
 
 public class StatusPickedSongItem {
     public PickedSongInfo item;
 
+    @SongStatus
     public int status;
 
     public boolean isSinging() {
@@ -42,5 +47,13 @@ public class StatusPickedSongItem {
 
     public String getArtist() {
         return item.ownerUserName;
+    }
+
+    public boolean match(@Nullable PickedSongInfo current) {
+        if (current == null) {
+            return false;
+        }
+        return TextUtils.equals(current.songId, item.songId)
+                && TextUtils.equals(current.ownerUid, item.ownerUid);
     }
 }
