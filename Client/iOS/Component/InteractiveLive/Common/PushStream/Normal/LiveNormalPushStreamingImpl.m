@@ -41,26 +41,6 @@
     _streamConfig = streamConfig;
 }
 
-- (NSString *)generalRTMUrl:(NSString *)rtmpUrl {
-    NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithString:rtmpUrl];
-    NSString *urlPath = urlComponents.path;
-
-    if (IsEmptyStr(urlPath.pathExtension)) {
-        urlPath = [urlPath stringByAppendingPathExtension:@"sdp"];
-    } else {
-        urlPath = [urlPath stringByReplacingOccurrencesOfString:urlPath.pathExtension withString:@"sdp"];
-    }
-
-    urlComponents.path = urlPath;
-
-    if (![urlComponents.scheme hasPrefix:@"http"]) {
-        urlComponents.scheme = @"http";
-    }
-
-    NSString *rtmUrl = urlComponents.URL.absoluteString;
-    return rtmUrl;
-}
-
 - (void)startNormalStreaming {
     [self setupLiveCoreIfNeed];
 
@@ -110,7 +90,7 @@
     audioCaptureConfig.channel = VeLiveAudioChannelStereo;
 
     VeLivePusherConfiguration *config = [[VeLivePusherConfiguration alloc] init];
-    config.reconnectCount = 3;
+    config.reconnectCount = 12;
     config.reconnectIntervalSeconds = 5; // seconds
     config.videoCaptureConfig = videoCaptureConfig;
     config.audioCaptureConfig = audioCaptureConfig;

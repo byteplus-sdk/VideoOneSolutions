@@ -6,13 +6,11 @@ package com.vertcdemo.solution.interactivelive.event;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 
 /**
  * Reply to the viewer's application connection event
  */
-@RTSInform
 public class AudienceLinkApplyEvent {
     @SerializedName("applicant")
     public LiveUserInfo applicant;

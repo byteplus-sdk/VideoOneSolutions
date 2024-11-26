@@ -23,7 +23,6 @@ import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.bean.PickedSongInfo;
 import com.vertcdemo.solution.ktv.bean.SeatInfo;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
-import com.vertcdemo.solution.ktv.common.SolutionToast;
 import com.vertcdemo.solution.ktv.core.rts.annotation.UserStatus;
 import com.vertcdemo.solution.ktv.databinding.FragmentKtvSeatGroupBinding;
 import com.vertcdemo.solution.ktv.event.FinishSingBroadcast;
@@ -35,6 +34,7 @@ import com.vertcdemo.solution.ktv.event.SeatChangedBroadcast;
 import com.vertcdemo.solution.ktv.event.StartSingBroadcast;
 import com.vertcdemo.solution.ktv.feature.main.seat.SeatLayout;
 import com.vertcdemo.solution.ktv.feature.main.viewmodel.KTVRoomViewModel;
+import com.vertcdemo.ui.CenteredToast;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -233,11 +233,11 @@ public class KTVSeatsFragment extends Fragment {
         } else {
             Log.d(TAG, "handleAudienceClickSeat: Click empty Seat");
             if (mViewModel.myUserStatus() == UserStatus.INTERACT) {
-                SolutionToast.show(R.string.toast_error_switch_seat);
+                CenteredToast.show(R.string.toast_error_switch_seat);
                 return;
             } else if (mViewModel.myUserStatus() == UserStatus.NORMAL) {
                 if (mViewModel.getSelfApply()) {
-                    SolutionToast.show(R.string.toast_apply_guest);
+                    CenteredToast.show(R.string.toast_apply_guest);
                     return;
                 }
             }

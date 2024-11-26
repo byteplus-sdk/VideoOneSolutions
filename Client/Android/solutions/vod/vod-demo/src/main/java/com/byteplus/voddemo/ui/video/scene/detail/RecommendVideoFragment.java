@@ -21,8 +21,8 @@ import com.byteplus.vod.scenekit.data.page.Page;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.ui.widgets.load.impl.RecycleViewLoadMoreHelper;
 import com.byteplus.voddemo.R;
-import com.byteplus.voddemo.data.remote.RemoteApi;
-import com.byteplus.voddemo.data.remote.api2.GetFeedStreamApi;
+import com.byteplus.vodcommon.data.remote.RemoteApi;
+import com.byteplus.vodcommon.data.remote.api2.GetFeedStreamApi;
 import com.byteplus.voddemo.databinding.VevodRecommendVideoFragmentBinding;
 import com.byteplus.voddemo.ui.video.scene.detail.bean.RecommendInfo;
 

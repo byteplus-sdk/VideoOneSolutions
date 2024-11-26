@@ -51,7 +51,7 @@ public class InputPullUrlActivity extends AppCompatActivity {
     private SwitchCompat mSeiSw;
 
     private void initUI() {
-        findViewById(R.id.title_bar_left_iv).setOnClickListener(v -> finish());
+        findViewById(com.byteplus.live.common.R.id.title_bar_left_iv).setOnClickListener(v -> finish());
 
         mEditText = findViewById(R.id.et_input_url);
         mEditText.setText(PreferenceUtil.getInstance().getPullUrl(""));
@@ -103,8 +103,8 @@ public class InputPullUrlActivity extends AppCompatActivity {
         mSuggestProtocolSp = findViewById(R.id.protocol);
         {
             String[] items = getResources().getStringArray(R.array.live_protocols);
-            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, R.layout.live_item_select, items);
-            spinnerAdapter.setDropDownViewResource(R.layout.live_item_drop);
+            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, com.byteplus.live.common.R.layout.live_item_select, items);
+            spinnerAdapter.setDropDownViewResource(com.byteplus.live.common.R.layout.live_item_drop);
             mSuggestProtocolSp.setAdapter(spinnerAdapter);
         }
         mSuggestProtocolSp.setSelection(PreferenceUtil.getInstance().getPullProtocol(PULL_PROTOCOL_TCP));
@@ -112,8 +112,8 @@ public class InputPullUrlActivity extends AppCompatActivity {
         mSuggestFormatSp = findViewById(R.id.format);
         {
             String[] items = getResources().getStringArray(R.array.live_formats);
-            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, R.layout.live_item_select, items);
-            spinnerAdapter.setDropDownViewResource(R.layout.live_item_drop);
+            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, com.byteplus.live.common.R.layout.live_item_select, items);
+            spinnerAdapter.setDropDownViewResource(com.byteplus.live.common.R.layout.live_item_drop);
             mSuggestFormatSp.setAdapter(spinnerAdapter);
         }
         mSuggestFormatSp.setSelection(PreferenceUtil.getInstance().getPullFormat(PULL_FORMAT_FLV));

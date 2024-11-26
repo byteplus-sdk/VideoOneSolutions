@@ -56,7 +56,7 @@ public interface LivePusher {
 
     void stopAudioCapture();
 
-    void startScreenRecording(boolean enableAppAudio, Intent screenIntent);
+    void startScreenRecording(Intent screenIntent);
 
     void stopScreenRecording();
 
@@ -116,7 +116,7 @@ public interface LivePusher {
 
     void setVoiceLoudness(float level);
 
-    void enableEcho(boolean enable);
+    boolean enableEcho(boolean enable);
 
     boolean isEnableEcho();
 
@@ -155,23 +155,6 @@ public interface LivePusher {
     void setZoomRatio(float ratio);
 
     void release();
-
-    static void setLogLevel(int level) {
-        Log.i("LivePusher", "setLogLevel, level: " + level);
-//        if (level == PreferenceUtil.PULL_LOG_LEVEL_NONE) {
-//            VeLivePusher.setLogLevel(VeLiveLogLevelNone);
-//        } else if (level == PreferenceUtil.PULL_LOG_LEVEL_ERROR) {
-//            VeLivePusher.setLogLevel(VeLiveLogLevelError);
-//        } else if (level == PreferenceUtil.PULL_LOG_LEVEL_WARN) {
-//            VeLivePusher.setLogLevel(VeLiveLogLevelWarn);
-//        } else if (level == PreferenceUtil.PULL_LOG_LEVEL_INFO) {
-//            VeLivePusher.setLogLevel(VeLiveLogLevelInfo);
-//        } else if (level == PreferenceUtil.PULL_LOG_LEVEL_DEBUG) {
-//            VeLivePusher.setLogLevel(VeLiveLogLevelDebug);
-//        } else if (level == PreferenceUtil.PULL_LOG_LEVEL_VERBOSE) {
-//            VeLivePusher.setLogLevel(VeLiveLogLevelVerbose);
-//        }
-    }
 
     class AudioFrame {
         //        static final int AUDIO_BUFFER_TYPE_UNKNOWN = 0;

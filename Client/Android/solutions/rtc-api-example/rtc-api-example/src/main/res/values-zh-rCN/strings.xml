@@ -7,9 +7,14 @@
     <string name="example_audio_effect_mixing">音效混音</string>
     <string name="example_audio_mixing">音乐混音</string>
     <string name="example_voice_effect">声音特效</string>
+    <string name="example_custom_audio_capture">自定义音频采集</string>
     <string name="example_picture_in_picture">画中画</string>
     <string name="example_video_config">视频配置</string>
     <string name="example_video_rotation">视频旋转</string>
+    <string name="example_screen_sharing">屏幕共享</string>
+    <string name="example_custom_video_capture">自定义视频采集</string>
+    <string name="example_custom_video_rendering">自定义视频渲染</string>
+    <string name="example_custom_video_encoding">自定义视频编码</string>
     <string name="example_cdn_stream">推流到CDN</string>
     <string name="example_third_beauty">第三方美颜</string>
     <string name="example_third_beauty_byte">字节美颜</string>
@@ -174,4 +179,22 @@
     <string name="label_virtual_color_title">纯色</string>
     <string name="label_virtual_image_title">图片</string>
 
+    <string name="title_external_video_frame">自定义视频采集</string>
+    <string name="title_video_render">自定义视频渲染</string>
+    <string name="title_encode_video_frame">自定义视频编码</string>
+    <string name="title_screen_share">屏幕共享</string>
+
+    <string name="button_start_push">开始推送</string>
+    <string name="button_stop_push">停止推送</string>
+    <string name="label_video_type">视频类型</string>
+    <string name="label_video_format">视频格式</string>
+    <string name="hint_user_id">用户 ID</string>
+    <string name="button_start_screen_sharing">开始投屏</string>
+    <string name="button_stop_screen_sharing">停止投屏</string>
+    <string name="button_start_render">开始渲染</string>
+    <string name="button_stop_render">停止渲染</string>
+    <string name="msg_sharing_low_os_version">当前系统版本过低，无法支持屏幕共享</string>
+    <string name="msg_sharing">正在录制/投射您的屏幕</string>
+    <string name="msg_empty_sei_message">SEI消息为空</string>
+    <string name="example_network_error">网络错误</string>
 </resources>

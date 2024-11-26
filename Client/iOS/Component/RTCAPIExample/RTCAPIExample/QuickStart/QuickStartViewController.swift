@@ -38,7 +38,8 @@ class QuickStartViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
     func buildActions() {
         stepButton1.buttonAction = { [weak self] in
             if self?.rtcVideo == nil {
-                self?.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+                self?.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+                self?.rtcVideo?.setBusinessId("quick")
             }
         }
         
@@ -100,7 +101,7 @@ class QuickStartViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
             return
         }
         
-        generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+        generateToken(roomId: roomId, userId: userId) { [weak self] token in
             // Join room
             self?.rtcRoom = self?.rtcVideo?.createRTCRoom(roomId)
             self?.rtcRoom?.delegate = self
@@ -126,7 +127,7 @@ class QuickStartViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
         canvas.view = self.localView.videoView
         canvas.renderMode = .hidden
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     func bindRemoteRenderView(view: UserVideoView, roomId: String, userId: String) {
@@ -139,7 +140,7 @@ class QuickStartViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
         let streamKey = ByteRTCRemoteStreamKey.init()
         streamKey.userId = userId
         streamKey.roomId = roomId;
-        streamKey.streamIndex = .main
+        streamKey.streamIndex = .indexMain
         
         self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
     }
@@ -155,7 +156,7 @@ class QuickStartViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
         let streamKey = ByteRTCRemoteStreamKey.init()
         streamKey.userId = userId
         streamKey.roomId = roomId;
-        streamKey.streamIndex = .main
+        streamKey.streamIndex = .indexMain
         
         self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
     }

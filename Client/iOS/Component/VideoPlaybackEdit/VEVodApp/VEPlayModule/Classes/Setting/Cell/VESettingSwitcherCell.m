@@ -5,7 +5,7 @@
 #import "UIColor+String.h"
 #import "Masonry.h"
 
-const NSString *VESettingSwitcherCellReuseID = @"VESettingSwitcherCellReuseID";
+extern NSString *VESettingSwitcherCellReuseID;
 
 @interface VESettingSwitcherCell ()
 

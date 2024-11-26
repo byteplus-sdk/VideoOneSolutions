@@ -6,12 +6,10 @@ package com.vertcdemo.solution.interactivelive.event;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
 /**
  * Host Disconnect Your link Event
  */
-@RTSInform
 public class AudienceLinkKickEvent {
 
     @SerializedName("linker_id")

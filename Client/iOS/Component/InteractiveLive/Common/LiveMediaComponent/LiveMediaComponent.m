@@ -20,6 +20,8 @@
 
 @property (nonatomic, assign) BOOL currentFlipImage;
 
+@property (nonatomic, strong) NSString *roomID;
+
 @end
 
 @implementation LiveMediaComponent
@@ -33,8 +35,10 @@
 
 #pragma mark - Publish Action
 
-- (void)show:(LiveMediaStatus)status
-    userModel:(LiveUserModel *)userModel {
+- (void)show:(NSString *)roomID
+      status:(LiveMediaStatus)status
+   userModel:(LiveUserModel *)userModel {
+    self.roomID = roomID;
     UIViewController *windowVC = [DeviceInforTool topViewController];
     UIView *mediaView = nil;
     CGFloat mediaViewHeight = 0;
@@ -179,9 +183,10 @@
                        block:(void (^)(BOOL result))block {
     __weak __typeof(self) wself = self;
     [[ToastComponent shareToastComponent] showLoading];
-    [LiveRTSManager liveUpdateMediaMic:mic
-                                camera:self.currentCamera
-                                 block:^(RTSACKModel *_Nonnull model) {
+    [LiveRTSManager liveUpdateMediaStatus:self.roomID
+                                      mic:mic
+                                   camera:self.currentCamera
+                                    block:^(RTSACKModel *_Nonnull model) {
                                      [[ToastComponent shareToastComponent] dismiss];
                                      if (!model.result) {
                                          [[ToastComponent shareToastComponent] showWithMessage:model.message];
@@ -199,20 +204,21 @@
                           block:(void (^)(BOOL result))block {
     __weak __typeof(self) wself = self;
     [[ToastComponent shareToastComponent] showLoading];
-    [LiveRTSManager liveUpdateMediaMic:self.currentMic
-                                camera:camera
-                                 block:^(RTSACKModel *_Nonnull model) {
-                                     [[ToastComponent shareToastComponent] dismiss];
-                                     if (!model.result) {
-                                         [[ToastComponent shareToastComponent] showWithMessage:model.message];
-                                     } else {
-                                         wself.currentCamera = camera;
-                                         [wself.delegate mediaComponent:wself toggleCamera:camera];
-                                     }
-                                     if (block) {
-                                         block(model.result);
-                                     }
-                                 }];
+    [LiveRTSManager liveUpdateMediaStatus:self.roomID
+                                      mic:self.currentMic
+                                   camera:camera
+                                    block:^(RTSACKModel *_Nonnull model) {
+                                        [[ToastComponent shareToastComponent] dismiss];
+                                        if (!model.result) {
+                                            [[ToastComponent shareToastComponent] showWithMessage:model.message];
+                                        } else {
+                                            wself.currentCamera = camera;
+                                            [wself.delegate mediaComponent:wself toggleCamera:camera];
+                                        }
+                                        if (block) {
+                                            block(model.result);
+                                        }
+                                    }];
 }
 
 #pragma mark - Private Action

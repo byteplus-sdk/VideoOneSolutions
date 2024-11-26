@@ -62,7 +62,7 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 
                 // Join room
@@ -87,7 +87,8 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("sei-messaging")
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -106,7 +107,7 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     func updateRenderView() {
@@ -164,8 +165,8 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         
         var regions = [ByteRTCMixedStreamLayoutRegionConfig]()
         
-        let width = 1.0
-        let height = 1.0
+        let width = 360
+        let height = 640
         
         // Local user
         let regionConfig = ByteRTCMixedStreamLayoutRegionConfig.init()
@@ -173,8 +174,8 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         regionConfig.roomID = roomId!
         regionConfig.locationX = 0
         regionConfig.locationY = 0
-        regionConfig.widthProportion = width
-        regionConfig.heightProportion = height
+        regionConfig.width = width
+        regionConfig.height = height
         regionConfig.zOrder = 0
         regionConfig.isLocalUser = true
         regionConfig.mediaType = .audioAndVideo
@@ -189,7 +190,7 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         let message = self.seiTextFieldView.text;
         
         if !message!.isEmpty, let data = message?.data(using: .utf8) {
-            self.rtcVideo?.sendSEIMessage(.main, andMessage: data, andRepeatCount: 3, andCountPerFrame: .single)
+            self.rtcVideo?.sendSEIMessage(.indexMain, andMessage: data, andRepeatCount: 3, andCountPerFrame: .single)
         }else {
             ToastComponents.shared.show(withMessage: LocalizedString("toast_send_message_empty_false"))
         }
@@ -206,7 +207,7 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         let streamKey = ByteRTCRemoteStreamKey.init()
         streamKey.userId = userId
         streamKey.roomId = roomId;
-        streamKey.streamIndex = .main
+        streamKey.streamIndex = .indexMain
         
         self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
     }
@@ -361,9 +362,7 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         if let cdnUrl = kCDNUrl as String?, !cdnUrl.isEmpty {
             settingView.text = cdnUrl
         } else {
-            LiveAddrProtocol().getRTMPAddr(taskId) { [weak settingView] addr in
-                settingView?.text = addr
-            }
+            settingView.text = generateLiveAddr(taskId: taskId)
         }
         return settingView
     }()
@@ -439,7 +438,7 @@ class SEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
             let streamKey = ByteRTCRemoteStreamKey.init()
             streamKey.userId = userId
             streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .main
+            streamKey.streamIndex = .indexMain
             
             self.users.append(streamKey)
             

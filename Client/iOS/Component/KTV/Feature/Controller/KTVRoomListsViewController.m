@@ -67,7 +67,6 @@
 #pragma mark - KTVRoomTableViewDelegate
 
 - (void)KTVRoomTableView:(KTVRoomTableView *)KTVRoomTableView didSelectRowAtIndexPath:(KTVRoomModel *)model {
-    [PublicParameterComponent share].roomId = model.roomID;
     KTVRoomViewController *next = [[KTVRoomViewController alloc]
                                          initWithRoomModel:model];
     [self.navigationController pushViewController:next animated:YES];

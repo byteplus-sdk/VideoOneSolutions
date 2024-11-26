@@ -4,9 +4,7 @@
 package com.vertcdemo.solution.chorus.bean;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
-@RTSInform
 public class PickedSongInform {
     @Override
     public String toString() {

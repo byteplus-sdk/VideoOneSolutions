@@ -14,53 +14,72 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="42dp" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="42dp" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/tab_layout"
+        app:layout_constraintBottom_toTopOf="@id/tab_scenes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="86dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tab_scenes" />
 
-    <TextView
+    <FrameLayout
         android:id="@+id/tab_scenes"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/main_tab_scene"
-        android:textColor="@color/tab_text_color"
-        android:textSize="14sp"
-        app:drawableTopCompat="@drawable/ic_tab_scenes"
-        app:layout_constraintBottom_toBottomOf="@id/tab_layout"
+        android:layout_height="86dp"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
         app:layout_constraintEnd_toStartOf="@id/tab_function"
-        app:layout_constraintStart_toStartOf="@id/tab_layout"
-        app:layout_constraintTop_toTopOf="@id/tab_layout"
-        tools:drawableTop="@drawable/ic_tab_scenes" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <TextView
+        <TextView
+            android:id="@+id/icon_scenes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/main_tab_scene"
+            android:textColor="@color/tab_text_color"
+            android:textSize="14sp"
+            app:drawableTopCompat="@drawable/ic_tab_scenes"
+            tools:drawableTop="@drawable/ic_tab_scenes" />
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/tab_function"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/main_tab_function"
-        android:textColor="@color/tab_text_color"
-        android:textSize="14sp"
-        app:drawableTopCompat="@drawable/ic_tab_functions"
-        app:layout_constraintBottom_toBottomOf="@id/tab_layout"
-        app:layout_constraintEnd_toEndOf="@id/tab_layout"
-        app:layout_constraintStart_toEndOf="@id/tab_scenes"
-        app:layout_constraintTop_toTopOf="@id/tab_layout"
-        tools:drawableTopCompat="@drawable/ic_tab_functions" />
+        android:layout_height="86dp"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tab_scenes">
+
+        <TextView
+            android:id="@+id/icon_function"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/main_tab_function"
+            android:textColor="@color/tab_text_color"
+            android:textSize="14sp"
+            app:drawableTopCompat="@drawable/ic_tab_functions"
+            tools:drawableTopCompat="@drawable/ic_tab_functions" />
+    </FrameLayout>
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"

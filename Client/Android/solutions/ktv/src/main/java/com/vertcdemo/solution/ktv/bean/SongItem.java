@@ -6,9 +6,7 @@ package com.vertcdemo.solution.ktv.bean;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSResponse;
 
-@RTSResponse
 public class SongItem {
     @SerializedName("artist")
     public String artist;

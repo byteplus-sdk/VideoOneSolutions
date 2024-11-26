@@ -15,24 +15,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.ss.bytertc.engine.type.VoiceReverbType;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
 import com.vertcdemo.solution.ktv.R;
-import com.vertcdemo.solution.ktv.common.SolutionToast;
 import com.vertcdemo.solution.ktv.core.KTVRTCManager;
 import com.vertcdemo.solution.ktv.databinding.DialogKtvTuningBinding;
 import com.vertcdemo.solution.ktv.event.FinishSingBroadcast;
 import com.vertcdemo.solution.ktv.event.StartSingBroadcast;
 import com.vertcdemo.solution.ktv.feature.main.viewmodel.KTVRoomViewModel;
+import com.vertcdemo.ui.CenteredToast;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class KTVTuningDialog extends BottomDialogFragmentX {
+public class KTVTuningDialog extends BottomSheetDialogFragment {
     @Override
     public int getTheme() {
-        return R.style.KTVBottomSheetDialogTheme;
+        return R.style.KTVBottomSheetDialog;
     }
 
     private KTVRoomViewModel mRoomViewModel;
@@ -56,7 +56,7 @@ public class KTVTuningDialog extends BottomDialogFragmentX {
         DialogKtvTuningBinding binding = DialogKtvTuningBinding.bind(view);
         binding.earMonitorSwitch.setOnClickListener(v -> {
             if (!KTVRTCManager.ins().canOpenEarMonitor()) {
-                SolutionToast.show(v.getContext().getString(R.string.label_monitor_mix_tip));
+                CenteredToast.show(R.string.label_monitor_mix_tip);
                 return;
             }
             boolean newValue = !v.isSelected();

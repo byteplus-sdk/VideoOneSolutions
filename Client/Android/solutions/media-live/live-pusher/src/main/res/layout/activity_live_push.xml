@@ -191,7 +191,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/settings"
+                android:text="@string/medialive_setting"
                 android:textAppearance="@style/LiveTextView.Action" />
         </LinearLayout>
     </LinearLayout>
@@ -333,7 +333,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/settings"
+                android:text="@string/medialive_setting"
                 android:textAppearance="@style/LiveTextView.Action" />
         </LinearLayout>
 

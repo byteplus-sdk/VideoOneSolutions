@@ -1,11 +1,13 @@
 package com.vertc.api.example.examples.video;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.TextureView;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Size;
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
@@ -35,11 +37,15 @@ import com.vertc.api.example.databinding.ActivityCdnStreamBinding;
 import com.vertc.api.example.utils.IMEUtils;
 import com.vertc.api.example.utils.RTCHelper;
 import com.vertc.api.example.utils.RTMPLinkGenerator;
+import com.vertc.api.example.utils.RemoteView;
 import com.vertc.api.example.utils.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -60,12 +66,9 @@ public class CDNStreamActivity extends ExampleBaseActivity {
     private String roomID;
     private static final String CDN_TASK_ID = "1";
     private FrameLayout localViewContainer;
-    @Size(3)
-    private final FrameLayout[] remoteContainers = new FrameLayout[3];
-    private final HashMap<String, Integer> remoteUserViewMap = new HashMap<>();
-    private final ArrayList<String> userNameList = new ArrayList<>();
-    @Size(3)
-    private final boolean[] isRemoteViewUsed = new boolean[3];
+    @NonNull
+    private List<RemoteView> mRemoteViews = Collections.emptyList();
+    private final List<String> allRemoteUserIds = new ArrayList<>();
     private RTCVideo rtcVideo;
     private RTCRoom rtcRoom;
 
@@ -85,21 +88,21 @@ public class CDNStreamActivity extends ExampleBaseActivity {
 
         initUI(binding);
 
-        rtcVideo = RTCHelper.createRTCVideo(this, videoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, videoEventHandler, "cdn-stream");
         setLocalRenderView();
         rtcVideo.startVideoCapture();
         rtcVideo.startAudioCapture();
-
-        userNameList.add(localUid);
 
         mixedStreamConfig = MixedStreamConfig.defaultMixedStreamConfig();
     }
 
     private void initUI(ActivityCdnStreamBinding binding) {
         localViewContainer = binding.localViewContainer;
-        remoteContainers[0] = binding.remoteViewContainer1;
-        remoteContainers[1] = binding.remoteViewContainer2;
-        remoteContainers[2] = binding.remoteViewContainer3;
+        mRemoteViews = Arrays.asList(
+                RemoteView.of(binding.remoteViewContainer1),
+                RemoteView.of(binding.remoteViewContainer2),
+                RemoteView.of(binding.remoteViewContainer3)
+        );
 
         binding.btnJoinRoom.setOnClickListener(v -> {
             if (v.isSelected()) {
@@ -140,17 +143,16 @@ public class CDNStreamActivity extends ExampleBaseActivity {
         rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
     }
 
-    private void setRemoteRenderView(String uid) {
-        for (int i = 0; i < isRemoteViewUsed.length; i++) {
-            if (!isRemoteViewUsed[i]) {
-                isRemoteViewUsed[i] = true;
-                remoteUserViewMap.put(uid, i);
+    @MainThread
+    void setRemoteRenderView(String uid) {
+        for (RemoteView remoteView : mRemoteViews) {
+            if (remoteView.isEmpty()) {
+                RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_MAIN);
 
                 TextureView textureView = new TextureView(this);
-                remoteContainers[i].removeAllViews();
-                remoteContainers[i].addView(textureView);
 
-                RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_MAIN);
+                remoteView.attach(remoteStreamKey, textureView);
+
                 VideoCanvas videoCanvas = new VideoCanvas();
                 videoCanvas.renderView = textureView;
                 videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
@@ -160,17 +162,26 @@ public class CDNStreamActivity extends ExampleBaseActivity {
         }
     }
 
-    private void removeRemoteView(String uid) {
-        int index = remoteUserViewMap.get(uid);
-        if (index >= 0 && index < 3) {
-            remoteContainers[index].removeAllViews();
-            isRemoteViewUsed[index] = false;
+    @MainThread
+    void removeRemoteView(String uid) {
+        for (RemoteView remoteView : mRemoteViews) {
+            if (remoteView.match(uid)) {
+                RemoteStreamKey remoteStreamKey = Objects.requireNonNull(remoteView.getStreamKey());
+                rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+                remoteView.detach();
+                break;
+            }
         }
-        remoteUserViewMap.remove(uid);
+    }
 
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_MAIN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
-
+    void clearRemoteViews() {
+        for (RemoteView remoteView : mRemoteViews) {
+            RemoteStreamKey streamKey = remoteView.getStreamKey();
+            if (streamKey != null) {
+                rtcVideo.setRemoteVideoCanvas(streamKey, null);
+                remoteView.detach();
+            }
+        }
     }
 
     private void joinRoom(String roomId) {
@@ -192,6 +203,9 @@ public class CDNStreamActivity extends ExampleBaseActivity {
     }
 
     private void leaveRoom() {
+        allRemoteUserIds.clear();
+        clearRemoteViews();
+
         if (rtcRoom != null) {
             rtcRoom.leaveRoom();
             rtcRoom.destroy();
@@ -247,46 +261,63 @@ public class CDNStreamActivity extends ExampleBaseActivity {
     }
 
     private MixedStreamConfig.MixedStreamLayoutRegionConfig[] getLayoutRegions() {
-        int userNum = Math.min(4, userNameList.size());
+        String mode = (String) binding.layoutModeSpinner.getSelectedItem();
+        boolean is1x4 = "1x4".equals(mode);
+
+        List<String> userIds = new ArrayList<>();
+        userIds.add(localUid);
+        userIds.addAll(allRemoteUserIds);
+        int userNum = Math.min(4, userIds.size());
 
         MixedStreamConfig.MixedStreamLayoutRegionConfig[] regions = new MixedStreamConfig.MixedStreamLayoutRegionConfig[userNum];
-        String mode = (String) binding.layoutModeSpinner.getSelectedItem();
-        if ("1x4".equals(mode)) {
-            for (int index = 0; index < userNum; index++) {
-                final String uid = userNameList.get(index);
-                MixedStreamConfig.MixedStreamLayoutRegionConfig region = new MixedStreamConfig.MixedStreamLayoutRegionConfig();
-                region.setRoomID(roomID);
-                region.setUserID(uid);
-                region.setLocationX(0.25 * index);
-                region.setLocationY(0.0);
-                region.setWidthProportion(0.25);
-                region.setHeightProportion(1.0);
-                region.setAlpha(1);
-                region.setZOrder(0);
-                region.setRenderMode(MixedStreamConfig.MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
-                region.setStreamType(MixedStreamConfig.MixedStreamLayoutRegionConfig.MixedStreamVideoType.MIXED_STREAM_VIDEO_TYPE_MAIN);
-                region.setMediaType(MixedStreamConfig.MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO);
-                regions[index] = region;
-            }
-        } else if ("2x2".equals(mode)) {
-            for (int index = 0; index < userNum; index++) {
-                final String uid = userNameList.get(index);
-                MixedStreamConfig.MixedStreamLayoutRegionConfig region = new MixedStreamConfig.MixedStreamLayoutRegionConfig();
-                region.setRoomID(roomID);
-                region.setUserID(uid);
-                region.setLocationX((index % 2) * 0.5);
-                region.setLocationY((index / 2) * 0.5);
-                region.setWidthProportion(0.5);
-                region.setHeightProportion(0.5);
-                region.setAlpha(1);
-                region.setZOrder(0);
-                region.setRenderMode(MixedStreamConfig.MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
-                region.setStreamType(MixedStreamConfig.MixedStreamLayoutRegionConfig.MixedStreamVideoType.MIXED_STREAM_VIDEO_TYPE_MAIN);
-                region.setMediaType(MixedStreamConfig.MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO);
-                regions[index] = region;
+        for (int index = 0; index < userNum; index++) {
+            if (is1x4) {
+                regions[index] = createRegion1x4(userIds, index);
+            } else {
+                regions[index] = createRegion2x2(userIds, index);
             }
         }
         return regions;
+    }
+
+    @NonNull
+    private MixedStreamConfig.MixedStreamLayoutRegionConfig createRegion1x4(List<String> userIds, int index) {
+        final String uid = userIds.get(index);
+        int regionWidth = mixedStreamConfig.getVideoConfig().getWidth() / 4;
+        int regionHeight = mixedStreamConfig.getVideoConfig().getHeight();
+        MixedStreamConfig.MixedStreamLayoutRegionConfig region = new MixedStreamConfig.MixedStreamLayoutRegionConfig();
+        region.setRoomID(roomID);
+        region.setUserID(uid);
+        region.setLocationX(regionWidth * index);
+        region.setLocationY(0);
+        region.setWidth(regionWidth);
+        region.setHeight(regionHeight);
+        region.setAlpha(1);
+        region.setZOrder(0);
+        region.setRenderMode(MixedStreamConfig.MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
+        region.setStreamType(MixedStreamConfig.MixedStreamLayoutRegionConfig.MixedStreamVideoType.MIXED_STREAM_VIDEO_TYPE_MAIN);
+        region.setMediaType(MixedStreamConfig.MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO);
+        return region;
+    }
+
+    @NonNull
+    private MixedStreamConfig.MixedStreamLayoutRegionConfig createRegion2x2(List<String> userIds, int index) {
+        final String uid = userIds.get(index);
+        int regionWidth = mixedStreamConfig.getVideoConfig().getWidth() / 2;
+        int regionHeight = mixedStreamConfig.getVideoConfig().getHeight() / 2;
+        MixedStreamConfig.MixedStreamLayoutRegionConfig region = new MixedStreamConfig.MixedStreamLayoutRegionConfig();
+        region.setRoomID(roomID);
+        region.setUserID(uid);
+        region.setLocationX((index % 2) * regionWidth);
+        region.setLocationY((index / 2) * regionHeight);
+        region.setWidth(regionWidth);
+        region.setHeight(regionHeight);
+        region.setAlpha(1);
+        region.setZOrder(0);
+        region.setRenderMode(MixedStreamConfig.MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
+        region.setStreamType(MixedStreamConfig.MixedStreamLayoutRegionConfig.MixedStreamVideoType.MIXED_STREAM_VIDEO_TYPE_MAIN);
+        region.setMediaType(MixedStreamConfig.MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO);
+        return region;
     }
 
     final IMixedStreamObserver mixedStreamObserver = new IMixedStreamObserver() {
@@ -358,13 +389,13 @@ public class CDNStreamActivity extends ExampleBaseActivity {
             super.onUserJoined(userInfo, elapsed);
             Log.i(TAG, "onUserJoined, uid:" + userInfo.getUid());
             ToastUtil.showToast(CDNStreamActivity.this, "onUserJoined, uid:" + userInfo.getUid());
-            userNameList.add(userInfo.getUid());
+            runOnUiThread(() -> allRemoteUserIds.add(userInfo.getUid()));
         }
 
         @Override
         public void onUserLeave(String uid, int reason) {
             super.onUserLeave(uid, reason);
-            userNameList.remove(uid);
+            runOnUiThread(() -> allRemoteUserIds.remove(uid));
         }
 
         @Override
@@ -374,7 +405,7 @@ public class CDNStreamActivity extends ExampleBaseActivity {
         }
     };
 
-    IRTCVideoEventHandler videoEventHandler = new IRTCVideoEventHandler() {
+    final IRTCVideoEventHandler videoEventHandler = new IRTCVideoEventHandler() {
     };
 
     @Override
@@ -389,5 +420,4 @@ public class CDNStreamActivity extends ExampleBaseActivity {
         RTCVideo.destroyRTCVideo();
         rtcVideo = null;
     }
-
 }

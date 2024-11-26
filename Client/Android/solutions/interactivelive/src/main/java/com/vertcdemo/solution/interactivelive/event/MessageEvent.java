@@ -4,20 +4,44 @@
 package com.vertcdemo.solution.interactivelive.event;
 
 import com.google.gson.annotations.SerializedName;
+import com.vertcdemo.core.chat.bean.IGiftEvent;
 import com.vertcdemo.core.common.GsonUtils;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.bean.MessageBody;
 
-@RTSInform
-public class MessageEvent {
+public class MessageEvent implements IGiftEvent {
     @SerializedName("user")
     public LiveUserInfo user;
 
     @SerializedName("message")
     public String message;
 
+    private transient MessageBody body;
+
     public MessageBody getBody() {
-        return GsonUtils.gson().fromJson(message, MessageBody.class);
+        if (body == null) {
+            body = GsonUtils.gson().fromJson(message, MessageBody.class);
+        }
+        return body;
+    }
+
+    @Override
+    public int getGiftType() {
+        return getBody().giftType;
+    }
+
+    @Override
+    public String getUserId() {
+        return user.userId;
+    }
+
+    @Override
+    public String getUserName() {
+        return user.userName;
+    }
+
+    @Override
+    public int getCount() {
+        return getBody().count;
     }
 }

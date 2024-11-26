@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "VELPushUIViewController+Private.h"
 #import <ToolKit/Localizator.h>
+#import <Toolkit/ToolKit.h>
 
 @implementation VELPushUIViewController (Stream)
 - (void)showStreamSettings {
@@ -128,6 +129,7 @@
 }
 
 - (void)setupSettingModels {
+    VOLogD(VOMediaLive, @"captureType: %ld", self.config.captureType);
     NSArray *models = nil;
     BOOL needResetModel = NO;
     if (self.config.enableAudioOnly) {
@@ -136,7 +138,11 @@
     } else {
         self.recordViewModel.showSanpShot = YES;
         NSMutableArray *settingModels = [NSMutableArray arrayWithCapacity:20];
-        [settingModels addObjectsFromArray:@[self.recordViewModel, self.aCfgViewModel, self.vCfgViewModel,self.mirrorViewModel, self.seiViewModel]];
+        if (self.config.captureType == VELSettingCaptureTypeScreen) {
+            [settingModels addObjectsFromArray:@[self.aCfgViewModel, self.vCfgViewModel]];
+        } else {
+            [settingModels addObjectsFromArray:@[self.recordViewModel, self.aCfgViewModel, self.vCfgViewModel,self.mirrorViewModel, self.seiViewModel]];
+        }
         models = settingModels;
     }
     if (_pushSettingView.models.count != models.count || needResetModel) {

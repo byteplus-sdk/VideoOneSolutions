@@ -16,12 +16,14 @@ import java.util.regex.Pattern;
 
 public class RTCHelper {
     @NonNull
-    public static RTCVideo createRTCVideo(Context context, IRTCVideoEventHandler videoEventHandler) {
+    public static RTCVideo createRTCVideo(Context context, IRTCVideoEventHandler videoEventHandler, String bid) {
         String appId = Objects.requireNonNull(RTCTokenManager.getInstance().getAppId(), "AppId not provided");
-        return Objects.requireNonNull(
+        RTCVideo engine = Objects.requireNonNull(
                 RTCVideo.createRTCVideo(context, appId, videoEventHandler, null, null),
                 "Failed to createRTCVideo()"
         );
+        engine.setBusinessId(RTCTokenManager.getInstance().getBusinessId(bid));
+        return engine;
     }
 
     private static final Pattern pattern = Pattern.compile("^[a-zA-Z0-9@._-]{1,128}$");

@@ -3,13 +3,10 @@
 //
 
 #import "BaseIMComponent.h"
-#import "BaseIMView.h"
 #import "DeviceInforTool.h"
 #import "Masonry.h"
 
 @interface BaseIMComponent ()
-
-@property (nonatomic, strong) BaseIMView *baseIMView;
 
 @end
 

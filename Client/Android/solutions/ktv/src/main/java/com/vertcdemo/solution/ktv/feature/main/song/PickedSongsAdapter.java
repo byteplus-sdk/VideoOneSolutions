@@ -53,6 +53,19 @@ public class PickedSongsAdapter extends RecyclerView.Adapter<BVH<ItemKtvPickedSo
     }
 
     @Override
+    public void onBindViewHolder(@NonNull BVH<ItemKtvPickedSongBinding> holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            Object payload = payloads.get(0);
+            if (PAYLOAD_STATUS == payload) {
+                StatusPickedSongItem item = mItems.get(position);
+                holder.binding.action.setVisibility(item.isSinging() ? View.VISIBLE : View.GONE);
+            }
+        }
+    }
+
+    @Override
     public int getItemCount() {
         return mItems.size();
     }
@@ -73,17 +86,25 @@ public class PickedSongsAdapter extends RecyclerView.Adapter<BVH<ItemKtvPickedSo
 
             @Override
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return oldItems.get(oldItemPosition) == newItems.get(newItemPosition);
+                StatusPickedSongItem oldItem = oldItems.get(oldItemPosition);
+                StatusPickedSongItem newItem = newItems.get(newItemPosition);
+                return oldItem.getSongId().equals(newItem.getSongId())
+                        && oldItem.getOwnerUid().equals(newItem.getOwnerUid());
             }
 
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                 StatusPickedSongItem oldItem = oldItems.get(oldItemPosition);
                 StatusPickedSongItem newItem = newItems.get(newItemPosition);
-                return oldItem.getSongId().equals(newItem.getSongId())
-                        && oldItem.getOwnerUid().equals(newItem.getOwnerUid())
-                        && oldItem.status == newItem.status;
+                return oldItem.status == newItem.status;
+            }
+
+            @Override
+            public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+                return PAYLOAD_STATUS;
             }
         }).dispatchUpdatesTo(this);
     }
+
+    private static final String PAYLOAD_STATUS = "status";
 }

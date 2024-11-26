@@ -92,10 +92,6 @@ public class PreferenceUtil {
     private static final String PUSH_EXTERNAL_VIDEO_FRAME_TYPE = "PUSH_EXTERNAL_VIDEO_FRAME_TYPE";
     private static final String PUSH_EXTERNAL_VIDEO_FRAME_BUFFER_TYPE = "PUSH_EXTERNAL_VIDEO_FRAME_BUFFER_TYPE";
 
-    private static final String PUSH_LOG_LEVEL = "PUSH_LOG_LEVEL";
-
-    private static final String PUSH_ENABLE_APP_AUDIO = "PUSH_ENABLE_APP_AUDIO";
-
     public static final int RESOLUTION_360P = 0;
     public static final int RESOLUTION_480P = 1;
     public static final int RESOLUTION_540P = 2;
@@ -136,13 +132,6 @@ public class PreferenceUtil {
     public static final int NETWORK_QUALITY_BAD = 1;
     public static final int NETWORK_QUALITY_POOR = 2;
     public static final int NETWORK_QUALITY_GOOD = 3;
-
-    public static final int PULL_LOG_LEVEL_NONE = 0;
-    public static final int PULL_LOG_LEVEL_ERROR = 1;
-    public static final int PULL_LOG_LEVEL_WARN = 2;
-    public static final int PULL_LOG_LEVEL_INFO = 3;
-    public static final int PULL_LOG_LEVEL_DEBUG = 4;
-    public static final int PULL_LOG_LEVEL_VERBOSE = 5;
 
     public static final int PUSH_ORIENTATION_LANDSCAPE = 0;
     public static final int PUSH_ORIENTATION_PORTRAIT = 1;
@@ -497,27 +486,11 @@ public class PreferenceUtil {
         return getIntValue(PUSH_EXTERNAL_VIDEO_FRAME_BUFFER_TYPE, defaultValue);
     }
 
-    public void setPushLogLevel(int level) {
-        setIntValue(PUSH_LOG_LEVEL, level);
-    }
-
-    public int getPushLogLevel(int defaultValue) {
-        return getIntValue(PUSH_LOG_LEVEL, defaultValue);
-    }
-
     public void setPushOrientation(int orientation) {
         setIntValue(PUSH_ORIENTATION, orientation);
     }
 
     public int getPushOrientation(int defaultValue) {
         return getIntValue(PUSH_ORIENTATION, defaultValue);
-    }
-
-    public void setPushEnableAppAudio(boolean enable) {
-        setBooleanValue(PUSH_ENABLE_APP_AUDIO, enable);
-    }
-
-    public boolean getPushEnableAppAudio(boolean defaultValue) {
-        return getBooleanValue(PUSH_ENABLE_APP_AUDIO, defaultValue);
     }
 }

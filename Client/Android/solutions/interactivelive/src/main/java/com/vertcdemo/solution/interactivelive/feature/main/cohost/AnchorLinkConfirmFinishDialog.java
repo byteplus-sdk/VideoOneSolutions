@@ -13,23 +13,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
-import com.videoone.avatars.Avatars;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.ErrorTool;
-import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.http.callback.OnFailure;
+import com.vertcdemo.core.utils.ErrorTool;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
-import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveAnchorLinkConfirmFinishBinding;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkFinishEvent;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
 import com.vertcdemo.ui.CenteredToast;
+import com.videoone.avatars.Avatars;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public final class AnchorLinkConfirmFinishDialog extends BottomDialogFragmentX {
+public final class AnchorLinkConfirmFinishDialog extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
@@ -41,7 +40,7 @@ public final class AnchorLinkConfirmFinishDialog extends BottomDialogFragmentX {
 
     @Override
     public int getTheme() {
-        return R.style.LiveBottomSheetDialogTheme;
+        return R.style.LiveBottomSheetDialog;
     }
 
     private String mLinkId;
@@ -87,25 +86,14 @@ public final class AnchorLinkConfirmFinishDialog extends BottomDialogFragmentX {
     }
 
     public static void finishLink(String linkId, String roomId) {
-        final IRequestCallback<LiveResponse> callback =
-                new IRequestCallback<LiveResponse>() {
-                    @Override
-                    public void onSuccess(LiveResponse data) {
-
+        LiveService.get()
+                .finishAnchorLink(linkId, roomId, OnFailure.of(e -> {
+                    if (e.getCode() == 560) { // record not found
+                        // Status error, so we fake an AnchorLinkFinishEvent
+                        SolutionEventBus.post(new AnchorLinkFinishEvent());
+                    } else {
+                        CenteredToast.show(ErrorTool.getErrorMessage(e));
                     }
-
-                    @Override
-                    public void onError(int errorCode, String message) {
-                        if (errorCode == 560) { // record not found
-                            // Status error, so we fake an AnchorLinkFinishEvent
-                            SolutionEventBus.post(new AnchorLinkFinishEvent());
-                        } else {
-                            CenteredToast.show(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
-                        }
-                    }
-                };
-        LiveRTCManager.ins()
-                .getRTSClient()
-                .finishHostLink(linkId, roomId, callback);
+                }));
     }
 }

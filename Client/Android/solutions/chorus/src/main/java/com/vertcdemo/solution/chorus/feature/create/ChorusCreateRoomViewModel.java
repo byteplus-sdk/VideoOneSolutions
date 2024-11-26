@@ -3,36 +3,37 @@
 
 package com.vertcdemo.solution.chorus.feature.create;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.vertcdemo.core.net.IRequestCallback;
-import com.vertcdemo.solution.chorus.bean.CreateRoomResponse;
-import com.vertcdemo.solution.chorus.common.SolutionToast;
-import com.vertcdemo.solution.chorus.core.ChorusRTCManager;
-import com.vertcdemo.solution.chorus.core.ChorusRTSClient;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.net.HttpException;
+import com.vertcdemo.solution.chorus.core.ErrorCodes;
+import com.vertcdemo.solution.chorus.http.ChorusService;
+import com.vertcdemo.solution.chorus.http.response.CreateRoomResponse;
+import com.vertcdemo.ui.CenteredToast;
+
+import java.util.Objects;
 
 public class ChorusCreateRoomViewModel extends ViewModel {
     public final MutableLiveData<Integer> bgIndex = new MutableLiveData<>(0);
 
-    public final MutableLiveData<CreateRoomResponse> response = new MutableLiveData<>();
-
-    private final IRequestCallback<CreateRoomResponse> mCreateRoomRequest = new IRequestCallback<CreateRoomResponse>() {
-        @Override
-        public void onSuccess(CreateRoomResponse data) {
-            response.postValue(data);
-        }
-
-        @Override
-        public void onError(int errorCode, String message) {
-            SolutionToast.show(message);
-        }
-    };
+    public final MutableLiveData<CreateRoomResponse> createResult = new MutableLiveData<>();
 
     public void requestStartRoom(String roomName, String backgroundImageName) {
-        ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-        assert rtsClient != null : "RTSClient is required";
-        rtsClient.requestStartLive(
-                roomName, backgroundImageName, mCreateRoomRequest);
+        ChorusService.get()
+                .startLive(roomName, backgroundImageName, new Callback<CreateRoomResponse>() {
+                    @Override
+                    public void onResponse(@Nullable CreateRoomResponse response) {
+                        CreateRoomResponse body = Objects.requireNonNull(response, "ResponseBody is null.");
+                        createResult.postValue(body);
+                    }
+
+                    @Override
+                    public void onFailure(HttpException e) {
+                        CenteredToast.show(ErrorCodes.prettyMessage(e));
+                    }
+                });
     }
 }

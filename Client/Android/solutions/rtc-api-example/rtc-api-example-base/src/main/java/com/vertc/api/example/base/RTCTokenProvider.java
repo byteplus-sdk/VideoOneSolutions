@@ -10,5 +10,8 @@ public interface RTCTokenProvider {
     String getAppId();
 
     @NonNull
+    String getBusinessId(String bid);
+
+    @NonNull
     Future<String> getToken(@NonNull String roomId, @NonNull String userId);
 }

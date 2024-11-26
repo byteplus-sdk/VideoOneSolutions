@@ -12,13 +12,13 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import com.google.gson.JsonSyntaxException;
 import com.vertcdemo.core.common.GsonUtils;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
+import com.vertcdemo.core.protocol.ScalingMode;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.SeiAppData;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveMode;
 import com.vertcdemo.solution.interactivelive.core.live.TTPlayer;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveAudienceBinding;
 import com.vertcdemo.solution.interactivelive.event.LiveModeChangeEvent;
-import com.vertcdemo.core.protocol.ScalingMode;
 
 import org.json.JSONException;
 import org.json.JSONObject;

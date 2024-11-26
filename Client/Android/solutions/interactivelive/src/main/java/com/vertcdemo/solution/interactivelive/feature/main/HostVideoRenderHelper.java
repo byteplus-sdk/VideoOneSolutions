@@ -13,12 +13,11 @@ import androidx.annotation.Size;
 import androidx.core.util.Consumer;
 
 import com.bumptech.glide.Glide;
-import com.videoone.avatars.Avatars;
 import com.vertcdemo.core.SolutionDataManager;
+import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveHostBinding;
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveCoHostVideoBinding;
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveHostAudience2Binding;
@@ -26,6 +25,7 @@ import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveHostAudience
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveHostVideoBinding;
 import com.vertcdemo.solution.interactivelive.event.PublishVideoStreamEvent;
 import com.vertcdemo.solution.interactivelive.util.MutableBoolean;
+import com.videoone.avatars.Avatars;
 
 import java.util.HashMap;
 import java.util.List;

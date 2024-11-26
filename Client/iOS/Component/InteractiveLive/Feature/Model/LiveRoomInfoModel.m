@@ -13,7 +13,6 @@
         @"roomName": @"room_name",
         @"anchorUserID": @"host_user_id",
         @"anchorUserName": @"host_user_name",
-        @"status": @"status",
         @"startTime": @"start_time",
         @"audienceCount": @"audience_count",
         @"streamPullStreamList": @"stream_pull_url_list",

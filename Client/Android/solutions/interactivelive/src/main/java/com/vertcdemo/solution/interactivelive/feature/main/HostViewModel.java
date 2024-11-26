@@ -9,12 +9,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.ErrorTool;
-import com.vertcdemo.core.net.IRequestCallback;
-import com.vertcdemo.solution.interactivelive.bean.LiveFinishResponse;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.utils.ErrorTool;
+import com.vertcdemo.core.net.HttpException;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
-import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.event.RequestFinishLiveResultEvent;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
+import com.vertcdemo.solution.interactivelive.http.response.FinishRoomResponse;
 import com.vertcdemo.ui.CenteredToast;
 
 public class HostViewModel extends ViewModel {
@@ -47,19 +48,18 @@ public class HostViewModel extends ViewModel {
 
     public void requestFinishLive() {
         finishRequested = true;
-        LiveRTCManager.ins().getRTSClient().requestFinishLive(rtsRoomId(), mFinishLiveCallback);
-    }
-    // anchor finishes the live callback
-    private final IRequestCallback<LiveFinishResponse> mFinishLiveCallback = new IRequestCallback<LiveFinishResponse>() {
-        @Override
-        public void onSuccess(LiveFinishResponse data) {
-            SolutionEventBus.post(new RequestFinishLiveResultEvent(data));
-        }
+        LiveService.get()
+                .finishLive(rtsRoomId(), new Callback<FinishRoomResponse>() {
+                    @Override
+                    public void onResponse(FinishRoomResponse response) {
+                        SolutionEventBus.post(new RequestFinishLiveResultEvent(response));
+                    }
 
-        @Override
-        public void onError(int errorCode, String message) {
-            CenteredToast.show(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
-            SolutionEventBus.post(new RequestFinishLiveResultEvent());
-        }
-    };
+                    @Override
+                    public void onFailure(HttpException e) {
+                        CenteredToast.show(ErrorTool.getErrorMessage(e));
+                        SolutionEventBus.post(new RequestFinishLiveResultEvent());
+                    }
+                });
+    }
 }

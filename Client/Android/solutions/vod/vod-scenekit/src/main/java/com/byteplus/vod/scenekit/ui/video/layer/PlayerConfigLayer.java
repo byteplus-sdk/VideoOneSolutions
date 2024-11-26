@@ -3,13 +3,12 @@
 
 package com.byteplus.vod.scenekit.ui.video.layer;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Supplier;
 
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.PlayerEvent;
 import com.byteplus.playerkit.utils.event.Event;
+import com.byteplus.vod.scenekit.ui.config.ICompleteAction;
 import com.byteplus.vod.scenekit.ui.video.layer.base.PlaybackEventLayer;
 
 public class PlayerConfigLayer extends PlaybackEventLayer {
@@ -19,18 +18,17 @@ public class PlayerConfigLayer extends PlaybackEventLayer {
         return "player_config";
     }
 
-    @NonNull
-    final Supplier<Boolean> mLoopingSupplier;
-
-    public PlayerConfigLayer(@NonNull Supplier<Boolean> supplier) {
-        mLoopingSupplier = supplier;
+    public PlayerConfigLayer() {
     }
 
     @Override
     protected void onPlaybackEvent(Event event) {
         if (event.code() == PlayerEvent.Action.PREPARE) {
             Player player = event.owner(Player.class);
-            player.setLooping(mLoopingSupplier.get());
+
+            ICompleteAction config = getConfig();
+            boolean looping = config != null && config.completeAction() == ICompleteAction.LOOP;
+            player.setLooping(looping);
         }
     }
 }

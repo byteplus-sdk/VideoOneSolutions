@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.byteplus.playerkit.player.Player;
+import com.byteplus.playerkit.player.config.IStrategy;
 import com.byteplus.playerkit.utils.Asserts;
 import com.byteplus.playerkit.utils.L;
 
@@ -78,6 +79,7 @@ public class VideoLayerHost {
     private final List<VideoLayerHostListener> mListeners = new CopyOnWriteArrayList<>();
     private final SparseArray<BackPressedHandler> mHandlers = new SparseArray<>();
     private final FrameLayout mHostView;
+    private final IStrategy mConfig;
     private VideoView mVideoView;
 
     private boolean mLocked;
@@ -100,8 +102,14 @@ public class VideoLayerHost {
         void onLayerHostDetachedFromVideoView(@NonNull VideoView videoView);
     }
 
+    @Deprecated
     public VideoLayerHost(Context context) {
+        this(context, null);
+    }
+
+    public VideoLayerHost(Context context, IStrategy config) {
         mHostView = new FrameLayout(context);
+        mConfig = config;
     }
 
     void addVideoLayerHostListener(VideoLayerHostListener listener) {
@@ -462,6 +470,10 @@ public class VideoLayerHost {
      */
     public FrameLayout hostView() {
         return mHostView;
+    }
+
+    public IStrategy getConfig() {
+        return mConfig;
     }
 
     final int indexOfLayerView(@NonNull VideoLayer layer) {

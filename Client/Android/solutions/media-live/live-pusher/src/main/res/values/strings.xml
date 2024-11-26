@@ -77,5 +77,4 @@
     <string name="medialive_downloaded">Download complete</string>
     <string name="medialive_xxx_downloading">File %s downloading…</string>
     <string name="medialive_effect">Beauty</string>
-    <string name="medialive_capture_app_audio">Capture in-app audio</string>
 </resources>

@@ -5,7 +5,7 @@ package com.byteplus.voddemo.ui.video.scene.detail.bean;
 
 import androidx.annotation.NonNull;
 
-import com.byteplus.voddemo.data.remote.RemoteApi;
+import com.byteplus.vodcommon.data.remote.RemoteApi;
 
 public class RecommendInfo {
     @NonNull

@@ -62,7 +62,7 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 
                 // Join room
@@ -95,7 +95,7 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
         }
         
         let userId = userTextField.text!
-        generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+        generateToken(roomId: roomId, userId: userId) { [weak self] token in
             let config = ByteRTCForwardStreamConfiguration.init()
             config.roomId = roomId
             config.token = token
@@ -115,7 +115,7 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
         }
         
         let userId = userTextField.text!
-        generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+        generateToken(roomId: roomId, userId: userId) { [weak self] token in
             let config = ByteRTCForwardStreamConfiguration.init()
             config.roomId = roomId
             config.token = token
@@ -139,7 +139,8 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("cross-room-pk")
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -155,7 +156,7 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
         canvas.renderMode = .hidden
         self.localView.userId = userTextField.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

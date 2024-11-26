@@ -74,7 +74,7 @@ class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, 
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 
                 // Join room
@@ -101,7 +101,8 @@ class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, 
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("audio-media-mixing")
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -303,7 +304,7 @@ class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, 
         canvas.renderMode = .hidden
         self.localView.userId = userTextField.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -751,9 +752,28 @@ class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, 
     // Room entry status
     func rtcRoom(_ rtcRoom: ByteRTCRoom, onRoomStateChanged roomId: String, withUid uid: String, state: Int, extraInfo: String) {
         ToastComponents.shared.show(withMessage: "onRoomStateChanged uid: \(uid) state:\(state)")
-        
     }
-    
+
+    // Remote user publish stream.
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
+        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId)")
+    }
+
+     // Remote user cancel publishing stream.
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
+        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
+    }
+
+    // Remote user join the room.
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
+        ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
+    }
+
+    // Remote user leave the room.
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserLeave uid: String, reason: ByteRTCUserOfflineReason) {
+        ToastComponents.shared.show(withMessage: "onUserLeave uid: \(uid)")
+    }
+
     // MARK: ByteRTCMediaPlayerEventHandler
     // Mix status
     func onMediaPlayerStateChanged(_ playerId: Int32, state: ByteRTCPlayerState, error: ByteRTCPlayerError) {

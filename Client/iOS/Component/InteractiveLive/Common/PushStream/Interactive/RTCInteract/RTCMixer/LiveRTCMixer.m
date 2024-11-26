@@ -62,7 +62,9 @@
     // Set mix Regions
     NSArray *regions = [self getRegionWithUserList:@[params.host]
                                          mixStatus:RTCMixStatusSingleLive
-                                         rtcRoomId:params.rtcRoomId];
+                                         rtcRoomId:params.rtcRoomId
+                                             width:params.width
+                                            height:params.height];
     layoutConfig.regions = regions;
     self.mixedStreamConfig.layoutConfig = layoutConfig;
 
@@ -82,7 +84,9 @@
     self.mixedStreamConfig.layoutConfig.userConfigExtraInfo = json;
     self.mixedStreamConfig.layoutConfig.regions = [self getRegionWithUserList:userList
                                                                     mixStatus:mixStatus
-                                                                    rtcRoomId:rtcRoomId];
+                                                                    rtcRoomId:rtcRoomId
+                                                                        width:self.mixedStreamConfig.videoConfig.width
+                                                                       height:self.mixedStreamConfig.videoConfig.height];
     [self.rtcEngineKit updatePushMixedStreamToCDN:@"" mixedConfig:self.mixedStreamConfig];
 }
 
@@ -101,7 +105,9 @@
 
 - (NSArray *)getRegionWithUserList:(NSArray<LiveUserModel *> *)userList
                          mixStatus:(RTCMixStatus)mixStatus
-                         rtcRoomId:(NSString *)rtcRoomId {
+                         rtcRoomId:(NSString *)rtcRoomId
+                             width:(NSInteger)videoWidth
+                            height:(NSInteger)videoHeight{
     NSInteger audienceIndex = 0;
     NSMutableArray *list = [[NSMutableArray alloc] init];
     for (int i = 0; i < userList.count; i++) {
@@ -116,8 +122,8 @@
                 // Single anchor layout
                 region.locationX = 0.0;
                 region.locationY = 0.0;
-                region.widthProportion = 1.0;
-                region.heightProportion = 1.0;
+                region.width = videoWidth;
+                region.height = videoHeight;
                 region.zOrder = 1;
                 region.alpha = 1.0;
             } break;
@@ -126,16 +132,16 @@
                 // Make Co-host layout
                 if (region.isLocalUser) {
                     region.locationX = 0.0;
-                    region.locationY = 0.25;
-                    region.widthProportion = 0.5;
-                    region.heightProportion = 0.5;
+                    region.locationY = 0.25 * videoHeight;
+                    region.width = 0.5 * videoWidth;
+                    region.height = 0.5 * videoHeight;
                     region.zOrder = 0;
                     region.alpha = 1.0;
                 } else {
-                    region.locationX = 0.5;
-                    region.locationY = 0.25;
-                    region.widthProportion = 0.5;
-                    region.heightProportion = 0.5;
+                    region.locationX = 0.5 * videoWidth;
+                    region.locationY = 0.25 * videoHeight;
+                    region.width = 0.5 * videoWidth;
+                    region.height = 0.5 * videoHeight;
                     region.zOrder = 0;
                     region.alpha = 1.0;
                 }
@@ -146,8 +152,8 @@
                 if (region.isLocalUser) {
                     region.locationX = 0.0;
                     region.locationY = 0.0;
-                    region.widthProportion = 1.0;
-                    region.heightProportion = 1.0;
+                    region.width = videoWidth;
+                    region.height = videoHeight;
                     region.zOrder = 1;
                     region.alpha = 1.0;
                 } else {
@@ -163,10 +169,10 @@
                     CGFloat regionY = (itemTopSpace - (itemHeight + itemSpace) * index) / screenH;
                     CGFloat regionX = 1 - (regionHeight * screenH + itemRightSpace) / screenW;
 
-                    region.locationX = regionX;
-                    region.locationY = regionY;
-                    region.widthProportion = regionWidth;
-                    region.heightProportion = regionHeight;
+                    region.locationX = regionX * videoWidth;
+                    region.locationY = regionY * videoHeight;
+                    region.width = regionWidth * videoWidth;
+                    region.height = regionHeight * videoHeight;
                     region.zOrder = 2;
                     region.alpha = 1.0;
                     //                    region.cornerRadius = 4 / screenW;
@@ -184,8 +190,8 @@
                 if (region.isLocalUser) {
                     region.locationX = 0.0;
                     region.locationY = 0.0;
-                    region.widthProportion = 1.0 - ((itemSpace + itemHeight) / screenW);
-                    region.heightProportion = 1.0;
+                    region.width = (1.0 - ((itemSpace + itemHeight) / screenW)) * videoWidth;
+                    region.height = videoHeight;
                     region.zOrder = 1;
                     region.alpha = 1.0;
                 } else {
@@ -196,10 +202,10 @@
                     CGFloat regionY = itemTopSpace / screenH;
                     CGFloat regionX = 1 - (regionHeight * screenH + itemRightSpace) / screenW;
 
-                    region.locationX = regionX;
-                    region.locationY = regionY;
-                    region.widthProportion = regionWidth;
-                    region.heightProportion = regionHeight;
+                    region.locationX = regionX * videoWidth;
+                    region.locationY = regionY * videoHeight;
+                    region.width = regionWidth * videoWidth;
+                    region.height = regionHeight * videoHeight;
                     region.zOrder = 2;
                     region.alpha = 1.0;
                 }

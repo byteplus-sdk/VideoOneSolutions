@@ -85,6 +85,23 @@
             tools:drawableTop="@drawable/vevod_ic_tab_settings_dark" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/license_tips"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#CC000000"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="LicenseCheck result"
+        tools:visibility="visible" />
+
     <include
         android:id="@+id/action_bar"
         layout="@layout/vevod_title_layout" />

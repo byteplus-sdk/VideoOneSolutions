@@ -11,12 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) NSString *appId;
 
-@property (nonatomic, copy) NSString *RTSToken;
-
-@property (nonatomic, copy) NSString *serverUrl;
-
-@property (nonatomic, copy) NSString *serverSignature;
-
 @property (nonatomic, copy) NSString *bid;
 
 @end

@@ -20,16 +20,16 @@ import androidx.fragment.app.DialogFragment;
 
 import com.vertcdemo.base.databinding.DialogSolutionCommonBinding;
 import com.vertcdemo.solution.ktv.R;
-import com.vertcdemo.solution.ktv.common.SolutionToast;
 import com.vertcdemo.solution.ktv.core.rts.annotation.ReplyType;
 import com.vertcdemo.solution.ktv.feature.main.viewmodel.KTVRoomViewModel;
+import com.vertcdemo.ui.CenteredToast;
 
 public class ConfirmInviteDialog extends DialogFragment {
     private static final String TAG = "ConfirmInviteDialog";
 
     @Override
     public int getTheme() {
-        return R.style.SolutionCommonDialogTheme;
+        return com.vertcdemo.base.R.style.SolutionCommonDialogTheme;
     }
 
     private KTVRoomViewModel mRoomViewModel;
@@ -76,7 +76,7 @@ public class ConfirmInviteDialog extends DialogFragment {
     final ActivityResultLauncher<String> launcher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {
         if (result != Boolean.TRUE) {
             Log.d(TAG, "No permission: " + Manifest.permission.RECORD_AUDIO);
-            SolutionToast.show(R.string.toast_ktv_no_mic_permission);
+            CenteredToast.show(R.string.toast_ktv_no_mic_permission);
         }
         replyInvite(ReplyType.ACCEPT);
     });

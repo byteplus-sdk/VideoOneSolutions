@@ -7,9 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
-@RTSInform
 public class StartSingInform {
     @SerializedName("song")
     public PickedSongInfo song;//如果song为空，点的歌曲已经全部演唱完，返回原始点歌台

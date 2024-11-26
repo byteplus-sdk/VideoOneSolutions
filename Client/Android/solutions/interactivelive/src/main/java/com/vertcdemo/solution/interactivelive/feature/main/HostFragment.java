@@ -4,7 +4,7 @@
 package com.vertcdemo.solution.interactivelive.feature.main;
 
 import static com.vertcdemo.core.chat.ChatConfig.SEND_MESSAGE_COUNT_LIMIT;
-import static com.vertcdemo.core.dialog.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
+import static com.vertcdemo.core.chat.input.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
 import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActivity.EXTRA_PUSH_URL;
 import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActivity.EXTRA_ROOM_INFO;
 import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActivity.EXTRA_RTC_ROOM_ID;
@@ -43,7 +43,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
@@ -51,28 +50,28 @@ import com.ss.bytertc.engine.type.NetworkQuality;
 import com.ss.bytertc.engine.type.NetworkQualityStats;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.chat.ChatAdapter;
-import com.vertcdemo.core.dialog.MessageInputDialog;
+import com.vertcdemo.core.chat.gift.GiftAnimateHelper;
+import com.vertcdemo.core.chat.input.MessageInputDialog;
 import com.vertcdemo.core.event.RTCNetworkQualityEvent;
 import com.vertcdemo.core.event.RTCReconnectToRoomEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.ErrorTool;
-import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.http.callback.OnNext;
+import com.vertcdemo.core.net.HttpException;
+import com.vertcdemo.core.utils.ErrorTool;
 import com.vertcdemo.core.utils.Streams;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.bean.LiveAnchorPermitAudienceResponse;
-import com.vertcdemo.solution.interactivelive.bean.LiveInviteResponse;
-import com.vertcdemo.solution.interactivelive.bean.LiveReconnectResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveSummary;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.bean.MessageBody;
+import com.vertcdemo.solution.interactivelive.bean.ReconnectInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.core.annotation.InviteReply;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveFinishType;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveLinkMicStatus;
 import com.vertcdemo.solution.interactivelive.core.annotation.LivePermitType;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveRoleType;
-import com.vertcdemo.solution.interactivelive.core.annotation.LiveUserStatus;
 import com.vertcdemo.solution.interactivelive.core.annotation.MessageType;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveHostBinding;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkFinishEvent;
@@ -93,12 +92,15 @@ import com.vertcdemo.solution.interactivelive.event.MessageEvent;
 import com.vertcdemo.solution.interactivelive.event.PublishVideoStreamEvent;
 import com.vertcdemo.solution.interactivelive.event.RequestFinishLiveResultEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
-import com.vertcdemo.solution.interactivelive.event.UserMediaControlEvent;
 import com.vertcdemo.solution.interactivelive.feature.main.audiencelink.AudienceLinkRequest;
 import com.vertcdemo.solution.interactivelive.feature.main.audiencelink.ManageAudiencesDialog;
 import com.vertcdemo.solution.interactivelive.feature.main.cohost.AnchorInviteHostDialog;
 import com.vertcdemo.solution.interactivelive.feature.main.cohost.AnchorLinkConfirmFinishDialog;
 import com.vertcdemo.solution.interactivelive.feature.main.cohost.AnchorLinkConfirmInviteDialog;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
+import com.vertcdemo.solution.interactivelive.http.response.LinkResponse;
+import com.vertcdemo.solution.interactivelive.http.response.PermitAudienceLinkResponse;
+import com.vertcdemo.solution.interactivelive.http.response.ReconnectResponse;
 import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 import com.videoone.avatars.Avatars;
@@ -154,10 +156,13 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
 
     private int mSendMessageCount = 0;
     // Respond to the invite callback
-    private final IRequestCallback<LiveInviteResponse> mAnchorReplyInviteCallback = new IRequestCallback<LiveInviteResponse>() {
-
+    private final Callback<LinkResponse> mAnchorReplyInviteCallback = new Callback<LinkResponse>() {
         @Override
-        public void onSuccess(LiveInviteResponse data) {
+        public void onResponse(LinkResponse data) {
+            if (data == null) {
+                onFailure(HttpException.unknown("Response is null"));
+                return;
+            }
             for (LiveUserInfo info : data.userList) {
                 if (!TextUtils.equals(info.userId, SolutionDataManager.ins().getUserId())) {
                     mCoHostInfo = info;
@@ -177,12 +182,12 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
         }
 
         @Override
-        public void onError(int errorCode, String message) {
-            showToast(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
+        public void onFailure(HttpException e) {
+            showToast(ErrorTool.getErrorMessage(e));
         }
     };
 
-    void handleAnchorPermitAudienceResponse(String audienceUserId, LiveAnchorPermitAudienceResponse data) {
+    void handleAnchorPermitAudienceResponse(String audienceUserId, PermitAudienceLinkResponse data) {
         setRoomStatus(RoomStatus.AUDIENCE_LINK);
         updateOnlineGuestList(data.userList);
 
@@ -200,22 +205,23 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
         }
     }
     // reconnect callback
-    private final IRequestCallback<LiveReconnectResponse> mLiveReconnectCallback = new IRequestCallback<LiveReconnectResponse>() {
+    private final Callback<ReconnectResponse> mLiveReconnectCallback = new Callback<ReconnectResponse>() {
         @Override
-        public void onSuccess(LiveReconnectResponse data) {
-            if (data.recoverInfo == null) {
+        public void onResponse(ReconnectResponse data) {
+            if (data == null || data.recoverInfo == null) {
                 showToast(R.string.live_ended_title);
                 popBackStack(); // reconnect no recover info
             } else {
-                setRoomStatus(data.interactStatus);
-                updateOnlineGuestList(data.getInteractUsers());
-                initByJoinResponse(data.recoverInfo.liveRoomInfo, data.userInfo, data.recoverInfo.audienceCount);
+                initByJoinResponse(data.getRoomStatus(),
+                        data.recoverInfo.liveRoomInfo,
+                        data.userInfo,
+                        data.recoverInfo);
             }
         }
 
         @Override
-        public void onError(int errorCode, String message) {
-            showToast(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
+        public void onFailure(HttpException e) {
+            showToast(ErrorTool.getErrorMessage(e));
             popBackStack(); // reconnect failed
         }
     };
@@ -300,7 +306,7 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
 
         mSelfInfo = userInfo;
         LiveRTCManager.ins().startCapture(true, true);
-        initByJoinResponse(roomInfo, mSelfInfo, 0);
+        initByJoinResponse(roomInfo, mSelfInfo);
         mViewModel.setLiveStartTime();
 
         getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
@@ -349,12 +355,24 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
         }
     }
 
-    public void initByJoinResponse(LiveRoomInfo liveRoomInfo, LiveUserInfo liveUserInfo, int audienceCount) {
+    public void initByJoinResponse(LiveRoomInfo liveRoomInfo, LiveUserInfo liveUserInfo) {
+        initByJoinResponse(mRoomStatus,
+                liveRoomInfo,
+                liveUserInfo,
+                null);
+    }
+
+    public void initByJoinResponse(@RoomStatus int newRoomStatus,
+                                   LiveRoomInfo liveRoomInfo,
+                                   LiveUserInfo liveUserInfo,
+                                   ReconnectInfo reconnectInfo) {
+        int audienceCount = reconnectInfo == null ? 0 : reconnectInfo.audienceCount;
+        final boolean reconnect = (reconnectInfo != null);
+
+        final int oldRoomStatus = getRoomStatus();
+        setRoomStatus(newRoomStatus);
         mViewModel.roomInfo = liveRoomInfo;
         mSelfInfo = liveUserInfo;
-
-        final LiveRTCManager rtcManager = LiveRTCManager.ins();
-        rtcManager.joinRTSRoom(mViewModel.rtsRoomId(), mSelfInfo.userId, mRTSToken);
 
         //UI
         String userName = liveRoomInfo == null ? null : liveRoomInfo.anchorUserName;
@@ -365,23 +383,49 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
                 .into(mBinding.hostAvatar.userAvatar);
         setAudienceCount(audienceCount);
 
-        rtcManager.startLive(mRTCRoomId, mRTCToken, mPushUrl, mSelfInfo);
-
         if (getRoomStatus() == RoomStatus.PK) {
             updateOnlineGuestList(Collections.emptyList());
             mVideoRender.setLiveUserInfo(mCoHostInfo);
-        } else if (getRoomStatus() == RoomStatus.AUDIENCE_LINK) {
+        } else {
+            List<LiveUserInfo> users = reconnectInfo == null ? null : reconnectInfo.getLinkMicUsers();
+            updateOnlineGuestList(users);
             mVideoRender.setLiveUserInfo();
             mVideoRender.addLinkUserInfo(mGuestList);
-        } else {
-            mVideoRender.setLiveUserInfo();
-            updateOnlineGuestList(Collections.emptyList());
         }
 
-        final int role = LiveRoleType.HOST;
-        final int width = rtcManager.getWidth(role);
-        final int height = rtcManager.getHeight(role);
-        rtcManager.getRTSClient().updateResolution(mViewModel.rtsRoomId(), width, height, null);
+        if (reconnect) {
+            Log.d(TAG, "initByJoinResponse: RECONNECT: status: " + oldRoomStatus + " -> " + newRoomStatus);
+            if (oldRoomStatus != RoomStatus.PK && newRoomStatus == RoomStatus.PK) {
+                // Enter co host PK
+                // but missed CoHostInfo caused by DISCONNECTED
+                // so ignore server status, set to LIVE
+                Log.w(TAG, "initByJoinResponse: Can't handle into PK mode.");
+                setRoomStatus(RoomStatus.LIVE);
+
+                String linkerId = reconnectInfo.getLinkerId();
+                if (!TextUtils.isEmpty(linkerId)) {
+                    String roomId = mViewModel.rtsRoomId();
+                    LiveService.get()
+                            .finishAnchorLink(linkerId, roomId, OnNext.empty());
+                }
+            } else if (oldRoomStatus == RoomStatus.PK && newRoomStatus != RoomStatus.PK) {
+                // Leave co host PK
+                //
+                // Need notify LiveRTCManager to stop co host PK
+                LiveRTCManager.ins().stopCoHostPK(); // reconnect
+            } else if (newRoomStatus == RoomStatus.AUDIENCE_LINK || newRoomStatus == RoomStatus.LIVE) {
+                updateLiveTranscodingWithAudience();
+            }
+        } else {
+            final LiveRTCManager rtcManager = LiveRTCManager.ins();
+            rtcManager.joinRTSRoom(mViewModel.rtsRoomId(), mSelfInfo.userId, mRTSToken);
+            rtcManager.startLive(mRTCRoomId, mRTCToken, mPushUrl, mSelfInfo);
+
+            final int role = LiveRoleType.HOST;
+            final int width = rtcManager.getWidth(role);
+            final int height = rtcManager.getHeight(role);
+            LiveService.get().updateResolution(mViewModel.rtsRoomId(), width, height);
+        }
     }
 
     private void setAudienceCount(int count) {
@@ -451,13 +495,13 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
             mLastInputText = null;
 
             if (mSendMessageCount >= SEND_MESSAGE_COUNT_LIMIT) {
-                showToast(R.string.send_message_exceeded_limit);
+                showToast(com.vertcdemo.rtc.toolkit.R.string.send_message_exceeded_limit);
                 return;
             }
             mSendMessageCount++;
 
             MessageBody body = MessageBody.createMessage(content);
-            LiveRTCManager.ins().getRTSClient().sendMessage(mViewModel.rtsRoomId(), body);
+            LiveService.get().sendMessage(mViewModel.rtsRoomId(), body);
         } else {
             mLastInputText = content;
         }
@@ -545,10 +589,8 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
                 mSelfInfo = userInfo;
 
                 if (getRoomStatus() == RoomStatus.PK) {
-                    mSelfInfo.status = LiveUserStatus.CO_HOSTING;
                     mSelfInfo.linkMicStatus = LiveLinkMicStatus.HOST_INTERACTING;
                 } else {
-                    mSelfInfo.status = LiveUserStatus.AUDIENCE_INTERACTING;
                     mSelfInfo.linkMicStatus = LiveLinkMicStatus.AUDIENCE_INTERACTING;
                 }
             } else {
@@ -581,9 +623,9 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
                 return;
             }
             if (event.type == LiveFinishType.TIMEOUT) {
-                showToast(com.vertcdemo.core.R.string.minutes_error_message);
+                showToast(com.vertcdemo.rtc.toolkit.R.string.minutes_error_message);
             } else if (event.type == LiveFinishType.IRREGULARITY) {
-                showToast(com.vertcdemo.core.R.string.closed_terms_service);
+                showToast(com.vertcdemo.rtc.toolkit.R.string.closed_terms_service);
             }
             popBackStack();
         }
@@ -596,11 +638,6 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
         } else {
             popBackStack();
         }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserMediaControlEvent(UserMediaControlEvent event) {
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -623,7 +660,7 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLiveReconnectEvent(RTCReconnectToRoomEvent event) {
-        LiveRTCManager.ins().getRTSClient().requestLiveReconnect(mViewModel.rtsRoomId(), mLiveReconnectCallback);
+        LiveService.get().reconnect(mViewModel.rtsRoomId(), mLiveReconnectCallback);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -748,33 +785,33 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
 
     @Override
     public void replyAudienceRequestByHost(AudienceLinkApplyEvent event, @LivePermitType int permitType) {
-        IRequestCallback<LiveAnchorPermitAudienceResponse> callback;
+        Callback<PermitAudienceLinkResponse> callback;
 
         if (permitType == LivePermitType.ACCEPT) {
             LiveRTCManager.ins().joinRoom(mRTCRoomId, mSelfInfo.userId, mRTCToken);
 
-            callback = new IRequestCallback<LiveAnchorPermitAudienceResponse>() {
+            callback = new Callback<PermitAudienceLinkResponse>() {
                 @Override
-                public void onSuccess(LiveAnchorPermitAudienceResponse data) {
+                public void onResponse(PermitAudienceLinkResponse data) {
                     handleAnchorPermitAudienceResponse(event.applicant.userId, data);
                 }
 
                 @Override
-                public void onError(int errorCode, String message) {
-                    showToast(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
+                public void onFailure(HttpException e) {
+                    showToast(ErrorTool.getErrorMessage(e));
                 }
             };
         } else {
-            callback = null;
+            callback = OnNext.empty();
         }
 
-        LiveRTCManager.ins().getRTSClient().replyAudienceRequestByHost(event.linkerId,
-                mViewModel.rtsRoomId(),
-                mViewModel.anchorUserId(),
-                mViewModel.rtsRoomId(),
-                event.applicant.userId,
-                permitType,
-                callback);
+        LiveService.get()
+                .permitAudienceLink(
+                        event.linkerId,
+                        mViewModel.rtsRoomId(), mViewModel.anchorUserId(),
+                        mViewModel.rtsRoomId(), event.applicant.userId,
+                        permitType,
+                        callback);
 
         if (permitType == LivePermitType.REJECT) {
             // No subsequence Event, so remove the request manually.
@@ -817,16 +854,16 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
             boolean isAccept = result.getBoolean("accept");
             String linkerId = result.getString("linkerId");
             LiveUserInfo userInfo = (LiveUserInfo) result.getSerializable("userInfo");
+            assert userInfo != null;
 
             final int reply = isAccept ? LivePermitType.ACCEPT : LivePermitType.REJECT;
-            final IRequestCallback<LiveInviteResponse> callback = isAccept ? mAnchorReplyInviteCallback : null;
             if (isAccept) {
                 mLinkId = linkerId;
             }
 
-            LiveRTCManager.ins()
-                    .getRTSClient()
-                    .replyHostInviteeByHost(linkerId,
+            final Callback<LinkResponse> callback = isAccept ? mAnchorReplyInviteCallback : OnNext.empty();
+            LiveService.get()
+                            .replyAnchorLink(linkerId,
                             userInfo.roomId,
                             userInfo.userId,
                             mViewModel.rtsRoomId(),
@@ -912,7 +949,7 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
     public void onAnchorLinkFinishEvent(AnchorLinkFinishEvent event) {
         setRoomStatus(RoomStatus.LIVE);
         showToast(getString(R.string.pk_has_ended));
-        LiveRTCManager.ins().stopCoHostPK();
+        LiveRTCManager.ins().stopCoHostPK(); // onAnchorLinkFinishEvent
         updateOnlineGuestList(Collections.emptyList());
         mVideoRender.setLiveUserInfo();
         mCoHostInfo = null;
@@ -940,8 +977,6 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
                 onLikeMessage(user);
                 break;
         }
-
-
     }
 
     private void onNormalMessage(LiveUserInfo user, String content) {
@@ -977,10 +1012,7 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
         Bundle args = new Bundle();
         args.putParcelable("summary", summary);
         args.putLong("duration", SystemClock.uptimeMillis() - mViewModel.getLiveStartTime());
-        NavOptions options = new NavOptions.Builder()
-                .setPopUpTo(R.id.host_view, true)
-                .build();
-        Navigation.findNavController(requireView()).navigate(R.id.live_summary, args, options);
+        Navigation.findNavController(requireView()).navigate(R.id.live_summary, args);
     }
 
 

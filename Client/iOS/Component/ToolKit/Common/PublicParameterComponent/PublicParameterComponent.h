@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) NSString *appId;
 
-@property (nonatomic, copy) NSString *roomId;
-
 + (PublicParameterComponent *)share;
 
 + (void)clear;

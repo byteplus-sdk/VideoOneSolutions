@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_video_playback_tab_name">视频播放</string>
+
+    <string name="vevod_function_playback_title">视频播放演示</string>
+    <string name="vevod_function_playback_desc">包含手势控制、画中画和各种播放功能</string>
+
+    <string name="vevod_function_playlist_title">播放列表</string>
+    <string name="vevod_function_playlist_desc">一组视频轮播组件</string>
+
+    <string name="vevod_function_smart_subtitle_title">智能字幕</string>
+    <string name="vevod_function_smart_subtitle_desc">多语言智能视频字幕组件</string>
+
+    <string name="vevod_function_prevent_recording_title">防录屏/防截图</string>
+    <string name="vevod_function_prevent_recording_desc">防止系统录屏和截图组件</string>
+    <string name="vevod_function_prevent_recording_tips">防录屏、防截图功能已开启。</string>
+
+</resources>

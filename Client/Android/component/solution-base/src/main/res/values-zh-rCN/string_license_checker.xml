@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="solution_license_uri_path_null">Uri 格式错误\n\n示例 assets:///license/ttsdk.lic</string>
+    <string name="solution_license_uri_schema_unsupported">Uri schema 不支持\n\n仅支持 assets；示例 assets:///license/ttsdk.lic</string>
+    <string name="solution_license_assets_not_exists">证书文件不存在\n\n请检查项目目录(app/src/main/assets/)下文件是否存在，检查 logcat 输出获取更多信息</string>
+    <string name="solution_license_parse_error">证书文件内容解析错误</string>
+    <string name="solution_license_package_name_not_match">PackageName 错误\n\n证书中的 PackageName 与应用的 PackageName 不符，检查 logcat 输出获取更多信息</string>
+    <string name="solution_license_unknown_error">未知错误\n\n请检查 logcat 输出获取更多信息</string>
+</resources>

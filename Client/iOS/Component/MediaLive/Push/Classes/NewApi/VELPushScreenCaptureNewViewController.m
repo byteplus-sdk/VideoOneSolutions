@@ -6,6 +6,7 @@
 #import <MediaLive/VeLiveSolutionScreenCaptureManager.h>
 #import <MediaLive/VeLiveBroadcaseExtensionUILauncher.h>
 #import <ToolKit/Localizator.h>
+#import <ToolKit/ToolKit.h>
 
 #define LocalizedStringByAppendingString(key,sufix) [LocalizedStringFromBundle(key, @"MediaLive") stringByAppendingString:sufix]
 #define LOG_TAG @"NEW_PUSH_SCREEN"
@@ -139,6 +140,26 @@
         case VeLiveNetworkQualityGood : return @"Good";
     }
     return @"Unknown";
+}
+
+- (void)updateVideoEncodeFps:(int)fps {
+    if (fps < 15 || fps > 30) {
+        return;
+    }
+    self.config.encodeFPS = fps;
+    [self updateLivePusherEncodeConfig];
+}
+
+- (void)updateVideoEncodeResolution:(VELSettingResolutionType)resolution {
+    self.config.encodeResolutionType = resolution;
+    [self updateLivePusherEncodeConfig];
+}
+
+- (void)updateLivePusherEncodeConfig {
+    VOLogD(VOMediaLive, @"fps: %ld resolusion: %ld", self.config.encodeFPS, self.config.encodeResolutionType);
+    VeLiveVideoEncoderConfiguration *videoEncodeCfg = [[VeLiveVideoEncoderConfiguration alloc] initWithResolution:(VeLiveVideoResolution)self.config.encodeResolutionType];
+    videoEncodeCfg.fps = (int)self.config.encodeFPS;
+    [self.screenCaptureManager.pusher setVideoEncoderConfiguration:videoEncodeCfg];
 }
 - (NSAttributedString *)getPushInfoString {
     NSMutableAttributedString *attributedString = [NSMutableAttributedString new];

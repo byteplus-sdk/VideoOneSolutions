@@ -36,8 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) NSArray<LiveUserModel *> *onlineDataLists;
 
-@property (nonatomic, copy) NSArray<LiveUserModel *> *applicationDataLists;
-
 @property (nonatomic, assign) BOOL isUnread;
 
 @property (nonatomic, copy) void (^clickMaskBlcok)(void);
@@ -53,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateGuestsCamera:(BOOL)camera uid:(NSString *)uid;
 
 - (void)updateCoHostStartTime:(NSDate *)time;
+
+- (void)setApplicationDataLists:(NSArray<LiveUserModel *> *)applies;
 
 @end
 

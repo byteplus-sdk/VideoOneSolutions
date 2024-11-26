@@ -3,13 +3,12 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    namespace 'com.vertc.api.example.entry'
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
-        namespace 'com.vertc.api.example.entry'
-
-        minSdkVersion 19
-        targetSdkVersion 34
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
     }
 
     buildTypes {
@@ -37,6 +36,7 @@ dependencies {
 
     implementation libs.gson
     implementation libs.eventbus
+    implementation libs.retrofit2
 
     implementation libs.rtc.sdk
 

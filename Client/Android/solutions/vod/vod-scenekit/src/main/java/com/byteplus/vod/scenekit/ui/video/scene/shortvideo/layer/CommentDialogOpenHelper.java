@@ -7,5 +7,10 @@ import androidx.fragment.app.FragmentActivity;
 
 @FunctionalInterface
 public interface CommentDialogOpenHelper {
-    void showCommentDialog(@NonNull FragmentActivity activity, @NonNull String vid);
+    enum Style {
+        Portrait,
+        Landscape
+    }
+
+    void show(@NonNull FragmentActivity activity, @NonNull String vid, @NonNull Style style);
 }

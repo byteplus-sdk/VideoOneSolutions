@@ -122,7 +122,7 @@ public class RawAudioDataActivity extends ExampleBaseActivity {
             isShowRemoteUserDataLog = false;
         });
 
-        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "audio-raw-data");
         setLocalRenderView();
         rtcVideo.startVideoCapture();
         rtcVideo.startAudioCapture();

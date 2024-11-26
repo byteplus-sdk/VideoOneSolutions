@@ -64,7 +64,7 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
 
         initUI(binding);
 
-        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "video-config-common");
         setLocalRenderView(VideoCanvas.RENDER_MODE_HIDDEN);
 
         rtcVideo.startVideoCapture();

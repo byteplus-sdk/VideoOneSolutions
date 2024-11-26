@@ -6,13 +6,11 @@ package com.vertcdemo.solution.interactivelive.event;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
 
 /**
  * Audience cancel the apply link event
  */
-@RTSInform
 public class AudienceLinkCancelEvent {
     @SerializedName("rtc_room_id")
     public String rtcRoomId;

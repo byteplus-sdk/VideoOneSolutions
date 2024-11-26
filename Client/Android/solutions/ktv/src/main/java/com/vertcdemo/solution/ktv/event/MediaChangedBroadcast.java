@@ -5,10 +5,8 @@ package com.vertcdemo.solution.ktv.event;
 
 import com.google.gson.annotations.SerializedName;
 import com.vertcdemo.core.annotation.MediaStatus;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
 
-@RTSInform
 public class MediaChangedBroadcast {
 
     @SerializedName("mic")

@@ -61,7 +61,7 @@ public class MultiRoomActivity extends ExampleBaseActivity {
 
         initUI(binding);
 
-        rtcVideo = RTCHelper.createRTCVideo(this, videoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, videoEventHandler, "multi-room");
         setLocalRenderView();
         rtcVideo.startAudioCapture();
         rtcVideo.startVideoCapture();

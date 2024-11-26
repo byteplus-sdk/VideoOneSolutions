@@ -48,8 +48,6 @@ public class PreviewSettingsDialog extends Dialog {
     private Spinner mVideoFrameFmtType;
     private Spinner mVideoFrameBufferType;
 
-    private SwitchCompat mEnableAppAudio;
-
     private LivePusher.InfoListener mObserver;
     private boolean mIsNeedRebuild;
     private Context mContext;
@@ -62,7 +60,6 @@ public class PreviewSettingsDialog extends Dialog {
         AUDIO_ENCODE_SAMPLE_RATE,
         VIDEO_FRAME_TYPE,
         VIDEO_FRAME_BUFFER_TYPE,
-        ENABLE_APP_AUDIO
     }
 
     private static final List<SettingsItem> CAMERA_SETTING_ITEMS = Arrays.asList(
@@ -80,8 +77,7 @@ public class PreviewSettingsDialog extends Dialog {
     private static final List<SettingsItem> SCREEN_SETTING_ITEMS = Arrays.asList(
             SettingsItem.VIDEO_ENCODE_RESOLUTION,
             SettingsItem.VIDEO_ENCODE_FPS,
-            SettingsItem.AUDIO_ENCODE_SAMPLE_RATE,
-            SettingsItem.ENABLE_APP_AUDIO
+            SettingsItem.AUDIO_ENCODE_SAMPLE_RATE
     );
 
     private static final List<SettingsItem> FILE_SETTING_ITEMS = Arrays.asList(
@@ -188,10 +184,6 @@ public class PreviewSettingsDialog extends Dialog {
             PreferenceUtil.getInstance().setPushAudioEncodeSampleRate(mAudioEncodeSampleRate.getSelectedItemPosition());
         }
         checkExternalVideoFrameType();
-        if (mEnableAppAudio != null) {
-            mIsNeedRebuild |= LivePusherSettingsHelper.getEnableAppAudio() != mEnableAppAudio.isChecked();
-            PreferenceUtil.getInstance().setPushEnableAppAudio(mEnableAppAudio.isChecked());
-        }
     }
 
     private void initWindow() {
@@ -199,7 +191,7 @@ public class PreviewSettingsDialog extends Dialog {
 
         Window window = getWindow();
         window.setDimAmount(0.6f);
-        window.getAttributes().windowAnimations = R.style.DialogInAndOutStyle;
+        window.getAttributes().windowAnimations = com.byteplus.live.common.R.style.DialogInAndOutStyle;
         int device_width = Resources.getSystem().getDisplayMetrics().widthPixels;
         window.setLayout(device_width, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.BOTTOM);
@@ -282,13 +274,6 @@ public class PreviewSettingsDialog extends Dialog {
                             LivePusherSettingsHelper.getExternalVideoFrameBufferType()
                     );
                     break;
-                case ENABLE_APP_AUDIO:
-                    mEnableAppAudio = createSwitchItem(inflater,
-                            settings,
-                            R.string.medialive_capture_app_audio,
-                            LivePusherSettingsHelper.getEnableAppAudio()
-                    );
-                    break;
                 default:
                     throw new IllegalStateException("Unhandled SettingsItem: " + panelItem);
             }
@@ -321,8 +306,8 @@ public class PreviewSettingsDialog extends Dialog {
         titleView.setText(title);
         Spinner spinner = view.findViewById(R.id.spinner);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.live_item_select2, items);
-        adapter.setDropDownViewResource(R.layout.live_item_drop);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, com.byteplus.live.common.R.layout.live_item_select2, items);
+        adapter.setDropDownViewResource(com.byteplus.live.common.R.layout.live_item_drop);
         spinner.setAdapter(adapter);
         spinner.setSelection(defaultPosition);
 

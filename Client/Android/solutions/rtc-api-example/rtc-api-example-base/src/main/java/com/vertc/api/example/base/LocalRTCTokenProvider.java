@@ -21,6 +21,11 @@ public class LocalRTCTokenProvider implements RTCTokenProvider {
     }
 
     @NonNull
+    public String getBusinessId(String bid) {
+        return "local-" + bid;
+    }
+
+    @NonNull
     @Override
     public Future<String> getToken(@NonNull String roomId, @NonNull String userId) {
         return new ImmediatelyFuture() {

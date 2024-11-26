@@ -70,7 +70,6 @@
 #pragma mark - ChorusRoomTableViewDelegate
 
 - (void)ChorusRoomTableView:(ChorusRoomTableView *)ChorusRoomTableView didSelectRowAtIndexPath:(ChorusRoomModel *)model {
-    [PublicParameterComponent share].roomId = model.roomID;
     ChorusRoomViewController *next = [[ChorusRoomViewController alloc]
                                          initWithRoomModel:model];
     [self.navigationController pushViewController:next animated:YES];

@@ -4,7 +4,6 @@
 package com.vertcdemo.solution.interactivelive.event;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
 /**
  * Audiences reply to the anchor invitation connection event
  */
-@RTSInform
 public class AudienceLinkReplyEvent {
 
     @SerializedName("invitee")

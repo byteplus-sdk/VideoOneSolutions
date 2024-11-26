@@ -31,7 +31,7 @@ public class EffectResourceManager {
     private static final String STICKER_RESOURCE_VERSION = BuildConfig.CV_STICKER_RESOURCE_VERSION;
     private static final String FILTER_RESOURCE_VERSION = BuildConfig.CV_FILTER_RESOURCE_VERSION;
 
-    private static final String LICENCE_FILENAME = BuildConfig.CV_LICENCE_FILENAME;
+    private static final String LICENSE_FILENAME = BuildConfig.CV_LICENSE_FILENAME;
 
     private final Context context;
 
@@ -40,10 +40,10 @@ public class EffectResourceManager {
     }
 
     public String getLicensePath() {
-        if (TextUtils.isEmpty(LICENCE_FILENAME)) {
-            Log.e(TAG, "[EffectResourceManager] cv licence filename not set!!!");
+        if (TextUtils.isEmpty(LICENSE_FILENAME)) {
+            Log.e(TAG, "[EffectResourceManager] cv license filename not set!!!");
         }
-        return getExternalResourcePath("resource/cvlab/LicenseBag.bundle/" + LICENCE_FILENAME).getAbsolutePath();
+        return getExternalResourcePath("resource/cvlab/LicenseBag.bundle/" + LICENSE_FILENAME).getAbsolutePath();
     }
 
     public String getModelPath() {

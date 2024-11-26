@@ -19,19 +19,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
-import com.videoone.avatars.Avatars;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
-import com.vertcdemo.solution.interactivelive.core.annotation.LiveUserStatus;
+import com.vertcdemo.solution.interactivelive.core.annotation.LiveLinkMicStatus;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveCoHostListBinding;
 import com.vertcdemo.solution.interactivelive.databinding.LayoutLiveCoHostItemBinding;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkInviteEvent;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkReplyEvent;
 import com.vertcdemo.solution.interactivelive.util.BVH;
-import com.vertcdemo.core.utils.DebounceClickListener;
+import com.videoone.avatars.Avatars;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -39,7 +39,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collections;
 import java.util.List;
 
-public class AnchorInviteHostDialog extends BottomDialogFragmentX {
+public class AnchorInviteHostDialog extends BottomSheetDialogFragment {
     private DialogLiveCoHostListBinding mBinding;
 
     private OnlineHostAdapter mOnlineHostAdapter;
@@ -57,7 +57,7 @@ public class AnchorInviteHostDialog extends BottomDialogFragmentX {
 
     @Override
     public int getTheme() {
-        return R.style.LiveBottomSheetDialogTheme;
+        return R.style.LiveBottomSheetDialog;
     }
 
     @Nullable
@@ -78,7 +78,7 @@ public class AnchorInviteHostDialog extends BottomDialogFragmentX {
         SolutionEventBus.register(this);
 
         mViewModel.users.observe(getViewLifecycleOwner(), users -> {
-            if (users == null || users.size() == 0) {
+            if (users == null || users.isEmpty()) {
                 mBinding.empty.setVisibility(View.VISIBLE);
                 mBinding.recycler.setVisibility(View.GONE);
             } else {
@@ -158,18 +158,18 @@ public class AnchorInviteHostDialog extends BottomDialogFragmentX {
 
             binding.name.setText(info.userName);
 
-            switch (info.status) {
-                case LiveUserStatus.HOST_INVITING:
+            switch (info.linkMicStatus) {
+                case LiveLinkMicStatus.INVITING:
                     binding.ok.setText(R.string.Initiate_send);
                     break;
 
-                case LiveUserStatus.CO_HOSTING:
+                case LiveLinkMicStatus.AUDIENCE_INTERACTING:
+                case LiveLinkMicStatus.HOST_INTERACTING:
                     binding.ok.setText(R.string.connecting);
                     break;
 
-                case LiveUserStatus.AUDIENCE_INTERACTING:
-                case LiveUserStatus.AUDIENCE_INVITING:
-                case LiveUserStatus.OTHER:
+                case LiveLinkMicStatus.APPLYING:
+                case LiveLinkMicStatus.OTHER:
                 default:
                     binding.ok.setText(R.string.invite);
                     break;
@@ -211,7 +211,8 @@ public class AnchorInviteHostDialog extends BottomDialogFragmentX {
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                     final LiveUserInfo oldInfo = oldList.get(oldItemPosition);
                     final LiveUserInfo newInfo = newList.get(newItemPosition);
-                    return oldInfo.status == newInfo.status && TextUtils.equals(oldInfo.userName, newInfo.userName);
+                    return oldInfo.linkMicStatus == newInfo.linkMicStatus
+                            && TextUtils.equals(oldInfo.userId, newInfo.userId);
                 }
             }).dispatchUpdatesTo(this);
         }

@@ -4,12 +4,10 @@
 package com.vertcdemo.solution.interactivelive.event;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
 /**
  * Audience connection end event
  */
-@RTSInform
 public class AudienceLinkFinishEvent {
 
     @SerializedName("rtc_room_id")

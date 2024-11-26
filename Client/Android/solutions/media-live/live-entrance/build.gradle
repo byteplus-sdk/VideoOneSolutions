@@ -3,8 +3,8 @@ plugins {
 }
 
 android {
-    compileSdk project.compileSdkVersion
     namespace 'com.byteplus.live.entrance'
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
@@ -24,15 +24,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 }
 
 dependencies {
     implementation libs.appcompat
     implementation libs.constraintlayout
+
+    implementation libs.bundles.viewmodel
 
     implementation project(path: ':solutions:media-live:live-common')
     implementation project(path: ':solutions:media-live:live-pusher')

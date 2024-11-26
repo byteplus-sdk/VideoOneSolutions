@@ -217,14 +217,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /// reconnect
+/// @param roomID current room ID
 /// @param block Callback
-+ (void)reconnectWithBlock:(void (^)(NSString *RTCToken,
-                                     KTVRoomModel *roomModel,
-                                     KTVUserModel *userModel,
-                                     KTVUserModel *hostUserModel,
-                                     KTVSongModel *songModel,
-                                     NSArray<KTVSeatModel *> *seatList,
-                                     RTSACKModel *model))block;
++ (void)reconnect:(NSString *)roomID
+            block:(void (^)(NSString *RTCToken,
+                            KTVRoomModel *roomModel,
+                            KTVUserModel *userModel,
+                            KTVUserModel *hostUserModel,
+                            KTVSongModel *songModel,
+                            NSArray<KTVSeatModel *> *seatList,
+                            RTSACKModel *model))block;
 
 
 

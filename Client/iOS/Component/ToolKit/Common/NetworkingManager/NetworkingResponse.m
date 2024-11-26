@@ -10,6 +10,7 @@
 
 + (instancetype)dataToResponseModel:(id)data {
     NetworkingResponse *response = [self yy_modelWithJSON:data];
+    response.json = data;
     if (response && response.code != RTSStatusCodeSuccess) {
         NSString *message = [NetworkingTool messageFromResponseCode:response.code];
         if (message && message.length > 0) {

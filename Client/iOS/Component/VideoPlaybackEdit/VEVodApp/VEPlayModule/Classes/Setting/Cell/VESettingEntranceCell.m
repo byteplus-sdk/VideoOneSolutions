@@ -5,8 +5,9 @@
 #import "UIColor+String.h"
 #import "Masonry.h"
 #import "Localizator.h"
+#import <ToolKit/ToolKit.h>
 
-const NSString *VESettingEntranceCellCellReuseID = @"VESettingEntranceCellCellReuseID";
+extern NSString *VESettingEntranceCellCellReuseID;
 
 @interface VESettingEntranceCell ()
 
@@ -28,7 +29,7 @@ const NSString *VESettingEntranceCellCellReuseID = @"VESettingEntranceCellCellRe
             make.left.equalTo(self).offset(28);
             make.centerY.equalTo(self);
         }];
-        UIImageView *close = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"black_back"]];
+        UIImageView *close = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"black_back" bundleName:@"VodPlayer"]];
         close.transform = CGAffineTransformRotate(close.transform, M_PI);
         [self.contentView addSubview:close];
         [close mas_makeConstraints:^(MASConstraintMaker *make) {

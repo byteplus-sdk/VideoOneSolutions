@@ -3,17 +3,15 @@
 
 package com.vertcdemo.solution.chorus.feature;
 
-
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,10 +19,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bytedance.chrous.R;
 import com.vertcdemo.core.event.AppTokenExpiredEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.rts.RTSInfo;
+import com.vertcdemo.core.http.bean.RTCAppInfo;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Objects;
 
 public class ChorusActivity extends AppCompatActivity {
     public static final String EXTRA_ROOM_INFO = "roomInfo";
@@ -38,12 +38,9 @@ public class ChorusActivity extends AppCompatActivity {
         final Window window = getWindow();
         WindowCompat.setDecorFitsSystemWindows(window, false);
 
-        // for HONOR 50, HTH-AN00, MagicOS 7, Android 12
-        // This device need this line to set status bar TRANSPARENT and should called before setStatusBarColor
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-
-        window.setStatusBarColor(Color.TRANSPARENT);
-        window.setNavigationBarColor(Color.TRANSPARENT);
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, window.getDecorView());
+        controller.setAppearanceLightStatusBars(true);
+        controller.setAppearanceLightNavigationBars(true);
 
         setContentView(R.layout.activity_chorus);
 
@@ -60,13 +57,11 @@ public class ChorusActivity extends AppCompatActivity {
         });
 
         final ChorusViewModel viewModel = new ViewModelProvider(this).get(ChorusViewModel.class);
-        viewModel.rtsStatus.observe(this, status -> {
-            if (status == ChorusViewModel.RTS_STATUS_NONE) {
+        viewModel.rtcStatus.observe(this, status -> {
+            if (status == ChorusViewModel.RTC_STATUS_NONE) {
                 final Intent intent = getIntent();
-                viewModel.setRTSInfo(intent.getParcelableExtra(RTSInfo.KEY_RTS));
-                viewModel.loginRTS();
-            } else if (status == ChorusViewModel.RTS_STATUS_FAILED) {
-                finish();
+                RTCAppInfo info = Objects.requireNonNull(intent.getParcelableExtra(RTCAppInfo.KEY_APP_INFO));
+                viewModel.setAppInfo(info);
             }
         });
     }

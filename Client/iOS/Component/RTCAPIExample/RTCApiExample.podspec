@@ -3,9 +3,9 @@ Pod::Spec.new do |spec|
   spec.version      = '1.0.0'
   spec.summary      = 'RTC API Example APP'
   spec.description  = 'RTC API Example App ..'
-  spec.homepage     = 'https://github.com/xxx'
+  spec.homepage     = 'https://github.com/byteplus-sdk'
   spec.license      = { :type => 'MIT', :file => 'LICENSE' }
-  spec.author       = { 'author' => 'xxxx rtc' }
+  spec.author       = { 'author' => 'byteplus-sdk' }
   spec.source       = { :path => './' }
   spec.ios.deployment_target = '11.0'
   spec.swift_version = '5.0'
@@ -18,8 +18,7 @@ Pod::Spec.new do |spec|
                      'RTCAPIExample/*.bundle']
   }
   
-#  spec.dependency 'BytePlusRTC'
-  spec.dependency 'TTSDK/RTC-Framework'
+  spec.dependency $RTC_SDK
   spec.dependency 'SnapKit'
   spec.dependency 'IQKeyboardManagerSwift'
 end

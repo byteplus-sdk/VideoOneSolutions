@@ -3,10 +3,8 @@
 
 package com.vertcdemo.solution.ktv.feature.list;
 
-import static com.vertcdemo.solution.ktv.feature.KTVViewModel.RTS_STATUS_FAILED;
-import static com.vertcdemo.solution.ktv.feature.KTVViewModel.RTS_STATUS_LOGGED;
-import static com.vertcdemo.solution.ktv.feature.KTVViewModel.RTS_STATUS_LOGGING;
-import static com.vertcdemo.solution.ktv.feature.KTVViewModel.RTS_STATUS_NONE;
+import static com.vertcdemo.solution.ktv.feature.KTVViewModel.RTC_STATUS_DONE;
+import static com.vertcdemo.solution.ktv.feature.KTVViewModel.RTC_STATUS_NONE;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -28,9 +26,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.bean.RoomInfo;
-import com.vertcdemo.solution.ktv.common.SolutionToast;
 import com.vertcdemo.solution.ktv.databinding.FragmentKtvRoomsBinding;
 import com.vertcdemo.solution.ktv.feature.KTVViewModel;
+import com.vertcdemo.ui.CenteredToast;
 
 import java.util.Collections;
 import java.util.List;
@@ -68,16 +66,16 @@ public class KTVRoomListFragment extends Fragment {
         binding.back.setOnClickListener(v -> requireActivity().onBackPressed());
 
         binding.refresh.setOnClickListener(DebounceClickListener.create(v -> {
-            int status = Objects.requireNonNull(mKTVViewModel.rtsStatus.getValue());
-            if (status == RTS_STATUS_LOGGED) {
+            int status = Objects.requireNonNull(mKTVViewModel.rtcStatus.getValue());
+            if (status == RTC_STATUS_DONE) {
                 binding.swipeLayout.setRefreshing(true);
                 mViewModel.requestRoomList();
             }
         }));
 
         binding.swipeLayout.setOnRefreshListener(() -> {
-            int status = Objects.requireNonNull(mKTVViewModel.rtsStatus.getValue());
-            if (status == RTS_STATUS_LOGGED) {
+            int status = Objects.requireNonNull(mKTVViewModel.rtcStatus.getValue());
+            if (status == RTC_STATUS_DONE) {
                 mViewModel.requestRoomList();
             } else {
                 binding.swipeLayout.setRefreshing(false);
@@ -88,7 +86,6 @@ public class KTVRoomListFragment extends Fragment {
         binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recycler.addItemDecoration(new KTVRoomItemDecoration());
         binding.recycler.setAdapter(roomListAdapter);
-        binding.recycler.setItemAnimator(null);
 
         binding.createRoom.setOnClickListener(
                 DebounceClickListener.create(v -> {
@@ -103,19 +100,13 @@ public class KTVRoomListFragment extends Fragment {
             binding.empty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
-        mKTVViewModel.rtsStatus.observe(getViewLifecycleOwner(), status -> {
+        mKTVViewModel.rtcStatus.observe(getViewLifecycleOwner(), status -> {
             switch (status) {
-                case RTS_STATUS_NONE:
+                case RTC_STATUS_NONE:
                     break;
-                case RTS_STATUS_LOGGING:
-                    // show loading
-                    break;
-                case RTS_STATUS_LOGGED:
+                case RTC_STATUS_DONE:
                     binding.swipeLayout.setRefreshing(true);
                     mViewModel.requestRoomList();
-                    break;
-                case RTS_STATUS_FAILED:
-                    // failed
                     break;
             }
         });
@@ -123,7 +114,7 @@ public class KTVRoomListFragment extends Fragment {
 
     final ActivityResultLauncher<String> launcher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {
         if (result != Boolean.TRUE) {
-            SolutionToast.show(R.string.toast_ktv_need_permission);
+            CenteredToast.show(R.string.toast_ktv_need_permission);
             return;
         }
         Navigation.findNavController(requireView()).navigate(R.id.action_create_ktv_room);

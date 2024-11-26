@@ -4,7 +4,8 @@
 package com.vertcdemo.solution.karaoke;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -15,11 +16,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
-import com.vertcdemo.solution.chorus.feature.ChorusEntryActivity;
-import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.databinding.ActivityKaraokeScenesBinding;
-import com.vertcdemo.solution.ktv.feature.KTVEntryActivity;
 
 public class KaraokeScenesActivity extends AppCompatActivity {
     @Override
@@ -29,12 +28,9 @@ public class KaraokeScenesActivity extends AppCompatActivity {
 
         WindowCompat.setDecorFitsSystemWindows(window, false);
 
-        // for HONOR 50, HTH-AN00, MagicOS 7, Android 12
-        // This device need this line to set status bar TRANSPARENT and should called before setStatusBarColor
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-
-        window.setStatusBarColor(Color.TRANSPARENT);
-        window.setNavigationBarColor(Color.TRANSPARENT);
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, window.getDecorView());
+        controller.setAppearanceLightStatusBars(true);
+        controller.setAppearanceLightNavigationBars(true);
 
         ActivityKaraokeScenesBinding binding = ActivityKaraokeScenesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -48,15 +44,32 @@ public class KaraokeScenesActivity extends AppCompatActivity {
             return WindowInsetsCompat.CONSUMED;
         });
 
-        binding.solo.setOnClickListener(v -> {
-            Intent intent = new Intent(this, KTVEntryActivity.class);
-            startActivity(intent);
-        });
+        PackageManager packageManager = getPackageManager();
+        String packageName = getPackageName();
 
-        binding.duet.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ChorusEntryActivity.class);
-            startActivity(intent);
-        });
+        {
+            Intent intent = new Intent(packageName + ".action.KTV_SCENE_SOLO");
+            intent.setPackage(packageName);
+            ResolveInfo info = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+            if (info != null) {
+                binding.solo.setOnClickListener(v -> startActivity(intent));
+            } else {
+                binding.groupSolo.setVisibility(View.GONE);
+            }
+        }
+
+        {
+            Intent intent = new Intent(packageName + ".action.KTV_SCENE_DUET");
+            intent.setPackage(packageName);
+            ResolveInfo info = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+            if (info != null) {
+                binding.duet.setOnClickListener(v -> startActivity(intent));
+            } else {
+                binding.groupDuet.setVisibility(View.GONE);
+            }
+        }
 
         binding.back.setOnClickListener(v -> finish());
     }

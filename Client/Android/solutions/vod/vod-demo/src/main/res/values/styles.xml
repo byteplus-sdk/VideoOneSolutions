@@ -6,11 +6,14 @@
 <resources>
 
     <style name="vevod_bottom_sheet_dialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
         <item name="bottomSheetStyle">@style/vevod_bottom_sheet_style</item>
+
     </style>
 
     <style name="vevod_bottom_sheet_style" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:background">@drawable/vevod_bg_dialog_comment</item>
+        <item name="behavior_draggable">false</item>
     </style>
 
     <style name="vevod_full_screen_dialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
@@ -19,5 +22,6 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowIsFloating">false</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 </resources>

@@ -11,5 +11,6 @@
 #import "UIView+Fillet.h"
 #import "UIViewController+Orientation.h"
 #import "NSString+Valid.h"
+#import "UIScrollView+Refresh.h"
 
 #endif /* Category_h */

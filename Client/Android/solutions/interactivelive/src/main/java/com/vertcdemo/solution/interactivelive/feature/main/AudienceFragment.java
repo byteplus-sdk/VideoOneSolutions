@@ -5,7 +5,7 @@ package com.vertcdemo.solution.interactivelive.feature.main;
 
 import static android.appwidget.AppWidgetManager.EXTRA_HOST_ID;
 import static com.vertcdemo.core.chat.ChatConfig.SEND_MESSAGE_COUNT_LIMIT;
-import static com.vertcdemo.core.dialog.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
+import static com.vertcdemo.core.chat.input.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
 import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveActivity.EXTRA_ROOM_ID;
 
 import android.content.Context;
@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -34,16 +35,18 @@ import com.bumptech.glide.Glide;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.chat.ChatAdapter;
-import com.vertcdemo.core.dialog.MessageInputDialog;
+import com.vertcdemo.core.chat.gift.GiftDialog;
+import com.vertcdemo.core.chat.annotation.GiftType;
+import com.vertcdemo.core.chat.gift.GiftAnimateHelper;
+import com.vertcdemo.core.chat.input.MessageInputDialog;
 import com.vertcdemo.core.event.RTCReconnectToRoomEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.ErrorTool;
-import com.vertcdemo.core.net.IRequestCallback;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.http.callback.OnFailure;
+import com.vertcdemo.core.utils.ErrorTool;
+import com.vertcdemo.core.net.HttpException;
 import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.bean.JoinLiveRoomResponse;
-import com.vertcdemo.solution.interactivelive.bean.LiveReconnectResponse;
-import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.bean.MessageBody;
@@ -72,6 +75,9 @@ import com.vertcdemo.solution.interactivelive.event.PublishVideoStreamEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaControlEvent;
 import com.vertcdemo.solution.interactivelive.feature.main.audiencelink.RequestAudienceLinkDialog;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
+import com.vertcdemo.solution.interactivelive.http.response.JoinRoomResponse;
+import com.vertcdemo.solution.interactivelive.http.response.ReconnectResponse;
 import com.vertcdemo.ui.CenteredToast;
 import com.videoone.avatars.Avatars;
 
@@ -85,7 +91,7 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class AudienceFragment extends Fragment {
+public class AudienceFragment extends Fragment implements GiftDialog.IGiftSender {
     private static final String TAG = "AudienceFragment";
 
     @RoomStatus
@@ -98,7 +104,6 @@ public class AudienceFragment extends Fragment {
 
     public void setRoomStatus(@RoomStatus int status) {
         mRoomStatus = status;
-
     }
 
     private String mRTSToken;
@@ -157,51 +162,49 @@ public class AudienceFragment extends Fragment {
 
     private int mSendMessageCount = 0;
 
-    private boolean isLeaveByKickOut = false;
-
     boolean isHostCameraOn() {
         return mHostInfo != null && mHostInfo.isCameraOn();
     }
     // join room callback
-    private final IRequestCallback<JoinLiveRoomResponse> mJoinRoomCallback = new IRequestCallback<JoinLiveRoomResponse>() {
+    private final Callback<JoinRoomResponse> mJoinRoomCallback = new Callback<JoinRoomResponse>() {
         @Override
-        public void onSuccess(JoinLiveRoomResponse data) {
-            setRoomStatus(data.liveRoomInfo.status);
+        public void onResponse(JoinRoomResponse data) {
+            if (data == null) {
+                onFailure(HttpException.unknown("Response is null"));
+                return;
+            }
+            setRoomStatus(data.getRoomStatus()); // Join room success
             mRTSToken = data.rtsToken;
             mHostInfo = data.liveHostUserInfo;
-            initByJoinResponse(data.liveRoomInfo, data.liveUserInfo, Collections.emptyList());
+            initByJoinResponse(data.liveRoomInfo, data.liveUserInfo);
         }
 
         @Override
-        public void onError(int errorCode, String message) {
-            String msg;
-            if (errorCode != 200) {
-                msg = getString(com.vertcdemo.core.R.string.joining_room_failed);
-            } else {
-                msg = ErrorTool.getErrorMessageByErrorCode(errorCode, message);
-            }
-
-            CenteredToast.show(msg);
-            popBackStack();
+        public void onFailure(HttpException e) {
+            CenteredToast.show(ErrorTool.getErrorMessage(e));
+            leaveRoom(false); // Join room failed, leave room
         }
     };
     // reconnect callback
-    private final IRequestCallback<LiveReconnectResponse> mLiveReconnectCallback = new IRequestCallback<LiveReconnectResponse>() {
+    private final Callback<ReconnectResponse> mLiveReconnectCallback = new Callback<ReconnectResponse>() {
         @Override
-        public void onSuccess(LiveReconnectResponse data) {
-            if (data.recoverInfo == null) {
+        public void onResponse(ReconnectResponse data) {
+            if (data == null || data.recoverInfo == null) {
                 showToast(R.string.live_ended_title);
-                popBackStack();
+                leaveRoom(false); // Reconnect failed
             } else {
-                initByJoinResponse(data.recoverInfo.liveRoomInfo, data.userInfo, data.getInteractUsers());
-                setRoomStatus(data.interactStatus);
+                initByJoinResponse(
+                        data.recoverInfo.liveRoomInfo,
+                        data.userInfo, data.getLinkMicUsers(),
+                        true);
+                setRoomStatus(data.getRoomStatus());
             }
         }
 
         @Override
-        public void onError(int errorCode, String message) {
-            showToast(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
-            popBackStack();
+        public void onFailure(HttpException e) {
+            showToast(ErrorTool.getErrorMessage(e));
+            leaveRoom(false); // Reconnect exception
         }
     };
 
@@ -223,6 +226,13 @@ public class AudienceFragment extends Fragment {
 
         getChildFragmentManager()
                 .setFragmentResultListener(REQUEST_KEY_MESSAGE_INPUT, this, messageInputResultListener);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                leaveRoom(); // On Back pressed
+            }
+        });
     }
 
     @Nullable
@@ -239,7 +249,7 @@ public class AudienceFragment extends Fragment {
         if (TextUtils.isEmpty(roomId) || TextUtils.isEmpty(hostId)) {
             throw new IllegalArgumentException("roomId or hostId not set!");
         } else {
-            LiveRTCManager.ins().getRTSClient().requestJoinLiveRoom(roomId, mJoinRoomCallback);
+            LiveService.get().joinRoom(roomId, mJoinRoomCallback);
         }
 
         mBinding = FragmentLiveAudienceBinding.bind(view);
@@ -257,7 +267,7 @@ public class AudienceFragment extends Fragment {
 
         mLiveChatAdapter = ChatAdapter.bind(mBinding.messagePanel);
 
-        mBinding.close.setOnClickListener(v -> popBackStack());
+        mBinding.close.setOnClickListener(v -> leaveRoom());
 
         // region bottom actions
         mBinding.comment.setOnClickListener(v -> openInputDialog());
@@ -279,30 +289,62 @@ public class AudienceFragment extends Fragment {
         mVideoRender.destroyPlayer();
 
         final LiveRTCManager rtcManager = LiveRTCManager.ins();
-        if (mLiveRoomInfo != null && mSelfInfo != null) {
-            if (getLinkMicStatus() == LiveLinkMicStatus.AUDIENCE_INTERACTING) {
-                showToast(getString(R.string.host_disconnected_live));
-            }
-            if (!isLeaveByKickOut) {
-                String roomId = getRTSRoomId();
-                rtcManager.getRTSClient().requestLeaveLiveRoom(roomId, null);
-            }
-        }
-
         rtcManager.leaveRTSRoom();
         rtcManager.leaveRoom();
         rtcManager.stopAllCapture();
     }
 
-    public void initByJoinResponse(LiveRoomInfo liveRoomInfo, LiveUserInfo liveUserInfo, List<LiveUserInfo> interactUserList) {
+    /**
+     * Leave Room & call server api
+     */
+    private void leaveRoom() {
+        leaveRoom(true);
+    }
+
+    /**
+     * Leave Room
+     *
+     * @param callServer if need call server api to leave room
+     */
+    private void leaveRoom(boolean callServer) {
+        SolutionEventBus.unregister(this);
+
+        if (mLiveRoomInfo != null && mSelfInfo != null) {
+            if (getLinkMicStatus() == LiveLinkMicStatus.AUDIENCE_INTERACTING) {
+                showToast(getString(R.string.host_disconnected_live));
+            }
+            if (callServer) {
+                String roomId = getRTSRoomId();
+                LiveService.get().leaveRoom(roomId);
+            }
+        }
+
+        Navigation.findNavController(requireView())
+                .popBackStack();
+    }
+
+    public void initByJoinResponse(
+            LiveRoomInfo liveRoomInfo,
+            LiveUserInfo liveUserInfo) {
+        initByJoinResponse(liveRoomInfo, liveUserInfo, Collections.emptyList(), false);
+    }
+
+    public void initByJoinResponse(
+            LiveRoomInfo liveRoomInfo,
+            LiveUserInfo liveUserInfo,
+            List<LiveUserInfo> interactUserList,
+            boolean isReconnect) {
+        final int oldLinkMicStatus = getLinkMicStatus();
         mLiveRoomInfo = liveRoomInfo;
         mViewModel.setLiveRoomInfo(liveRoomInfo);
         setSelfInfo(liveUserInfo);
         int audienceCount = liveRoomInfo.audienceCount;
 
-        final LiveRTCManager rtcManager = LiveRTCManager.ins();
-        rtcManager.joinRTSRoom(getRTSRoomId(), getMyUserId(), mRTSToken);
-        rtcManager.startCapture(false, false);
+        if (!isReconnect) {
+            final LiveRTCManager rtcManager = LiveRTCManager.ins();
+            rtcManager.joinRTSRoom(getRTSRoomId(), getMyUserId(), mRTSToken);
+            rtcManager.startCapture(false, false);
+        }
 
         //UI
         String hostUserName = liveRoomInfo.anchorUserName;
@@ -312,16 +354,21 @@ public class AudienceFragment extends Fragment {
                 .load(Avatars.byUserId(hostUserId))
                 .into(mBinding.hostAvatar.userAvatar);
 
-//        Glide.with(mBinding.hostAvatarBig)
-//                .load(Avatars.byUserId(hostUserId))
-//                .centerCrop()
-//                .into(mBinding.hostAvatarBig);
-
         setAudienceCount(audienceCount);
 
         updatePlayerStatus();
 
         updateOnlineGuestList(interactUserList);
+
+        if (isReconnect) {
+            // Check if current user is interacting
+            int newLinkMicStatus = getLinkMicStatus();
+            if (oldLinkMicStatus == LiveLinkMicStatus.AUDIENCE_INTERACTING
+                    && newLinkMicStatus != LiveLinkMicStatus.AUDIENCE_INTERACTING) {
+                // Update to live watching mode
+                linkStatusDisconnected();
+            }
+        }
     }
 
     private void setAudienceCount(int count) {
@@ -388,13 +435,13 @@ public class AudienceFragment extends Fragment {
     public void onLiveFinishEvent(LiveFinishEvent event) {
         if (TextUtils.equals(event.roomId, getRTSRoomId())) {
             if (event.type == LiveFinishType.TIMEOUT) {
-                showToast(com.vertcdemo.core.R.string.live_ended);
+                showToast(com.vertcdemo.rtc.toolkit.R.string.live_ended);
             } else if (event.type == LiveFinishType.IRREGULARITY) {
-                showToast(com.vertcdemo.core.R.string.closed_terms_service);
+                showToast(com.vertcdemo.rtc.toolkit.R.string.closed_terms_service);
             } else if (event.type == LiveFinishType.NORMAL) {
-                showToast(com.vertcdemo.core.R.string.live_ended);
+                showToast(com.vertcdemo.rtc.toolkit.R.string.live_ended);
             }
-            popBackStack();
+            leaveRoom(false); // Live End
         }
     }
 
@@ -413,17 +460,9 @@ public class AudienceFragment extends Fragment {
         }
         int mic = LiveRTCManager.ins().isMicOn() ? MediaStatus.ON : MediaStatus.OFF;
         int camera = LiveRTCManager.ins().isCameraOn() ? MediaStatus.ON : MediaStatus.OFF;
-        LiveRTCManager.ins().getRTSClient().updateMediaStatus(event.guestRoomId, mic, camera, new IRequestCallback<LiveResponse>() {
-            @Override
-            public void onSuccess(LiveResponse data) {
-
-            }
-
-            @Override
-            public void onError(int errorCode, String message) {
-                showToast(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
-            }
-        });
+        LiveService.get().updateMediaStatus(getRTSRoomId(), mic, camera, OnFailure.of(e -> {
+            showToast(ErrorTool.getErrorMessage(e));
+        }));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -457,7 +496,7 @@ public class AudienceFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLiveReconnectEvent(RTCReconnectToRoomEvent event) {
-        LiveRTCManager.ins().getRTSClient().requestLiveReconnect(getRTSRoomId(), mLiveReconnectCallback);
+        LiveService.get().reconnect(getRTSRoomId(), mLiveReconnectCallback);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -468,13 +507,12 @@ public class AudienceFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLiveKickUserEvent(LiveKickUserEvent event) {
         showToast(getString(R.string.same_logged_in));
-        isLeaveByKickOut = true;
-        popBackStack();
+        leaveRoom(false); // Same user login
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLinkMicStatusEvent(LinkMicStatusEvent event) {
-        setRoomStatus(event.linkMicStatus);
+        setRoomStatus(event.linkMicStatus); // onLinkMicStatusEvent
         mHostInfo.linkMicStatus = event.linkMicStatus;
         updatePlayerStatus();
     }
@@ -505,7 +543,7 @@ public class AudienceFragment extends Fragment {
             LiveRTCManager.ins().joinRoom(event.rtcRoomId, getMyUserId(), event.rtcToken);
             LiveRTCManager.ins().startCapture(mSelfInfo.isCameraOn(), mSelfInfo.isMicOn());
 
-            setRoomStatus(RoomStatus.AUDIENCE_LINK);
+            setRoomStatus(RoomStatus.AUDIENCE_LINK); // onAudienceLinkPermitEvent
             setLinkMicStatus(LiveLinkMicStatus.AUDIENCE_INTERACTING);
 
             updatePlayerStatus();
@@ -537,7 +575,7 @@ public class AudienceFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAudienceLinkStatusEvent(AudienceLinkStatusEvent event) {
         if (event.isJoin()) {
-            setRoomStatus(RoomStatus.AUDIENCE_LINK);
+            setRoomStatus(RoomStatus.AUDIENCE_LINK); // onAudienceLinkStatusEvent
             updateOnlineGuestList(event.userList);
             showLinkView(event.userList);
         } else {
@@ -569,7 +607,7 @@ public class AudienceFragment extends Fragment {
     }
 
     void linkStatusDisconnected() {
-        setRoomStatus(RoomStatus.LIVE);
+        setRoomStatus(RoomStatus.LIVE); // linkStatusDisconnected
         setLinkMicStatus(LiveLinkMicStatus.OTHER);
         updateOnlineGuestList(Collections.emptyList());
         LiveRTCManager.ins().startCapture(false, false);
@@ -577,14 +615,6 @@ public class AudienceFragment extends Fragment {
 
         mVideoRender.showPlayer();
         updatePlayerStatus();
-    }
-
-    void popBackStack() {
-        final View view = getView();
-        if (view == null) {
-            return;
-        }
-        Navigation.findNavController(view).popBackStack();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -602,13 +632,13 @@ public class AudienceFragment extends Fragment {
             mLastInputText = null;
 
             if (mSendMessageCount >= SEND_MESSAGE_COUNT_LIMIT) {
-                showToast(R.string.send_message_exceeded_limit);
+                showToast(com.vertcdemo.rtc.toolkit.R.string.send_message_exceeded_limit);
                 return;
             }
             mSendMessageCount++;
 
             MessageBody body = MessageBody.createMessage(content);
-            LiveRTCManager.ins().getRTSClient().sendMessage(getRTSRoomId(), body);
+            LiveService.get().sendMessage(getRTSRoomId(), body);
         } else {
             mLastInputText = content;
         }
@@ -659,16 +689,40 @@ public class AudienceFragment extends Fragment {
     // Gift
     void onGiftButtonClicked(View view) {
         GiftDialog dialog = new GiftDialog();
-        final Bundle args = new Bundle();
-        args.putString("rtsRoomId", getRTSRoomId());
-        dialog.setArguments(args);
         dialog.show(getChildFragmentManager(), "gift_dialog");
     }
+
+    @Override
+    public void sendGift(int giftType) {
+        MessageBody body;
+        switch (giftType) {
+            case GiftType.LIKE:
+                body = MessageBody.GIFT_LIKE;
+                break;
+            case GiftType.SUGAR:
+                body = MessageBody.GIFT_SUGAR;
+                break;
+            case GiftType.DIAMOND:
+                body = MessageBody.GIFT_DIAMOND;
+                break;
+            case GiftType.FIREWORKS:
+                body = MessageBody.GIFT_FIREWORKS;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + giftType);
+        }
+
+        LiveService.get().sendMessage(getRTSRoomId(), body, sGiftCallback);
+    }
+
+    private static final Callback<Void> sGiftCallback = OnFailure.of(e -> {
+        CenteredToast.show(ErrorTool.getErrorMessage(e));
+    });
 
     // Like/Heart
 
     void onLikeButtonClicked(View view) {
-        LiveRTCManager.rts().sendMessage(getRTSRoomId(), MessageBody.LIKE);
+        LiveService.get().sendMessage(getRTSRoomId(), MessageBody.LIKE);
     }
 
     // Beauty

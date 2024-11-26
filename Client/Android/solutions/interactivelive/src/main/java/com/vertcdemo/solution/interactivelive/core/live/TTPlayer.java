@@ -10,11 +10,6 @@ import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerFormat.VeL
 import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerFormat.VeLivePlayerFormatRTM;
 import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerProtocol.VeLivePlayerProtocolTCP;
 import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerProtocol.VeLivePlayerProtocolTLS;
-import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionHD;
-import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionLD;
-import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionOrigin;
-import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionSD;
-import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution.VeLivePlayerResolutionUHD;
 import static com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerStreamType.VeLivePlayerStreamTypeMain;
 import static com.vertcdemo.solution.interactivelive.core.live.StreamUrls.get1080Url;
 import static com.vertcdemo.solution.interactivelive.core.live.StreamUrls.get480Url;
@@ -159,13 +154,13 @@ public class TTPlayer implements IVideoPlayer {
         VeLivePlayerStreamData.VeLivePlayerStream rtmStream = new VeLivePlayerStreamData.VeLivePlayerStream();
         rtmStream.url = sdpUrl;
         rtmStream.format = VeLivePlayerFormatRTM;
-        rtmStream.resolution = VeLivePlayerResolutionOrigin;
+        rtmStream.resolution = LivePlayerResolution.Origin;
         rtmStream.streamType = VeLivePlayerStreamTypeMain;
 
         VeLivePlayerStreamData.VeLivePlayerStream flvStream = new VeLivePlayerStreamData.VeLivePlayerStream();
         flvStream.url = url;
         flvStream.format = VeLivePlayerFormatFLV;
-        flvStream.resolution = VeLivePlayerResolutionOrigin;
+        flvStream.resolution = LivePlayerResolution.Origin;
         flvStream.streamType = VeLivePlayerStreamTypeMain;
 
         VeLivePlayerStreamData streamData = new VeLivePlayerStreamData();
@@ -188,7 +183,7 @@ public class TTPlayer implements IVideoPlayer {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
                 stream.url = url;
                 stream.format = VeLivePlayerFormatFLV;
-                stream.resolution = VeLivePlayerResolutionLD;
+                stream.resolution = LivePlayerResolution.LD;
                 stream.streamType = VeLivePlayerStreamTypeMain;
                 stream.bitrate = 1024;
 
@@ -203,7 +198,7 @@ public class TTPlayer implements IVideoPlayer {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
                 stream.url = url;
                 stream.format = VeLivePlayerFormatFLV;
-                stream.resolution = VeLivePlayerResolutionSD;
+                stream.resolution = LivePlayerResolution.SD;
                 stream.streamType = VeLivePlayerStreamTypeMain;
                 stream.bitrate = 1638;
 
@@ -218,7 +213,7 @@ public class TTPlayer implements IVideoPlayer {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
                 stream.url = url;
                 stream.format = VeLivePlayerFormatFLV;
-                stream.resolution = VeLivePlayerResolutionHD;
+                stream.resolution = LivePlayerResolution.HD;
                 stream.streamType = VeLivePlayerStreamTypeMain;
                 stream.bitrate = 2048;
 
@@ -233,7 +228,7 @@ public class TTPlayer implements IVideoPlayer {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
                 stream.url = url;
                 stream.format = VeLivePlayerFormatFLV;
-                stream.resolution = VeLivePlayerResolutionUHD;
+                stream.resolution = LivePlayerResolution.UHD;
                 stream.streamType = VeLivePlayerStreamTypeMain;
                 stream.bitrate = 3200;
 
@@ -248,7 +243,7 @@ public class TTPlayer implements IVideoPlayer {
                 VeLivePlayerStreamData.VeLivePlayerStream stream = new VeLivePlayerStreamData.VeLivePlayerStream();
                 stream.url = url;
                 stream.format = VeLivePlayerFormatFLV;
-                stream.resolution = VeLivePlayerResolutionOrigin;
+                stream.resolution = LivePlayerResolution.Origin;
                 stream.streamType = VeLivePlayerStreamTypeMain;
                 stream.bitrate = 5000;
 
@@ -258,7 +253,7 @@ public class TTPlayer implements IVideoPlayer {
 
         VeLivePlayerStreamData streamData = new VeLivePlayerStreamData();
         streamData.mainStreamList = streams;
-        streamData.defaultResolution = VeLivePlayerResolutionHD;
+        streamData.defaultResolution = LivePlayerResolution.HD;
         streamData.enableABR = true;
         return streamData;
     }

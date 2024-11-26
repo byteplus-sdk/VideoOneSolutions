@@ -40,6 +40,7 @@
             tools:progress="50" />
     </LinearLayout>
 
+    <!-- HardwareEcho not ready yet, so hide the setting item -->
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/hardware_earphone_monitor"
         style="@style/LiveSwitch"
@@ -49,5 +50,6 @@
         android:minHeight="24dp"
         android:text="@string/medialive_audio_echo"
         android:textColor="@color/white"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:visibility="gone" />
 </LinearLayout>

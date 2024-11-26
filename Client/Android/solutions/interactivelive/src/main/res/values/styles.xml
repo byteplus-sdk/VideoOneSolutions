@@ -12,12 +12,13 @@
         <item name="android:textColor">#CCCED0</item>
     </style>
 
-    <style name="LiveBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/LiveBottomSheetStyle</item>
+    <style name="LiveBottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetDialogModal</item>
+        <item name="android:navigationBarColor">@color/live_bottom_sheet_color</item>
     </style>
 
-    <style name="LiveBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@android:color/transparent</item>
+    <style name="BottomSheetDialogModal" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@android:color/transparent</item>
     </style>
 
     <style name="LiveCommonDialogTheme" parent="Theme.AppCompat.Light.Dialog.MinWidth">

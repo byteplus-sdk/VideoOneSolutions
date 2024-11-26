@@ -7,9 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 import com.vertcdemo.core.annotation.MediaStatus;
-import com.vertcdemo.core.net.rts.RTSInform;
 
-@RTSInform
 public class MediaOperateBroadcast {
 
     @SerializedName("mic")

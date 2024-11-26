@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gift_like">点赞</string>
+    <string name="gift_sugar">糖果</string>
+    <string name="gift_diamond">钻石</string>
+    <string name="gift_fireworks">烟花</string>
+
+    <string name="send_gift">送了 %1$s</string>
+    <string name="send">发送</string>
+
+    <string name="say_something">说点什么</string>
+</resources>

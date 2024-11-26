@@ -49,15 +49,16 @@ public class ChorusRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutChorus
 
     @Override
     public void onBindViewHolder(@NonNull BVH<LayoutChorusRoomItemBinding> holder, int position) {
-        final RoomInfo info = mItems.get(position);
-        holder.binding.userName.setText(mContext.getString(R.string.label_chorus_create_name_xxx, info.hostUserName));
+        RoomInfo item = mItems.get(position);
+        holder.binding.userName.setText(mContext.getString(R.string.label_chorus_create_name_xxx, item.hostUserName));
         Glide.with(holder.binding.userAvatar)
-                .load(Avatars.byUserId(info.hostUserId))
+                .load(Avatars.byUserId(item.hostUserId))
                 .into(holder.binding.userAvatar);
 
-        holder.binding.audienceCount.setText(formatAudienceCount(info.audienceCount + 1));
+        holder.binding.audienceCount.setText(formatAudienceCount(item.audienceCount + 1));
 
         holder.itemView.setOnClickListener(DebounceClickListener.create(v -> {
+            RoomInfo info = mItems.get(holder.getBindingAdapterPosition());
             Bundle args = new Bundle();
             args.putParcelable(EXTRA_ROOM_INFO, info);
             args.putString(EXTRA_REFERRER, "list");
@@ -65,6 +66,21 @@ public class ChorusRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutChorus
             Navigation.findNavController(v)
                     .navigate(R.id.action_room, args);
         }));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull BVH<LayoutChorusRoomItemBinding> holder,
+                                 int position,
+                                 @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            Object payload = payloads.get(0);
+            if (PAYLOAD_AUDIENCE_COUNT == payload) {
+                RoomInfo item = mItems.get(position);
+                holder.binding.audienceCount.setText(formatAudienceCount(item.audienceCount + 1));
+            }
+        }
     }
 
     private static String formatAudienceCount(int count) {
@@ -101,18 +117,26 @@ public class ChorusRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutChorus
 
             @Override
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return false;
+                final RoomInfo o = oldItems.get(oldItemPosition);
+                final RoomInfo n = newItems.get(newItemPosition);
+                return o.roomId.equals(n.roomId)
+                        && o.hostUserId.equals(n.hostUserId)
+                        && o.hostUserName.equals(n.hostUserName);
             }
 
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                 final RoomInfo o = oldItems.get(oldItemPosition);
                 final RoomInfo n = newItems.get(newItemPosition);
-                return o.roomId.equals(n.roomId)
-                        && o.hostUserId.equals(n.hostUserId)
-                        && o.hostUserName.equals(n.hostUserName)
-                        && o.audienceCount == n.audienceCount;
+                return o.audienceCount == n.audienceCount;
+            }
+
+            @Override
+            public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+                return PAYLOAD_AUDIENCE_COUNT;
             }
         }).dispatchUpdatesTo(this);
     }
+
+    private static final String PAYLOAD_AUDIENCE_COUNT = "audience_count";
 }

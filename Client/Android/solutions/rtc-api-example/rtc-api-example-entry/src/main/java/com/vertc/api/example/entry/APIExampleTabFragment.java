@@ -10,15 +10,15 @@ import androidx.fragment.app.DialogFragment;
 
 import com.vertc.api.example.base.RTCTokenManager;
 import com.vertc.api.example.base.ui.ApiExampleFragment;
-import com.vertcdemo.core.SolutionDataManager;
-import com.vertcdemo.core.joinrtsparams.bean.JoinRTSRequest;
-import com.vertcdemo.core.joinrtsparams.common.JoinRTSManager;
-import com.vertcdemo.core.net.ErrorTool;
-import com.vertcdemo.core.net.IRequestCallback;
-import com.vertcdemo.core.net.ServerResponse;
-import com.vertcdemo.core.net.rts.RTSInfo;
+import com.vertcdemo.core.http.AppInfoManager;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.http.bean.RTCAppInfo;
+import com.vertcdemo.core.net.HttpException;
+import com.vertcdemo.core.utils.ErrorTool;
 import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionProgressDialog;
+
+import java.util.Objects;
 
 public class APIExampleTabFragment extends ApiExampleFragment {
 
@@ -64,21 +64,20 @@ public class APIExampleTabFragment extends ApiExampleFragment {
     }
 
     private void startup(@Nullable Runnable next) {
-        IRequestCallback<ServerResponse<RTSInfo>> callback = new IRequestCallback<ServerResponse<RTSInfo>>() {
+        Callback<RTCAppInfo> callback = new Callback<RTCAppInfo>() {
             @Override
-            public void onSuccess(ServerResponse<RTSInfo> response) {
+            public void onResponse(RTCAppInfo data) {
                 Activity activity = getActivity();
                 if (activity == null || activity.isFinishing()) {
                     return;
                 }
                 dismissProgressDialog();
-                RTSInfo data = response == null ? null : response.getData();
-                if (data == null || !data.isValid()) {
-                    onError(-1, "Invalid RTSInfo response.");
+                if (data == null || data.isInvalid()) {
+                    onFailure(HttpException.unknown("Invalid RTCAppInfo response."));
                     return;
                 }
                 RTCTokenManager.getInstance().setRemoteProvider(
-                        new RemoteRTCTokenProvider(data.appId)
+                        new RemoteRTCTokenProvider(Objects.requireNonNull(data.appId), data.bid)
                 );
 
                 if (next != null) {
@@ -87,16 +86,16 @@ public class APIExampleTabFragment extends ApiExampleFragment {
             }
 
             @Override
-            public void onError(int errorCode, String message) {
+            public void onFailure(HttpException e) {
                 Activity activity = getActivity();
                 if (activity == null || activity.isFinishing()) {
                     return;
                 }
                 dismissProgressDialog();
-                CenteredToast.show(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
+                CenteredToast.show(ErrorTool.getErrorMessage(e));
             }
         };
-        JoinRTSRequest request = new JoinRTSRequest(SOLUTION_NAME_ABBR, SolutionDataManager.ins().getToken());
-        JoinRTSManager.requestRTSInfo(request, callback);
+
+        AppInfoManager.requestInfo(SOLUTION_NAME_ABBR, callback);
     }
 }

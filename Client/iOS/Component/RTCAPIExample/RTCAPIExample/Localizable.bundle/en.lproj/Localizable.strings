@@ -113,6 +113,14 @@
 
 "example_cdn_stream" = "Push to CDN";
 
+"example_screen_share" = "Screen share";
+
+"example_custom_video_capture" = "Custom video capture";
+
+"example_custom_video_render" = "Custom video render";
+
+"example_custom_video_encode" = "Custom video encode";
+
 "example_cross_room_pk" = "Cross-room PvP";
 
 "example_multi_room" = "Multi-room";
@@ -127,6 +135,8 @@
 
 "example_sei_messaging" = "SEI message";
 
+"example_external_video_sei_message" = "External Video SEI message";
+
 "example_stream_sync_info" = "Synchronize messages with frames";
 
 "example_third_beauty" = "Third-party beauty effects";
@@ -136,6 +146,18 @@
 "example_video_rotation" = "Video rotation";
 
 "example_voice_effect" = "Sound effects";
+
+"example_custom_audio_capture" = "Custom Audio Capture";
+
+"example_video_capture_format" = "Video capture format";
+
+"example_video_render_format" = "Video render format";
+
+"example_start_screen_share" = "Start screen share";
+
+"example_start_sharing" = "Start sharing";
+
+"example_end_sharing" = "End sharing";
 
 "hint_audio_track" = "Track (0, 1)";
 

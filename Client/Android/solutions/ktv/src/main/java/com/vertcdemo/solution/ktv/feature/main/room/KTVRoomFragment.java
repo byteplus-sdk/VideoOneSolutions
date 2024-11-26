@@ -4,7 +4,7 @@
 package com.vertcdemo.solution.ktv.feature.main.room;
 
 import static com.vertcdemo.core.chat.ChatConfig.SEND_MESSAGE_COUNT_LIMIT;
-import static com.vertcdemo.core.dialog.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
+import static com.vertcdemo.core.chat.input.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
 import static com.vertcdemo.solution.ktv.feature.KTVActivity.EXTRA_REFERRER;
 import static com.vertcdemo.solution.ktv.feature.KTVActivity.EXTRA_ROOM_INFO;
 import static com.vertcdemo.solution.ktv.feature.KTVActivity.EXTRA_RTC_TOKEN;
@@ -45,7 +45,7 @@ import com.ss.bytertc.engine.data.AudioMixingState;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.chat.ChatAdapter;
-import com.vertcdemo.core.dialog.MessageInputDialog;
+import com.vertcdemo.core.chat.input.MessageInputDialog;
 import com.vertcdemo.core.event.AudioRouteChangedEvent;
 import com.vertcdemo.core.event.ClearUserEvent;
 import com.vertcdemo.core.event.JoinRTSRoomErrorEvent;
@@ -58,10 +58,8 @@ import com.vertcdemo.solution.ktv.bean.PickedSongInfo;
 import com.vertcdemo.solution.ktv.bean.RoomInfo;
 import com.vertcdemo.solution.ktv.bean.SongItem;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
-import com.vertcdemo.solution.ktv.common.SolutionToast;
 import com.vertcdemo.solution.ktv.core.ErrorCodes;
 import com.vertcdemo.solution.ktv.core.KTVRTCManager;
-import com.vertcdemo.solution.ktv.core.KTVRTSClient;
 import com.vertcdemo.solution.ktv.core.MusicDownloadManager;
 import com.vertcdemo.solution.ktv.core.rts.annotation.DownloadType;
 import com.vertcdemo.solution.ktv.core.rts.annotation.FinishType;
@@ -87,7 +85,9 @@ import com.vertcdemo.solution.ktv.feature.main.state.SingState;
 import com.vertcdemo.solution.ktv.feature.main.state.Singing;
 import com.vertcdemo.solution.ktv.feature.main.state.UserRoleState;
 import com.vertcdemo.solution.ktv.feature.main.viewmodel.KTVRoomViewModel;
+import com.vertcdemo.solution.ktv.http.KTVService;
 import com.vertcdemo.solution.ktv.lrc.LrcView;
+import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -116,9 +116,8 @@ public class KTVRoomFragment extends Fragment {
         @Override
         public void handleMessage(@NonNull Message msg) {
             if (msg.what == MSG_START_NEXT_SONG) {
-                KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-                assert rtsClient != null;
-                rtsClient.cutOffSong(mViewModel.requireRoomId(), mViewModel.myUserId());
+                KTVService.get()
+                        .cutOffSong(mViewModel.requireRoomId());
             }
         }
     };
@@ -133,6 +132,7 @@ public class KTVRoomFragment extends Fragment {
     private KTVRoomViewModel mViewModel;
 
     private int mSendMessageCount = 0;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -318,8 +318,6 @@ public class KTVRoomFragment extends Fragment {
 
     private ChatAdapter mChatAdapter;
 
-    private boolean isLeaveByKickOut = false;
-
     // region BottomActions
     private String mLastInputText;
 
@@ -350,7 +348,7 @@ public class KTVRoomFragment extends Fragment {
         if (newValue) {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
                     != PackageManager.PERMISSION_GRANTED) {
-                SolutionToast.show(R.string.toast_ktv_no_mic_permission);
+                CenteredToast.show(R.string.toast_ktv_no_mic_permission);
             }
         }
 
@@ -364,13 +362,13 @@ public class KTVRoomFragment extends Fragment {
     private final FragmentResultListener leaveConfirmResultListener = (requestKey, result) -> {
         int option = result.getInt(SolutionCommonDialog.EXTRA_RESULT);
         if (option == Dialog.BUTTON_POSITIVE) {
-            leaveRoom();
+            leaveRoom(); // Confirm Leave Room
         }
     };
 
     void attemptLeave() {
         if (!mViewModel.isHost()) {
-            leaveRoom();
+            leaveRoom(); // Audience Leave Room
             return;
         }
         SolutionCommonDialog dialog = new SolutionCommonDialog();
@@ -378,23 +376,35 @@ public class KTVRoomFragment extends Fragment {
                 REQUEST_KEY_LEAVE_CONFIRM,
                 R.string.label_alert_live_end,
                 R.string.button_alert_live_end,
-                R.string.cancel
+                com.vertcdemo.rtc.toolkit.R.string.cancel
         );
         dialog.setArguments(args);
         dialog.show(getChildFragmentManager(), REQUEST_KEY_LEAVE_CONFIRM);
     }
 
+    /**
+     * Leave Room & call server api
+     */
     private void leaveRoom() {
+        leaveRoom(true);
+    }
+
+    /**
+     * Leave Room
+     *
+     * @param callServer if need call server api to leave room
+     */
+    private void leaveRoom(boolean callServer) {
         SolutionEventBus.unregister(this);
         KTVRTCManager.ins().leaveRoom();
         KTVRTCManager.ins().stopAudioMixing();
-        if (!isLeaveByKickOut) {
-            KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-            assert rtsClient != null;
+        if (callServer) {
             if (mViewModel.isHost()) {
-                rtsClient.requestFinishLive(mViewModel.requireRoomId());
+                KTVService.get()
+                        .finishLive(mViewModel.requireRoomId());
             } else {
-                rtsClient.requestLeaveRoom(mViewModel.requireRoomId());
+                KTVService.get()
+                        .leaveRoom(mViewModel.requireRoomId());
             }
         }
 
@@ -404,7 +414,7 @@ public class KTVRoomFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRTSLogoutEvent(RTSLogoutEvent event) {
-        leaveRoom();
+        leaveRoom(); // RTS Logout
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -414,13 +424,13 @@ public class KTVRoomFragment extends Fragment {
         }
         boolean isHost = mViewModel.isHost();
         if (event.type == FinishType.BLOCKED) {
-            SolutionToast.show(R.string.closed_terms_service);
+            CenteredToast.show(com.vertcdemo.rtc.toolkit.R.string.closed_terms_service);
         } else if (event.type == FinishType.TIMEOUT && isHost) {
-            SolutionToast.show(R.string.toast_false_time_out);
+            CenteredToast.show(R.string.toast_false_time_out);
         } else if (!isHost) {
-            SolutionToast.show(R.string.toast_false_live_end);
+            CenteredToast.show(R.string.toast_false_live_end);
         }
-        leaveRoom();
+        leaveRoom(false); // Live End
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -431,7 +441,7 @@ public class KTVRoomFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onJoinRTSRoomErrorEvent(JoinRTSRoomErrorEvent event) {
         if (event.isReconnect) {
-            leaveRoom();
+            leaveRoom(false); // Reconnect Failed
             return;
         }
         String message = ErrorCodes.prettyMessage(event.errorCode, event.message);
@@ -441,12 +451,12 @@ public class KTVRoomFragment extends Fragment {
     private static final String REQUEST_KEY_ARGS_ERROR = "args_error";
 
     private final FragmentResultListener argsErrorResultListener = (requestKey, result) -> {
-        leaveRoom();
+        leaveRoom(false); // Confirm Join Room Error
     };
 
     private void onArgsError(String message) {
         SolutionCommonDialog dialog = new SolutionCommonDialog();
-        dialog.setArguments(SolutionCommonDialog.dialogArgs(REQUEST_KEY_ARGS_ERROR, message, R.string.confirm));
+        dialog.setArguments(SolutionCommonDialog.dialogArgs(REQUEST_KEY_ARGS_ERROR, message, com.vertcdemo.base.R.string.confirm));
         dialog.show(getChildFragmentManager(), REQUEST_KEY_ARGS_ERROR);
     }
     // endregion
@@ -454,25 +464,23 @@ public class KTVRoomFragment extends Fragment {
     // region Message
     private void sendMessage(final String message) {
         if (TextUtils.isEmpty(message)) {
-            SolutionToast.show(R.string.send_empty_message_cannot_be_empty);
+            CenteredToast.show(com.vertcdemo.rtc.toolkit.R.string.send_empty_message_cannot_be_empty);
             return;
         }
 
         if (mSendMessageCount >= SEND_MESSAGE_COUNT_LIMIT) {
-            SolutionToast.show(R.string.send_message_exceeded_limit);
+            CenteredToast.show(com.vertcdemo.rtc.toolkit.R.string.send_message_exceeded_limit);
             return;
         }
         mSendMessageCount++;
-
-        KTVRTSClient rtsClient = KTVRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
 
         UserInfo myInfo = mViewModel.getMyInfo();
         onNormalMessage(myInfo.userId, myInfo.userName, message);
 
         try {
             String messageEncoded = URLEncoder.encode(message, "utf-8");
-            rtsClient.sendMessage(mViewModel.requireRoomId(), messageEncoded);
+            KTVService.get()
+                    .sendMessage(mViewModel.requireRoomId(), messageEncoded);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -557,15 +565,15 @@ public class KTVRoomFragment extends Fragment {
         mViewModel.updateSelf(event.userInfo);
 
         if (event.isJoin()) {
-            SolutionToast.show(R.string.toast_become_guest);
+            CenteredToast.show(R.string.toast_become_guest);
             mViewModel.startInteract();
             String roomId = mViewModel.requireRoomId();
             mViewModel.requestPickedSongList(roomId);
         } else {
             if (event.isByHost()) {
-                SolutionToast.show(R.string.toast_passive_audience);
+                CenteredToast.show(R.string.toast_passive_audience);
             } else {
-                SolutionToast.show(R.string.toast_become_audience);
+                CenteredToast.show(R.string.toast_become_audience);
             }
             mViewModel.stopInteract();
         }
@@ -581,7 +589,7 @@ public class KTVRoomFragment extends Fragment {
         if (event.reply == ReplyType.REJECT) {
             Application context = AppUtil.getApplicationContext();
             String message = context.getString(R.string.toast_receive_invitation_received_xxx, event.userInfo.userName);
-            SolutionToast.show(message);
+            CenteredToast.show(message);
         }
     }
 
@@ -620,7 +628,7 @@ public class KTVRoomFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMediaOperateBroadcast(MediaOperateBroadcast event) {
         boolean isMicOn = event.mic == MediaStatus.ON;
-        SolutionToast.show(isMicOn ? R.string.toast_receive_unmute : R.string.toast_receive_mute);
+        CenteredToast.show(isMicOn ? R.string.toast_receive_unmute : R.string.toast_receive_mute);
 
         mViewModel.updateSelfMediaStatus(mViewModel.requireRoomId(), isMicOn);
     }
@@ -628,9 +636,8 @@ public class KTVRoomFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onClearUserBroadcast(ClearUserEvent event) {
         if (TextUtils.equals(SolutionDataManager.ins().getUserId(), event.userId)) {
-            SolutionToast.show(R.string.toast_receive_clear_user);
-            isLeaveByKickOut = true;
-            leaveRoom();
+            CenteredToast.show(R.string.toast_receive_clear_user);
+            leaveRoom(false); // Same user login
         }
     }
 
@@ -791,13 +798,10 @@ public class KTVRoomFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAudioMixingStateEvent(AudioMixingStateEvent event) {
-        if (event.state == AudioMixingState.AUDIO_MIXING_STATE_FINISHED) {
+        if (event.state == AudioMixingStateEvent.State.FINISHED) {
             mViewModel.finishSinging();
-        } else if (event.state == AudioMixingState.AUDIO_MIXING_STATE_PAUSED) {
-            mViewModel.isAudioMixing.postValue(false);
-        } else if (event.state == AudioMixingState.AUDIO_MIXING_STATE_PLAYING) {
-            mViewModel.isAudioMixing.postValue(true);
         }
+        mViewModel.isAudioMixing.postValue(event.state == AudioMixingStateEvent.State.PLAYING);
     }
     // endregion
 }

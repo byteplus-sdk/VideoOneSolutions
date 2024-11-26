@@ -64,7 +64,6 @@
                                   ChorusUserModel * _Nonnull hostUserModel,
                                   RTSACKModel * _Nonnull model) {
         if (model.result) {
-            [PublicParameterComponent share].roomId = roomModel.roomID;
             ChorusRoomViewController *next = [[ChorusRoomViewController alloc] initWithRoomModel:roomModel rtcToken:RTCToken hostUserModel:hostUserModel];
             [wself.navigationController pushViewController:next animated:YES];
         } else {

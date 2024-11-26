@@ -21,7 +21,8 @@ Pod::Spec.new do |spec|
                                 '#import "InteractiveLiveConstants.h"'
     
   spec.dependency 'ToolKit/RTC'
-  spec.dependency 'ToolKit/Player'
+  spec.dependency 'ToolKit/LiveRoomUI'
+  spec.dependency 'ToolKit/LivePlayer'
   spec.dependency 'YYModel'
   spec.dependency 'Masonry'
   spec.dependency 'MJRefresh'

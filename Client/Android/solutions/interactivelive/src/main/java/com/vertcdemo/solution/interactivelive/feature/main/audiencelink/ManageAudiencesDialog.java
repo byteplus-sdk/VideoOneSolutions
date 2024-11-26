@@ -33,16 +33,14 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.net.IRequestCallback;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
+import com.vertcdemo.core.http.callback.OnResponse;
 import com.vertcdemo.solution.interactivelive.R;
-import com.vertcdemo.solution.interactivelive.bean.LiveResponse;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
-import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.core.annotation.LivePermitType;
-import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.solution.interactivelive.databinding.DialogManageAudiencesBinding;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkApplyEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkCancelEvent;
@@ -51,6 +49,7 @@ import com.vertcdemo.solution.interactivelive.event.AudienceLinkStatusEvent;
 import com.vertcdemo.solution.interactivelive.event.LiveRTSUserEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
 import com.vertcdemo.solution.interactivelive.feature.main.HostViewModel;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
 import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
@@ -60,7 +59,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collections;
 import java.util.List;
 
-public class ManageAudiencesDialog extends BottomDialogFragmentX {
+public class ManageAudiencesDialog extends BottomSheetDialogFragment {
 
     public interface IManageAudience {
         List<AudienceLinkRequest> getAudienceLinkRequests();
@@ -84,7 +83,7 @@ public class ManageAudiencesDialog extends BottomDialogFragmentX {
 
     @Override
     public int getTheme() {
-        return R.style.LiveBottomSheetDialogTheme;
+        return R.style.LiveBottomSheetDialog;
     }
 
     private DialogManageAudiencesBinding mBinding;
@@ -258,9 +257,9 @@ public class ManageAudiencesDialog extends BottomDialogFragmentX {
         final int button = result.getInt(EXTRA_RESULT);
         if (button == Dialog.BUTTON_POSITIVE) {
             String roomId = mLiveRoomInfo.roomId;
-            LiveRTCManager.ins().getRTSClient().finishAudienceLinkByHost(roomId, data -> {
+            LiveService.get().finishAudienceLink(roomId, OnResponse.of(o -> {
                 CenteredToast.show(R.string.audience_link_disconnect_all);
-            });
+            }));
         }
     };
 
@@ -299,11 +298,7 @@ public class ManageAudiencesDialog extends BottomDialogFragmentX {
         final String roomId = mLiveRoomInfo.roomId;
         final String hostId = mLiveRoomInfo.anchorUserId;
         final String audienceId = item.info.userId;
-
-        final IRequestCallback<LiveResponse> callback = o -> {
-
-        };
-        LiveRTCManager.rts().requestManageGuest(roomId, hostId, roomId, audienceId, camera, mic, callback);
+        LiveService.get().manageGuestMedia(roomId, hostId, roomId, audienceId, camera, mic);
         SolutionEventBus.post(new UserMediaChangedEvent(roomId, audienceId, hostId, mic, camera));
     }
 

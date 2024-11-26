@@ -218,7 +218,7 @@
 
         <include
             android:id="@+id/gift_slot_2"
-            layout="@layout/layout_live_gift_show_item"
+            layout="@layout/layout_gift_show_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
@@ -227,7 +227,7 @@
 
         <include
             android:id="@+id/gift_slot_1"
-            layout="@layout/layout_live_gift_show_item"
+            layout="@layout/layout_gift_show_item"
             android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -263,9 +263,9 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_panel"
         app:layout_constraintEnd_toStartOf="@id/message_panel_barrier"
         app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/item_live_chat_layout" />
+        tools:listitem="@layout/layout_chat_item" />
 
-    <com.vertcdemo.solution.interactivelive.view.LikeAnimationView
+    <com.vertcdemo.core.chat.like.LikeAnimationView
         android:id="@+id/like_area"
         android:layout_width="120dp"
         android:layout_height="180dp"

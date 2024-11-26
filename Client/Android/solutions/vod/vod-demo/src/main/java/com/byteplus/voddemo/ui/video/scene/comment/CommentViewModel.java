@@ -6,10 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.byteplus.voddemo.data.remote.api2.ApiManager;
-import com.byteplus.voddemo.data.remote.api2.model.CommentDetail;
-import com.byteplus.voddemo.data.remote.api2.model.GetVideoCommentResponse;
-import com.byteplus.voddemo.ui.video.scene.comment.model.CommentItem;
+import com.byteplus.vodcommon.data.remote.api2.ApiManager;
+import com.byteplus.vodcommon.data.remote.api2.model.CommentDetail;
+import com.byteplus.vodcommon.data.remote.api2.model.GetVideoCommentResponse;
+import com.byteplus.vodcommon.ui.video.scene.comment.model.CommentItem;
 
 import java.io.IOException;
 import java.util.ArrayList;

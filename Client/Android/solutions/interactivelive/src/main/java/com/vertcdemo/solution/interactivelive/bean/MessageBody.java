@@ -4,7 +4,7 @@
 package com.vertcdemo.solution.interactivelive.bean;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.solution.interactivelive.core.annotation.GiftType;
+import com.vertcdemo.core.chat.annotation.GiftType;
 import com.vertcdemo.solution.interactivelive.core.annotation.MessageType;
 
 public class MessageBody {

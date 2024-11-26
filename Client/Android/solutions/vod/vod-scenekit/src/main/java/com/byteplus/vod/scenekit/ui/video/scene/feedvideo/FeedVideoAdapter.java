@@ -72,11 +72,13 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
 
     private final List<VideoItem> mItems = new ArrayList<>();
     private final OnItemViewListener mOnItemViewListener;
+    private final IFeedVideoStrategyConfig mStrategyConfig;
 
     private boolean mIsLoadingMore;
 
-    public FeedVideoAdapter(OnItemViewListener listener) {
+    public FeedVideoAdapter(OnItemViewListener listener, @NonNull IFeedVideoStrategyConfig config) {
         this.mOnItemViewListener = listener;
+        this.mStrategyConfig = config;
     }
 
     public void setItems(List<VideoItem> videoItems) {
@@ -126,7 +128,8 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(
                 VevodFeedVideoItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false),
-                mOnItemViewListener);
+                mOnItemViewListener,
+                mStrategyConfig);
     }
 
     @Override
@@ -151,10 +154,12 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
 
         protected VideoItem videoItem;
 
-        public ViewHolder(@NonNull VevodFeedVideoItemBinding binding, OnItemViewListener listener) {
+        public ViewHolder(@NonNull VevodFeedVideoItemBinding binding,
+                          OnItemViewListener listener,
+                          @NonNull IFeedVideoStrategyConfig config) {
             super(binding.getRoot());
             this.binding = binding;
-            initVideoView(binding, listener);
+            initVideoView(binding, listener, config);
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onItemClick(ViewHolder.this);
@@ -162,16 +167,19 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
             });
         }
 
-        private void initVideoView(@NonNull VevodFeedVideoItemBinding binding, OnItemViewListener listener) {
+        private void initVideoView(@NonNull VevodFeedVideoItemBinding binding,
+                                   OnItemViewListener listener,
+                                   @NonNull IFeedVideoStrategyConfig config) {
             videoViewContainer = binding.videoViewContainer;
             VideoView videoView = sharedVideoView = binding.videoView;
 
-            VideoLayerHost layerHost = new VideoLayerHost(itemView.getContext());
+            VideoLayerHost layerHost = new VideoLayerHost(itemView.getContext(), config);
             layerHost.addLayer(new GestureLayer());
             layerHost.addLayer(new CoverLayer());
             layerHost.addLayer(new FeedVideoCoverShadowLayer());
             layerHost.addLayer(new TimeProgressBarLayer(TimeProgressBarLayer.CompletedPolicy.KEEP));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    && config.miniPlayerEnabled()) {
                 layerHost.addLayer(new MiniPlayerLayer());
             }
             layerHost.addLayer(new TitleBarLayer());

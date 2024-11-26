@@ -19,8 +19,6 @@ import org.json.JSONObject;
 public class RoomInfo implements Parcelable {
     private static final String TAG = "RoomInfo";
 
-    @SerializedName("app_id")
-    public String appId;
     @SerializedName("room_id")
     public String roomId;
     @SerializedName("room_name")
@@ -52,7 +50,6 @@ public class RoomInfo implements Parcelable {
     }
 
     protected RoomInfo(Parcel in) {
-        appId = in.readString();
         roomId = in.readString();
         roomName = in.readString();
         hostUserId = in.readString();
@@ -84,7 +81,6 @@ public class RoomInfo implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(appId);
         dest.writeString(roomId);
         dest.writeString(roomName);
         dest.writeString(hostUserId);
@@ -100,9 +96,8 @@ public class RoomInfo implements Parcelable {
     @Override
     @NonNull
     public String toString() {
-        return "VCRoomInfo{" +
-                "appId='" + appId + '\'' +
-                ", requireRoomId='" + roomId + '\'' +
+        return "RoomInfo{" +
+                "roomId='" + roomId + '\'' +
                 ", roomName='" + roomName + '\'' +
                 ", hostUserId='" + hostUserId + '\'' +
                 ", hostUserName='" + hostUserName + '\'' +

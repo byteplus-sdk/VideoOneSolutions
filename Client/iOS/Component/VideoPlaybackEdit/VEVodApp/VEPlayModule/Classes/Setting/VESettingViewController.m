@@ -66,7 +66,7 @@ extern NSString *universalVideoUrlSectionKey;
 
         BaseButton *button = [[BaseButton alloc] init];
         button.backgroundColor = [UIColor clearColor];
-        UIImage *image = [UIImage imageNamed:@"black_back"];
+        UIImage *image = [UIImage imageNamed:@"black_back" bundleName:@"VodPlayer"];
         button.tintColor = [UIColor whiteColor];
         [button setImage:image forState:UIControlStateNormal];
         [button addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
@@ -78,7 +78,7 @@ extern NSString *universalVideoUrlSectionKey;
         }];
 
         UILabel *label = [[UILabel alloc] init];
-        label.text = LocalizedStringFromBundle(@"setting_title", @"VEVodApp");
+        label.text = LocalizedStringFromBundle(@"setting_title", @"VodPlayer");
         label.textColor = [UIColor blackColor];
         label.font = [UIFont systemFontOfSize:16 weight:UIFontWeightMedium];
         [_navView addSubview:label];

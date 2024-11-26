@@ -62,7 +62,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 
                 // Join room
@@ -87,7 +87,8 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("cdn-stream")
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -116,7 +117,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
             
             self.rtcVideo?.startPushMixedStream(toCDN: taskId, mixedConfig: self.mixConfig, observer: self)
         } else {
-            ToastComponents.shared.show(withMessage: LocalizedString("无效的推流地址"))
+            ToastComponents.shared.show(withMessage: LocalizedString("toast_mix_url_false"))
         }
     }
     
@@ -142,6 +143,8 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         var regions = [ByteRTCMixedStreamLayoutRegionConfig]()
         if self.layoutSheetView.selectedIndex == 0 {
             // 1x4 layout
+            let width = (self.mixConfig?.videoConfig.width ?? 360) / 4
+            let height = (self.mixConfig?.videoConfig.height ?? 640)
             
             // Local perspective user
             let regionConfig = ByteRTCMixedStreamLayoutRegionConfig.init()
@@ -149,8 +152,8 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
             regionConfig.roomID = roomId!
             regionConfig.locationX = 0
             regionConfig.locationY = 0
-            regionConfig.widthProportion = 0.25
-            regionConfig.heightProportion = 1.0
+            regionConfig.width = width
+            regionConfig.height = height
             regionConfig.zOrder = 0
             regionConfig.isLocalUser = true
             regionConfig.mediaType = .audioAndVideo
@@ -164,10 +167,10 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
                     regionConfig.userID = item.userId!
                     regionConfig.roomID = item.roomId!
                     
-                    regionConfig.locationX = 0.25 * (CGFloat(index) + 1.0)
+                    regionConfig.locationX = width * (index + 1)
                     regionConfig.locationY = 0
-                    regionConfig.widthProportion = 0.25
-                    regionConfig.heightProportion = 1
+                    regionConfig.width = width
+                    regionConfig.height = height
                     regionConfig.zOrder = 0
                     regionConfig.isLocalUser = false
                     regionConfig.mediaType = .audioAndVideo
@@ -177,6 +180,8 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
             }
         } else {
             // 2x2 layout
+            let width = (self.mixConfig?.videoConfig.width ?? 360) / 2
+            let height = (self.mixConfig?.videoConfig.height ?? 640) / 2
             
             // Local perspective user
             let regionConfig = ByteRTCMixedStreamLayoutRegionConfig.init()
@@ -184,8 +189,8 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
             regionConfig.roomID = roomId!
             regionConfig.locationX = 0
             regionConfig.locationY = 0
-            regionConfig.widthProportion = 0.5
-            regionConfig.heightProportion = 0.5
+            regionConfig.width = width
+            regionConfig.height = height
             regionConfig.zOrder = 0
             regionConfig.isLocalUser = true
             regionConfig.mediaType = .audioAndVideo
@@ -202,10 +207,10 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
                     let col = (index + 1) % 2
                     let row = (index + 1) / 2
                     
-                    regionConfig.locationX = 0.5 * CGFloat(col)
-                    regionConfig.locationY = 0.5 * CGFloat(row)
-                    regionConfig.widthProportion = 0.5
-                    regionConfig.heightProportion = 0.5
+                    regionConfig.locationX = width * col
+                    regionConfig.locationY = height * row
+                    regionConfig.width = width
+                    regionConfig.height = height
                     regionConfig.zOrder = 0
                     regionConfig.isLocalUser = false
                     regionConfig.mediaType = .audioAndVideo
@@ -345,7 +350,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     func updateRenderView() {
@@ -373,7 +378,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         let streamKey = ByteRTCRemoteStreamKey.init()
         streamKey.userId = userId
         streamKey.roomId = roomId;
-        streamKey.streamIndex = .main
+        streamKey.streamIndex = .indexMain
         
         self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
     }
@@ -669,9 +674,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         if let cdnUrl = kCDNUrl as String?, !cdnUrl.isEmpty {
             textField.text = cdnUrl
         } else {
-            LiveAddrProtocol().getRTMPAddr(taskId) { [weak textField] addr in
-                textField?.text = addr
-            }
+            textField.text = generateLiveAddr(taskId: taskId)
         }
         
         textField.inputTextField.keyboardType = .URL
@@ -811,7 +814,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
             let streamKey = ByteRTCRemoteStreamKey.init()
             streamKey.userId = userId
             streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .main
+            streamKey.streamIndex = .indexMain
             
             self.users.append(streamKey)
             

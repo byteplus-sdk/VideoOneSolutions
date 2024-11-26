@@ -16,27 +16,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.ui.BottomDialogFragmentX;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.core.annotation.InviteReply;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveRequestAudienceLinkBinding;
 import com.vertcdemo.solution.interactivelive.event.InviteAudienceEvent;
 import com.vertcdemo.solution.interactivelive.feature.main.AudienceViewModel;
 import com.vertcdemo.ui.CenteredToast;
-import com.vertcdemo.core.utils.DebounceClickListener;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Map;
 
-public class RequestAudienceLinkDialog extends BottomDialogFragmentX {
+public class RequestAudienceLinkDialog extends BottomSheetDialogFragment {
 
     @Override
     public int getTheme() {
-        return R.style.LiveBottomSheetDialogTheme;
+        return R.style.LiveBottomSheetDialog;
     }
 
     private AudienceViewModel mViewModel;

@@ -9,23 +9,18 @@
     android:layout_height="wrap_content"
     android:background="#FFFFFF">
 
-    <TextView
-        android:id="@+id/itemTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|start"
-        android:layout_marginVertical="16dp"
-        android:layout_marginStart="16dp"
-        android:textColor="#1D2129"
-        android:textSize="16sp"
-        tools:text="Preload strategy" />
-
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switchView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="12dp" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="12dp"
+        android:minHeight="48dp"
+        android:textColor="#1D2129"
+        android:textSize="16sp"
+        tools:text="Preload strategy"
+        tools:theme="@style/Theme.AppCompat.DayNight" />
 
     <View
         android:layout_width="match_parent"

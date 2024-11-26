@@ -12,49 +12,11 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '11.0'
 
-  s.default_subspecs = 'VEPlayerUIModule', 'VEPlayerKit', 'VESceneKit', 'Setting', 'LongVideo', 'FeedVideo', 'ShortVideo', 'VideoDetail', 'Entry', 'SingleFunction'
+  s.default_subspecs = 'VESceneKit', 'Setting', 'LongVideo', 'FeedVideo', 'ShortVideo', 'Entry', 'SingleFunction'
   
   $XCODE_VERSION = `xcrun xcodebuild -version | grep Xcode | cut -d' ' -f2`
   if $XCODE_VERSION >= '15.0.0'
     s.user_target_xcconfig = {"OTHER_LDFLAGS"=> "-ld64", }
-  end
-
-  s.subspec 'VEPlayerUIModule' do |subspec|
-    subspec.public_header_files = [
-      'VEVodApp/VEPlayerUIModule/Classes/**/*.h'
-    ]
-    subspec.source_files = [
-      'VEVodApp/VEPlayerUIModule/Classes/**/*'
-    ]
-    subspec.resources = [
-      'VEVodApp/VEPlayerUIModule/VEVodApp.xcassets',
-      'VEVodApp/VEPlayerUIModule/Resource/*.{json}'
-    ]
-    subspec.resource_bundle = {
-      'VEVodApp' => 'VEVodApp/VEPlayerUIModule/*.bundle'
-    }
-    subspec.dependency 'AppConfig'
-    subspec.dependency 'SDWebImage'
-    subspec.dependency 'Masonry'
-    subspec.dependency 'MJRefresh'
-    subspec.dependency 'YYModel'
-    subspec.dependency 'YYCache'
-    subspec.dependency 'ToolKit'
-    subspec.dependency 'lottie-ios', '~> 2.0'
-  end
-
-  s.subspec 'VEPlayerKit' do |subspec|
-    subspec.public_header_files = [
-      'VEVodApp/VEPlayerKit/Classes/**/*.h'
-    ]
-    subspec.source_files = [
-      'VEVodApp/VEPlayerKit/Classes/**/*'
-    ]
-    subspec.dependency 'TTSDK/Player'
-    subspec.dependency 'AppConfig'
-    subspec.dependency 'SDWebImage'
-    subspec.dependency 'Masonry'
-    subspec.dependency 'ToolKit'
   end
 
   s.subspec 'VESceneKit' do |subspec|
@@ -80,8 +42,7 @@ Pod::Spec.new do |s|
     subspec.resources = [
       'VEVodApp/VEPlayModule/Classes/Setting/**/*.{xib}'
     ]
-    subspec.dependency 'VideoPlaybackEdit/VEPlayerKit'
-    subspec.dependency 'VideoPlaybackEdit/VEPlayerUIModule'
+    subspec.dependency 'ToolKit/VodPlayer'
   end
 
   s.subspec 'LongVideo' do |subspec|
@@ -94,7 +55,7 @@ Pod::Spec.new do |s|
     subspec.resources = [
       'VEVodApp/VEPlayModule/Classes/LongVideo/**/*.{xib}'
     ]
-    subspec.dependency 'VideoPlaybackEdit/VideoDetail'
+    subspec.dependency 'ToolKit/VodPlayer'
   end
 
   s.subspec 'FeedVideo' do |subspec|
@@ -107,7 +68,7 @@ Pod::Spec.new do |s|
     subspec.resources = [
       'VEVodApp/VEPlayModule/Classes/FeedVideo/**/*.{xib}'
     ]
-    subspec.dependency 'VideoPlaybackEdit/VideoDetail'
+    subspec.dependency 'ToolKit/VodPlayer'
   end
 
   s.subspec 'ShortVideo' do |subspec|
@@ -118,18 +79,7 @@ Pod::Spec.new do |s|
       'VEVodApp/VEPlayModule/Classes/ShortVideo/**/*'
     ]
     subspec.dependency 'VideoPlaybackEdit/VESceneKit'
-    subspec.dependency 'VideoPlaybackEdit/VideoDetail'
-  end
-
-  s.subspec 'VideoDetail' do |subspec|
-    subspec.public_header_files = [
-    'VEVodApp/VEPlayModule/Classes/VideoDetail/**/*.{h}'
-    ]
-    subspec.source_files = [
-      'VEVodApp/VEPlayModule/Classes/VideoDetail/**/*'
-    ]
-    subspec.dependency 'VideoPlaybackEdit/Setting'
-    subspec.dependency 'VideoPlaybackEdit/VEPlayerUIModule'
+    subspec.dependency 'ToolKit/VodPlayer'
   end
 
   s.subspec 'Entry' do |subspec|
@@ -152,6 +102,6 @@ Pod::Spec.new do |s|
     subspec.source_files = [
       'VEVodApp/SingleFunction/**/*'
     ]
-    subspec.dependency 'VideoPlaybackEdit/VideoDetail'
+    subspec.dependency 'ToolKit/VodPlayer'
   end
 end

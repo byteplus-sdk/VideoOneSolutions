@@ -31,7 +31,7 @@ object InitializeManager {
     private fun invokeInitialize(application: Application, className: String) {
         try {
             val clazz = Class.forName(className)
-            val initializer = clazz.newInstance() as IInitializer
+            val initializer = clazz.getConstructor().newInstance() as IInitializer
             initializer.initialize(application)
         } catch (e: ReflectiveOperationException) {
             Log.w(TAG, "invokeInitialize: failed", e)

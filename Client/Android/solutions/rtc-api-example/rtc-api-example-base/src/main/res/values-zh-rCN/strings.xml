@@ -7,7 +7,4 @@
     <string name="label_example_video">视频管理</string>
     <string name="label_example_important">重要组件</string>
     <string name="label_example_message">消息管理</string>
-
-    <string name="sdk_version_xxx">Sdk 版本: %s</string>
-    <string name="api_example_name">API Example</string>
 </resources>

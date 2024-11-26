@@ -24,6 +24,7 @@ import com.byteplus.playerkit.player.source.Track;
 import com.byteplus.playerkit.player.ve.PlayerConfig;
 import com.byteplus.playerkit.player.ve.VEPlayerStatic;
 import com.byteplus.playerkit.utils.FileUtils;
+import com.byteplus.vod.scenekit.annotation.CompleteAction;
 import com.byteplus.vod.settingskit.CenteredToast;
 import com.byteplus.vod.settingskit.Option;
 import com.byteplus.vod.settingskit.Options;
@@ -65,7 +66,6 @@ public class VideoSettings {
 
     public static final String DEBUG_ENABLE_LOG_LAYER = "debug_enable_log_layer";
     public static final String DEBUG_ENABLE_DEBUG_TOOL = "debug_enable_debug_tool";
-    public static final String DEBUG_INPUT_MEDIA_SOURCE = "debug_input_media_source";
 
     public static final String COMMON_CODEC_STRATEGY = "common_codec_strategy";
     public static final String COMMON_HARDWARE_DECODE = "common_hardware_decode";
@@ -73,10 +73,12 @@ public class VideoSettings {
     public static final String COMMON_SOURCE_TYPE = "common_source_type";
     public static final String COMMON_SOURCE_ENCODE_TYPE_H265 = "common_source_encode_type_h265";
     public static final String COMMON_SOURCE_VIDEO_FORMAT_TYPE = "common_source_video_format_type";
-    public static final String COMMON_SOURCE_VIDEO_ENABLE_PRIVATE_DRM = "common_source_video_enable_private_drm";
     public static final String COMMON_IS_MINIPLAYER_ON = "common_is_miniplayer_on";
 
     public static final String COMMON_SHOW_FULL_SCREEN_TIPS = "show_full_screen_tips";
+
+
+    private static final String ACTION_INPUT_MEDIA_SOURCE = "com.byteplus.vod.scenekit.action.INPUT_MEDIA_SOURCE";
 
     private static Options sOptions;
 
@@ -110,14 +112,12 @@ public class VideoSettings {
     /**
      * @see R.bool#vevod_settings_filter_enabled
      */
-    private static final List<String> FILTER_OUT_ABLE_KEYS = Collections.singletonList(
-            COMMON_SOURCE_VIDEO_ENABLE_PRIVATE_DRM
-    );
+    private static final List<String> FILTER_OUT_ABLE_KEYS = Collections.emptyList();
 
     public static void init(Context context) {
         sContext = context;
         List<SettingItem> settings = createSettings();
-        sOptions = new OptionsDefault(context, createOptions(settings), option -> null);
+        sOptions = new OptionsDefault(context, createOptions(settings));
         if (context.getResources().getBoolean(R.bool.vevod_settings_filter_enabled)) {
             Iterator<SettingItem> iterator = settings.iterator();
             while (iterator.hasNext()) { // remove unsupported settings
@@ -152,19 +152,21 @@ public class VideoSettings {
                 COMMON_SHOW_FULL_SCREEN_TIPS,
                 ResourcesCompat.ID_NULL,
                 Boolean.class,
-                Boolean.TRUE,
-                null));
+                Boolean.TRUE));
         options.add(new Option(
                 Option.TYPE_RATIO_BUTTON,
                 CATEGORY_NO_UI,
                 COMMON_IS_MINIPLAYER_ON,
                 ResourcesCompat.ID_NULL,
                 Boolean.class,
-                Boolean.FALSE,
-                null));
+                Boolean.FALSE));
     }
 
+    @Nullable
     public static Option option(String key) {
+        if (sOptions == null) {
+            return null;
+        }
         return sOptions.option(key);
     }
 
@@ -209,8 +211,7 @@ public class VideoSettings {
                         DEBUG_ENABLE_LOG_LAYER,
                         R.string.vevod_option_debug_enable_log_layer,
                         Boolean.class,
-                        Boolean.FALSE,
-                        null)));
+                        Boolean.FALSE)));
         settings.add(SettingItem.createOptionItem(CATEGORY_DEBUG,
                 new Option(
                         Option.TYPE_RATIO_BUTTON,
@@ -218,25 +219,21 @@ public class VideoSettings {
                         DEBUG_ENABLE_DEBUG_TOOL,
                         R.string.vevod_option_debug_enable_debug_tool,
                         Boolean.class,
-                        Boolean.FALSE,
-                        null)));
-        settings.add(SettingItem.createOptionClickableItem(CATEGORY_DEBUG,
-                new Option(
-                        Option.TYPE_ARROW,
-                        CATEGORY_DEBUG,
-                        DEBUG_INPUT_MEDIA_SOURCE,
-                        R.string.vevod_option_debug_input_media_source,
-                        String.class,
-                        "",
-                        null), (eventType, context, settingItem, holder) -> {
-                            try {
-                                Class<?> calzz = Class.forName("com.byteplus.voddemo.ui.sample.SampleSourceActivity");
-                                Intent intent = new Intent(context, calzz);
-                                context.startActivity(intent);
-                            } catch (Exception e) {
-                                Toast.makeText(context, "Not Implemented", Toast.LENGTH_SHORT).show();
-                            }
-                        }));
+                        Boolean.FALSE)));
+
+        settings.add(SettingItem.createActionItem(
+                CATEGORY_DEBUG,
+                R.string.vevod_option_debug_input_media_source,
+                (eventType, context, settingItem, holder) -> {
+                    try {
+                        Intent intent = new Intent(ACTION_INPUT_MEDIA_SOURCE);
+                        intent.setPackage(context.getPackageName());
+                        context.startActivity(intent);
+                    } catch (Exception e) {
+                        Toast.makeText(context, "Not Implemented", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        ));
     }
 
     private static void createShortVideoSettings(List<SettingItem> settings) {
@@ -249,8 +246,7 @@ public class VideoSettings {
                         SHORT_VIDEO_SCENE_ACCOUNT_ID,
                         R.string.vevod_option_short_video_scene_account_id,
                         String.class,
-                        "short-video",
-                        null)));
+                        "short-video")));
 
         settings.add(SettingItem.createOptionItem(CATEGORY_SHORT_VIDEO,
                 new Option(
@@ -259,8 +255,7 @@ public class VideoSettings {
                         SHORT_VIDEO_ENABLE_STRATEGY,
                         R.string.vevod_option_short_video_enable_strategy,
                         Boolean.class,
-                        Boolean.TRUE,
-                        null)));
+                        Boolean.TRUE)));
 
         settings.add(SettingItem.createOptionItem(CATEGORY_SHORT_VIDEO,
                 new Option(
@@ -269,8 +264,7 @@ public class VideoSettings {
                         SHORT_VIDEO_ENABLE_IMAGE_COVER,
                         R.string.vevod_option_short_video_enable_image_cover,
                         Boolean.class,
-                        Boolean.TRUE,
-                        null)));
+                        Boolean.TRUE)));
 
         settings.add(SettingItem.createOptionItem(CATEGORY_SHORT_VIDEO,
                 new Option(
@@ -279,8 +273,8 @@ public class VideoSettings {
                         SHORT_VIDEO_PLAYBACK_COMPLETE_ACTION,
                         R.string.vevod_option_short_video_playback_complete_action,
                         Integer.class,
-                        0,
-                        Arrays.asList(0, 1)), new SettingItem.ValueMapper() {
+                        CompleteAction.LOOP,
+                        Arrays.asList(CompleteAction.LOOP, CompleteAction.NEXT)), new SettingItem.ValueMapper() {
                     @Override
                     public String toString(Object value) {
                         final int action = (int) value;
@@ -304,8 +298,7 @@ public class VideoSettings {
                         FEED_VIDEO_SCENE_ACCOUNT_ID,
                         R.string.vevod_option_feed_video_scene_account_id,
                         String.class,
-                        "feedvideo",
-                        null)));
+                        "feedvideo")));
         settings.add(SettingItem.createOptionItem(CATEGORY_FEED_VIDEO,
                 new Option(
                         Option.TYPE_RATIO_BUTTON,
@@ -313,8 +306,7 @@ public class VideoSettings {
                         FEED_VIDEO_ENABLE_PRELOAD,
                         R.string.vevod_option_feed_video_enable_preload,
                         Boolean.class,
-                        Boolean.TRUE,
-                        null)));
+                        Boolean.TRUE)));
     }
 
     private static void createLongVideoSettings(List<SettingItem> settings) {
@@ -326,8 +318,7 @@ public class VideoSettings {
                         LONG_VIDEO_SCENE_ACCOUNT_ID,
                         R.string.vevod_option_long_video_scene_account_id,
                         String.class,
-                        "long-video",
-                        null)));
+                        "long-video")));
     }
 
     private static void createDetailVideoSettings(List<SettingItem> settings) {
@@ -403,8 +394,7 @@ public class VideoSettings {
                         COMMON_SUPER_RESOLUTION,
                         R.string.vevod_option_common_super_resolution,
                         Boolean.class,
-                        Boolean.FALSE,
-                        null)));
+                        Boolean.FALSE)));
 
         settings.add(SettingItem.createOptionItem(CATEGORY_COMMON_VIDEO,
                 new Option(
@@ -413,8 +403,7 @@ public class VideoSettings {
                         COMMON_SOURCE_ENCODE_TYPE_H265,
                         R.string.vevod_option_common_source_encode_type_bytevc1,
                         Boolean.class,
-                        Boolean.TRUE,
-                        null)));
+                        Boolean.TRUE)));
 
 
         settings.add(SettingItem.createOptionItem(CATEGORY_COMMON_VIDEO,
@@ -465,16 +454,6 @@ public class VideoSettings {
                         return null;
                     }
                 }));
-
-        settings.add(SettingItem.createOptionItem(CATEGORY_COMMON_VIDEO,
-                new Option(
-                        Option.TYPE_RATIO_BUTTON,
-                        CATEGORY_COMMON_VIDEO,
-                        COMMON_SOURCE_VIDEO_ENABLE_PRIVATE_DRM,
-                        R.string.vevod_option_common_source_video_enable_private_drm,
-                        Boolean.class,
-                        Boolean.FALSE,
-                        null)));
 
         settings.add(SettingItem.createCopyableTextItem(CATEGORY_COMMON_VIDEO,
                 R.string.vevod_option_common_device_id,

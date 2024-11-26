@@ -6,12 +6,10 @@ package com.vertcdemo.solution.interactivelive.event;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
 /**
  * Anchor Lianmai end event
  */
-@RTSInform
 public class AnchorLinkFinishEvent {
     @SerializedName("rtc_room_id")
     public String rtcRoomId;

@@ -109,7 +109,7 @@ public class CrossRoomPKActivity extends ExampleBaseActivity {
             }
         });
 
-        rtcVideo = RTCHelper.createRTCVideo(this, videoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, videoEventHandler, "cross-room-pk");
         setLocalRenderView();
         rtcVideo.startVideoCapture();
         rtcVideo.startAudioCapture();

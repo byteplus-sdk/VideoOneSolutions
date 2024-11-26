@@ -6,12 +6,6 @@
 #ifndef LiveConstants_h
 #define LiveConstants_h
 
-typedef NS_ENUM(NSInteger, LiveRoomStatus) {
-    LiveRoomStatusLive = 1,
-    LiveRoomStatusAudienceLink = 2,
-    LiveRoomStatusCoHost = 3,
-};
-
 typedef NS_ENUM(NSInteger, LiveUserRole) {
     LiveUserRoleAudience = 1,
     LiveUserRoleHost = 2,

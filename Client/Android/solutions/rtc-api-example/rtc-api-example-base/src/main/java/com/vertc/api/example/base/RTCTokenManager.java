@@ -29,6 +29,15 @@ public class RTCTokenManager implements RTCTokenProvider {
     }
 
     @NonNull
+    public String getBusinessId(String bid) {
+        if (mRemoteProvider != null) {
+            return mRemoteProvider.getBusinessId(bid);
+        } else {
+            return mLocalProvider.getBusinessId(bid);
+        }
+    }
+
+    @NonNull
     @Override
     public Future<String> getToken(@NonNull String roomId, @NonNull String userId) {
         if (mRemoteProvider != null) {

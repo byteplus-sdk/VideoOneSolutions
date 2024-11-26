@@ -166,6 +166,16 @@ public class MainTabFragment extends Fragment {
             }
         });
 
+        viewModel.licenseResult.observe(getViewLifecycleOwner(), licenseResult -> {
+            if (licenseResult.isEmpty()) {
+                viewModel.checkLicense(requireContext().getApplicationContext());
+            } else if (!licenseResult.isOk()) {
+                binding.licenseTips.setText(licenseResult.message);
+                binding.licenseTips.setVisibility(View.VISIBLE);
+                binding.licenseTips.setOnClickListener(v -> {/*consume the click event*/});
+            }
+        });
+
         binding.tabHome.setOnClickListener(v -> viewModel.currentTab.setValue(MainTabViewModel.TAB_MAIN));
         binding.tabFeed.setOnClickListener(v -> viewModel.currentTab.setValue(MainTabViewModel.TAB_FEED));
         binding.tabChannel.setOnClickListener(v -> viewModel.currentTab.setValue(MainTabViewModel.TAB_CHANNEL));

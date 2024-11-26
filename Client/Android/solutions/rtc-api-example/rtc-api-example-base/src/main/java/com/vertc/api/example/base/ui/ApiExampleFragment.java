@@ -21,14 +21,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.Guideline;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
-import com.ss.bytertc.engine.RTCVideo;
 import com.vertc.api.example.base.ExampleCategory;
 import com.vertc.api.example.base.R;
 import com.vertc.api.example.base.annotation.ApiExample;
@@ -58,25 +53,6 @@ public class ApiExampleFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Context context = requireContext();
-
-        Guideline guidelineTop = view.findViewById(R.id.guideline_top);
-        if (guidelineTop != null) {
-            ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
-                Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-                guidelineTop.setGuidelineBegin(insets.top);
-                return windowInsets;
-            });
-        }
-
-        View back = view.findViewById(R.id.back);
-        if (back != null) {
-            back.setOnClickListener(v -> requireActivity().onBackPressed());
-        }
-
-        TextView sdkVersionView = view.findViewById(R.id.sdk_version);
-        if (sdkVersionView != null) {
-            sdkVersionView.setText(getString(R.string.sdk_version_xxx, RTCVideo.getSDKVersion()));
-        }
 
         ViewGroup listview = view.findViewById(R.id.list);
 
@@ -193,5 +169,3 @@ public class ApiExampleFragment extends Fragment {
         return examples;
     }
 }
-
-

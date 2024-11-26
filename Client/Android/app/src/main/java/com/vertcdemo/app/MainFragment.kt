@@ -38,6 +38,7 @@ class MainFragment : VersionFragment(R.layout.fragment_main) {
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             mViewModel.guidelineTop.value = insets.top
             binding.guidelineTop.setGuidelineBegin(insets.top)
+            binding.guidelineBottom.setGuidelineEnd(insets.bottom)
             windowInsets
         }
 
@@ -61,10 +62,10 @@ class MainFragment : VersionFragment(R.layout.fragment_main) {
             val bold = Typeface.defaultFromStyle(Typeface.BOLD)
             val normal = Typeface.defaultFromStyle(Typeface.NORMAL)
             binding.tabScenes.isSelected = position == 0
-            binding.tabScenes.typeface = if (position == 0) bold else normal
+            binding.iconScenes.typeface = if (position == 0) bold else normal
 
             binding.tabFunction.isSelected = position == 1
-            binding.tabFunction.typeface = if (position == 1) bold else normal
+            binding.iconScenes.typeface = if (position == 1) bold else normal
         }
 
         updateUserInfo(binding)

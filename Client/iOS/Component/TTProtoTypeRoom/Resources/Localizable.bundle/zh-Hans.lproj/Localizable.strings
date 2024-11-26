@@ -1,0 +1,6 @@
+"tt_scene_name" = "Media up and down swiping";
+"tt_scene_des" = "Live streamings and videos mixed, with swiping up and down for playback and interaction.";
+"tt_live_status" = "直播中";
+"tt_live_btn_text" = "点击进入直播间";
+"tt_rtc_initial_failed" = "rtc 初始化失败";
+"tt_live_license_invalid" = "License 无效";

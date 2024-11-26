@@ -4,7 +4,7 @@
 package com.vertcdemo.solution.chorus.feature.room;
 
 import static com.vertcdemo.core.chat.ChatConfig.SEND_MESSAGE_COUNT_LIMIT;
-import static com.vertcdemo.core.dialog.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
+import static com.vertcdemo.core.chat.input.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
 import static com.vertcdemo.solution.chorus.feature.ChorusActivity.EXTRA_REFERRER;
 import static com.vertcdemo.solution.chorus.feature.ChorusActivity.EXTRA_ROOM_INFO;
 import static com.vertcdemo.solution.chorus.feature.ChorusActivity.EXTRA_RTC_TOKEN;
@@ -39,7 +39,7 @@ import com.bytedance.chrous.R;
 import com.bytedance.chrous.databinding.FragmentChorusRoomBinding;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.chat.ChatAdapter;
-import com.vertcdemo.core.dialog.MessageInputDialog;
+import com.vertcdemo.core.chat.input.MessageInputDialog;
 import com.vertcdemo.core.event.AudioRouteChangedEvent;
 import com.vertcdemo.core.event.ClearUserEvent;
 import com.vertcdemo.core.event.JoinRTSRoomErrorEvent;
@@ -54,9 +54,7 @@ import com.vertcdemo.solution.chorus.bean.RoomInfo;
 import com.vertcdemo.solution.chorus.bean.StartSingInform;
 import com.vertcdemo.solution.chorus.bean.UserInfo;
 import com.vertcdemo.solution.chorus.bean.WaitSingInform;
-import com.vertcdemo.solution.chorus.common.SolutionToast;
 import com.vertcdemo.solution.chorus.core.ChorusRTCManager;
-import com.vertcdemo.solution.chorus.core.ChorusRTSClient;
 import com.vertcdemo.solution.chorus.core.ErrorCodes;
 import com.vertcdemo.solution.chorus.event.AudienceChangedEvent;
 import com.vertcdemo.solution.chorus.event.DownloadStatusChanged;
@@ -64,6 +62,8 @@ import com.vertcdemo.solution.chorus.event.PlayFinishEvent;
 import com.vertcdemo.solution.chorus.feature.room.state.CaptureControl;
 import com.vertcdemo.solution.chorus.feature.room.state.SingState;
 import com.vertcdemo.solution.chorus.feature.room.state.UserRoleState;
+import com.vertcdemo.solution.chorus.http.ChorusService;
+import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -129,7 +129,7 @@ public class ChorusRoomFragment extends Fragment {
         if (result == Boolean.TRUE) {
             mViewModel.toggleCamera();
         } else {
-            SolutionToast.show(R.string.toast_chorus_no_camera_permission);
+            CenteredToast.show(R.string.toast_chorus_no_camera_permission);
         }
     });
 
@@ -232,13 +232,13 @@ public class ChorusRoomFragment extends Fragment {
     private final FragmentResultListener leaveConfirmResultListener = (requestKey, result) -> {
         int option = result.getInt(SolutionCommonDialog.EXTRA_RESULT);
         if (option == Dialog.BUTTON_POSITIVE) {
-            leaveRoom(false);
+            leaveRoom(); // Confirm Leave Room
         }
     };
 
     public void attemptLeave() {
         if (!mViewModel.isHost()) {
-            leaveRoom(false);
+            leaveRoom(); // Audience Leave Room
             return;
         }
         SolutionCommonDialog dialog = new SolutionCommonDialog();
@@ -246,22 +246,34 @@ public class ChorusRoomFragment extends Fragment {
                 REQUEST_KEY_LEAVE_CONFIRM,
                 R.string.label_alert_live_end,
                 R.string.button_alert_live_end,
-                R.string.cancel
+                com.vertcdemo.rtc.toolkit.R.string.cancel
         );
         dialog.setArguments(args);
         dialog.show(getChildFragmentManager(), REQUEST_KEY_LEAVE_CONFIRM);
     }
 
-    private void leaveRoom(boolean kickOut) {
+    /**
+     * Leave Room & call server api
+     */
+    private void leaveRoom() {
+        leaveRoom(true);
+    }
+
+    /**
+     * Leave Room
+     *
+     * @param callServer if need call server api to leave room
+     */
+    private void leaveRoom(boolean callServer) {
         SolutionEventBus.unregister(this);
         ChorusRTCManager.ins().leaveRoom();
-        if (!kickOut) {
-            ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-            assert rtsClient != null;
+        if (!callServer) {
             if (mViewModel.isHost()) {
-                rtsClient.requestFinishLive(mViewModel.requireRoomId());
+                ChorusService.get()
+                        .finishLive(mViewModel.requireRoomId());
             } else {
-                rtsClient.requestLeaveRoom(mViewModel.requireRoomId());
+                ChorusService.get()
+                        .leaveRoom(mViewModel.requireRoomId());
             }
         }
 
@@ -278,8 +290,8 @@ public class ChorusRoomFragment extends Fragment {
     public void onJoinRTSRoomErrorEvent(JoinRTSRoomErrorEvent event) {
         String message = ErrorCodes.prettyMessage(event.errorCode, event.message);
         if (event.isReconnect) {
-            SolutionToast.show(message);
-            leaveRoom(true);
+            CenteredToast.show(message);
+            leaveRoom(false); // Reconnect Failed
             return;
         }
         onArgsError(message);
@@ -288,20 +300,20 @@ public class ChorusRoomFragment extends Fragment {
     private static final String REQUEST_KEY_ARGS_ERROR = "args_error";
 
     private final FragmentResultListener argsErrorResultListener = (requestKey, result) -> {
-        leaveRoom(false);
+        leaveRoom(false); // Confirm Join Room Error
     };
 
     private void onArgsError(String message) {
         SolutionCommonDialog dialog = new SolutionCommonDialog();
-        dialog.setArguments(SolutionCommonDialog.dialogArgs(REQUEST_KEY_ARGS_ERROR, message, R.string.confirm));
+        dialog.setArguments(SolutionCommonDialog.dialogArgs(REQUEST_KEY_ARGS_ERROR, message, com.vertcdemo.base.R.string.confirm));
         dialog.show(getChildFragmentManager(), REQUEST_KEY_ARGS_ERROR);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onClearUserBroadcast(ClearUserEvent event) {
         if (TextUtils.equals(SolutionDataManager.ins().getUserId(), event.userId)) {
-            SolutionToast.show(R.string.same_logged_in);
-            leaveRoom(true);
+            CenteredToast.show(R.string.same_logged_in);
+            leaveRoom(false); // Same user login
         }
     }
     // endregion
@@ -355,25 +367,24 @@ public class ChorusRoomFragment extends Fragment {
 
     private void sendMessage(final String message) {
         if (TextUtils.isEmpty(message)) {
-            SolutionToast.show(R.string.send_empty_message_cannot_be_empty);
+            CenteredToast.show(com.vertcdemo.rtc.toolkit.R.string.send_empty_message_cannot_be_empty);
             return;
         }
 
         if (mSendMessageCount >= SEND_MESSAGE_COUNT_LIMIT) {
-            SolutionToast.show(R.string.send_message_exceeded_limit);
+            CenteredToast.show(com.vertcdemo.rtc.toolkit.R.string.send_message_exceeded_limit);
             return;
         }
         mSendMessageCount++;
-
-        ChorusRTSClient rtsClient = ChorusRTCManager.ins().getRTSClient();
-        assert rtsClient != null;
 
         UserInfo myInfo = mViewModel.getMyInfo();
         onNormalMessage(myInfo.userId, myInfo.userName, message);
 
         try {
             String messageEncoded = URLEncoder.encode(message, "utf-8");
-            rtsClient.sendMessage(mViewModel.requireRoomId(), messageEncoded);
+
+            ChorusService.get()
+                    .sendMessage(mViewModel.requireRoomId(), messageEncoded);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -423,14 +434,14 @@ public class ChorusRoomFragment extends Fragment {
         boolean isHost = mViewModel.isHost();
         if (isHost) {
             if (event.type == FinishLiveInform.FINISH_TYPE_AGAINST) {
-                SolutionToast.show(R.string.closed_terms_service);
+                CenteredToast.show(com.vertcdemo.rtc.toolkit.R.string.closed_terms_service);
             } else if (event.type == FinishLiveInform.FINISH_TYPE_TIMEOUT) {
-                SolutionToast.show(R.string.finish_room_by_overtime);
+                CenteredToast.show(R.string.finish_room_by_overtime);
             }
         } else {
-            SolutionToast.show(R.string.toast_chorus_live_is_end);
+            CenteredToast.show(R.string.toast_chorus_live_is_end);
         }
-        leaveRoom(false);
+        leaveRoom(false); // Live End
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -486,6 +497,4 @@ public class ChorusRoomFragment extends Fragment {
             mViewModel.setEarMonitorSwitch(false);
         }
     }
-
-
 }

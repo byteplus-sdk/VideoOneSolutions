@@ -4,7 +4,6 @@
 //
 
 #import "FunctionsViewController.h"
-#import "RTCFunctionSection.h"
 #import "FunctionTableView.h"
 #import "FunctionTableCell.h"
 #import "Localizator.h"
@@ -75,34 +74,31 @@
     CGFloat viewWidth = self.view.frame.size.width;
     CGFloat viewHeight = self.scrollView.frame.size.height;
     FunctionTableView *lastTableView;
-    
-    lastTableView = [[FunctionTableView alloc] initWithDataList:[[NSClassFromString([FunctionsViewController funcSectionList][0][@"className"]) alloc] init]];
-    [self.scrollView addSubview:lastTableView];
-    [lastTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.scrollView);
-        make.width.mas_equalTo(viewWidth);
-        make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
-        make.bottom.equalTo(self.view);
-    }];
-    
-    FunctionTableView *table1 = [[FunctionTableView alloc] initWithDataList:[[NSClassFromString([FunctionsViewController funcSectionList][1][@"className"]) alloc] init]];
-    [self.scrollView addSubview:table1];
-    [table1 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(lastTableView.mas_right);
-        make.width.mas_equalTo(viewWidth);
-        make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
-        make.bottom.equalTo(self.view);
-    }];
-    lastTableView = table1;
-    
-    FunctionTableView *table2 = [[FunctionTableView alloc] initWithDataList:[[NSClassFromString([FunctionsViewController funcSectionList][2][@"className"]) alloc] init]];
-    [self.scrollView addSubview:table2];
-    [table2 mas_makeConstraints:^(MASConstraintMaker *make) {
+    for (NSDictionary *funcSection in [FunctionsViewController funcSectionList]) {
+        BaseFunctionDataList *section = [[NSClassFromString(funcSection[@"className"]) alloc] init];
+        if (section) {
+            FunctionTableView *tableView = [[FunctionTableView alloc] initWithDataList:section];
+            [self.scrollView addSubview:tableView];
+            if (lastTableView != nil) {
+                [tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.left.equalTo(lastTableView.mas_right);
+                    make.width.mas_equalTo(viewWidth);
+                    make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
+                    make.bottom.equalTo(self.view);
+                }];
+            } else {
+                [tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.left.equalTo(self.scrollView);
+                    make.width.mas_equalTo(viewWidth);
+                    make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
+                    make.bottom.equalTo(self.view);
+                }];
+            }
+            lastTableView = tableView;
+        }
+    }
+    [lastTableView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.scrollView);
-        make.left.equalTo(lastTableView.mas_right);
-        make.width.mas_equalTo(viewWidth);
-        make.top.equalTo(self.sectionListView.mas_bottom).offset(20);
-        make.bottom.equalTo(self.view);
     }];
 }
 

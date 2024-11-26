@@ -8,4 +8,5 @@
     <string name="content_limit">仅支持中文、字母、数字、1~%s位</string>
     <string name="username_hint">用户名</string>
     <string name="welcome">欢迎来到音视频终端（VOS）Demo体验中心</string>
+    <string name="login_app_version">App 版本 %1$s</string>
 </resources>

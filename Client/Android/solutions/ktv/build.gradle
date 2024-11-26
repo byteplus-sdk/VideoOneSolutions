@@ -3,7 +3,9 @@ plugins {
 }
 
 android {
+    namespace 'com.vertcdemo.solution.ktv'
     compileSdk project.compileSdkVersion
+    namespace "com.vertcdemo.solution.ktv"
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
@@ -20,9 +22,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 
     buildFeatures {
@@ -38,8 +41,8 @@ dependencies {
     implementation libs.material
     implementation libs.swiperefreshlayout
 
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
+    implementation libs.bundles.navigation
+    implementation libs.bundles.viewmodel
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
@@ -48,6 +51,7 @@ dependencies {
     implementation libs.fadingedgelayout
 
     implementation project(':component:rtc-toolkit')
+    implementation project(':component:rtc-chat-ui')
     implementation project(':component:solution-base')
     implementation project(':component:avatars')
 

@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.byteplus.vod.scenekit.ui.video.layer.dialog.InputDialog;
 import com.byteplus.voddemo.R;
 import com.byteplus.voddemo.databinding.VevodDialogCommentLayerBinding;
-import com.byteplus.voddemo.ui.video.scene.comment.model.CommentItem;
+import com.byteplus.vodcommon.ui.video.scene.comment.model.CommentItem;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
 /**

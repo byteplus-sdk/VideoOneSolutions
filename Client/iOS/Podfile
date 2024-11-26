@@ -9,7 +9,12 @@ install! 'cocoapods',
 
 
 # TTSDK version
-$TT_SDK_VERSION = '1.41.300.203-rtc'
+$TT_SDK_VERSION = '1.43.300.2-premium'
+
+$RTC_SDK = 'TTSDK/RTCSDK'
+def rtc_pods
+  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['RTCSDK'], :modular_headers => true
+end
 
 def common_pods
   # Depends on SDK
@@ -26,7 +31,7 @@ end
 def scene_InteractiveLive_pods
   # Interactive Live
   # Depends on SDK
-   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git', :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTC-Framework']
+   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git', :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTCSDK']
   pod 'InteractiveLive', :path => './Component/InteractiveLive'
 end
 
@@ -39,29 +44,47 @@ def scene_VideoPlaybackEdit_pods
   
 end
 
+def scene_Vod_SingleFunction_pods
+  # One-Stop Video
+  # Depends on SDK
+  pod 'VodSingleFunction', :path => './Component/VodSingleFunction'
+  
+   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['Player']
+  
+end
+
 def scene_KTV_pods
   # One-Stop Video
   # Depends on SDK
-   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['RTC-Framework', 'ByteAudio']
+   pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['RTCSDK', 'ByteAudio']
   pod 'KTV', :path => './Component/KTV'
   pod 'Chorus', :path => './Component/Chorus'
 end
 
-def scene_MedeaLive_pods
+def scene_MediaLive_pods
   # LiveDemo SingleFunction
    pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'Quic/Pull', 'Quic/Push', 'ScreenCapture']
   pod 'MediaLive', :path => './Component/MediaLive'
 end
 
 def develop_rtc_pods
+  pod 'ApiExampleEntry', :path => 'component/ApiExampleEntry'
+  pod 'RTCDependency', :path => 'component/RTCDependency', :subspecs=> ['audioeffect', 'ScreenCapture']
   
   pod 'RTCAPIExample', :path => 'Component/RTCAPIExample'
   pod 'RTCTokenOnlineKit', :path => 'Component/RTCTokenOnlineKit'
 
-  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['RTC-Framework', 'ByteAudio'], :modular_headers => true
+  rtc_pods
   pod 'SnapKit'
   pod 'OpenSSL-Universal'
   pod 'IQKeyboardManagerSwift'
+end
+
+
+def scene_TTProtoTypeRoom_pods
+     pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git',  :subspecs => ['LivePull-RTS', 'Player']
+    pod 'TTProtoTypeRoom', :path => './Component/TTProtoTypeRoom'
+
 end
 
 target 'VideoOne' do
@@ -69,14 +92,18 @@ target 'VideoOne' do
   scene_InteractiveLive_pods
   scene_KTV_pods
   scene_VideoPlaybackEdit_pods
-  scene_MedeaLive_pods
+  scene_Vod_SingleFunction_pods
+  scene_MediaLive_pods
   develop_rtc_pods
+  scene_TTProtoTypeRoom_pods
+  pod 'SDWebImage', '~> 5.12.0'
   
 end
 
 target 'ScreenShareExtension' do
   pod 'AppConfig', :path => './Component/AppConfig'
    pod 'TTSDK', $TT_SDK_VERSION, :source => 'https://github.com/byteplus-sdk/byteplus-specs.git', :subspecs => ['ScreenCaptureExtension']
+  pod 'RTCDependency', :path => 'component/RTCDependency', :subspecs=> ['audioeffect', 'ScreenCapture']
 end
 
 post_install do |installer|

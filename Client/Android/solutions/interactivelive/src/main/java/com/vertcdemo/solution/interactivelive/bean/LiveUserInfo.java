@@ -6,11 +6,9 @@ package com.vertcdemo.solution.interactivelive.bean;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSResponse;
+import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveLinkMicStatus;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveRoleType;
-import com.vertcdemo.solution.interactivelive.core.annotation.LiveUserStatus;
-import com.vertcdemo.core.annotation.MediaStatus;
 
 import java.io.Serializable;
 
@@ -18,7 +16,6 @@ import java.io.Serializable;
 /**
  * User data model
  */
-@RTSResponse
 public class LiveUserInfo implements Serializable {
 
     @SerializedName("room_id")
@@ -30,9 +27,6 @@ public class LiveUserInfo implements Serializable {
     @SerializedName("user_role")
     @LiveRoleType
     public int role;
-
-    @LiveUserStatus
-    public int status = LiveUserStatus.OTHER;
     @MediaStatus
     @SerializedName("mic")
     public int mic;
@@ -65,7 +59,6 @@ public class LiveUserInfo implements Serializable {
                 ", userId='" + userId + '\'' +
                 ", userName='" + userName + '\'' +
                 ", role=" + role +
-                ", status=" + status +
                 ", micStatus=" + mic +
                 ", cameraStatus=" + camera +
                 ", extra='" + extra + '\'' +

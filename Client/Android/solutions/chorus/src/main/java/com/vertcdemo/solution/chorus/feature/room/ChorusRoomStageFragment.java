@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
@@ -27,10 +26,10 @@ import com.bytedance.chrous.R;
 import com.bytedance.chrous.databinding.FragmentChorusRoomStageBinding;
 import com.vertcdemo.core.event.NetworkStatusEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.chorus.event.MusicLibraryInitEvent;
 import com.vertcdemo.solution.chorus.bean.PickedSongInfo;
 import com.vertcdemo.solution.chorus.bean.SongItem;
-import com.vertcdemo.solution.chorus.common.SolutionToast;
 import com.vertcdemo.solution.chorus.core.MusicDownloadManager;
 import com.vertcdemo.solution.chorus.core.rts.annotation.DownloadType;
 import com.vertcdemo.solution.chorus.core.rts.annotation.SongStatus;
@@ -42,6 +41,7 @@ import com.vertcdemo.solution.chorus.feature.room.bean.SingerData;
 import com.vertcdemo.solution.chorus.feature.room.state.SingState;
 import com.vertcdemo.solution.chorus.feature.room.state.Singing;
 import com.vertcdemo.solution.chorus.view.LrcView;
+import com.vertcdemo.ui.CenteredToast;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -73,7 +73,7 @@ public class ChorusRoomStageFragment extends Fragment {
         if (result == Boolean.TRUE) {
             mViewModel.startSing();
         } else {
-            SolutionToast.show(R.string.toast_chorus_no_mic_permission);
+            CenteredToast.show(R.string.toast_chorus_no_mic_permission);
         }
     });
 
@@ -86,28 +86,28 @@ public class ChorusRoomStageFragment extends Fragment {
         binding = FragmentChorusRoomStageBinding.bind(view);
         mLrcView = binding.lrcView;
 
-        binding.startChorus.setOnClickListener(v -> {
+        binding.startChorus.setOnClickListener(DebounceClickListener.create(v -> {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
                     == PackageManager.PERMISSION_GRANTED) {
                 mViewModel.startSing();
             } else {
                 startChorusLauncher.launch(Manifest.permission.RECORD_AUDIO);
             }
-        });
+        }));
 
         mViewModel.originTrack.observe(getViewLifecycleOwner(), value -> binding.origin.setSelected(value == Boolean.TRUE));
 
-        binding.origin.setOnClickListener(v -> mViewModel.switchTrack());
-        binding.next.setOnClickListener(v -> mViewModel.nextTrack());
-        binding.tuning.setOnClickListener(v -> {
+        binding.origin.setOnClickListener(DebounceClickListener.create(v -> mViewModel.switchTrack()));
+        binding.next.setOnClickListener(DebounceClickListener.create(v -> mViewModel.nextTrack()));
+        binding.tuning.setOnClickListener(DebounceClickListener.create(v -> {
             Navigation.findNavController(v).navigate(R.id.action_tuning);
-        });
+        }));
 
-        binding.songs.setOnClickListener(v -> {
+        binding.songs.setOnClickListener(DebounceClickListener.create(v -> {
             Bundle args = new Bundle();
             args.putInt("tab_index", 1);
             Navigation.findNavController(v).navigate(R.id.action_music_library, args);
-        });
+        }));
 
         final ChorusSingerManager leaderSinger = new ChorusSingerManager(
                 binding.leaderSinger,

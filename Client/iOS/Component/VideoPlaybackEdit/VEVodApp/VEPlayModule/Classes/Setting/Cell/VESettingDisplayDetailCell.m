@@ -8,7 +8,7 @@
 #import "Masonry.h"
 
 
-const NSString *VESettingDisplayDetailCellReuseID = @"VESettingDisplayDetailCellReuseID";
+extern NSString *VESettingDisplayDetailCellReuseID;
 
 @interface VESettingDisplayDetailCell ()
 
@@ -35,7 +35,7 @@ const NSString *VESettingDisplayDetailCellReuseID = @"VESettingDisplayDetailCell
         self.detailLabel.font = [UIFont systemFontOfSize:12];
         
         self.operationButton = [UIButton new];
-        [self.operationButton setTitle:LocalizedStringFromBundle(@"copy", @"VEVodApp") forState:UIControlStateNormal];
+        [self.operationButton setTitle:LocalizedStringFromBundle(@"copy", @"VodPlayer") forState:UIControlStateNormal];
         [self.operationButton setTitleColor:[UIColor colorFromHexString:@"#1664FF"] forState:UIControlStateNormal];
         [self.operationButton addTarget:self action:@selector(onCopy) forControlEvents:UIControlEventTouchUpInside];
         
@@ -68,7 +68,7 @@ const NSString *VESettingDisplayDetailCellReuseID = @"VESettingDisplayDetailCell
     _settingModel = settingModel;
     self.titleLabel.text = [NSString stringWithFormat:@"%@", settingModel.displayText];
     self.detailLabel.text = [NSString stringWithFormat:@"%@", settingModel.detailText];
-    [self.operationButton setTitle:LocalizedStringFromBundle(@"copy", @"VEVodApp") forState:UIControlStateNormal];
+    [self.operationButton setTitle:LocalizedStringFromBundle(@"copy", @"VodPlayer") forState:UIControlStateNormal];
 }
 
 - (void)onCopy {

@@ -8,11 +8,14 @@
 @implementation LiveUserModel
 
 + (NSDictionary *)modelCustomPropertyMapper {
-    return @{@"roomID": @"room_id",
-             @"uid": @"user_id",
-             @"role": @"user_role",
-             @"status": @"linkmic_status",
-             @"name": @"user_name"};
+    return @{
+        @"roomID": @"room_id",
+        @"uid": @"user_id",
+        @"role": @"user_role",
+        @"status": @"linkmic_status",
+        @"name": @"user_name",
+        @"applyLinkTime": @"apply_link_time",
+    };
 }
 
 - (BOOL)isLoginUser {

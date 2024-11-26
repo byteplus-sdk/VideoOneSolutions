@@ -6,10 +6,6 @@
 //  Copyright © 2021 bytedance. All rights reserved.
 //
 
-let kAppID  = PublicParameterComponent.share().appId
-
-let kAppKey = RTCAPPKey
-
 let kCDNUrl = ""
 
 let kOnLineAudioUrl = ""

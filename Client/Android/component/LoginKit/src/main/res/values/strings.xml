@@ -8,4 +8,5 @@
     <string name="content_limit">No more than %s characters with a mix of Chinese, letters &amp; numbers</string>
     <string name="username_hint">Username</string>
     <string name="welcome">Welcome to VideoOne</string>
+    <string name="login_app_version">App version %1$s</string>
 </resources>

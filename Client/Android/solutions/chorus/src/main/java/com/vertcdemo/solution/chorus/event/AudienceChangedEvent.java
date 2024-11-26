@@ -4,10 +4,8 @@
 package com.vertcdemo.solution.chorus.event;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.chorus.bean.UserInfo;
 
-@RTSInform
 public class AudienceChangedEvent {
 
     public boolean isJoin;

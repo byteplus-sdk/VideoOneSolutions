@@ -3,8 +3,12 @@
 
 package com.vertcdemo.solution.interactivelive.bean;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,8 +29,11 @@ public class ReconnectInfo {
     public String rtcRoomId;
     @SerializedName("rtc_token")
     public String rtcToken;
-    @SerializedName("rtc_user_list")
-    public List<LiveUserInfo> rtcUserList;
+    @SerializedName("linkmic_user_list")
+    public List<LiveUserInfo> linkMicUsers;
+    @Nullable
+    @SerializedName(value = "linker_id")
+    public String linkerId;
 
     @Override
     public String toString() {
@@ -37,7 +44,16 @@ public class ReconnectInfo {
                 ", streamPullUrl=" + streamPullUrl +
                 ", rtcRoomId='" + rtcRoomId + '\'' +
                 ", rtcToken='" + rtcToken + '\'' +
-                ", rtcUserList=" + rtcUserList +
                 '}';
+    }
+
+    @NonNull
+    public List<LiveUserInfo> getLinkMicUsers() {
+        return linkMicUsers == null ? Collections.emptyList() : linkMicUsers;
+    }
+
+    @Nullable
+    public String getLinkerId() {
+        return linkerId;
     }
 }

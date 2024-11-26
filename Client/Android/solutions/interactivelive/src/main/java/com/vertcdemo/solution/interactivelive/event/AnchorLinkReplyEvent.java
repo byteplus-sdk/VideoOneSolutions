@@ -6,7 +6,6 @@ package com.vertcdemo.solution.interactivelive.event;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.List;
 /**
  * The anchor responds to the connection invitation event
  */
-@RTSInform
 public class AnchorLinkReplyEvent {
     @SerializedName("invitee")
     public LiveUserInfo userInfo;

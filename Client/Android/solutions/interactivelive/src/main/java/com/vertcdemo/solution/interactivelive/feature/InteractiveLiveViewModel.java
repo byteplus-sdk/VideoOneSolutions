@@ -3,39 +3,25 @@
 
 package com.vertcdemo.solution.interactivelive.feature;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.vertcdemo.core.net.rts.IRTSCallback;
-import com.vertcdemo.core.net.rts.RTSBaseClient;
-import com.vertcdemo.core.net.rts.RTSInfo;
+import com.vertcdemo.core.http.bean.RTCAppInfo;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
 
 public class InteractiveLiveViewModel extends ViewModel {
 
-    public static final int RTS_STATUS_NONE = 0;
-    public static final int RTS_STATUS_LOGGING = 1;
-    public static final int RTS_STATUS_LOGGED = 2;
-    public static final int RTS_STATUS_FAILED = 3;
+    public static final int RTC_STATUS_NONE = 0;
+    public static final int RTC_STATUS_DONE = 1;
 
-    private RTSInfo rtsInfo;
+    public MutableLiveData<Integer> rtcStatus = new MutableLiveData<>(RTC_STATUS_NONE);
 
-    public MutableLiveData<Integer> rtsStatus = new MutableLiveData<>(RTS_STATUS_NONE);
-
-    public void setRTSInfo(RTSInfo rtsInfo) {
-        this.rtsInfo = rtsInfo;
-        LiveRTCManager.ins().rtcConnect(rtsInfo);
-    }
-
-    public void loginRTS() {
-        rtsStatus.postValue(RTS_STATUS_LOGGING);
-        LiveRTCManager.ins().getRTSClient().login(rtsInfo.rtsToken, (resultCode, message) -> {
-            if (resultCode == IRTSCallback.CODE_SUCCESS) {
-                rtsStatus.postValue(RTS_STATUS_LOGGED);
-            } else {
-                rtsStatus.postValue(RTS_STATUS_FAILED);
-            }
-        });
+    public void setAppInfo(@NonNull RTCAppInfo info) {
+        LiveService.get().setAppId(info.appId);
+        LiveRTCManager.ins().createEngine(info.appId, info.bid);
+        rtcStatus.postValue(RTC_STATUS_DONE);
     }
 
     @Override

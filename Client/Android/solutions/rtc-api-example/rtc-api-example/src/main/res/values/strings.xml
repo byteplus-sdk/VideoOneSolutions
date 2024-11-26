@@ -7,9 +7,14 @@
     <string name="example_audio_effect_mixing">Sound effect mixing</string>
     <string name="example_audio_mixing">Music mixing</string>
     <string name="example_voice_effect">Sound effects</string>
+    <string name="example_custom_audio_capture">Custom audio capture</string>
     <string name="example_picture_in_picture">Picture-in-picture</string>
     <string name="example_video_config">Video configuration</string>
     <string name="example_video_rotation">Video rotation</string>
+    <string name="example_screen_sharing">Screen sharing</string>
+    <string name="example_custom_video_capture">Custom video capture</string>
+    <string name="example_custom_video_rendering">Custom video rendering</string>
+    <string name="example_custom_video_encoding">Custom video encoding</string>
     <string name="example_cdn_stream">Push to CDN</string>
     <string name="example_third_beauty">Third-party beauty effects</string>
     <string name="example_third_beauty_byte">BytePlus Effects</string>
@@ -153,4 +158,22 @@
     <string name="toast_rtc_engine_not_created">RTC Engine not created</string>
     <string name="toast_open_audio_effect_first">Please turn on the sound effect switch first</string>
 
+    <string name="title_external_video_frame">Custom video capture</string>
+    <string name="title_video_render">Custom video rendering</string>
+    <string name="title_encode_video_frame">Custom video encoding</string>
+    <string name="title_screen_share">Screen sharing</string>
+
+    <string name="button_start_push">Start push</string>
+    <string name="button_stop_push">Stop push</string>
+    <string name="label_video_type">Video type</string>
+    <string name="label_video_format">Video format</string>
+    <string name="hint_user_id">User id</string>
+    <string name="button_start_screen_sharing">Start sharing</string>
+    <string name="button_stop_screen_sharing">Stop sharing</string>
+    <string name="button_start_render">Start render</string>
+    <string name="button_stop_render">Stop render</string>
+    <string name="msg_sharing_low_os_version">Current os version is too low to support screen sharing</string>
+    <string name="msg_sharing">Recording/sharing your screen</string>
+    <string name="msg_empty_sei_message">SEI message is null</string>
+    <string name="example_network_error">Network error</string>
 </resources>

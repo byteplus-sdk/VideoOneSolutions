@@ -30,8 +30,8 @@ import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.ui.video.scene.feedvideo.FeedVideoPageView;
 import com.byteplus.vod.scenekit.ui.video.scene.feedvideo.FeedVideoSceneView;
 import com.byteplus.voddemo.R;
-import com.byteplus.voddemo.data.remote.RemoteApi;
-import com.byteplus.voddemo.data.remote.api2.GetFeedStreamApi;
+import com.byteplus.vodcommon.data.remote.RemoteApi;
+import com.byteplus.vodcommon.data.remote.api2.GetFeedStreamApi;
 import com.byteplus.voddemo.ui.video.scene.VideoActivity;
 import com.byteplus.voddemo.ui.video.scene.detail.DetailVideoFragment;
 

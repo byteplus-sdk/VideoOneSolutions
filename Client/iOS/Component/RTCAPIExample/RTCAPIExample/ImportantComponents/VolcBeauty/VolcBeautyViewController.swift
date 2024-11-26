@@ -75,7 +75,8 @@ class VolcBeautyViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("byte-beauty")
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -131,11 +132,11 @@ class VolcBeautyViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
         canvas.renderMode = .fit
         self.localView.userId = userId
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     @objc func joinRoom()  {
-        generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+        generateToken(roomId: roomId, userId: userId) { [weak self] token in
             // Join room
             self?.rtcRoom = self?.rtcVideo?.createRTCRoom(self?.roomId ?? "")
             self?.rtcRoom?.delegate = self

@@ -113,6 +113,14 @@
 
 "example_cdn_stream" = "推流到CDN";
 
+"example_screen_share" = "屏幕分享";
+
+"example_custom_video_capture" = "自定义视频采集";
+
+"example_custom_video_render" = "自定义视频渲染";
+
+"example_custom_video_encode" = "自定义视频编码";
+
 "example_cross_room_pk" = "跨房间pk";
 
 "example_multi_room" = "多房间";
@@ -127,6 +135,8 @@
 
 "example_sei_messaging" = "SEI消息";
 
+"example_external_video_sei_message" = "外部视频源SEI";
+
 "example_stream_sync_info" = "随帧同步消息";
 
 "example_third_beauty" = "第三方美颜";
@@ -136,6 +146,18 @@
 "example_video_rotation" = "视频旋转";
 
 "example_voice_effect" = "声音特效";
+
+"example_custom_audio_capture" = "自定义音频采集";
+
+"example_video_capture_format" = "视频采集格式";
+
+"example_video_render_format" = "视频渲染格式";
+
+"example_start_screen_share" = "开始屏幕共享";
+
+"example_start_sharing" = "开始分享";
+
+"example_end_sharing" = "结束分享";
 
 "hint_audio_track" = "音轨(0,1)";
 

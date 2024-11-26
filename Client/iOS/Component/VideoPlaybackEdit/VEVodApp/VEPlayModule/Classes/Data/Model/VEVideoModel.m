@@ -23,27 +23,28 @@
         @"userName": @"name",
         @"likeCount": @"like",
         @"commentCount": @"comment",
-        @"playUrl": @"httpUrl"
+        @"playUrl": @"httpUrl",
+        @"playType": @"type"
     };
 }
 
 - (BOOL)modelCustomTransformFromDictionary:(NSDictionary *)dic {
     NSString *createTime = dic[@"createTime"];
     if (createTime) {
-        _createTime = [NSString timeStringForUTCTime:createTime];
+        self.createTime = [NSString timeStringForUTCTime:createTime];
     }
     return YES;
 }
 
 - (NSString *)playTimeToString {
-    return [NSString stringWithFormat:@"%@ %@", [NSString stringForCount:_playTimes], LocalizedStringFromBundle(@"views", @"VEVodApp")];
+    return [NSString stringWithFormat:@"%@ %@", [NSString stringForCount:self.playTimes], LocalizedStringFromBundle(@"views", @"VodPlayer")];
 }
 
 + (BOOL)propertyIsOptional:(NSString *)propertyName {
     return YES;
 }
 
-+ (TTVideoEngineVidSource *)videoEngineVidSource:(VEVideoModel *)videoModel {
++ (TTVideoEngineVidSource *)videoEngineVidSource:(BaseVideoModel *)videoModel {
     VESettingModel *h265 = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalH265];
     TTVideoEngineEncodeType codec = h265.open ? TTVideoEngineh265 : TTVideoEngineH264;
     TTVideoEngineVidSource *source = [[TTVideoEngineVidSource alloc] initWithVid:videoModel.videoId playAuthToken:videoModel.playAuthToken resolution:[VEVideoPlayerController getPlayerCurrentResolution] encodeType:codec isDash:NO isHLS:NO];
@@ -52,11 +53,10 @@
     return source;
 }
 
-+ (TTVideoEngineUrlSource *)videoEngineUrlSource:(VEVideoModel *)videoModel {
++ (TTVideoEngineUrlSource *)videoEngineUrlSource:(BaseVideoModel *)videoModel {
     TTVideoEngineUrlSource *source = [[TTVideoEngineUrlSource alloc] initWithUrl:videoModel.playUrl cacheKey:videoModel.playUrl.vloc_md5String videoId:videoModel.videoId];
     source.title = videoModel.title;
     source.cover = videoModel.coverUrl;
     return source;
 }
-
 @end

@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace 'com.vertcdemo.login'
     compileSdk project.compileSdkVersion
 
     defaultConfig {
@@ -16,6 +17,7 @@ android {
 
         buildConfigField('String', 'TERMS_OF_SERVICE_URL', "\"$TERMS_OF_SERVICE_URL\"")
         buildConfigField('String', 'PRIVACY_POLICY_URL', "\"$PRIVACY_POLICY_URL\"")
+        buildConfigField("String", "APP_VERSION", "\"${project.APP_VERSION_NAME}\"")
     }
 
     buildTypes {
@@ -24,12 +26,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 
     buildFeatures {
+        buildConfig true
         viewBinding true
     }
 }
@@ -40,8 +44,6 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.material
 
-    implementation libs.core.ktx
-
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -50,4 +52,5 @@ dependencies {
 
     implementation libs.eventbus
     implementation libs.gson
+    implementation libs.retrofit2
 }

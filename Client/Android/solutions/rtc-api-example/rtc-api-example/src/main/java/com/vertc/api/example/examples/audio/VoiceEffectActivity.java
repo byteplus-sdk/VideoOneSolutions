@@ -61,7 +61,7 @@ public class VoiceEffectActivity extends ExampleBaseActivity {
 
         initUI(binding);
 
-        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "voice-effect");
         rtcVideo.startAudioCapture();
         rtcVideo.startVideoCapture();
 

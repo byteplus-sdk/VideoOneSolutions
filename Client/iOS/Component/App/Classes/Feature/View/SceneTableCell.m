@@ -31,15 +31,13 @@
     self.backgroundColor = [UIColor clearColor];
 
     self.bgImgV = [[UIImageView alloc] init];
-    self.bgImgV.contentMode = UIViewContentModeScaleAspectFill;
-    self.bgImgV.clipsToBounds = YES;
-    self.bgImgV.layer.cornerRadius = 12;
+    self.bgImgV.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:self.bgImgV];
     [self.bgImgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(self.contentView).mas_offset(6);
-        make.trailing.equalTo(self.contentView).mas_offset(-6);
-        make.top.equalTo(self.contentView).mas_offset(2);
-        make.bottom.equalTo(self.contentView).mas_offset(-2);
+        make.leading.equalTo(self.contentView);
+        make.trailing.equalTo(self.contentView);
+        make.top.equalTo(self.contentView).mas_offset(8);
+        make.bottom.equalTo(self.contentView).mas_offset(-8);
     }];
 
     UIView *contentView = [[UIView alloc] init];

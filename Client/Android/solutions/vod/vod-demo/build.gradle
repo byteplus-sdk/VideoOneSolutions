@@ -6,22 +6,17 @@ plugins {
 }
 
 android {
-    compileSdk rootProject.ext.compileSdkVersion
     namespace "com.byteplus.voddemo"
+    compileSdk project.compileSdkVersion
 
     resourcePrefix 'vevod_'
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-
-        buildConfigField('String', 'VOD_BASE_URL', "\"${SERVER_URL}/vod/v1/\"")
-        buildConfigField('String', 'VOD_APP_ID', "\"$VOD_APP_ID\"")
-        buildConfigField('String', 'VOD_APP_CHANNEL', "\"$VOD_APP_CHANNEL\"")
-        buildConfigField('String', 'VOD_LICENSE_URI', "\"$VOD_LICENSE_URI\"")
     }
 
     buildTypes {
@@ -31,12 +26,14 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 
     buildFeatures {
+        buildConfig true
         viewBinding true
     }
 }
@@ -49,6 +46,8 @@ dependencies {
     implementation libs.cardview
     implementation libs.viewpager2
     implementation libs.swiperefreshlayout
+
+    implementation libs.bundles.viewmodel
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
@@ -64,10 +63,13 @@ dependencies {
     implementation project(':component:solution-base')
     implementation project(':component:avatars')
 
+    implementation project(':solutions:vod:vod-common')
     implementation project(':solutions:vod:vod-scenekit')
     implementation project(':solutions:vod:vod-settingskit')
     implementation project(':solutions:vod:vod-playerkit:vod-player')
     implementation project(':solutions:vod:vod-playerkit:vod-player-ve')
     implementation project(':solutions:vod:vod-playerkit:vod-player-utils')
+
+    implementation project(':solutions:vod:vod-input-media')
 
 }

@@ -62,7 +62,7 @@ class MutiRoomViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
         joinButton1.isSelected = !joinButton1.isSelected
         
         if joinButton1.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton1.setTitle(LocalizedString("button_leave_room1"), for: .normal)
                 
                 // Join room
@@ -107,7 +107,7 @@ class MutiRoomViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
         joinButton2.isSelected = !joinButton2.isSelected
         
         if joinButton2.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton2.setTitle(LocalizedString("button_leave_room2"), for: .normal)
                 
                 // Join room
@@ -136,7 +136,8 @@ class MutiRoomViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("multi-room")
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -153,7 +154,7 @@ class MutiRoomViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
         canvas.renderMode = .hidden
         self.localView.userId = userTextField1.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.main, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
     }
     
     func bindRemoteRenderView(view: UserVideoView, roomId: String, userId: String) {
@@ -166,7 +167,7 @@ class MutiRoomViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
         let streamKey = ByteRTCRemoteStreamKey.init()
         streamKey.userId = userId
         streamKey.roomId = roomId
-        streamKey.streamIndex = .main
+        streamKey.streamIndex = .indexMain
         
         self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
     }
@@ -406,7 +407,7 @@ class MutiRoomViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
             let streamKey = ByteRTCRemoteStreamKey.init()
             streamKey.userId = userId
             streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .main
+            streamKey.streamIndex = .indexMain
             
             self.users.append(streamKey)
             

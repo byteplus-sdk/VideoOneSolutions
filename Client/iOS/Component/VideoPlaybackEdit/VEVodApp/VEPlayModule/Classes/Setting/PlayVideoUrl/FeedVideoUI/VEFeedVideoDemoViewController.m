@@ -5,6 +5,7 @@
 #import "VEVideoDetailViewController.h"
 #import "VEVideoModel.h"
 #import "VEVideoPlayerController.h"
+#import "NSString+VE.h"
 #import <Masonry/Masonry.h>
 #import <ToolKit/ToolKit.h>
 
@@ -91,6 +92,11 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
     VEVideoDetailViewController *detailViewController = [[VEVideoDetailViewController alloc] initWithType:VEVideoPlayerTypeFeed];
     detailViewController.delegate = self;
     detailViewController.videoModel = videoModel;
+    __weak __typeof(self) wself = self;
+    detailViewController.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
+        wself.playerController = playerController;
+        [wself resumePlay];
+    };
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
@@ -107,7 +113,37 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
 }
 
 - (void)feedVideoCellDidRotate:(VEFeedVideoNormalCell *)cell {
+    VOLogD(VOVideoPlayback, @"feedVideoCellDidRotate");
+    [cell playerControlInterfaceDestory];
+    VEVideoDetailViewController *detailViewController = [[VEVideoDetailViewController alloc] initWithType:VEVideoPlayerTypeFeed];
+    detailViewController.landscapeMode = YES;
+    detailViewController.delegate = self;
+    detailViewController.videoModel = cell.videoModel;
+    [self.navigationController pushViewController:detailViewController animated:NO];
+    __weak __typeof(self) wself = self;
+    detailViewController.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
+        wself.playerController = playerController;
+        VOLogD(VOVideoPlayback, @"vid: %@", playerController.mediaSource.uniqueId);
+        [wself resumePlay];
+    };
 }
+
+- (void)resumePlay {
+    if (self.view.isHidden) {
+        return;
+    }
+    NSString *mediaId = self.playerController.mediaSource.uniqueId;
+    if (mediaId.length) {
+        for (VEFeedVideoNormalCell *cell in self.tableView.visibleCells) {
+            if ([cell.videoModel.playUrl.vloc_md5String isEqualToString:mediaId]) {
+                VOLogD(VOVideoPlayback, @"mediaId: %@", mediaId);
+                [cell startPlay];
+                break;
+            }
+        }
+    }
+}
+
 
 - (void)feedVideoDidEndPlay:(VEVideoModel *)videoModel playAt:(CFTimeInterval)time duration:(CFTimeInterval)duration {
 }
@@ -157,7 +193,7 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
 
         BaseButton *button = [[BaseButton alloc] init];
         button.backgroundColor = [UIColor clearColor];
-        UIImage *image = [UIImage imageNamed:@"nav_left"];
+        UIImage *image = [UIImage imageNamed:@"nav_left" bundleName:@"VodPlayer"];
         button.tintColor = [UIColor whiteColor];
         [button setImage:image forState:UIControlStateNormal];
         [button addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
@@ -169,7 +205,7 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
         }];
 
         UILabel *label = [[UILabel alloc] init];
-        label.text = LocalizedStringFromBundle(@"vod_entry_feed", @"VEVodApp");
+        label.text = LocalizedStringFromBundle(@"vod_entry_feed", @"VodPlayer");
         label.textColor = [UIColor whiteColor];
         label.font = [UIFont systemFontOfSize:16 weight:UIFontWeightBold];
         [_navView addSubview:label];
@@ -195,10 +231,11 @@ static NSString *VEFeedVideoNormalCellReuseIDdemo = @"VEFeedVideoNormalCellReuse
 
 - (BOOL)willPlayCurrentSource:(VEVideoModel *)videoModel {
     NSString *currentVid = @"";
-    if (self.playerController && [self.playerController.mediaSource isKindOfClass:[TTVideoEngineVidSource class]]) {
-        currentVid = [self.playerController.mediaSource performSelector:@selector(vid)];
+    if (self.playerController && [self.playerController.mediaSource isKindOfClass:[TTVideoEngineUrlSource class]]) {
+        currentVid = self.playerController.mediaSource.uniqueId;
     }
-    if ([currentVid isEqualToString:videoModel.videoId]) {
+    VOLogD(VOVideoPlayback, @"currentVid: %@, videoId: %@", currentVid, videoModel.playUrl.vloc_md5String);
+    if ([currentVid isEqualToString:videoModel.playUrl.vloc_md5String]) {
         return YES;
     } else {
         return NO;

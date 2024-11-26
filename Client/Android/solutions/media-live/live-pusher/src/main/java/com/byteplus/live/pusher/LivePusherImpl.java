@@ -7,6 +7,11 @@ import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_MICRO
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_MUTE_FRAME;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_VOICE_COMMUNICATION;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_VOICE_RECOGNITION;
+import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_16K;
+import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_32K;
+import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_44_1K;
+import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_48K;
+import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_8K;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_BACK;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_CUSTOM_IMAGE;
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_DUAL;
@@ -34,7 +39,11 @@ import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeL
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioChannel.VeLiveAudioChannelStereo;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioFrameSource.VeLiveAudioFrameSourceCapture;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioFrameSource.VeLiveAudioFrameSourcePreEncode;
+import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate16000;
+import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate32000;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate44100;
+import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate48000;
+import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate8000;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveNetworkQuality.VeLiveNetworkQualityBad;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveNetworkQuality.VeLiveNetworkQualityGood;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveNetworkQuality.VeLiveNetworkQualityPoor;
@@ -78,6 +87,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.byteplus.live.common.FileUtils;
 import com.byteplus.live.common.WriterPCMFile;
 import com.byteplus.live.settings.PreferenceUtil;
@@ -92,7 +103,6 @@ import com.ss.avframework.live.VeLivePusherDef;
 import com.ss.avframework.live.VeLivePusherObserver;
 import com.ss.avframework.live.VeLiveVideoFrame;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -217,13 +227,16 @@ public class LivePusherImpl implements LivePusher,
     }
 
     @Override
-    public void startScreenRecording(boolean enableAppAudio, Intent screenIntent) {
-        Log.d(TAG, "startScreenRecording, enableAppAudio: " + enableAppAudio);
+    public void startScreenRecording(Intent screenIntent) {
+        Log.d(TAG, "startScreenRecording");
         if (mLivePusher == null) {
             Log.e(TAG, "startScreenRecording, mLivePusher is null.");
             return;
         }
-        mLivePusher.startScreenRecording(enableAppAudio, screenIntent);
+        // https://docs.byteplus.com/en/docs/byteplus-media-live/docs-broadcast-sdk-for-android-api#VeLivePusher-startscreenrecording
+        // enableAppAudio
+        // Whether to record in-app audio data. Currently, you can only set it to true, which is the default value.
+        mLivePusher.startScreenRecording(true, screenIntent);
     }
 
     @Override
@@ -603,20 +616,22 @@ public class LivePusherImpl implements LivePusher,
     }
 
     @Override
-    public void enableEcho(boolean enable) {
+    public boolean enableEcho(boolean enable) {
         Log.d(TAG, "enableEcho, enable:" + enable);
         if (mLivePusher == null) {
             Log.e(TAG, "enableEcho, livePusher is null.");
-            return;
+            return false;
         }
         if (mLiveAudioDev == null) {
             mLiveAudioDev = mLivePusher.getAudioDevice();
-            return;
+            return false;
         }
         if (mLiveAudioDev.isSupportHardwareEcho()) {
             mLiveAudioDev.enableEcho(enable);
+            return true;
         } else {
             Toast.makeText(mContext, R.string.medialive_audio_echo_not_supported, Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 
@@ -825,6 +840,7 @@ public class LivePusherImpl implements LivePusher,
         mMediaPlayer.enableBGMLoop(loop);
     }
 
+    @NonNull
     @Override
     public VeLivePusherDef.VeLiveAudioFrameSource getObservedAudioFrameSource() {
         return new VeLivePusherDef.VeLiveAudioFrameSource(VeLiveAudioFrameSourceCapture | VeLiveAudioFrameSourcePreEncode);
@@ -874,6 +890,7 @@ public class LivePusherImpl implements LivePusher,
         }
     }
 
+    @NonNull
     @Override
     public VeLivePusherDef.VeLiveVideoFrameSource getObservedVideoFrameSource() {
         return new VeLivePusherDef.VeLiveVideoFrameSource(VeLiveVideoFrameSourceCapture | VeLiveVideoFrameSourcePreEncode);
@@ -1166,150 +1183,161 @@ public class LivePusherImpl implements LivePusher,
         mLivePusher.setVideoEncoderConfiguration(videoConfig);
 
         VeLivePusherDef.VeLiveAudioEncoderConfiguration audioConfig = new VeLivePusherDef.VeLiveAudioEncoderConfiguration();
+        audioConfig.setSampleRate(convertAudioEncodeSampleRate(LivePusherSettingsHelper.getAudioEncodeSampleRate()));
         mLivePusher.setAudioEncoderConfiguration(audioConfig);
     }
 
-    private VeLivePusherDef.VeLiveVideoResolution convertVideoResolution(int res) {
-        VeLivePusherDef.VeLiveVideoResolution ret = VeLiveVideoResolution720P;
+    private static VeLivePusherDef.VeLiveVideoResolution convertVideoResolution(int res) {
         switch (res) {
             case RESOLUTION_360P:
-                ret = VeLiveVideoResolution360P;
-                break;
+                return VeLiveVideoResolution360P;
             case RESOLUTION_480P:
-                ret = VeLiveVideoResolution480P;
-                break;
+                return VeLiveVideoResolution480P;
             case RESOLUTION_540P:
-                ret = VeLiveVideoResolution540P;
-                break;
-            case RESOLUTION_720P:
-                ret = VeLiveVideoResolution720P;
-                break;
+                return VeLiveVideoResolution540P;
             case RESOLUTION_1080P:
-                ret = VeLiveVideoResolution1080P;
-                break;
+                return VeLiveVideoResolution1080P;
+
+            case RESOLUTION_720P:
+            default:
+                return VeLiveVideoResolution720P;
         }
-        return ret;
     }
 
     private VeLivePusherDef.VeLiveVideoCaptureType convertVideoCaptureType(int type) {
-        VeLivePusherDef.VeLiveVideoCaptureType captureType = VeLiveVideoCaptureFrontCamera;
         switch (type) {
-            case PUSH_VIDEO_CAPTURE_FRONT:
-                captureType = VeLiveVideoCaptureFrontCamera;
-                break;
             case PUSH_VIDEO_CAPTURE_BACK:
-                captureType = VeLiveVideoCaptureBackCamera;
-                break;
+                return VeLiveVideoCaptureBackCamera;
             case PUSH_VIDEO_CAPTURE_DUAL:
-                captureType = VeLiveVideoCaptureDualCamera;
-                break;
+                return VeLiveVideoCaptureDualCamera;
             case PUSH_VIDEO_CAPTURE_SCREEN:
-                captureType = VeLiveVideoCaptureScreen;
-                break;
+                return VeLiveVideoCaptureScreen;
             case PUSH_VIDEO_CAPTURE_EXTERNAL:
-                captureType = VeLiveVideoCaptureExternal;
-                break;
+                return VeLiveVideoCaptureExternal;
             case PUSH_VIDEO_CAPTURE_CUSTOM_IMAGE:
-                captureType = VeLiveVideoCaptureCustomImage;
-                break;
+                return VeLiveVideoCaptureCustomImage;
             case PUSH_VIDEO_CAPTURE_LAST_FRAME:
-                captureType = VeLiveVideoCaptureLastFrame;
-                break;
+                return VeLiveVideoCaptureLastFrame;
             case PUSH_VIDEO_CAPTURE_DUMMY_FRAME:
-                captureType = VeLiveVideoCaptureDummyFrame;
-                break;
+                return VeLiveVideoCaptureDummyFrame;
+
+            case PUSH_VIDEO_CAPTURE_FRONT:
+            default:
+                return VeLiveVideoCaptureFrontCamera;
         }
-        return captureType;
     }
 
-    private VeLivePusherDef.VeLiveAudioCaptureType convertAudioCaptureType(int type) {
-        VeLivePusherDef.VeLiveAudioCaptureType captureType = VeLiveAudioCaptureMicrophone;
+    private static VeLivePusherDef.VeLiveAudioCaptureType convertAudioCaptureType(int type) {
         switch (type) {
-            case PUSH_AUDIO_CAPTURE_MICROPHONE:
-                captureType = VeLiveAudioCaptureMicrophone;
-                break;
             case PUSH_AUDIO_CAPTURE_VOICE_COMMUNICATION:
-                captureType = VeLiveAudioCaptureVoiceCommunication;
-                break;
+                return VeLiveAudioCaptureVoiceCommunication;
             case PUSH_AUDIO_CAPTURE_VOICE_RECOGNITION:
-                captureType = VeLiveAudioCaptureVoiceRecognition;
-                break;
+                return VeLiveAudioCaptureVoiceRecognition;
             case PUSH_AUDIO_CAPTURE_EXTERNAL:
-                captureType = VeLiveAudioCaptureExternal;
-                break;
+                return VeLiveAudioCaptureExternal;
             case PUSH_AUDIO_CAPTURE_MUTE_FRAME:
-                captureType = VeLiveAudioCaptureMuteFrame;
-                break;
+                return VeLiveAudioCaptureMuteFrame;
+
+            case PUSH_AUDIO_CAPTURE_MICROPHONE:
+            default:
+                return VeLiveAudioCaptureMicrophone;
         }
-        return captureType;
     }
 
-    private VeLivePusherDef.VeLiveVideoMirrorType convertMirrorType(int type) {
-        VeLivePusherDef.VeLiveVideoMirrorType ret = VeLiveVideoMirrorCapture;
-        if (type == PUSH_VIDEO_CAPTURE_MIRROR) {
-            ret = VeLiveVideoMirrorCapture;
-        } else if (type == PUSH_VIDEO_PREVIEW_MIRROR) {
-            ret = VeLiveVideoMirrorPreview;
-        } else if (type == PUSH_VIDEO_PUSH_MIRROR) {
-            ret = VeLiveVideoMirrorPushStream;
+    private static VeLivePusherDef.VeLiveVideoMirrorType convertMirrorType(int type) {
+        switch (type) {
+            case PUSH_VIDEO_PREVIEW_MIRROR:
+                return VeLiveVideoMirrorPreview;
+            case PUSH_VIDEO_PUSH_MIRROR:
+                return VeLiveVideoMirrorPushStream;
+
+            case PUSH_VIDEO_CAPTURE_MIRROR:
+            default:
+                return VeLiveVideoMirrorCapture;
         }
-        return ret;
     }
 
-    private VeLiveVideoFrame convertVideoFrame(VideoFrame frame) {
-        VeLiveVideoFrame tmp = null;
+    private static VeLiveVideoFrame convertVideoFrame(VideoFrame frame) {
         if (frame.bufferType == VideoFrame.VIDEO_BUFFER_TYPE_TEXTURE_ID) {
-            tmp = new VeLiveVideoFrame(frame.width, frame.height, frame.pts,
+            VeLiveVideoFrame tmp = new VeLiveVideoFrame(frame.width, frame.height, frame.pts,
                     frame.textureId,
-                    (frame.pixelFormat == VideoFrame.VIDEO_PIXEL_FMT_OES_TEXTURE ? true : false), null);
+                    (frame.pixelFormat == VideoFrame.VIDEO_PIXEL_FMT_OES_TEXTURE), null);
+
+            tmp.setRotation(convertRotation(frame.rotation));
+
+            return tmp;
         } else if (frame.bufferType == VideoFrame.VIDEO_BUFFER_TYPE_BYTE_BUFFER) {
-            tmp = new VeLiveVideoFrame(frame.width, frame.height, frame.pts,
-                    frame.buffer);
+            VeLiveVideoFrame tmp = new VeLiveVideoFrame(frame.width, frame.height, frame.pts, frame.buffer);
             tmp.setPixelFormat(convertPixelFmt(frame.pixelFormat));
+            tmp.setRotation(convertRotation(frame.rotation));
+
+            return tmp;
         } else if (frame.bufferType == VideoFrame.VIDEO_BUFFER_TYPE_BYTE_ARRAY) {
-            tmp = new VeLiveVideoFrame(frame.width, frame.height, frame.pts,
-                    frame.data);
+            VeLiveVideoFrame tmp = new VeLiveVideoFrame(frame.width, frame.height, frame.pts, frame.data);
             tmp.setPixelFormat(convertPixelFmt(frame.pixelFormat));
+            tmp.setRotation(convertRotation(frame.rotation));
+
+            return tmp;
+        } else {
+            return null;
         }
-        tmp.setRotation(convertRotation(frame.rotation));
-        return tmp;
     }
 
-    private VeLivePusherDef.VeLivePixelFormat convertPixelFmt(int fmt) {
-        VeLivePusherDef.VeLivePixelFormat ret = VeLivePixelFormatI420;
-        if (fmt == VideoFrame.VIDEO_PIXEL_FMT_I420) {
-            ret = VeLivePixelFormatI420;
-        } else if (fmt == VideoFrame.VIDEO_PIXEL_FMT_NV12) {
-            ret = VeLivePixelFormatNV12;
-        } else if (fmt == VideoFrame.VIDEO_PIXEL_FMT_NV21) {
-            ret = VeLivePixelFormatNV21;
+    private static VeLivePusherDef.VeLivePixelFormat convertPixelFmt(int fmt) {
+        switch (fmt) {
+            case VideoFrame.VIDEO_PIXEL_FMT_NV12:
+                return VeLivePixelFormatNV12;
+            case VideoFrame.VIDEO_PIXEL_FMT_NV21:
+                return VeLivePixelFormatNV21;
+
+            case VideoFrame.VIDEO_PIXEL_FMT_I420:
+            default:
+                return VeLivePixelFormatI420;
         }
-        return ret;
     }
 
-    private VeLivePusherDef.VeLiveVideoRotation convertRotation(int rotation) {
-        VeLivePusherDef.VeLiveVideoRotation ret = VeLiveVideoRotation0;
-        if (rotation == VideoFrame.VIDEO_ROTATION_0) {
-            ret = VeLiveVideoRotation0;
-        } else if (rotation == VideoFrame.VIDEO_ROTATION_1) {
-            ret = VeLiveVideoRotation90;
-        } else if (rotation == VideoFrame.VIDEO_ROTATION_2) {
-            ret = VeLiveVideoRotation180;
-        } else if (rotation == VideoFrame.VIDEO_ROTATION_3) {
-            ret = VeLiveVideoRotation270;
+    private static VeLivePusherDef.VeLiveVideoRotation convertRotation(int rotation) {
+        switch (rotation) {
+            case VideoFrame.VIDEO_ROTATION_1:
+                return VeLiveVideoRotation90;
+            case VideoFrame.VIDEO_ROTATION_2:
+                return VeLiveVideoRotation180;
+            case VideoFrame.VIDEO_ROTATION_3:
+                return VeLiveVideoRotation270;
+
+            case VideoFrame.VIDEO_ROTATION_0:
+            default:
+                return VeLiveVideoRotation0;
         }
-        return ret;
     }
 
-    private VeLivePusherDef.VeLivePusherRenderMode convertRenderMode(int mode) {
-        VeLivePusherDef.VeLivePusherRenderMode ret = VeLivePusherRenderModeFit;
-        if (mode == PUSH_VIDEO_RENDER_MODE_FILL) {
-            ret = VeLivePusherRenderModeFill;
-        } else if (mode == PUSH_VIDEO_RENDER_MODE_FIT) {
-            ret = VeLivePusherRenderModeFit;
-        } else if (mode == PUSH_VIDEO_RENDER_MODE_HIDDEN) {
-            ret = VeLivePusherRenderModeHidden;
+    private static VeLivePusherDef.VeLivePusherRenderMode convertRenderMode(int mode) {
+        switch (mode) {
+            case PUSH_VIDEO_RENDER_MODE_FILL:
+                return VeLivePusherRenderModeFill;
+            case PUSH_VIDEO_RENDER_MODE_HIDDEN:
+                return VeLivePusherRenderModeHidden;
+
+            case PUSH_VIDEO_RENDER_MODE_FIT:
+            default:
+                return VeLivePusherRenderModeFit;
         }
-        return ret;
+    }
+
+    private static VeLivePusherDef.VeLiveAudioSampleRate convertAudioEncodeSampleRate(int index) {
+        switch (index) {
+            case PUSH_AUDIO_SAMPLE_RATE_8K:
+                return VeLiveAudioSampleRate8000;
+            case PUSH_AUDIO_SAMPLE_RATE_16K:
+                return VeLiveAudioSampleRate16000;
+            case PUSH_AUDIO_SAMPLE_RATE_32K:
+                return VeLiveAudioSampleRate32000;
+            case PUSH_AUDIO_SAMPLE_RATE_48K:
+                return VeLiveAudioSampleRate48000;
+
+            case PUSH_AUDIO_SAMPLE_RATE_44_1K:
+            default:
+                return VeLiveAudioSampleRate44100;
+        }
     }
 }

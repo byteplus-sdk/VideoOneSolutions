@@ -53,6 +53,30 @@ public class MusicLibraryAdapter extends RecyclerView.Adapter<BVH<ItemChorusSong
         String singer = holder.itemView.getContext().getString(R.string.label_music_list_singer_xxx, item.getArtist());
         holder.binding.trackArtist.setText(singer);
 
+        updateStatus(holder, item);
+
+        if (mOnClickListener != null) {
+            holder.itemView.setOnClickListener(v -> {
+                StatusSongItem info = mItems.get(holder.getBindingAdapterPosition());
+                mOnClickListener.accept(info);
+            });
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull BVH<ItemChorusSongsBinding> holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            Object payload = payloads.get(0);
+            if (PAYLOAD_STATUS == payload) {
+                StatusSongItem item = mItems.get(position);
+                updateStatus(holder, item);
+            }
+        }
+    }
+
+    private void updateStatus(BVH<ItemChorusSongsBinding> holder, StatusSongItem item) {
         if (item.status == SongStatus.PICKED) {
             holder.binding.action.setSelected(true);
             holder.binding.action.setText(R.string.button_music_list_already);
@@ -62,9 +86,6 @@ public class MusicLibraryAdapter extends RecyclerView.Adapter<BVH<ItemChorusSong
         } else {
             holder.binding.action.setSelected(false);
             holder.binding.action.setText(R.string.button_music_list_request_song);
-        }
-        if (mOnClickListener != null) {
-            holder.itemView.setOnClickListener(v -> mOnClickListener.accept(item));
         }
     }
 
@@ -89,16 +110,24 @@ public class MusicLibraryAdapter extends RecyclerView.Adapter<BVH<ItemChorusSong
 
             @Override
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return oldItems.get(oldItemPosition) == newItems.get(newItemPosition);
+                StatusSongItem oldItem = oldItems.get(oldItemPosition);
+                StatusSongItem newItem = newItems.get(newItemPosition);
+                return oldItem.getSongId().equals(newItem.getSongId());
             }
 
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                 StatusSongItem oldItem = oldItems.get(oldItemPosition);
                 StatusSongItem newItem = newItems.get(newItemPosition);
-                return oldItem.getSongId().equals(newItem.getSongId())
-                        && oldItem.status == newItem.status;
+                return oldItem.status == newItem.status;
+            }
+
+            @Override
+            public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+                return PAYLOAD_STATUS;
             }
         }).dispatchUpdatesTo(this);
     }
+
+    private static final String PAYLOAD_STATUS = "status";
 }

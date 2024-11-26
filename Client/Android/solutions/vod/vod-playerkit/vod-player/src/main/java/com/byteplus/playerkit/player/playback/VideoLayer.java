@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.byteplus.playerkit.player.Player;
+import com.byteplus.playerkit.player.config.IStrategy;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.utils.Asserts;
 import com.byteplus.playerkit.utils.L;
@@ -560,5 +561,12 @@ public abstract class VideoLayer extends VideoView.VideoViewListener.Adapter
             show();
             mPictureInPicturePaddingShow = false;
         }
+    }
+
+    @Nullable
+    public <T> T getConfig() {
+        if (mLayerHost == null) return null;
+        IStrategy config = mLayerHost.getConfig();
+        return (T) config;
     }
 }

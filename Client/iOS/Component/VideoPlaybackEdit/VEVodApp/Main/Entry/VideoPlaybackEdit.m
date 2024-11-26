@@ -15,10 +15,11 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.title = LocalizedStringFromBundle(@"vod_scenes", @"VEVodApp");
-        self.des = LocalizedStringFromBundle(@"vod_scenes_des", @"VEVodApp");
+        self.title = LocalizedStringFromBundle(@"vod_scenes", @"VodPlayer");
+        self.des = LocalizedStringFromBundle(@"vod_scenes_des", @"VodPlayer");
         self.iconName = @"scene_vod_bg";
         self.scenesName = @"vod";
+        self.bundleName = @"VodPlayer";
     }
     return self;
 }

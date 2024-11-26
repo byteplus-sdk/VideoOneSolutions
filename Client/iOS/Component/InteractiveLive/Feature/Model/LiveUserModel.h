@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat videoWidth;
 @property (nonatomic, assign) CGFloat videoHeight;
 @property (nonatomic, assign) CGSize videoSize;
+@property (nonatomic, strong) NSDate *applyLinkTime;
 @end
 
 NS_ASSUME_NONNULL_END

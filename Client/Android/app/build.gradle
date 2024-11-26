@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace 'com.vertcdemo.app'
     compileSdk project.compileSdkVersion
 
     defaultConfig {
@@ -12,6 +13,7 @@ android {
         minSdkVersion project.minSdkVersion
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion project.targetSdkVersion
+        compileSdk project.compileSdkVersion
 
         versionCode project.APP_VERSION_CODE.toInteger()
         versionName project.APP_VERSION_NAME
@@ -32,6 +34,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig true
         viewBinding true
     }
 
@@ -42,13 +45,10 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 
     lintOptions {
@@ -59,24 +59,26 @@ android {
     packagingOptions {
         pickFirst 'lib/*/libc++_shared.so'
     }
+
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.22"))
 
     implementation libs.appcompat
+    implementation libs.activity
     implementation libs.recyclerview
     implementation libs.constraintlayout
     implementation libs.material
 
-    implementation libs.navigation.fragment.ktx
-    implementation libs.navigation.ui.ktx
+    implementation libs.bundles.navigation
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-
-    implementation libs.lifecycle.runtime.ktx
 
     implementation libs.eventbus
 
@@ -92,7 +94,9 @@ dependencies {
     implementation project(':solutions:interactivelive')
     implementation project(':solutions:ktv')
     implementation project(':solutions:vod:vod-demo')
+    implementation project(':solutions:vod:vod-function')
     implementation project(':solutions:media-live:live-entrance')
     implementation project(':solutions:rtc-api-example:rtc-api-example-entry')
+    implementation project(':solutions:vod-live-feed')
     // endregion
 }

@@ -56,10 +56,12 @@
     self.listsView.dataLists = onlineDataLists;
 }
 
-- (void)setApplicationDataLists:(NSArray<LiveUserModel *> *)applicationDataLists {
-    _applicationDataLists = applicationDataLists;
+- (void)setApplicationDataLists:(NSArray<LiveUserModel *> *)applies {
+    NSArray<LiveUserModel *> * sorted = [applies sortedArrayUsingComparator:^(LiveUserModel * o1, LiveUserModel * o2){
+        return [o1.applyLinkTime compare:o2.applyLinkTime];
+    }];
 
-    self.applicationListView.dataLists = applicationDataLists;
+    self.applicationListView.dataLists = sorted;
     self.topView.isUnread = NO;
     [[NSNotificationCenter defaultCenter] postNotificationName:NotificationReadApplyMessage object:nil];
 }

@@ -4,7 +4,10 @@
 package com.vertcdemo.solution.interactivelive.core.live.adapter;
 
 import android.graphics.Bitmap;
+import android.view.Surface;
 
+import com.ss.videoarch.liveplayer.VeLivePayerAudioLoudnessInfo;
+import com.ss.videoarch.liveplayer.VeLivePayerAudioVolume;
 import com.ss.videoarch.liveplayer.VeLivePlayer;
 import com.ss.videoarch.liveplayer.VeLivePlayerAudioFrame;
 import com.ss.videoarch.liveplayer.VeLivePlayerDef;
@@ -13,6 +16,10 @@ import com.ss.videoarch.liveplayer.VeLivePlayerObserver;
 import com.ss.videoarch.liveplayer.VeLivePlayerStatistics;
 import com.ss.videoarch.liveplayer.VeLivePlayerVideoFrame;
 import com.vertcdemo.solution.interactivelive.core.live.LLog;
+
+import org.json.JSONObject;
+
+import java.nio.ByteBuffer;
 
 public class VeLivePlayerObserverAdapter implements VeLivePlayerObserver {
     private static final String TAG = "PlayerObserver";
@@ -116,6 +123,71 @@ public class VeLivePlayerObserverAdapter implements VeLivePlayerObserver {
     public void onStreamFailedOpenSuperResolution(VeLivePlayer player,
                                                   VeLivePlayerError error) {
         LLog.d(TAG, "onStreamFailedOpenSuperResolution: error: " + error);
+    }
+
+    @Override
+    public void onAudioDeviceOpen(VeLivePlayer veLivePlayer, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onAudioDeviceClose(VeLivePlayer veLivePlayer) {
+
+    }
+
+    @Override
+    public void onAudioDeviceRelease(VeLivePlayer veLivePlayer) {
+
+    }
+
+    @Override
+    public void onBinarySeiUpdate(VeLivePlayer veLivePlayer, ByteBuffer byteBuffer) {
+
+    }
+
+    @Override
+    public void onMonitorLog(VeLivePlayer veLivePlayer, JSONObject jsonObject, String s) {
+
+    }
+
+    @Override
+    public void onReportALog(VeLivePlayer veLivePlayer, int i, String s) {
+
+    }
+
+    @Override
+    public void onResolutionDegrade(VeLivePlayer veLivePlayer, VeLivePlayerDef.VeLivePlayerResolution veLivePlayerResolution) {
+
+    }
+
+    @Override
+    public void onTextureRenderDrawFrame(VeLivePlayer veLivePlayer, Surface surface) {
+
+    }
+
+    @Override
+    public void onHeadPoseUpdate(VeLivePlayer veLivePlayer, float v, float v1, float v2, float v3, float v4, float v5, float v6) {
+
+    }
+
+    @Override
+    public void onResponseSmoothSwitch(VeLivePlayer veLivePlayer, boolean b, int i) {
+
+    }
+
+    @Override
+    public void onNetworkQualityChanged(VeLivePlayer veLivePlayer, int i, String s) {
+
+    }
+
+    @Override
+    public void onAudioVolume(VeLivePlayer veLivePlayer, VeLivePayerAudioVolume veLivePayerAudioVolume) {
+
+    }
+
+    @Override
+    public void onLoudness(VeLivePlayer veLivePlayer, VeLivePayerAudioLoudnessInfo veLivePayerAudioLoudnessInfo) {
+
     }
 
     @Override

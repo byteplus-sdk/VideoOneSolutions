@@ -5,8 +5,8 @@ package com.vertcdemo.solution.interactivelive.feature.main.audiencelink;
 
 import android.text.TextUtils;
 
-import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.core.annotation.MediaStatus;
+import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
 
 public class LinkedAudienceItem {

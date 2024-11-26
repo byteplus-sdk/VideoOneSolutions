@@ -4,12 +4,10 @@
 package com.vertcdemo.solution.chorus.bean;
 
 import com.google.gson.annotations.SerializedName;
-import com.vertcdemo.core.net.rts.RTSInform;
 
 /**
  * 来自业务服务端消息事件
  */
-@RTSInform
 public class MessageInform {
     @SerializedName("user_info")
     public UserInfo userInfo;

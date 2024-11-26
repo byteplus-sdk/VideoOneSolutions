@@ -35,6 +35,7 @@ import com.byteplus.voddemo.ui.video.scene.shortvideo.ShortVideoFragment;
 
 
 public class VideoActivity extends BaseActivity {
+    public static final String ACTION_VIDEO_DETAILS = "com.byteplus.vod.scenekit.action.VIDEO_DETAILS";
 
     private static final String EXTRA_VIDEO_SCENE = "extra_video_scene";
     private static final String EXTRA_ARGS = "extra_args";

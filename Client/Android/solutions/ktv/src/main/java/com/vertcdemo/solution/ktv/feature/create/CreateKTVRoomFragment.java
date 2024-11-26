@@ -123,7 +123,7 @@ public class CreateKTVRoomFragment extends Fragment {
             }
         });
 
-        mViewModel.response.observe(getViewLifecycleOwner(), response -> {
+        mViewModel.createResult.observe(getViewLifecycleOwner(), response -> {
             if (response == null) {
                 return;
             }

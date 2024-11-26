@@ -8,6 +8,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void(^NetworkingManagerBlock)(NetworkingResponse *response);
+
 @interface NetworkingManager : NSObject
 
 #pragma mark - Base
@@ -15,37 +17,33 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)processResponse:(id _Nullable)responseObject
                   block:(void (^__nullable)(NetworkingResponse *response))block;
 
++ (void)callHttpEvent:(NSString *)eventName
+              content:(NSDictionary *)content
+                block:(void (^__nullable)(NetworkingResponse *response))block;
+
 + (void)postWithEventName:(NSString *)eventName
                     space:(NSString *)space
                   content:(NSDictionary *)content
                     block:(void (^__nullable)(NetworkingResponse *response))block;
 
-+ (void)postWithParameters:(nullable id)parameters
-                     space:(NSString *)space
-                     block:(void (^__nullable)(NetworkingResponse *response))block;
++ (void)postWithPath:(NSString *)path
+          parameters:(nullable id)parameters
+               block:(void(^__nullable)(NetworkingResponse *response))block;
+
++ (void)postWithPath:(NSString *)path
+          parameters:(nullable id)parameters
+             headers:(nullable NSDictionary<NSString *, NSString *> *)headers
+               block:(void(^__nullable)(NetworkingResponse *response))block;
 
 + (void)postWithPath:(NSString *)path
           parameters:(nullable id)parameters
              headers:(nullable NSDictionary<NSString *, NSString *> *)headers
             progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress
-               block:(void (^__nullable)(NetworkingResponse *response))block;
+               block:(void(^__nullable)(NetworkingResponse *response))block;
 
 + (void)getWithPath:(NSString *)path
          parameters:(nullable id)parameters
               block:(void (^__nullable)(NetworkingResponse *response))block;
-
-#pragma mark - User
-
-/*
- * Change User Name
- * @param userName User Name
- * @param loginToken Login token
- * @param block Callback
- */
-+ (void)changeUserName:(NSString *)userName
-            loginToken:(NSString *)loginToken
-                 block:(void (^__nullable)(NetworkingResponse *response))block;
-
 
 @end
 

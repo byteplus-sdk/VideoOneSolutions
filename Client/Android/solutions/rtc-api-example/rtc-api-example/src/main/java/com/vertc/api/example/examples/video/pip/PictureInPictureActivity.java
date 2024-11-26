@@ -1,17 +1,22 @@
 package com.vertc.api.example.examples.video.pip;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.TextureView;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
@@ -31,6 +36,7 @@ import com.vertc.api.example.base.ExampleBaseActivity;
 import com.vertc.api.example.base.ExampleCategory;
 import com.vertc.api.example.base.annotation.ApiExample;
 import com.vertc.api.example.databinding.ActivityPictureInPictureBinding;
+import com.vertc.api.example.service.RTCForegroundService;
 import com.vertc.api.example.utils.IMEUtils;
 import com.vertc.api.example.utils.RTCHelper;
 import com.vertc.api.example.utils.ToastUtil;
@@ -48,6 +54,8 @@ import java.util.Locale;
  */
 @ApiExample(title = "Picture in picture", category = ExampleCategory.VIDEO, order = 1)
 public class PictureInPictureActivity extends ExampleBaseActivity {
+    private static final String TAG = "PictureInPicture";
+
     private RTCVideo rtcVideo;
     private RTCRoom rtcRoom;
     private String roomID;
@@ -68,10 +76,11 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
 
         initUI(binding);
 
-        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler);
+        rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "pip");
         setLocalRenderView();
         rtcVideo.startVideoCapture();
         rtcVideo.startAudioCapture();
+        startForeground();
     }
 
     private void initUI(ActivityPictureInPictureBinding binding) {
@@ -231,8 +240,54 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
         if (rtcVideo != null) {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
+
+            stopForeground();
         }
         RTCVideo.destroyRTCVideo();
         rtcVideo = null;
+    }
+
+    void startForeground() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPostNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+                    return;
+                }
+            }
+
+            startForegroundImpl();
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private final ActivityResultLauncher<String> requestPostNotificationPermission = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            granted -> {
+                if (!granted) {
+                    // Missed permission: POST_NOTIFICATIONS, foreground service may not work
+                    Log.w(TAG, "onActivityResult: Permission 'android.permission.POST_NOTIFICATIONS' not granted, foreground service may not work!");
+                    ToastUtil.showLongToast(
+                            PictureInPictureActivity.this,
+                            com.vertc.api.example.base.R.string.rtc_missing_permission_post_notifications
+                    );
+                }
+
+                startForegroundImpl();
+            }
+    );
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    void startForegroundImpl() {
+        Intent intent = new Intent(this, RTCForegroundService.class);
+        startForegroundService(intent);
+    }
+
+    void stopForeground() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Intent intent = new Intent(this, RTCForegroundService.class);
+            stopService(intent);
+        }
     }
 }

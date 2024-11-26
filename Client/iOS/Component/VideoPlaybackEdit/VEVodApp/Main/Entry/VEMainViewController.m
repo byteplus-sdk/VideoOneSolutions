@@ -123,21 +123,21 @@ static inline BOOL VEIsMainDartTheme(NSUInteger index) {
         VEMainItemButton *shortVideoItem = [[VEMainItemButton alloc] init];
         shortVideoItem.index = 0;
         shortVideoItem.bingedVC = [[VEShortVideoViewController alloc] init];
-        [shortVideoItem bingImage:[UIImage imageNamed:@"vod_entry_home_dark"] status:VEMainItemStatusDark];
-        [shortVideoItem bingImage:[UIImage imageNamed:@"vod_entry_home"] status:VEMainItemStatusLight];
-        [shortVideoItem bingImage:[UIImage imageNamed:@"vod_entry_home_s"] status:VEMainItemStatusActive];
+        [shortVideoItem bingImage:[UIImage imageNamed:@"vod_entry_home_dark" bundleName:@"VodPlayer"] status:VEMainItemStatusDark];
+        [shortVideoItem bingImage:[UIImage imageNamed:@"vod_entry_home"  bundleName:@"VodPlayer"] status:VEMainItemStatusLight];
+        [shortVideoItem bingImage:[UIImage imageNamed:@"vod_entry_home_s"  bundleName:@"VodPlayer"] status:VEMainItemStatusActive];
         [shortVideoItem bingTitleColor:[UIColor colorFromHexString:@"#EBEDF0"] status:VEMainItemStatusActive];
-        [shortVideoItem setTitle:LocalizedStringFromBundle(@"vod_entry_home", @"VEVodApp") forState:UIControlStateNormal];
+        [shortVideoItem setTitle:LocalizedStringFromBundle(@"vod_entry_home", @"VodPlayer") forState:UIControlStateNormal];
         [shortVideoItem addTarget:self action:@selector(scenesButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [array addObject:shortVideoItem];
 
         VEMainItemButton *feedVideoItem = [[VEMainItemButton alloc] init];
         feedVideoItem.index = 1;
         feedVideoItem.bingedVC = [[VEFeedVideoViewController alloc] init];
-        [feedVideoItem bingImage:[UIImage imageNamed:@"vod_entry_feed_dark"] status:VEMainItemStatusDark];
-        [feedVideoItem bingImage:[UIImage imageNamed:@"vod_entry_feed"] status:VEMainItemStatusLight];
-        [feedVideoItem bingImage:[UIImage imageNamed:@"vod_entry_feed_s"] status:VEMainItemStatusActive];
-        [feedVideoItem setTitle:LocalizedStringFromBundle(@"vod_entry_feed", @"VEVodApp") forState:UIControlStateNormal];
+        [feedVideoItem bingImage:[UIImage imageNamed:@"vod_entry_feed_dark" bundleName:@"VodPlayer"] status:VEMainItemStatusDark];
+        [feedVideoItem bingImage:[UIImage imageNamed:@"vod_entry_feed" bundleName:@"VodPlayer"] status:VEMainItemStatusLight];
+        [feedVideoItem bingImage:[UIImage imageNamed:@"vod_entry_feed_s" bundleName:@"VodPlayer"] status:VEMainItemStatusActive];
+        [feedVideoItem setTitle:LocalizedStringFromBundle(@"vod_entry_feed", @"VodPlayer") forState:UIControlStateNormal];
         [feedVideoItem bingTitleColor:[UIColor colorFromHexString:@"#EBEDF0"] status:VEMainItemStatusActive];
         [feedVideoItem addTarget:self action:@selector(scenesButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [array addObject:feedVideoItem];
@@ -145,20 +145,20 @@ static inline BOOL VEIsMainDartTheme(NSUInteger index) {
         VEMainItemButton *longVideoItem = [[VEMainItemButton alloc] init];
         longVideoItem.index = 2;
         longVideoItem.bingedVC = [[VELongVideoViewController alloc] init];
-        [longVideoItem bingImage:[UIImage imageNamed:@"vod_entry_channel_dark"] status:VEMainItemStatusDark];
-        [longVideoItem bingImage:[UIImage imageNamed:@"vod_entry_channel"] status:VEMainItemStatusLight];
-        [longVideoItem bingImage:[UIImage imageNamed:@"vod_entry_channel_s_dark"] status:VEMainItemStatusActive];
-        [longVideoItem setTitle:LocalizedStringFromBundle(@"vod_entry_channel", @"VEVodApp") forState:UIControlStateNormal];
+        [longVideoItem bingImage:[UIImage imageNamed:@"vod_entry_channel_dark" bundleName:@"VodPlayer"] status:VEMainItemStatusDark];
+        [longVideoItem bingImage:[UIImage imageNamed:@"vod_entry_channel" bundleName:@"VodPlayer"] status:VEMainItemStatusLight];
+        [longVideoItem bingImage:[UIImage imageNamed:@"vod_entry_channel_s_dark" bundleName:@"VodPlayer"] status:VEMainItemStatusActive];
+        [longVideoItem setTitle:LocalizedStringFromBundle(@"vod_entry_channel", @"VodPlayer") forState:UIControlStateNormal];
         [longVideoItem addTarget:self action:@selector(scenesButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [array addObject:longVideoItem];
 
         VEMainItemButton *settingItem = [[VEMainItemButton alloc] init];
         settingItem.index = 3;
         settingItem.bingedVC = [[VESettingViewController alloc] init];
-        [settingItem bingImage:[UIImage imageNamed:@"vod_entry_setting_dark"] status:VEMainItemStatusDark];
-        [settingItem bingImage:[UIImage imageNamed:@"vod_entry_setting"] status:VEMainItemStatusLight];
-        [settingItem bingImage:[UIImage imageNamed:@"vod_entry_setting_s_dark"] status:VEMainItemStatusActive];
-        [settingItem setTitle:LocalizedStringFromBundle(@"vod_entry_setting", @"VEVodApp") forState:UIControlStateNormal];
+        [settingItem bingImage:[UIImage imageNamed:@"vod_entry_setting_dark" bundleName:@"VodPlayer"] status:VEMainItemStatusDark];
+        [settingItem bingImage:[UIImage imageNamed:@"vod_entry_setting" bundleName:@"VodPlayer"] status:VEMainItemStatusLight];
+        [settingItem bingImage:[UIImage imageNamed:@"vod_entry_setting_s_dark" bundleName:@"VodPlayer"] status:VEMainItemStatusActive];
+        [settingItem setTitle:LocalizedStringFromBundle(@"vod_entry_setting", @"VodPlayer") forState:UIControlStateNormal];
         [settingItem addTarget:self action:@selector(scenesButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [array addObject:settingItem];
 

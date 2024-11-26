@@ -1,17 +1,18 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
 }
 
 android {
-    compileSdk 34
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
         namespace 'com.vertc.api.example'
 
-        minSdkVersion 19
-        targetSdkVersion 34
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
 
-        buildConfigField('String', 'CV_LICENCE_FILENAME', "\"${safeGetProp('CV_LICENCE_FILENAME')}\"")
+        buildConfigField('String', 'CV_LICENSE_FILENAME', "\"${safeGetProp('CV_LICENSE_FILENAME')}\"")
         buildConfigField('String', 'CV_MODEL_RESOURCE_VERSION', "\"${safeGetProp('CV_MODEL_RESOURCE_VERSION', '1')}\"")
         buildConfigField('String', 'CV_COMPOSE_MAKEUP_RESOURCE_VERSION', "\"${safeGetProp('CV_COMPOSE_MAKEUP_RESOURCE_VERSION', '1')}\"")
         buildConfigField('String', 'CV_STICKER_RESOURCE_VERSION', "\"${safeGetProp('CV_STICKER_RESOURCE_VERSION', '1')}\"")
@@ -26,7 +27,14 @@ android {
     }
 
     buildFeatures {
+        buildConfig true
         viewBinding true
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 }
 
@@ -36,6 +44,8 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.recyclerview
     implementation libs.gridlayout
+
+    implementation libs.bundles.camerax
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

@@ -161,7 +161,7 @@
                 self.playerController.startTime = time;
             }
         }
-        if (self.videoModel.playUrl) {
+        if ((self.videoModel.playType == nil || [self.videoModel.playType isEqualToString:@"1"]) && self.videoModel.playUrl) {
             [self.playerController playWithMediaSource:[VEVideoModel videoEngineUrlSource:self.videoModel]];
         } else if (self.videoModel.videoId) {
             [self.playerController playWithMediaSource:[VEVideoModel videoEngineVidSource:self.videoModel]];

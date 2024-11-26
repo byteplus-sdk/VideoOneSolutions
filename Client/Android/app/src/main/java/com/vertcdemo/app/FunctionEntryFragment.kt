@@ -28,7 +28,7 @@ class FunctionEntryFragment : Fragment(R.layout.fragment_function_entry) {
         entryNames.mapNotNull { entryClass ->
             try {
                 val clazz = Class.forName(entryClass)
-                clazz.newInstance() as IFunctionTabEntry
+                clazz.getConstructor().newInstance() as IFunctionTabEntry
             } catch (e: ReflectiveOperationException) {
                 Log.w(TAG, "Entry not found: $entryClass")
                 null

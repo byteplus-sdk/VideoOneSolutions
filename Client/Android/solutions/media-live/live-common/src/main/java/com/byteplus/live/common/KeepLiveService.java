@@ -9,8 +9,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -53,7 +53,13 @@ public class KeepLiveService extends Service {
             NotificationManagerCompat.from(this)
                     .createNotificationChannel(channel);
         }
-        startForeground(NOTIFICATION_ID, getNotification());
+        try {
+            startForeground(NOTIFICATION_ID, getNotification());
+        } catch (Exception e) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+                startForeground(NOTIFICATION_ID, getNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA);
+            }
+        }
     }
 
     private Notification getNotification() {
@@ -68,7 +74,7 @@ public class KeepLiveService extends Service {
         Notification.Builder builder = new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setContentTitle(appName)
-                .setContentIntent(getIntent())
+                .setContentIntent(getPendingIntent())
                 .setContentText(getString(R.string.notification_media_live_in_background));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setChannelId(NOTIFICATION_CHANNEL_ID);
@@ -76,7 +82,7 @@ public class KeepLiveService extends Service {
         return builder.build();
     }
 
-    private PendingIntent getIntent() {
+    private PendingIntent getPendingIntent() {
         Intent intent = getPackageManager()
                 .getLaunchIntentForPackage(getPackageName());
 

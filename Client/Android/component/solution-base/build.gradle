@@ -4,7 +4,9 @@ plugins {
 }
 
 android {
+    namespace 'com.vertcdemo.base'
     compileSdk project.compileSdkVersion
+    namespace "com.vertcdemo.base"
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
@@ -19,6 +21,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig true
         viewBinding true
     }
 
@@ -28,12 +31,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
     kotlinOptions {
-        jvmTarget = '1.8'
         freeCompilerArgs += '-Xjvm-default=all'
     }
 }
@@ -41,7 +44,6 @@ android {
 dependencies {
     implementation libs.appcompat
     implementation libs.constraintlayout
-    implementation libs.lifecycle.runtime.ktx
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
@@ -50,6 +52,10 @@ dependencies {
     implementation libs.eventbus
     implementation libs.gson
     implementation libs.okhttp
+    implementation libs.okhttp.loggingInterceptor
+    implementation libs.retrofit2
+    implementation libs.retrofit2.converter.gson
+    implementation libs.retrofit2.converter.scalars
 }
 
 private def ensureProperty(String propertyName) {

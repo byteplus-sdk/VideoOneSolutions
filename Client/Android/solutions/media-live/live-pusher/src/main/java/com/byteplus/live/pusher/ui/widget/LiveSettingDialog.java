@@ -212,7 +212,11 @@ public class LiveSettingDialog extends SettingsDialog {
 
         SwitchCompat earphoneMonitor = view.findViewById(R.id.hardware_earphone_monitor);
         earphoneMonitor.setOnCheckedChangeListener((button, isChecked) -> {
-            mLivePusherAPI.enableEcho(isChecked);
+            boolean success = mLivePusherAPI.enableEcho(isChecked);
+            if (isChecked && !success) {
+                // Earphone monitor not supported
+                earphoneMonitor.setChecked(false);
+            }
         });
     }
 
@@ -229,7 +233,7 @@ public class LiveSettingDialog extends SettingsDialog {
 
         initAudioSettingsItem(view.findViewById(R.id.audio_settings));
 
-        if (mCaptureMode != LiveCaptureType.AUDIO) {
+        if (mCaptureMode == LiveCaptureType.CAMERA) {
 //            View videoRoot = view.findViewById(R.id.video_settings);
 //            videoRoot.setVisibility(View.VISIBLE);
 //            initVideoItem(videoRoot);
@@ -302,8 +306,8 @@ public class LiveSettingDialog extends SettingsDialog {
     }
 
     private static Spinner bindSpinner(Spinner spinner, String[] spinnerItems) {
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(spinner.getContext(), R.layout.live_item_select2, spinnerItems);
-        spinnerAdapter.setDropDownViewResource(R.layout.live_item_drop);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(spinner.getContext(), com.byteplus.live.common.R.layout.live_item_select2, spinnerItems);
+        spinnerAdapter.setDropDownViewResource(com.byteplus.live.common.R.layout.live_item_drop);
         spinner.setAdapter(spinnerAdapter);
         return spinner;
     }

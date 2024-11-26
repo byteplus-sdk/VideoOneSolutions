@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // 
 
-#import "ChorusRTSManager.h"
 #import "ChorusRTCManager.h"
-#import "JoinRTSParams.h"
+#import "ChorusRTSManager.h"
 
 @implementation ChorusRTSManager
 
@@ -18,10 +17,11 @@
                             ChorusRoomModel *roomModel,
                             ChorusUserModel *hostUserModel,
                             RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_name" : roomName,
-                          @"background_image_name" : bgImageName,
-                          @"user_name" : userName};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSDictionary *dic = @{
+        @"room_name" : (roomName ?: @""),
+        @"background_image_name" : (bgImageName ?: @""),
+        @"user_name" : (userName ?: @"")
+    };
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcStartLive" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
 
@@ -43,8 +43,9 @@
     if (IsEmptyStr(roomID)) {
         return;
     }
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSDictionary *dic = @{
+        @"room_id": (roomID ?: @"")
+    };
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcFinishLive" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -57,8 +58,9 @@
     if (IsEmptyStr(roomID)) {
         return;
     }
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSDictionary *dic = @{
+        @"room_id": (roomID ?: @"")
+    };
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcGetRequestSongList" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -75,7 +77,7 @@
 + (void)getPresetSongList:(NSString *)roomID
                     block:(void(^)(NSArray <ChorusSongModel *> *songList,
                                    RTSACKModel *model))complete {
-    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
+    NSDictionary *dic = @{};
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcGetPresetSongList" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         NSMutableArray<ChorusSongModel *> *songList = [[NSMutableArray alloc] init];
         if ([ChorusRTSManager ackModelResponseClass:ackModel]) {
@@ -94,13 +96,12 @@
           roomID:(NSString *)roomID
            block:(void (^)(RTSACKModel * _Nonnull))complete {
     NSDictionary *dic = @{
-        @"song_id" : songModel.musicId,
-        @"room_id" : roomID,
-        @"song_name" : songModel.musicName,
+        @"song_id" : (songModel.musicId ?: @""),
+        @"room_id" : (roomID ?: @""),
+        @"song_name" : (songModel.musicName ?: @""),
         @"song_duration" : @(songModel.musicAllTime),
-        @"cover_url" : songModel.coverURL,
+        @"cover_url" : (songModel.coverURL ?: @""),
     };
-    dic = [JoinRTSParams addTokenToParams:dic];
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcRequestSong" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -113,9 +114,8 @@
 + (void)cutOffSong:(NSString *)roomID
              block:(void(^)(RTSACKModel *model))complete {
     NSDictionary *dic = @{
-        @"room_id" : roomID,
+        @"room_id": (roomID ?: @"")
     };
-    dic = [JoinRTSParams addTokenToParams:dic];
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcCutOffSong" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -131,11 +131,10 @@
              block:(void(^)(ChorusSongModel *songModel,
                             RTSACKModel *model))complete {
     NSDictionary *dic = @{
-        @"room_id" : roomID,
-        @"song_id" : songID,
+        @"room_id" : (roomID ?: @""),
+        @"song_id" : (songID ?: @""),
         @"score" : @(score),
     };
-    dic = [JoinRTSParams addTokenToParams:dic];
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcFinishSing" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -164,9 +163,10 @@
                                ChorusUserModel *succentorUserModel,
                                ChorusSongModel *nextSongModel,
                                RTSACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"user_name" : userName};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSDictionary *dic = @{
+        @"room_id" : (roomID ?: @""),
+        @"user_name" : (userName ?: @"")
+    };
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcJoinLiveRoom" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -206,8 +206,9 @@
 }
 
 + (void)leaveLiveRoom:(NSString *)roomID {
-    NSDictionary *dic = @{@"room_id" : roomID ?: @""};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSDictionary *dic = @{
+        @"room_id": (roomID ?: @"")
+    };
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcLeaveLiveRoom" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -219,7 +220,7 @@
 
 + (void)getActiveLiveRoomListWithBlock:(void (^)(NSArray<ChorusRoomModel *> *roomList,
                                                  RTSACKModel *model))block {
-    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
+    NSDictionary *dic = @{};
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcGetActiveLiveRoomList" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -241,9 +242,10 @@
             message:(NSString *)message
               block:(void (^)(RTSACKModel *model))block {
     NSString *encodedString = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,(CFStringRef)message,NULL,NULL,kCFStringEncodingUTF8));
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"message" : encodedString};
-    dic = [JoinRTSParams addTokenToParams:dic];
+    NSDictionary *dic = @{
+        @"room_id" : (roomID ?: @""),
+        @"message" : (encodedString ?: @"")
+    };
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcSendMessage" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -258,11 +260,10 @@
                        type:(NSInteger)type
                       block:(void(^)(RTSACKModel *model))block {
     NSDictionary *dic = @{
-        @"room_id" : roomID,
-        @"song_id" : songID,
+        @"room_id" : (roomID ?: @""),
+        @"song_id" : (songID ?: @""),
         @"type" : @(type).stringValue
     };
-    dic = [JoinRTSParams addTokenToParams:dic];
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcStartSing" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -274,7 +275,6 @@
 
 + (void)clearUser:(void(^)(RTSACKModel *model))block {
     NSDictionary *dic = @{};
-    dic = [JoinRTSParams addTokenToParams:dic];
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcClearUser" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         
@@ -284,17 +284,20 @@
     }];
 }
 
-+ (void)reconnectWithBlock:(void(^)(NSString *RTCToken,
-                                    ChorusRoomModel *roomModel,
-                                    ChorusUserModel *userModel,
-                                    ChorusUserModel *hostUserModel,
-                                    ChorusSongModel *songModel,
-                                    ChorusUserModel *leadSingerUserModel,
-                                    ChorusUserModel *succentorUserModel,
-                                    ChorusSongModel *nextSongModel,
-                                    NSInteger audienceCount,
-                                    RTSACKModel *model))block {
-    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
++ (void)reconnect:(NSString *)roomID
+            block:(void(^)(NSString *RTCToken,
+                           ChorusRoomModel *roomModel,
+                           ChorusUserModel *userModel,
+                           ChorusUserModel *hostUserModel,
+                           ChorusSongModel *songModel,
+                           ChorusUserModel *leadSingerUserModel,
+                           ChorusUserModel *succentorUserModel,
+                           ChorusSongModel *nextSongModel,
+                           NSInteger audienceCount,
+                           RTSACKModel *model))block {
+    NSDictionary *dic = @{
+        @"room_id" : (roomID ?: @""),
+    };
     
     [[ChorusRTCManager shareRtc] emitWithAck:@"owcReconnect" with:dic block:^(RTSACKModel * _Nonnull ackModel) {
         

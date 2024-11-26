@@ -63,7 +63,7 @@ import com.byteplus.vod.scenekit.ui.video.scene.feedvideo.FeedVideoPageView;
 import com.byteplus.vod.scenekit.utils.FormatHelper;
 import com.byteplus.vod.scenekit.utils.ViewUtils;
 import com.byteplus.voddemo.R;
-import com.byteplus.voddemo.data.remote.RemoteApi;
+import com.byteplus.vodcommon.data.remote.RemoteApi;
 import com.byteplus.voddemo.databinding.VevodDetailVideoFragmentBinding;
 import com.byteplus.voddemo.ui.video.scene.detail.bean.RecommendInfo;
 import com.videoone.avatars.Avatars;

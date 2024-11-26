@@ -134,6 +134,53 @@
 
                 </LinearLayout>
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="5dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/rtc_bg_config_card">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:text="@string/title_external_video_frame"
+                    android:textStyle="bold"/>
+
+                <EditText
+                    android:id="@+id/video_frame_msg_input"
+                    android:layout_width="match_parent"
+                    android:hint="@string/hint_sei_message"
+                    android:paddingLeft="10dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="4"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_start_push_frame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/button_start_push"
+                        tools:gravity="center"/>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_stop_push_frame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/button_stop_push"
+                        tools:gravity="center"/>
+                </LinearLayout>
+            </LinearLayout>
+
         </LinearLayout>
     </com.vertc.api.example.view.NoPressedLinearLayout>
 </ScrollView>

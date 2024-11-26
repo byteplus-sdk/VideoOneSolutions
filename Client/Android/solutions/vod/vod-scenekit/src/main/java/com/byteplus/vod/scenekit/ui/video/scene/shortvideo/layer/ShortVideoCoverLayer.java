@@ -14,7 +14,8 @@ import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.utils.L;
 import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.playerkit.utils.event.Event;
-import com.byteplus.vod.scenekit.VideoSettings;
+import com.byteplus.vod.scenekit.ui.config.IImageCoverConfig;
+import com.byteplus.vod.scenekit.ui.config.IPreRenderConfig;
 import com.byteplus.vod.scenekit.ui.video.layer.CoverLayer;
 import com.byteplus.vod.scenekit.ui.video.scene.shortvideo.ShortVideoStrategy;
 
@@ -38,7 +39,9 @@ public class ShortVideoCoverLayer extends CoverLayer {
             return;
         }
 
-        final boolean rendered = ShortVideoStrategy.renderFrame(videoView);
+        IPreRenderConfig config = getConfig();
+        boolean enableStrategy = config != null && config.enableStrategy();
+        final boolean rendered = enableStrategy && ShortVideoStrategy.renderFrame(videoView);
         if (rendered) {
             L.d(this, "onSurfaceAvailable", videoView, surface, "preRender success");
             dismiss();
@@ -50,10 +53,10 @@ public class ShortVideoCoverLayer extends CoverLayer {
 
     @Override
     protected void load() {
-
-        if (!VideoSettings.booleanValue(VideoSettings.SHORT_VIDEO_ENABLE_IMAGE_COVER)) return;
-
-        super.load();
+        IImageCoverConfig config = getConfig();
+        if (config != null && config.enableCover()) {
+            super.load();
+        }
     }
 
     @Override

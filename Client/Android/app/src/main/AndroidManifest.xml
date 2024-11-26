@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.vertcdemo.app">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -42,7 +41,8 @@
         <activity
             android:name="com.vertcdemo.app.LaunchActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -51,14 +51,15 @@
         <activity
             android:name="com.vertcdemo.app.MainActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion">
             <intent-filter>
                 <action android:name="com.byteplus.videoone.action.APPLICATION_MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-        <service android:name=".PictureInPictureService"/>
+        <service android:name="com.vertcdemo.app.PictureInPictureService" />
     </application>
 
 </manifest>

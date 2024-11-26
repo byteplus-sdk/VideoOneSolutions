@@ -44,78 +44,105 @@
     return manager;
 }
 
-#pragma mark - User
+#pragma mark Public
 
-+ (void)changeUserName:(NSString *)userName
-            loginToken:(NSString *)loginToken
-                 block:(void (^)(NetworkingResponse *_Nonnull))block {
-    NSDictionary *content = @{@"user_name": userName ?: @"",
-                              @"login_token": loginToken ?: @""};
-    [self postWithEventName:@"changeUserName" space:@"login" content:content block:block];
++ (void)callHttpEvent:(nonnull NSString *)eventName
+              content:(nonnull NSDictionary *)content
+                block:(nullable NetworkingManagerBlock)block {
+    NSString *url = [NSString stringWithFormat:@"%@/http_call?event_name=%@", ServerUrl, eventName];
+
+    NSMutableDictionary *parameters = [NetworkingManager httpEventCommons];
+    [parameters addEntriesFromDictionary:content];
+
+    NSDictionary *headers = @{
+        @"X-Login-Token": [LocalUserComponent userModel].loginToken
+    };
+
+    [self postWithUrl:url
+           parameters:parameters
+              headers:headers
+                block:block];
 }
-
-#pragma mark -
 
 + (void)postWithEventName:(NSString *)eventName
                     space:(NSString *)space
                   content:(NSDictionary *)content
-                    block:(void (^__nullable)(NetworkingResponse *response))block {
+                    block:(nullable NetworkingManagerBlock)block {
+    NSString *URLString = [NSString stringWithFormat:@"%@/%@", ServerUrl, space];
     NSString *appid = [PublicParameterComponent share].appId;
     NSDictionary *parameters = @{@"event_name": eventName ?: @"",
                                  @"language": [Localizator getLanguageKey],
                                  @"content": [content yy_modelToJSONString] ?: @{},
                                  @"device_id": [NetworkingTool getDeviceId] ?: @"",
                                  @"app_id": appid ? appid : @""};
-    [self postWithPath:space parameters:parameters headers:nil progress:nil block:block];
+    [self postWithUrl:URLString
+            parameters:parameters
+               headers:nil
+                 block:block];
 }
 
-+ (void)postWithParameters:(id)parameters space:(NSString *)space block:(void (^)(NetworkingResponse *_Nonnull))block {
-    [self postWithPath:space parameters:parameters headers:nil progress:nil block:block];
+
+
++ (void)postWithPath:(NSString *)path
+          parameters:(nullable id)parameters
+               block:(nullable NetworkingManagerBlock)block {
+    [self postWithPath:path
+           parameters:parameters
+              headers:nil
+             progress:nil
+                block:block];
 }
 
 + (void)postWithPath:(NSString *)path
-          parameters:(id)parameters
-             headers:(NSDictionary<NSString *, NSString *> *)headers
-            progress:(void (^)(NSProgress *_Nonnull))uploadProgress
-               block:(void (^)(NetworkingResponse *_Nonnull))block {
+          parameters:(nullable id)parameters
+             headers:(nullable NSDictionary<NSString *, NSString *> *)headers
+               block:(nullable NetworkingManagerBlock)block {
+    [self postWithPath:path
+           parameters:parameters
+              headers:headers
+             progress:nil
+                block:block];
+}
+
+
++ (void)postWithPath:(NSString *)path
+          parameters:(nullable id)parameters
+             headers:(nullable NSDictionary<NSString *, NSString *> *)headers
+            progress:(nullable void (^)(NSProgress *))uploadProgress
+               block:(nullable NetworkingManagerBlock)block {
+    
+    NSAssert(uploadProgress == nil, @"Simplify the api, ignore the progress block.");
+    
     NSString *URLString = [NSString stringWithFormat:@"%@/%@", ServerUrl, path];
-    [[self shareManager].sessionManager POST:URLString
-        parameters:parameters
-        headers:headers
-        progress:uploadProgress
-        success:^(NSURLSessionDataTask *_Nonnull task,
-                  id _Nullable responseObject) {
-            [self processResponse:responseObject block:block];
-            VOLogI(VOToolKit, @"[%@]-%@ %@", [self class], path, responseObject);
-        } failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
-            if (block) {
-                block([NetworkingResponse responseWithError:error]);
-            }
-            VOLogE(VOToolKit, @"[%@]-%@ failure %@", [self class], path, task.response);
-        }];
+    [self postWithUrl:URLString
+           parameters:parameters
+              headers:headers
+                block:block];
 }
 
 + (void)getWithPath:(NSString *)path
          parameters:(nullable id)parameters
-              block:(void (^)(NetworkingResponse *_Nonnull))block {
+              block:(nullable NetworkingManagerBlock)block {
     NSString *URLString = [NSString stringWithFormat:@"%@/%@", ServerUrl, path];
     [[self shareManager].sessionManager GET:URLString
-        parameters:parameters
-        headers:nil
-        progress:nil
-        success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
-            [self processResponse:responseObject block:block];
-            VOLogI(VOToolKit, @"[%@]-%@ %@", [self class], path, responseObject);
-        } failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
-            if (block) {
-                block([NetworkingResponse responseWithError:error]);
-            }
-            VOLogE(VOToolKit, @"[%@]-%@ failure %@", [self class], path, task.response);
-        }];
+                                 parameters:parameters
+                                    headers:nil
+                                   progress:nil
+                                    success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+        [self processResponse:responseObject block:block];
+        VOLogI(VOToolKit, @"%@ REQUEST: %@", URLString, parameters);
+        VOLogI(VOToolKit, @"%@ RESPONSE: %@", URLString, responseObject);
+    } failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+        if (block) {
+            block([NetworkingResponse responseWithError:error]);
+        }
+        VOLogI(VOToolKit, @"%@ REQUEST: %@", URLString, parameters);
+        VOLogE(VOToolKit, @"%@ RESPONSE: failure: %@", URLString, task.response);
+    }];
 }
 
 + (void)processResponse:(id _Nullable)responseObject
-                  block:(void (^__nullable)(NetworkingResponse *response))block {
+                  block:(nullable NetworkingManagerBlock)block {
     NetworkingResponse *response = [NetworkingResponse dataToResponseModel:responseObject];
     if (block) {
         block(response);
@@ -125,6 +152,58 @@
                                                             object:self
                                                           userInfo:@{NotificationLogoutReasonKey: @"token_expired"}];
     }
+}
+
+#pragma mark Private
+
++ (void)postWithUrl:(NSString *)URLString
+         parameters:(id)parameters
+            headers:(NSDictionary<NSString *, NSString *> *)headers
+              block:(nullable NetworkingManagerBlock)block {
+    AFHTTPSessionManager *sessionManager = [self shareManager].sessionManager;
+    
+    [sessionManager POST:URLString
+              parameters:parameters
+                 headers:headers
+                progress:nil
+                 success:^(NSURLSessionDataTask *_Nonnull task,
+                           id _Nullable responseObject) {
+        [NetworkingManager processResponse:responseObject
+                                     block:block];
+        VOLogI(VOToolKit, @"%@ REQUEST: %@", URLString, parameters);
+        VOLogI(VOToolKit, @"%@ RESPONSE: %@", URLString, responseObject);
+    }
+                 failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+        if (block) {
+            block([NetworkingResponse responseWithError:error]);
+        }
+        
+        VOLogI(VOToolKit, @"%@ REQUEST: %@", URLString, parameters);
+        VOLogE(VOToolKit, @"%@ RESPONSE: failure: %@", URLString, task.response);
+    }];
+}
+
++ (NSMutableDictionary *)httpEventCommons {
+    NSMutableDictionary *params = [NSMutableDictionary new];
+
+    NSString *rtcAppId = [PublicParameterComponent share].appId;
+    if (NOEmptyStr(rtcAppId)) {
+        [params setValue:rtcAppId forKey:@"app_id"];
+    }
+
+    NSString *userId = [LocalUserComponent userModel].uid;
+    if (NOEmptyStr(userId)) {
+        [params setValue:userId forKey:@"user_id"];
+    }
+
+    NSString *deviceId = [NetworkingTool getDeviceId];
+    if (NOEmptyStr(deviceId)) {
+        [params setValue:deviceId forKey:@"device_id"];
+    }
+
+    [params setValue:[Localizator getLanguageKey] forKey:@"language"];
+
+    return params;
 }
 
 @end

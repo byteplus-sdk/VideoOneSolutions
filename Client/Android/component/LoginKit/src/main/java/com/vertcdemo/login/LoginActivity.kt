@@ -18,18 +18,22 @@ import android.view.View
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.vertcdemo.core.SolutionDataManager
 import com.vertcdemo.core.entity.LoginInfo
 import com.vertcdemo.core.event.RefreshUserNameEvent
 import com.vertcdemo.core.eventbus.SolutionEventBus
-import com.vertcdemo.core.net.IRequestCallback
-import com.vertcdemo.core.net.ServerResponse
-import com.vertcdemo.core.utils.Activities.transparentStatusBar
+import com.vertcdemo.core.net.SolutionRetrofit
 import com.vertcdemo.core.utils.IMEUtils
 import com.vertcdemo.core.utils.TextWatcherAdapter
 import com.vertcdemo.login.databinding.ActivityLoginBinding
-import com.vertcdemo.login.net.LoginApi
+import com.vertcdemo.login.http.LoginApi
+import com.vertcdemo.login.http.request.LoginRequest
 import com.vertcdemo.login.utils.LengthFilterWithCallback
+import retrofit2.Call
+import retrofit2.Response
 import java.util.regex.Pattern
 
 private const val INPUT_REGEX = "^[\\u4e00-\\u9fa5a-zA-Z0-9@_-]+$"
@@ -46,7 +50,13 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        transparentStatusBar(this)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.getInsetsController(window, findViewById(android.R.id.content)).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+
         mViewBinding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(mViewBinding.getRoot())
         mViewBinding.verifyConfirm.setOnClickListener { onClickConfirm() }
@@ -68,6 +78,15 @@ class LoginActivity : AppCompatActivity() {
         mViewBinding.verifyInputUserNameEt.addTextChangedListener(mTextWatcher)
         mViewBinding.verifyCb.setOnCheckedChangeListener { v: CompoundButton?, isChecked: Boolean -> setupConfirmStatus() }
         setupConfirmStatus()
+
+        mViewBinding.appVersion.text =
+            getString(R.string.login_app_version, BuildConfig.APP_VERSION)
+
+        ViewCompat.setOnApplyWindowInsetsListener(mViewBinding.guidelineBottom) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            mViewBinding.guidelineBottom.setGuidelineEnd(insets.bottom)
+            windowInsets
+        }
     }
 
     private val spannedText: CharSequence
@@ -142,11 +161,15 @@ class LoginActivity : AppCompatActivity() {
         val userName = mViewBinding.verifyInputUserNameEt.getText().toString().trim { it <= ' ' }
         mViewBinding.verifyConfirm.setEnabled(false)
         IMEUtils.closeIME(mViewBinding.verifyConfirm)
-        LoginApi.passwordFreeLogin(
-            userName,
-            object : IRequestCallback<ServerResponse<LoginInfo>> {
-                override fun onSuccess(data: ServerResponse<LoginInfo>) {
-                    val login = data.data
+
+        SolutionRetrofit.getApi(LoginApi::class.java)
+            .login(LoginRequest.create(userName))
+            .enqueue(object : retrofit2.Callback<LoginInfo> {
+                override fun onResponse(call: Call<LoginInfo>, response: Response<LoginInfo>) {
+                    if (isFinishing) {
+                        return
+                    }
+                    val login = response.body()
                     if (login == null) {
                         Toast.makeText(
                             this@LoginActivity,
@@ -166,7 +189,10 @@ class LoginActivity : AppCompatActivity() {
                     finish()
                 }
 
-                override fun onError(errorCode: Int, message: String?) {
+                override fun onFailure(call: Call<LoginInfo>, t: Throwable) {
+                    if (isFinishing) {
+                        return
+                    }
                     Toast.makeText(
                         this@LoginActivity,
                         com.vertcdemo.base.R.string.network_message_1011,

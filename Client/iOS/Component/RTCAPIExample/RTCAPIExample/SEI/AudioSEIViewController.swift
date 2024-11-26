@@ -55,7 +55,7 @@ class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
         joinButton.isSelected = !joinButton.isSelected
         
         if joinButton.isSelected {
-            generatorToken(roomId: roomId, userId: userId) { [weak self] token in
+            generateToken(roomId: roomId, userId: userId) { [weak self] token in
                 self?.joinButton.setTitle(LocalizedString("button_leave_room"), for: .normal)
                 
                 // Join room
@@ -80,7 +80,8 @@ class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(kAppID, delegate: self, parameters: [:])
+        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        self.rtcVideo?.setBusinessId("stream-sync-info")
         
         // Enable local audio collection
         self.rtcVideo?.startAudioCapture()
@@ -92,7 +93,7 @@ class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
         
         if !message!.isEmpty, let data = message?.data(using: .utf8) {
             let config = ByteRTCStreamSycnInfoConfig.init()
-            config.streamIndex = .main
+            config.streamIndex = .indexMain
             config.streamType = .audio
             config.repeatCount = 3
             self.rtcVideo?.sendStreamSyncInfo(data, config: config)
