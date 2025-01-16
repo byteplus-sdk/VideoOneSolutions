@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "VEFeedVideoNormalCell.h"
 #import "ToolKit.h"
-#import "UIColor+RGB.h"
 #import "VEInterfaceFeedVideoSceneConf.h"
 #import "VEPlayerKit.h"
 #import "VEPlayerUIModule.h"
@@ -92,7 +91,7 @@
     _videoModel = videoModel;
 
     self.avatarImgView.image = [UIImage avatarImageForUid:videoModel.uid];
-    self.titleLabel.text = videoModel.userName;
+    self.titleLabel.text = videoModel.title;
     self.detailLabel.text = [NSString stringWithFormat:@"%@ · %@", [videoModel playTimeToString], videoModel.createTime];
     [self.coverImgView sd_setImageWithURL:[NSURL URLWithString:videoModel.coverUrl]];
 }

@@ -24,7 +24,7 @@ import com.byteplus.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.utils.UIUtils;
 
-public class PlayPauseLayer extends AnimateLayer {
+public class PlayPauseLayer extends AnimateLayer implements GestureControllable{
     private ImageView mPreviousIv;
     private ImageView mPlayIv;
     private ImageView mNextIv;

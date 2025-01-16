@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bytedance.chrous.R;
 import com.bytedance.chrous.databinding.ItemChorusSongsBinding;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.chorus.bean.StatusSongItem;
 import com.vertcdemo.solution.chorus.core.rts.annotation.SongStatus;
 import com.vertcdemo.solution.chorus.utils.BVH;
@@ -56,10 +57,14 @@ public class MusicLibraryAdapter extends RecyclerView.Adapter<BVH<ItemChorusSong
         updateStatus(holder, item);
 
         if (mOnClickListener != null) {
-            holder.itemView.setOnClickListener(v -> {
-                StatusSongItem info = mItems.get(holder.getBindingAdapterPosition());
+            holder.itemView.setOnClickListener(DebounceClickListener.create(v -> {
+                int pos = holder.getBindingAdapterPosition();
+                if (pos < 0 || pos >= mItems.size()) {
+                    return;
+                }
+                StatusSongItem info = mItems.get(pos);
                 mOnClickListener.accept(info);
-            });
+            }));
         }
     }
 

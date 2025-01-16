@@ -3,19 +3,14 @@
 
 package com.byteplus.vodcommon.data.remote.api2;
 
-import android.util.Log;
-
 import com.byteplus.vodcommon.BuildConfig;
 import com.byteplus.vodcommon.data.remote.api2.model.GetFeedStreamRequest;
 import com.byteplus.vodcommon.data.remote.api2.model.GetFeedStreamResponse;
 import com.byteplus.vodcommon.data.remote.api2.model.GetPlaylistResponse;
 import com.byteplus.vodcommon.data.remote.api2.model.GetSimilarVideoRequest;
 import com.byteplus.vodcommon.data.remote.api2.model.GetVideoCommentResponse;
+import com.vertcdemo.core.net.HttpClient;
 
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -30,14 +25,9 @@ public class ApiManager {
     private final Api2 api2;
 
     private ApiManager() {
-        OkHttpClient httpClient = builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .build();
         api2 = new Retrofit.Builder()
                 .baseUrl(BuildConfig.VOD_BASE_URL)
-                .client(httpClient)
+                .client(HttpClient.getClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(Api2.class);
@@ -66,15 +56,5 @@ public class ApiManager {
 
         @GET("getVideoComments")
         Call<GetVideoCommentResponse> getVideoComments(@Query("vid") String vid);
-    }
-
-    private static OkHttpClient.Builder builder() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        if (DEBUG_LOG) {
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(message -> Log.d(TAG, message));
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            builder.addInterceptor(interceptor);
-        }
-        return builder;
     }
 }

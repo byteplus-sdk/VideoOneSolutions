@@ -10,8 +10,9 @@ import static com.byteplus.playerkit.player.playback.DisplayModeHelper.map;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.Surface;
 import android.view.View;
@@ -22,11 +23,14 @@ import androidx.annotation.Nullable;
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.PlayerEvent;
 import com.byteplus.playerkit.player.event.InfoTrackInfoReady;
+import com.byteplus.playerkit.player.playback.ext.PictureInPictureModeChangedListener;
+import com.byteplus.playerkit.player.playback.ext.VideoViewAttachedToWindowListener;
 import com.byteplus.playerkit.player.playback.widgets.RatioFrameLayout;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.source.Track;
 import com.byteplus.playerkit.utils.Asserts;
 import com.byteplus.playerkit.utils.L;
+import com.byteplus.playerkit.utils.ReturnableRunnable;
 import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.playerkit.utils.event.Event;
 
@@ -62,35 +66,48 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
     @NonNull
     private final CopyOnWriteArrayList<VideoViewListener> mListeners = new CopyOnWriteArrayList<>();
 
+    private final SparseArray<CopyOnWriteArrayList<VideoViewPlaybackActionInterceptor>> mPriorityInterceptors = new SparseArray<>();
+
     private OnClickListener mOnClickListener;
 
     private boolean mInterceptDispatchClick;
 
     private int mPlayScene;
 
-    private boolean mIsInPictureInPictureMode = false;
-
     private Boolean mHasWindowFocus;
 
-    public interface ViewEventListener {
+    public interface VideoViewPlaybackActionInterceptor {
+        /**
+         * @return Intercept reason. Not intercept return null
+         */
+        default String onVideoViewInterceptStartPlayback(VideoView videoView) {
+            return null;
+        }
+
+        /**
+         * @return Intercept reason. Not intercept return null
+         */
+        default String onVideoViewInterceptStopPlayback(VideoView videoView) {
+            return null;
+        }
+
+        /**
+         * @return Intercept reason. Not intercept return null
+         */
+        default String onVideoViewInterceptPausePlayback(VideoView videoView) {
+            return null;
+        }
+    }
+
+    public interface ViewEventListener extends VideoViewAttachedToWindowListener {
         void onConfigurationChanged(Configuration newConfig);
 
         void onWindowFocusChanged(boolean hasWindowFocus);
     }
 
-    public interface PictureInPictureModeChangedListener{
-        void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig);
-    }
-
-    public interface VideoViewListener extends DisplayView.SurfaceListener, ViewEventListener, PictureInPictureModeChangedListener {
-
-        default void onVideoViewAttachedToWindow(@NonNull VideoView videoView) {
-
-        }
-
-        default void onVideoViewDetachedFromWindow(@NonNull VideoView videoView) {
-
-        }
+    public interface VideoViewListener extends DisplayView.SurfaceListener,
+            ViewEventListener,
+            PictureInPictureModeChangedListener {
 
         void onVideoViewBindController(PlaybackController controller);
 
@@ -107,6 +124,12 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
         void onVideoViewDisplayViewChanged(View oldView, View newView);
 
         void onVideoViewPlaySceneChanged(int fromScene, int toScene);
+
+        void onVideoViewStartPlaybackIntercepted(VideoView videoView, String reason);
+
+        void onVideoViewStopPlaybackIntercepted(VideoView videoView, String reason);
+
+        void onVideoViewPausePlaybackIntercepted(VideoView videoView, String reason);
 
         class Adapter implements VideoViewListener {
 
@@ -142,6 +165,21 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
             }
 
             @Override
+            public void onVideoViewStartPlaybackIntercepted(VideoView videoView, String reason) {
+
+            }
+
+            @Override
+            public void onVideoViewStopPlaybackIntercepted(VideoView videoView, String reason) {
+
+            }
+
+            @Override
+            public void onVideoViewPausePlaybackIntercepted(VideoView videoView, String reason) {
+
+            }
+
+            @Override
             public void onConfigurationChanged(Configuration newConfig) {
             }
 
@@ -165,9 +203,22 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
             public void onSurfaceDestroy(Surface surface) {
             }
 
+            // region VideoOne Enhancement
             @Override
             public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+
             }
+
+            @Override
+            public void onVideoViewAttachedToWindow(@NonNull VideoView videoView) {
+
+            }
+
+            @Override
+            public void onVideoViewDetachedFromWindow(@NonNull VideoView videoView) {
+
+            }
+            // endregion
         }
     }
 
@@ -227,22 +278,6 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        for (VideoViewListener listener : mListeners) {
-            listener.onVideoViewAttachedToWindow(this);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        for (VideoViewListener listener : mListeners) {
-            listener.onVideoViewDetachedFromWindow(this);
-        }
-        super.onDetachedFromWindow();
-    }
-
-    @Override
     public void requestLayout() {
         super.requestLayout();
     }
@@ -250,7 +285,7 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (isInPictureInPictureMode()) {
+        if (mIsInPictureInPictureMode) {
             mDisplayView.getDisplayView().measure(widthMeasureSpec, heightMeasureSpec);
         }
     }
@@ -399,6 +434,30 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
         mListeners.clear();
     }
 
+    public void addPlaybackInterceptor(int priority, VideoViewPlaybackActionInterceptor interceptor) {
+        CopyOnWriteArrayList<VideoViewPlaybackActionInterceptor> interceptors = mPriorityInterceptors.get(priority);
+        if (interceptors == null) {
+            interceptors = new CopyOnWriteArrayList<>();
+            mPriorityInterceptors.put(priority, interceptors);
+        }
+        interceptors.addIfAbsent(interceptor);
+    }
+
+    public void removePlaybackInterceptor(int priority, VideoViewPlaybackActionInterceptor interceptor) {
+        List<VideoViewPlaybackActionInterceptor> interceptors = mPriorityInterceptors.get(priority);
+        if (interceptors != null) {
+            interceptors.remove(interceptor);
+        }
+    }
+
+    public void removePlaybackInterceptor(int priority) {
+        mPriorityInterceptors.put(priority, null);
+    }
+
+    public void removeAllPlaybackInterceptor() {
+        mPriorityInterceptors.clear();
+    }
+
     public void setInterceptDispatchClick(boolean interceptClick) {
         this.mInterceptDispatchClick = interceptClick;
     }
@@ -431,17 +490,21 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
         if (mDisplayView == null) {
             mDisplayView = DisplayView.create(getContext(), viewType);
             mDisplayView.setSurfaceListener(this);
-            for (VideoViewListener listener : mListeners) {
-                listener.onVideoViewDisplayViewCreated(mDisplayView.getDisplayView());
+            if (mListeners != null) {
+                for (VideoViewListener listener : mListeners) {
+                    listener.onVideoViewDisplayViewCreated(mDisplayView.getDisplayView());
+                }
             }
             addView(mDisplayView.getDisplayView(), 0,
                     new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER));
             mDisplayModeHelper.setContainerView(this);
             mDisplayModeHelper.setDisplayView(mDisplayView.getDisplayView());
 
-            for (VideoViewListener listener : mListeners) {
-                listener.onVideoViewDisplayViewChanged(current == null ? null : current.getDisplayView(),
-                        mDisplayView.getDisplayView());
+            if (mListeners != null) {
+                for (VideoViewListener listener : mListeners) {
+                    listener.onVideoViewDisplayViewChanged(current == null ? null : current.getDisplayView(),
+                            mDisplayView.getDisplayView());
+                }
             }
         }
     }
@@ -484,20 +547,6 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
         return mPlayScene;
     }
 
-    public void setPictureInPictureModeChanged(boolean isInPictureInPictureMode,
-                                               @NonNull Configuration newConfig) {
-        if (mIsInPictureInPictureMode != isInPictureInPictureMode) {
-            mIsInPictureInPictureMode = isInPictureInPictureMode;
-            for (VideoViewListener listener : mListeners) {
-                listener.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
-            }
-        }
-    }
-
-    public boolean isInPictureInPictureMode() {
-        return mIsInPictureInPictureMode;
-    }
-
     /**
      * @return The {@link VideoLayerHost} instance
      */
@@ -530,6 +579,16 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
      */
     public final void startPlayback() {
         if (mController == null) return;
+
+        final String reason = interceptPlaybackAction(interceptor -> interceptor.onVideoViewInterceptStartPlayback(VideoView.this));
+        if (!TextUtils.isEmpty(reason)) {
+            L.d(this, "startPlayback", "intercepted! " + reason);
+            for (VideoViewListener listener : mListeners) {
+                listener.onVideoViewStartPlaybackIntercepted(this, reason);
+            }
+            return;
+        }
+
         mController.startPlayback();
     }
 
@@ -538,6 +597,16 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
      */
     public final void stopPlayback() {
         if (mController == null) return;
+
+        final String reason = interceptPlaybackAction(interceptor -> interceptor.onVideoViewInterceptStopPlayback(VideoView.this));
+        if (!TextUtils.isEmpty(reason)) {
+            L.d(this, "stopPlayback", "intercepted! " + reason);
+            for (VideoViewListener listener : mListeners) {
+                listener.onVideoViewStopPlaybackIntercepted(this, reason);
+            }
+            return;
+        }
+
         mController.stopPlayback();
     }
 
@@ -549,6 +618,16 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
      */
     public final void pausePlayback() {
         if (mController == null) return;
+
+        final String reason = interceptPlaybackAction(interceptor -> interceptor.onVideoViewInterceptPausePlayback(VideoView.this));
+        if (!TextUtils.isEmpty(reason)) {
+            L.d(this, "pausePlayback", "intercepted! " + reason);
+            for (VideoViewListener listener : mListeners) {
+                listener.onVideoViewPausePlaybackIntercepted(this, reason);
+            }
+            return;
+        }
+
         mController.pausePlayback();
     }
 
@@ -569,8 +648,10 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
             L.v(this, "setDisplayMode", map(current), map(displayMode));
             mDisplayModeHelper.setDisplayMode(displayMode);
 
-            for (VideoViewListener listener : mListeners) {
-                listener.onVideoViewDisplayModeChanged(current, displayMode);
+            if (mListeners != null) {
+                for (VideoViewListener listener : mListeners) {
+                    listener.onVideoViewDisplayModeChanged(current, displayMode);
+                }
             }
         }
     }
@@ -645,8 +726,10 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
     public void bindDataSource(@NonNull MediaSource source) {
         L.d(this, "bindDataSource", MediaSource.dump(mSource), MediaSource.dump(source));
         mSource = source;
-        for (VideoViewListener listener : mListeners) {
-            listener.onVideoViewBindDataSource(source);
+        if (mListeners != null) {
+            for (VideoViewListener listener : mListeners) {
+                listener.onVideoViewBindDataSource(source);
+            }
         }
 
         if (mSource != null && mSource.getDisplayAspectRatio() > 0) {
@@ -654,26 +737,56 @@ public class VideoView extends RatioFrameLayout implements Dispatcher.EventListe
         }
     }
 
-    private final Bundle extras = new Bundle();
-
-    public void putExtra(@Nullable String key, int value) {
-        extras.putInt(key, value);
-    }
-
-    public void putExtra(@Nullable String key, @Nullable String value) {
-        extras.putString(key, value);
-    }
-
-    @Nullable
-    public String getStringExtra(@Nullable String key) {
-        return extras.getString(key);
-    }
-
-    public int getIntExtra(@Nullable String key) {
-        return extras.getInt(key);
-    }
-
     public String dump() {
         return String.format("%s %s %s", L.obj2String(this), L.obj2String(getSurface()), map(getDisplayMode()));
     }
+
+    private String interceptPlaybackAction(ReturnableRunnable<String, VideoViewPlaybackActionInterceptor> runnable) {
+        for (int i = mPriorityInterceptors.size() - 1; i >= 0; i--) {
+            final List<VideoViewPlaybackActionInterceptor> interceptors = mPriorityInterceptors.get(mPriorityInterceptors.keyAt(i));
+            if (interceptors != null) {
+                for (VideoViewPlaybackActionInterceptor interceptor : interceptors) {
+                    final String reason = runnable.run(interceptor);
+                    if (!TextUtils.isEmpty(reason)) {
+                        return reason;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // region VideoOne Enhancement
+    private boolean mIsInPictureInPictureMode = false;
+
+    public void setPictureInPictureModeChanged(boolean isInPictureInPictureMode,
+                                               @NonNull Configuration newConfig) {
+        if (mIsInPictureInPictureMode != isInPictureInPictureMode) {
+            mIsInPictureInPictureMode = isInPictureInPictureMode;
+            for (VideoViewListener listener : mListeners) {
+                listener.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+            }
+        }
+    }
+
+    public boolean isInPictureInPictureMode() {
+        return mIsInPictureInPictureMode;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        for (VideoViewListener listener : mListeners) {
+            listener.onVideoViewAttachedToWindow(this);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        for (VideoViewListener listener : mListeners) {
+            listener.onVideoViewDetachedFromWindow(this);
+        }
+        super.onDetachedFromWindow();
+    }
+    // endregion
 }

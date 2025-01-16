@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -44,7 +43,7 @@ public class DoubleTapHeartHelper {
         image.setTranslationX(x - heartSize / 2.F);
         image.setTranslationY(translationY);
 
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(heartSize, heartSize);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(heartSize, heartSize);
         parent.addView(image, params);
 
         // Initialized Rotate [-30, 30]

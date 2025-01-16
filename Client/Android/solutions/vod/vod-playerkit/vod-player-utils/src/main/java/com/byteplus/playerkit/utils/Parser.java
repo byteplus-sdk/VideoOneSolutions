@@ -3,12 +3,10 @@
 
 package com.byteplus.playerkit.utils;
 
-import androidx.annotation.NonNull;
-
 import org.json.JSONException;
 
 public interface Parser<T> {
 
-    T parse(@NonNull String source) throws JSONException;
+    T parse() throws JSONException;
 
 }

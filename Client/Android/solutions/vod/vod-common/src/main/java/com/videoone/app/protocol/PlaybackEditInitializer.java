@@ -52,7 +52,6 @@ public class PlaybackEditInitializer implements IInitializer {
                 appName,
                 appChannel,
                 info.versionName,
-                "singapore",
                 BuildConfig.VOD_LICENSE_URI);
 
         initialized = true;

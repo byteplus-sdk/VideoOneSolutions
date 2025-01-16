@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="vevod_view_pager" type="id" />
+    <item name="vevod_refresh_view" type="id" />
+    <item name="vevod_loading_progress_bar" type="id" />
+</resources>

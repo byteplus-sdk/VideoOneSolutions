@@ -23,7 +23,11 @@ public class FormatHelper {
     }
 
     public static String formatDuration(@NonNull Context context, @NonNull VideoItem videoItem) {
-        long durationInSeconds = videoItem.getDuration() / 1000;
+        return formatDuration(context, videoItem.getDuration());
+    }
+
+    public static String formatDuration(@NonNull Context context, long duraion) {
+        long durationInSeconds = duraion / 1000;
         long minutes = durationInSeconds / 60;
         long seconds = durationInSeconds % 60;
         return String.format(Locale.ENGLISH, "%1$02d:%2$02d", minutes, seconds);

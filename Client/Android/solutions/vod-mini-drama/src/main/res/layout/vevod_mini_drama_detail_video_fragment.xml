@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2022 bytedance
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  ~ Create Date : 2022/9/13
+  -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="#000000"
+    tools:context="com.byteplus.vod.minidrama.scene.detail.DramaDetailVideoFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp"
+        tools:layout_constraintGuide_begin="42dp" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/vevod_refresh_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomBarCardSelectEpisode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vevod_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:paddingStart="42dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top"
+        tools:text="Video Title" />
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="2dp"
+        android:contentDescription="@android:string/cancel"
+        android:scaleType="center"
+        android:src="@drawable/vevod_mini_drama_ic_title_back_light"
+        app:layout_constraintBottom_toBottomOf="@id/title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/title" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/title_bar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="back, title" />
+
+
+    <TextView
+        android:id="@+id/bottomBarCardSelectEpisode"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/vevod_mini_drama_bg_episode_selector_card"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:textColor="#B3FFFFFF"
+        app:drawableEndCompat="@drawable/vevod_mini_drama_ic_episode_selector_up"
+        app:drawableStartCompat="@drawable/vevod_mini_drama_ic_episode_selector_icon"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toStartOf="@id/bottomBarCardSpeedSelector"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vevod_refresh_view"
+        tools:drawableEnd="@drawable/vevod_mini_drama_ic_episode_selector_up"
+        tools:drawableStart="@drawable/vevod_mini_drama_ic_episode_selector_icon"
+        tools:showIn="@layout/vevod_mini_drama_detail_video_fragment"
+        tools:text="Full Episodes · 22 videos" />
+
+    <TextView
+        android:id="@+id/bottomBarCardSpeedSelector"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:enabled="false"
+        android:gravity="center"
+        android:minWidth="72dp"
+        android:paddingHorizontal="16dp"
+        android:textColor="#B3FFFFFF"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/bottomBarCardSelectEpisode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bottomBarCardSelectEpisode"
+        tools:showIn="@layout/vevod_mini_drama_detail_video_fragment"
+        tools:text="0.75X" />
+
+    <LinearLayout
+        android:id="@+id/bottomBarCardSpeedIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="28dp"
+        android:background="@drawable/vevod_mini_drama_video_bottom_bar_card_bg"
+        android:elevation="18dp"
+        android:enabled="false"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="gone">
+
+        <ImageView
+            android:id="@+id/speedArrow"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginEnd="4dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/vevod_mini_drama_video_bottom_card_speed_ic" />
+
+        <TextView
+            android:id="@+id/speedDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#E6FFFFFF"
+            android:textFontWeight="500"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            tools:text="2.0x 播放中" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@id/guideline_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp"
+        tools:layout_constraintGuide_end="24dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

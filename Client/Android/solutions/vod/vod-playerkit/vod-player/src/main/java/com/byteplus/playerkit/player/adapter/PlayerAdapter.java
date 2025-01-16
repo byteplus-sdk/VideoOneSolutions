@@ -32,21 +32,21 @@ public interface PlayerAdapter {
         /**
          * Unspecified media player info.
          *
-         * @see Listener#onInfo(PlayerAdapter, int, int)
+         * @see Listener#onInfo(PlayerAdapter, int, Object)
          */
         public static final int MEDIA_INFO_UNKNOWN = MediaPlayer.MEDIA_INFO_UNKNOWN;
 
         /**
          * The player just pushed the very first video frame for rendering.
          *
-         * @see Listener#onInfo(PlayerAdapter, int, int)
+         * @see Listener#onInfo(PlayerAdapter, int, Object)
          */
         public static final int MEDIA_INFO_VIDEO_RENDERING_START = MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START;
 
         /**
          * The player just pushed the very first audio frame for rendering.
          *
-         * @see Listener#onInfo(PlayerAdapter, int, int)
+         * @see Listener#onInfo(PlayerAdapter, int, Object)
          */
         public static final int MEDIA_INFO_AUDIO_RENDERING_START = 4;
 
@@ -57,14 +57,14 @@ public interface PlayerAdapter {
          * MediaPlayer is temporarily pausing playback internally in order to
          * buffer more data.
          *
-         * @see Listener#onInfo(PlayerAdapter, int, int)
+         * @see Listener#onInfo(PlayerAdapter, int, Object)
          */
         public static final int MEDIA_INFO_BUFFERING_START = MediaPlayer.MEDIA_INFO_BUFFERING_START;
 
         /**
          * MediaPlayer is resuming playback after filling buffers.
          *
-         * @see Listener#onInfo(PlayerAdapter, int, int)
+         * @see Listener#onInfo(PlayerAdapter, int, Object)
          */
         public static final int MEDIA_INFO_BUFFERING_END = MediaPlayer.MEDIA_INFO_BUFFERING_END;
 
@@ -74,24 +74,24 @@ public interface PlayerAdapter {
          * simultaneously as {@link #MEDIA_INFO_BUFFERING_START} and {@link #MEDIA_INFO_BUFFERING_END}
          * when playing network files.
          *
-         * @see Listener#onInfo(PlayerAdapter, int, int)
+         * @see Listener#onInfo(PlayerAdapter, int, Object)
          */
         public static final int MEDIA_INFO_NETWORK_BANDWIDTH = 703;
 
         /**
          * The media cannot be seeked (e.g live stream)
          *
-         * @see Listener#onInfo(PlayerAdapter, int, int)
+         * @see Listener#onInfo(PlayerAdapter, int, Object)
          */
         public static final int MEDIA_INFO_NOT_SEEKABLE = MediaPlayer.MEDIA_INFO_NOT_SEEKABLE;
     }
 
-    class SourceLoadInfo {
-        public static final int SOURCE_INFO_PLAY_INFO_FETCHED = 0;
+    class MediaSourceUpdateReason {
+        public static final int MEDIA_SOURCE_UPDATE_REASON_PLAY_INFO_FETCHED = 1;
 
-        public static final int SOURCE_INFO_SUBTITLE_INFO_FETCHED = 1;
+        public static final int MEDIA_SOURCE_UPDATE_REASON_SUBTITLE_INFO_FETCHED = 2;
 
-        public static final int SOURCE_INFO_MASK_INFO_FETCHED = 2;
+        public static final int MEDIA_SOURCE_UPDATE_REASON_MASK_INFO_FETCHED = 3;
     }
 
     interface Factory {
@@ -119,15 +119,29 @@ public interface PlayerAdapter {
 
     void setDataSource(@NonNull MediaSource source) throws IOException;
 
+    MediaSource getDataSource();
+
     boolean isSupportSmoothTrackSwitching(@Track.TrackType int trackType);
 
     void selectTrack(@Track.TrackType int trackType, @Nullable Track track) throws IllegalStateException;
+
+    Track getSelectedTrack(@Track.TrackType int trackType) throws IllegalStateException;
 
     Track getPendingTrack(@Track.TrackType int trackType) throws IllegalStateException;
 
     Track getCurrentTrack(@Track.TrackType int trackType) throws IllegalStateException;
 
     List<Track> getTracks(@Track.TrackType int trackType) throws IllegalStateException;
+
+    List<Subtitle> getSubtitles();
+
+    void selectSubtitle(@Nullable Subtitle subtitle);
+
+    Subtitle getSelectedSubtitle();
+
+    Subtitle getPendingSubtitle();
+
+    Subtitle getCurrentSubtitle();
 
     void setStartTime(long startTime);
 
@@ -196,16 +210,21 @@ public interface PlayerAdapter {
     boolean isSuperResolutionEnabled();
 
     void setSubtitleEnabled(boolean enabled);
-    boolean isSubtitleEnabled();
-    void selectSubtitle(Subtitle subtitle);
 
-    Subtitle getSelectedSubtitle();
-    List<Subtitle> getSupportSubtitles();
+    boolean isSubtitleEnabled();
+
+    @Player.DecoderType
+    int getVideoDecoderType();
+
+    @Player.CodecId
+    int getVideoCodecId();
 
     String dump();
 
-    interface Listener extends SourceInfoListener, TrackListener, SubtitleListener {
+    interface Listener extends PlayerListener, MediaSourceListener, TrackListener, SubtitleListener, FrameInfoListener {
+    }
 
+    interface PlayerListener {
         void onPrepared(@NonNull PlayerAdapter mp);
 
         void onCompletion(@NonNull PlayerAdapter mp);
@@ -222,17 +241,21 @@ public interface PlayerAdapter {
 
         void onProgressUpdate(@NonNull PlayerAdapter mp, long position);
 
-        void onInfo(@NonNull PlayerAdapter mp, int what, int extra);
+        void onInfo(@NonNull PlayerAdapter mp, int what, @Nullable Object extra);
 
         void onCacheHint(PlayerAdapter mp, long cacheSize);
     }
 
-    interface SourceInfoListener {
-        void onSourceInfoLoadStart(PlayerAdapter mp, int type, MediaSource source);
+    interface FrameInfoListener {
+        void onFrameInfoUpdate(PlayerAdapter mp, @Player.FrameType int frameType, long pts, long clockTime);
+    }
 
-        void onSourceInfoLoadComplete(PlayerAdapter mp, int type, MediaSource source);
+    interface MediaSourceListener {
+        void onMediaSourceUpdateStart(PlayerAdapter mp, int type, MediaSource source);
 
-        void onSourceInfoLoadError(PlayerAdapter mp, int type, PlayerException e);
+        void onMediaSourceUpdated(PlayerAdapter mp, int type, MediaSource source);
+
+        void onMediaSourceUpdateError(PlayerAdapter mp, int type, PlayerException e);
     }
 
     interface TrackListener {
@@ -241,18 +264,20 @@ public interface PlayerAdapter {
 
         void onTrackWillChange(@NonNull PlayerAdapter mp, @Track.TrackType int trackType, @Nullable Track current, @NonNull Track target);
 
-        void onTrackChanged(@NonNull PlayerAdapter mp, @Track.TrackType int trackType, @NonNull Track pre, @NonNull Track current);
+        void onTrackChanged(@NonNull PlayerAdapter mp, @Track.TrackType int trackType, @Nullable Track pre, @NonNull Track current);
     }
 
     interface SubtitleListener {
-        void onSubtitleStateChanged(@NonNull PlayerAdapter pm, boolean enabled);
+        void onSubtitleStateChanged(@NonNull PlayerAdapter mp, boolean enabled);
 
-        void onSubtitleInfoReady(@NonNull PlayerAdapter pm, List<Subtitle> subtitles);
+        void onSubtitleInfoReady(@NonNull PlayerAdapter mp, List<Subtitle> subtitles);
 
-        void onSubtitleFileLoadFinish(@NonNull PlayerAdapter pm, int success, String info);
+        void onSubtitleFileLoadFinish(@NonNull PlayerAdapter mp, int success, String info);
 
-        void onSubtitleChanged(@NonNull PlayerAdapter pm, Subtitle subtitle);
+        void onSubtitleWillChange(@NonNull PlayerAdapter mp, Subtitle current, Subtitle target);
 
-        void onSubtitleTextUpdate(@NonNull PlayerAdapter pm, @NonNull SubtitleText subtitleText);
+        void onSubtitleChanged(@NonNull PlayerAdapter mp, Subtitle pre, Subtitle current);
+
+        void onSubtitleTextUpdate(@NonNull PlayerAdapter mp, @NonNull SubtitleText subtitleText);
     }
 }

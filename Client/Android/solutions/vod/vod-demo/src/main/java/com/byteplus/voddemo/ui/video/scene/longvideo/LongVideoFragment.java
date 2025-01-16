@@ -3,17 +3,16 @@
 
 package com.byteplus.voddemo.ui.video.scene.longvideo;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -27,9 +26,9 @@ import com.byteplus.vod.scenekit.data.page.Page;
 import com.byteplus.vod.scenekit.ui.base.BaseFragment;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.ui.widgets.load.impl.RecycleViewLoadMoreHelper;
-import com.byteplus.voddemo.R;
 import com.byteplus.vodcommon.data.remote.RemoteApi;
 import com.byteplus.vodcommon.data.remote.api2.GetFeedStreamApi;
+import com.byteplus.voddemo.R;
 import com.byteplus.voddemo.ui.video.scene.VideoActivity;
 import com.byteplus.voddemo.ui.video.scene.detail.DetailVideoFragment;
 
@@ -47,14 +46,8 @@ public class LongVideoFragment extends BaseFragment {
     private RecycleViewLoadMoreHelper mLoadMoreHelper;
     private LongVideoDataTrans mDataTrans;
 
-    private DetailVideoFragment.DetailVideoSceneEventListener mListener;
-
     public static LongVideoFragment newInstance() {
         return new LongVideoFragment();
-    }
-
-    public void setDetailSceneEventListener(DetailVideoFragment.DetailVideoSceneEventListener listener) {
-        mListener = listener;
     }
 
     @Override
@@ -108,7 +101,6 @@ public class LongVideoFragment extends BaseFragment {
         } else {
             FragmentActivity activity = requireActivity();
             DetailVideoFragment detail = DetailVideoFragment.newInstance(bundle);
-            detail.getLifecycle().addObserver(mDetailLifeCycle);
             activity.getSupportFragmentManager()
                     .beginTransaction()
                     .setCustomAnimations(R.anim.vevod_slide_in_right, R.anim.vevod_slide_out_right,
@@ -118,24 +110,6 @@ public class LongVideoFragment extends BaseFragment {
                     .commit();
         }
     }
-
-    final LifecycleEventObserver mDetailLifeCycle = new LifecycleEventObserver() {
-        @Override
-        public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
-            switch (event) {
-                case ON_CREATE:
-                    if (mListener != null) {
-                        mListener.onEnterDetail();
-                    }
-                    break;
-                case ON_DESTROY:
-                    if (mListener != null) {
-                        mListener.onExitDetail();
-                    }
-                    break;
-            }
-        }
-    };
 
     @Override
     protected void initBackPressedHandler() {
@@ -178,7 +152,7 @@ public class LongVideoFragment extends BaseFragment {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 L.d(this, "refresh", e, "error");
                 if (getActivity() == null) return;
                 dismissRefreshing();
@@ -232,7 +206,7 @@ public class LongVideoFragment extends BaseFragment {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     L.d(this, "loadMore", "error", mBook.nextPageIndex());
                     if (getActivity() == null) return;
                     dismissLoadingMore();

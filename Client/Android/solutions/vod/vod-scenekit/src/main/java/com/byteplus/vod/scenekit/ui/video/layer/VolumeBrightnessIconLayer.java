@@ -15,8 +15,7 @@ import com.byteplus.vod.scenekit.R;
 import com.byteplus.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.dialog.VolumeBrightnessDialogLayer;
 
-
-public class VolumeBrightnessIconLayer extends AnimateLayer {
+public class VolumeBrightnessIconLayer extends AnimateLayer implements GestureCheckActive {
 
     private View mVolume;
 

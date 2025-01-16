@@ -4,6 +4,9 @@
 
 package com.byteplus.playerkit.player.source;
 
+import static com.byteplus.playerkit.player.source.Track.TRACK_TYPE_AUDIO;
+import static com.byteplus.playerkit.player.source.Track.TRACK_TYPE_VIDEO;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -264,21 +268,14 @@ public class MediaSource extends ExtraObject implements Serializable {
     private String playAuthToken;
 
     /**
-     * Subtitle auth token of {@link #mediaId}. Only works with {@link #SOURCE_TYPE_ID}
-     */
-    private String subtitleAuthToken;
-
-    /**
-     * A list of subtitle stream in different languages.
-     */
-    private final List<Subtitle> subtitles = new ArrayList<>();
-
-    private Subtitle subtitle;
-
-    /**
      * Json string of VideoModel. Only works with {@link #SOURCE_TYPE_MODEL}
      */
     private String modelJson;
+
+    /**
+     * Auth token of subtitle. Only works with {@link #SOURCE_TYPE_ID}
+     */
+    private String subtitleAuthToken;
 
     /**
      * Additional headers of video url http request
@@ -304,9 +301,17 @@ public class MediaSource extends ExtraObject implements Serializable {
     private boolean supportABR;
 
     /**
-     * A list of url track of video/audio stream in different quality.
+     * A list of url track of video/audio stream in different qualities.
      */
     private List<Track> tracks;
+
+
+    private final Map<Integer, List<Track>> tracksMap = new HashMap<>();
+
+    /**
+     * A list of subtitle stream in different languages.
+     */
+    private List<Subtitle> subtitles;
 
     /**
      * Utility method for quick create single url source.
@@ -332,14 +337,11 @@ public class MediaSource extends ExtraObject implements Serializable {
      *
      * @param mediaId       Media id of video/audio. Null is not allowed.
      * @param playAuthToken Auth token of {@link #mediaId}.
-     * @param subtitleAuthToken Subtitle auth token of {@link #mediaId}.
      * @return Instance of id MediaSource.
      */
-    public static MediaSource createIdSource(@NonNull String mediaId, @NonNull String playAuthToken,
-                                             @Nullable String subtitleAuthToken) {
+    public static MediaSource createIdSource(@NonNull String mediaId, @NonNull String playAuthToken) {
         MediaSource mediaSource = new MediaSource(mediaId, SOURCE_TYPE_ID);
         mediaSource.setPlayAuthToken(playAuthToken);
-        mediaSource.setSubtitleAuthToken(subtitleAuthToken);
         return mediaSource;
     }
 
@@ -523,22 +525,6 @@ public class MediaSource extends ExtraObject implements Serializable {
     }
 
     /**
-     * @return Subtitle auth token of {@link #mediaId}. Only works with {@link #SOURCE_TYPE_ID}
-     */
-    public String getSubtitleAuthToken() {
-        return subtitleAuthToken;
-    }
-
-    /**
-     * Set subtitle auth token of {@link #mediaId}. Only works with {@link #SOURCE_TYPE_ID}
-     *
-     * @param subtitleAuthToken Subtitle auth token of {@link #mediaId}
-     */
-    public void setSubtitleAuthToken(String subtitleAuthToken) {
-        this.subtitleAuthToken = subtitleAuthToken;
-    }
-
-    /**
      * Get VideoModel json string.
      *
      * @return VideoModel json string
@@ -554,6 +540,22 @@ public class MediaSource extends ExtraObject implements Serializable {
      */
     public void setModelJson(String modelJson) {
         this.modelJson = modelJson;
+    }
+
+    /**
+     * @return Auth token of subtitle. Only works with {@link #SOURCE_TYPE_ID}
+     */
+    public String getSubtitleAuthToken() {
+        return subtitleAuthToken;
+    }
+
+    /**
+     * Set Auth token of subtitle. Only works with {@link #SOURCE_TYPE_ID}
+     *
+     * @param subtitleAuthToken Auth token of subtitle
+     */
+    public void setSubtitleAuthToken(String subtitleAuthToken) {
+        this.subtitleAuthToken = subtitleAuthToken;
     }
 
     /**
@@ -644,7 +646,9 @@ public class MediaSource extends ExtraObject implements Serializable {
      * @return list of {@link Track}
      */
     public List<Track> getTracks() {
-        return tracks;
+        synchronized (this) {
+            return tracks;
+        }
     }
 
     /**
@@ -663,12 +667,16 @@ public class MediaSource extends ExtraObject implements Serializable {
      * @param comparator list sorter
      */
     public void setTracks(List<Track> tracks, @Nullable Comparator<Track> comparator) {
-        final List<Track> list = new ArrayList<>(tracks);
-        if (comparator != null) {
-            Collections.sort(list, comparator);
+        synchronized (this) {
+            final List<Track> list = new ArrayList<>(tracks);
+            if (comparator != null) {
+                Collections.sort(list, comparator);
+            }
+            tracksMap.clear();
+            this.tracks = Collections.unmodifiableList(list);
         }
-        this.tracks = list;
     }
+
 
     /**
      * @param trackType track type
@@ -676,14 +684,26 @@ public class MediaSource extends ExtraObject implements Serializable {
      */
     @Nullable
     public List<Track> getTracks(@Track.TrackType int trackType) {
-        if (tracks == null) return null;
-        List<Track> result = new ArrayList<>();
-        for (Track track : tracks) {
-            if (track.getTrackType() == trackType) {
-                result.add(track);
+        synchronized (this) {
+            if (tracks == null) return null;
+            List<Track> result = tracksMap.get(trackType);
+            if (result == null) {
+                result = new ArrayList<>();
+                for (Track track : tracks) {
+                    if (track.getTrackType() == trackType) {
+                        result.add(track);
+                    }
+                }
+                result = Collections.unmodifiableList(result);
+                tracksMap.put(trackType, result);
             }
+            return result;
         }
-        return result;
+    }
+
+    public List<Track> getTracksByMediaType() {
+        @Track.TrackType final int trackType = mediaType2TrackType(this);
+        return getTracks(trackType);
     }
 
     /**
@@ -692,47 +712,43 @@ public class MediaSource extends ExtraObject implements Serializable {
      */
     @Nullable
     public Track getFirstTrack(@Track.TrackType int trackType) {
-        if (tracks == null) return null;
-        for (Track track : tracks) {
-            if (track.getTrackType() == trackType) {
-                return track;
-            }
-        }
-        return null;
-    }
-
-    public void setSubtitles(List<Subtitle> subtitles) {
-        synchronized (this.subtitles) {
-            this.subtitles.clear();
-            if (subtitles != null) {
-                this.subtitles.addAll(subtitles);
-            }
-        }
-    }
-
-    public List<Subtitle> getSubtitles() {
-        synchronized (this.subtitles) {
-            return subtitles;
-        }
-    }
-
-    public Subtitle getSubtitle(int subtitleId) {
-        synchronized (this.subtitles) {
-            for (Subtitle subtitle : subtitles) {
-                if (subtitle.subtitleId == subtitleId) {
-                    return subtitle;
+        synchronized (this) {
+            if (tracks == null) return null;
+            for (Track track : tracks) {
+                if (track.getTrackType() == trackType) {
+                    return track;
                 }
             }
         }
         return null;
     }
 
-    public Subtitle getSubtitle() {
-        return subtitle;
+    @Track.TrackType
+    public static int mediaType2TrackType(@NonNull MediaSource mediaSource) {
+        return mediaSource.getMediaType() == MediaSource.MEDIA_TYPE_AUDIO ? TRACK_TYPE_AUDIO : TRACK_TYPE_VIDEO;
     }
 
-    public void setSubtitle(Subtitle subtitle) {
-        this.subtitle = subtitle;
+    public void setSubtitles(List<Subtitle> subtitles) {
+        synchronized (this) {
+            this.subtitles = subtitles;
+        }
+    }
+
+    public List<Subtitle> getSubtitles() {
+        synchronized (this) {
+            return subtitles;
+        }
+    }
+
+    public Subtitle getSubtitle(int subtitleId) {
+        synchronized (this) {
+            for (Subtitle subtitle : subtitles) {
+                if (subtitle.getSubtitleId() == subtitleId) {
+                    return subtitle;
+                }
+            }
+        }
+        return null;
     }
 
     public static String dump(MediaSource source) {

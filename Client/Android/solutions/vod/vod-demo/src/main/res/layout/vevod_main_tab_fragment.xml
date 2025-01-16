@@ -19,10 +19,9 @@
     <LinearLayout
         android:id="@+id/bottom_bar"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="#FFFFFF"
-        android:paddingVertical="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -30,9 +29,10 @@
         <TextView
             android:id="@+id/tab_home"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="64dp"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:text="@string/vevod_tab_home"
             android:textColor="#0C0D0F"
             android:textSize="12sp"
@@ -42,9 +42,10 @@
         <TextView
             android:id="@+id/tab_feed"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="64dp"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:text="@string/vevod_tab_feed"
             android:textColor="#0C0D0F"
             android:textSize="12sp"
@@ -54,17 +55,19 @@
         <ImageView
             android:id="@+id/creative"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="64dp"
             android:layout_weight="1"
+            android:paddingVertical="8dp"
             android:scaleType="center"
             android:src="@drawable/vevod_ic_tab_creative_dark" />
 
         <TextView
             android:id="@+id/tab_channel"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="64dp"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:text="@string/vevod_tab_channel"
             android:textColor="#0C0D0F"
             android:textSize="12sp"
@@ -75,9 +78,10 @@
         <TextView
             android:id="@+id/tab_settings"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="64dp"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:text="@string/vevod_tab_setting"
             android:textColor="#0C0D0F"
             android:textSize="12sp"
@@ -100,7 +104,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="LicenseCheck result"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <include
         android:id="@+id/action_bar"

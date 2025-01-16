@@ -37,7 +37,7 @@
 
 @end
 @interface VELQRScanViewController () <AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
-@property (nonatomic, strong) VELQRMaskView *maskView;
+@property (nonatomic, strong) VELQRMaskView *qeMaskView;
 @property (nonatomic, strong) AVCaptureDeviceInput *inputDevice;
 @property (nonatomic, strong) AVCaptureDevice *device;
 @property (nonatomic, strong) AVCaptureMetadataOutput *metadataOutput;
@@ -83,12 +83,12 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     self.previewLayer.frame = self.view.bounds;
-    self.maskView.frame = self.view.bounds;
+    self.qeMaskView.frame = self.view.bounds;
     CGSize size = CGSizeMake(self.view.bounds.size.width * 0.7, self.view.bounds.size.width * 0.7);
     CGFloat x = (self.view.bounds.size.width - size.width) * 0.5;
     CGFloat y = (self.view.bounds.size.height - size.height) * 0.5;
     CGRect rect = CGRectMake(x, y, size.width, size.height);
-    self.maskView.qrRect = rect;
+    self.qeMaskView.qrRect = rect;
     [self.torchBtn sizeToFit];
     CGFloat width = self.torchBtn.bounds.size.width;
     CGFloat height = self.torchBtn.bounds.size.height;
@@ -98,9 +98,9 @@
 }
 
 - (void)setupMaskView {
-    self.maskView = [[VELQRMaskView alloc] initWithFrame:self.view.bounds];
-    self.maskView.backgroundColor = UIColor.clearColor;
-    [self.view addSubview:self.maskView];
+    self.qeMaskView = [[VELQRMaskView alloc] initWithFrame:self.view.bounds];
+    self.qeMaskView.backgroundColor = UIColor.clearColor;
+    [self.view addSubview:self.qeMaskView];
 }
 
 - (void)setupTorchBtn {
@@ -205,7 +205,7 @@
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [self.session startRunning];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.maskView startAnimating];
+            [self.qeMaskView startAnimating];
         });
     });
 }

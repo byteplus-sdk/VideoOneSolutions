@@ -1,3 +1,6 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+
 package com.byteplus.vodlive.network.model
 
 import com.byteplus.vod.scenekit.data.model.VideoItem
@@ -40,10 +43,10 @@ class PlayAuthTokenVideoDetail(
         val item = VideoItem.createVidItem(
             vid,
             playAuthToken,
+            subtitleAuthToken,
             (duration * 1000).toLong(),
             coverUrl,
-            caption,
-            subtitleAuthToken
+            caption
         )
 
         item.subtitle = subtitle

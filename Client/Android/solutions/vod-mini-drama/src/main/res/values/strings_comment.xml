@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_comment_dialog_num">%1$,d comments</string>
+    <string name="vevod_comment_question_message">Comments you post are temporary and will be visible only to you. BytePlus assures that no collection, storage or backups of these comments will be made.</string>
+    <string name="vevod_tips">Tips</string>
+    <string name="vevod_close">Close</string>
+
+    <string name="vevod_confirm_delete_title">Confirm deletion?</string>
+    <string name="vevod_confirm_delete_message">The comment content can not be restored after deletion. Please confirm the operation.</string>
+</resources>

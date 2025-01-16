@@ -6,7 +6,7 @@
 static NSMutableArray <VELToastView *> *__VELGlobalViews__ = nil;
 
 @interface VELToastView ()
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *toastMaskView;
 @property (nonatomic, weak) NSTimer *delayTimer;
 @property (nonatomic, strong) UIView *backgroundView;
 @property (nonatomic, weak) UIView *containerView;
@@ -53,10 +53,10 @@ static NSMutableArray <VELToastView *> *__VELGlobalViews__ = nil;
     
     self.contentView = [[VELToastContentView alloc] init];
     [self addSubview:self.contentView];
-    _maskView = [[UIView alloc] init];
-    self.maskView.hidden = !self.enableMaskControl;
-    self.maskView.backgroundColor = UIColor.clearColor;
-    [self addSubview:self.maskView];
+    _toastMaskView = [[UIView alloc] init];
+    self.toastMaskView.hidden = !self.enableMaskControl;
+    self.toastMaskView.backgroundColor = UIColor.clearColor;
+    [self addSubview:self.toastMaskView];
     
     [self.containerView addSubview:self];
 }
@@ -68,7 +68,7 @@ static NSMutableArray <VELToastView *> *__VELGlobalViews__ = nil;
 
 - (void)setEnableMaskControl:(BOOL)enableMaskControl {
     _enableMaskControl = enableMaskControl;
-    self.maskView.hidden = !enableMaskControl;
+    self.toastMaskView.hidden = !enableMaskControl;
 }
 
 - (void)didMoveToSuperview {
@@ -101,7 +101,7 @@ static NSMutableArray <VELToastView *> *__VELGlobalViews__ = nil;
     [super layoutSubviews];
     
     self.frame = self.containerView.bounds;
-    self.maskView.frame = self.bounds;
+    self.toastMaskView.frame = self.bounds;
     
     CGFloat contentWidth = CGRectGetWidth(self.containerView.bounds);
     CGFloat contentHeight = CGRectGetHeight(self.containerView.bounds);

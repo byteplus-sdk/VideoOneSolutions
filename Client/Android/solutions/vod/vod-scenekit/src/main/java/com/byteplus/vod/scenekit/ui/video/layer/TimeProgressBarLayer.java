@@ -44,7 +44,7 @@ import com.byteplus.vod.scenekit.utils.UIUtils;
 
 import java.util.List;
 
-public class TimeProgressBarLayer extends AnimateLayer {
+public class TimeProgressBarLayer extends AnimateLayer implements GestureControllable {
 
     public enum CompletedPolicy {
         /**
@@ -138,20 +138,7 @@ public class TimeProgressBarLayer extends AnimateLayer {
             }
         });
         mCommentContainer.setOnClickListener(v -> {
-            FragmentActivity activity = activity();
-            if (activity == null) {
-                return;
-            }
-            String vid = VideoViewExtras.getVid(videoView());
-            if (vid != null) {
-                OuterActions.showCommentDialogL(activity, vid);
-                GestureLayer layer = findLayer(GestureLayer.class);
-                if (layer != null) {
-                    layer.dismissController();
-                }
-            } else {
-                L.w(this, "vid not found");
-            }
+            onCommentClicked();
         });
 
         mQuality = mInteractLayout.findViewById(R.id.quality);
@@ -184,14 +171,31 @@ public class TimeProgressBarLayer extends AnimateLayer {
         mPlaylistContainer = mInteractLayout.findViewById(R.id.playlistContainer);
         mPlaylist = mInteractLayout.findViewById(R.id.playlist);
         mPlaylistContainer.setOnClickListener(v -> {
-            PlaylistLayer playlistLayer = findLayer(PlaylistLayer.class);
-            if (playlistLayer != null) {
-                playlistLayer.animateShow(false);
+            ListBaseLayer listLayer = findLayer(ListBaseLayer.class);
+            if (listLayer != null) {
+                listLayer.animateShow(false);
             }
         });
 
         applyTheme(view);
         return view;
+    }
+
+    protected void onCommentClicked() {
+        FragmentActivity activity = activity();
+        if (activity == null) {
+            return;
+        }
+        String vid = VideoViewExtras.getVid(videoView());
+        if (vid != null) {
+            OuterActions.showCommentDialogL(activity, vid);
+            GestureLayer layer = findLayer(GestureLayer.class);
+            if (layer != null) {
+                layer.dismissController();
+            }
+        } else {
+            L.w(this, "vid not found");
+        }
     }
 
     private void showControllerLayers() {
@@ -278,8 +282,8 @@ public class TimeProgressBarLayer extends AnimateLayer {
         SubtitleSelectDialogLayer subtitleDialogLayer = findLayer(SubtitleSelectDialogLayer.class);
         mSubtitleContainer.setVisibility(subtitleDialogLayer == null ? View.GONE : View.VISIBLE);
 
-        PlaylistLayer playlistLayer = findLayer(PlaylistLayer.class);
-        mPlaylistContainer.setVisibility(playlistLayer == null ? View.GONE : View.VISIBLE);
+        ListBaseLayer listLayer = findLayer(ListBaseLayer.class);
+        mPlaylistContainer.setVisibility(listLayer == null ? View.GONE : View.VISIBLE);
 
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mSeekBar.getLayoutParams();
         lp.height = (int) UIUtils.dip2Px(context(), 40);
@@ -374,7 +378,7 @@ public class TimeProgressBarLayer extends AnimateLayer {
         Subtitle selectedSubtitle = player == null ? null : player.getSelectedSubtitle();
         if (selectedSubtitle != null && player.isSubtitleEnabled()) {
             mSubtitleIcon.setImageResource(R.drawable.vevod_fullscreen_subtitle_enable);
-            mSubtitle.setText(SubtitleSelectDialogLayer.getLanguage(mSpeed.getContext(), selectedSubtitle.languageId));
+            mSubtitle.setText(SubtitleSelectDialogLayer.getLanguage(mSpeed.getContext(), selectedSubtitle.getLanguageId()));
             SubtitleLayer layer = findLayer(SubtitleLayer.class);
             if (layer != null && !layer.isShowing()) {
                 layer.applyVisible();
@@ -393,11 +397,11 @@ public class TimeProgressBarLayer extends AnimateLayer {
         if (mPlaylistContainer == null || mPlaylistContainer.getVisibility() == View.GONE) {
             return;
         }
-        PlaylistLayer playlistLayer = findLayer(PlaylistLayer.class);
-        if (playlistLayer == null) {
+        ListBaseLayer listBaseLayer = findLayer(ListBaseLayer.class);
+        if (listBaseLayer == null) {
             return;
         }
-        mPlaylist.setText(String.valueOf(playlistLayer.getPlaylistSize()));
+        mPlaylist.setText(String.valueOf(listBaseLayer.getSize()));
     }
 
     @Override
@@ -415,7 +419,7 @@ public class TimeProgressBarLayer extends AnimateLayer {
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         VideoView videoView = videoView();
-        PlaybackController playbackController =videoView == null ? null : videoView.controller();
+        PlaybackController playbackController = videoView == null ? null : videoView.controller();
         if (isInPictureInPictureMode) {
             if (playbackController != null) {
                 playbackController.removePlaybackListener(mPlaybackListener);

@@ -32,7 +32,7 @@ public class PlaylistFragment extends VodFunctionFragment implements PlayListIte
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle =requireArguments();
-        List<VideoItem> videoList = bundle.getParcelableArrayList(VodFunctionActivity.EXTRA_VIDEO_LIST);
+        List<VideoItem> videoList = (List<VideoItem>) bundle.getSerializable(VodFunctionActivity.EXTRA_VIDEO_LIST);
         String playMode = bundle.getString(VodFunctionActivity.EXTRA_PLAY_MODE, "loop");
         mPlaylistController = new PlaylistController(videoList, playMode, new PlaylistController.IPlaylistCallback() {
             @Override
@@ -57,11 +57,6 @@ public class PlaylistFragment extends VodFunctionFragment implements PlayListIte
                 showPreviousBtn(mPlaylistController.hasPrevious());
             }
         });
-    }
-
-    @Override
-    protected VideoItem initVideoItem(Bundle bundle) {
-        return mPlaylistController.getPlayVideoItem();
     }
 
     @Override

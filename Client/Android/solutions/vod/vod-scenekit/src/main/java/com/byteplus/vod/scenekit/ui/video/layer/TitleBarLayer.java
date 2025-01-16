@@ -29,8 +29,7 @@ import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.utils.UIUtils;
 import com.byteplus.vod.settingskit.CenteredToast;
 
-
-public class TitleBarLayer extends AnimateLayer {
+public class TitleBarLayer extends AnimateLayer implements GestureControllable {
     private TextView mTitle;
     private View mTitleBar;
 
@@ -147,7 +146,7 @@ public class TitleBarLayer extends AnimateLayer {
         return player != null && player.isPaused();
     }
 
-    private String resolveTitle() {
+    protected String resolveTitle() {
         VideoView videoView = videoView();
         if (videoView == null) {
             return null;
@@ -161,6 +160,10 @@ public class TitleBarLayer extends AnimateLayer {
             return videoItem.getTitle();
         }
         return null;
+    }
+
+    public void refreshTitle() {
+        mTitle.setText(resolveTitle());
     }
 
     private void applyTheme() {

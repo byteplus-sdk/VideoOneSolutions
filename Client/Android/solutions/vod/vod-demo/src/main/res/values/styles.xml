@@ -16,6 +16,16 @@
         <item name="behavior_draggable">false</item>
     </style>
 
+    <style name="vevod_bottom_sheet_dialog_dark" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/vevod_bottom_sheet_style_dark</item>
+        <item name="android:navigationBarColor">#000000</item>
+    </style>
+
+    <style name="vevod_bottom_sheet_style_dark" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/vevod_bg_bottom_sheet_dialog_dark</item>
+        <item name="behavior_draggable">false</item>
+    </style>
+
     <style name="vevod_full_screen_dialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowBackground">@null</item>

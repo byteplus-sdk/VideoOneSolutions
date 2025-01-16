@@ -4,7 +4,7 @@
 
 @interface KTVTextInputView ()
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *inputMaskView;
 @property (nonatomic, strong) UIImageView *borderImageView;
 @property (nonatomic, strong) UITextField *textField;
 @property (nonatomic, strong) BaseButton *senderButton;
@@ -16,8 +16,8 @@
 - (instancetype)initWithMessage:(NSString *)message {
     self = [super init];
     if (self) {
-        [self addSubview:self.maskView];
-        [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+        [self addSubview:self.inputMaskView];
+        [self.inputMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.equalTo(self);
         }];
         
@@ -73,12 +73,12 @@
 
 #pragma mark - Getter
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor colorFromRGBHexString:@"#0E0825" andAlpha:0.95 * 255];
+- (UIView *)inputMaskView {
+    if (!_inputMaskView) {
+        _inputMaskView = [[UIView alloc] init];
+        _inputMaskView.backgroundColor = [UIColor colorFromRGBHexString:@"#0E0825" andAlpha:0.95 * 255];
     }
-    return _maskView;
+    return _inputMaskView;
 }
 
 - (UIImageView *)borderImageView {

@@ -3,31 +3,37 @@
 
 package com.byteplus.vod.scenekit.data.model;
 
-import static com.byteplus.playerkit.player.ve.PlayerConfig.EXTRA_VE_CONFIG;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.byteplus.playerkit.player.source.MediaSource;
+import com.byteplus.playerkit.player.source.Subtitle;
 import com.byteplus.playerkit.player.source.Track;
-import com.byteplus.playerkit.player.ve.Mapper;
-import com.byteplus.playerkit.player.ve.PlayerConfig;
+import com.byteplus.playerkit.player.volcengine.Mapper;
+import com.byteplus.playerkit.player.volcengine.VolcConfig;
+import com.byteplus.playerkit.utils.ExtraObject;
 import com.byteplus.playerkit.utils.MD5;
 import com.byteplus.vod.scenekit.VideoSettings;
+import com.byteplus.vod.scenekit.strategy.VideoQuality;
+import com.byteplus.vod.scenekit.strategy.VideoSubtitle;
 import com.byteplus.vod.settingskit.Option;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-
-public class VideoItem implements Parcelable {
+public class VideoItem extends ExtraObject implements ViewItem, Serializable {
     public static final String EXTRA_VIDEO_ITEM = "extra_video_item";
 
+    public static final String PLAY_AUTH_TOKEN_NULL = "beb41110-b664-44f5-b9e7-05018684ca17";
+    public static final String PLAY_AUTH_TOKEN_EMPTY = "2620463e-cbd6-4789-8da8-029e90c32b54";
+
+    public static final int SOURCE_TYPE_EMPTY = -1;
     public static final int SOURCE_TYPE_VID = 0;
     public static final int SOURCE_TYPE_URL = 1;
     public static final int SOURCE_TYPE_MODEL = 2;
@@ -35,90 +41,39 @@ public class VideoItem implements Parcelable {
     private VideoItem() {
     }
 
-    protected VideoItem(Parcel in) {
-        vid = in.readString();
-        playAuthToken = in.readString();
-        videoModel = in.readString();
-        mediaSource = (MediaSource) in.readSerializable();
-        duration = in.readLong();
-        title = in.readString();
-        cover = in.readString();
-        url = in.readString();
-        urlCacheKey = in.readString();
-        sourceType = in.readInt();
-        tag = in.readString();
-        subTag = in.readString();
-        subtitle = in.readString();
-        playCount = in.readInt();
-        createTime = (Date) in.readSerializable();
-        width = in.readInt();
-        height = in.readInt();
-        userName = in.readString();
-        userId = in.readString();
-        likeCount = in.readInt();
-        commentCount = in.readInt();
-        playScene = in.readInt();
-        subtitleAuthToken = in.readString();
-    }
-
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(vid);
-        dest.writeString(playAuthToken);
-        dest.writeString(videoModel);
-        dest.writeSerializable(mediaSource);
-        dest.writeLong(duration);
-        dest.writeString(title);
-        dest.writeString(cover);
-        dest.writeString(url);
-        dest.writeString(urlCacheKey);
-        dest.writeInt(sourceType);
-        dest.writeString(tag);
-        dest.writeString(subTag);
-        dest.writeString(subtitle);
-        dest.writeInt(playCount);
-        dest.writeSerializable(createTime);
-        dest.writeInt(width);
-        dest.writeInt(height);
-        dest.writeString(userName);
-        dest.writeString(userId);
-        dest.writeInt(likeCount);
-        dest.writeInt(commentCount);
-        dest.writeInt(playScene);
-        dest.writeString(subtitleAuthToken);
+    public int itemType() {
+        return ItemType.ITEM_TYPE_VIDEO;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    // region Creators
+    public static VideoItem createEmptyItem(@NonNull String vid,
+                                            long duration,
+                                            @Nullable String cover,
+                                            @Nullable String title) {
+        VideoItem videoItem = new VideoItem();
+        videoItem.sourceType = SOURCE_TYPE_EMPTY;
+        videoItem.vid = vid;
+        videoItem.duration = duration;
+        videoItem.cover = cover;
+        videoItem.title = title;
+        return videoItem;
     }
-
-    public static final Creator<VideoItem> CREATOR = new Creator<VideoItem>() {
-        @Override
-        public VideoItem createFromParcel(Parcel in) {
-            return new VideoItem(in);
-        }
-
-        @Override
-        public VideoItem[] newArray(int size) {
-            return new VideoItem[size];
-        }
-    };
 
     public static VideoItem createVidItem(
             @NonNull String vid,
             @NonNull String playAuthToken,
             @Nullable String cover) {
-        return createVidItem(vid, playAuthToken, 0, cover, null, null);
+        return createVidItem(vid, playAuthToken, null, 0, cover, null);
     }
 
     public static VideoItem createVidItem(
             @NonNull String vid,
             @NonNull String playAuthToken,
+            @Nullable String subtitleAuthToken,
             long duration,
             @Nullable String cover,
-            @Nullable String title,
-            @Nullable String subtitleAuthToken) {
+            @Nullable String title) {
         VideoItem videoItem = new VideoItem();
         videoItem.sourceType = SOURCE_TYPE_VID;
         videoItem.vid = vid;
@@ -131,13 +86,18 @@ public class VideoItem implements Parcelable {
     }
 
     public static VideoItem createUrlItem(@NonNull String url, @Nullable String cover) {
-        return createUrlItem(MD5.getMD5(url), url, null, 0, cover, null);
+        return createUrlItem(MD5.getMD5(url), url, cover);
+    }
+
+    public static VideoItem createUrlItem(@NonNull String vid, @NonNull String url, @Nullable String cover) {
+        return createUrlItem(vid, url, null, null, 0, cover, null);
     }
 
     public static VideoItem createUrlItem(
             @NonNull String vid,
             @NonNull String url,
             @Nullable String urlCacheKey,
+            @Nullable List<Subtitle> subtitles,
             long duration,
             @Nullable String cover,
             @Nullable String title) {
@@ -146,6 +106,7 @@ public class VideoItem implements Parcelable {
         videoItem.vid = vid;
         videoItem.url = url;
         videoItem.urlCacheKey = urlCacheKey;
+        videoItem.subtitles = subtitles;
         videoItem.duration = duration;
         videoItem.cover = cover;
         videoItem.title = title;
@@ -153,7 +114,7 @@ public class VideoItem implements Parcelable {
     }
 
     public static VideoItem createMultiStreamUrlItem(
-            @Nullable String vid,
+            @NonNull String vid,
             @NonNull MediaSource mediaSource,
             long duration,
             @Nullable String cover,
@@ -166,15 +127,6 @@ public class VideoItem implements Parcelable {
         videoItem.cover = cover;
         videoItem.title = title;
         return videoItem;
-    }
-
-    public static VideoItem createVideoModelItem(
-            @NonNull String vid,
-            @NonNull String videoModel,
-            long duration,
-            @Nullable String cover,
-            @Nullable String title) {
-        return createVideoModelItem(vid, videoModel, "", duration, cover, title);
     }
 
     public static VideoItem createVideoModelItem(
@@ -194,6 +146,7 @@ public class VideoItem implements Parcelable {
         videoItem.title = title;
         return videoItem;
     }
+// endregion
 
     private String vid;
 
@@ -215,13 +168,19 @@ public class VideoItem implements Parcelable {
 
     private String urlCacheKey;
 
-    private int sourceType;
+    private List<Subtitle> subtitles;
 
+    private int sourceType;
 
     private String tag;
 
     private String subTag;
 
+    private int playScene;
+
+    private boolean syncProgress;
+
+    // region VideoOne Enhancement
     private String subtitle;
     private int playCount;
 
@@ -237,8 +196,18 @@ public class VideoItem implements Parcelable {
     private int commentCount;
 
     private boolean iLikeIt = false;
+    // endregion
 
-    private int playScene;
+    public static String dump(VideoItem videoItem) {
+        if (videoItem == null) return "VideoItem{ null }";
+        return switch (videoItem.sourceType) {
+            case SOURCE_TYPE_VID -> "VideoItem{ vid:" + videoItem.vid + "}";
+            case SOURCE_TYPE_URL -> "VideoItem{ url:" + videoItem.url + "}";
+            case SOURCE_TYPE_MODEL -> "VideoItem{ model:" + videoItem.videoModel + "}";
+            case SOURCE_TYPE_EMPTY -> "VideoItem{ empty:" + videoItem.vid + "}";
+            default -> "VideoItem{ sourceType:" + videoItem.sourceType + "}";
+        };
+    }
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
@@ -318,8 +287,25 @@ public class VideoItem implements Parcelable {
         return vid;
     }
 
+    @Deprecated
+    public void setVid(String vid) {
+        this.vid = vid;
+    }
+
     public String getPlayAuthToken() {
         return playAuthToken;
+    }
+
+    public boolean playable() {
+        if (sourceType == VideoItem.SOURCE_TYPE_VID) {
+            return !TextUtils.isEmpty(vid) && !TextUtils.isEmpty(playAuthToken);
+        } else if (sourceType == VideoItem.SOURCE_TYPE_URL) {
+            return !TextUtils.isEmpty(url);
+        } else if (sourceType == VideoItem.SOURCE_TYPE_MODEL) {
+            return !TextUtils.isEmpty(videoModel);
+        } else {
+            return sourceType == VideoItem.SOURCE_TYPE_EMPTY;
+        }
     }
 
     public String getVideoModel() {
@@ -330,8 +316,16 @@ public class VideoItem implements Parcelable {
         return duration;
     }
 
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getCover() {
@@ -354,82 +348,112 @@ public class VideoItem implements Parcelable {
         return playScene;
     }
 
+    public void updatePlayAuthToken(String authToken) {
+        this.playAuthToken = authToken;
+        if (mediaSource != null) {
+            mediaSource.setPlayAuthToken(authToken);
+        }
+    }
+
+    public void updateSubtitleAuthToken(String authToken) {
+        this.subtitleAuthToken = authToken;
+        if (mediaSource != null) {
+            mediaSource.setSubtitleAuthToken(authToken);
+        }
+    }
+
     @NonNull
     public static MediaSource toMediaSource(VideoItem videoItem) {
-        return toMediaSource(videoItem, false);
+        if (videoItem.mediaSource == null) {
+            videoItem.mediaSource = createMediaSource(videoItem);
+        }
+        final MediaSource mediaSource = videoItem.mediaSource;
+        VideoItem.set(mediaSource, videoItem);
+        VolcConfig.set(mediaSource, createVolcConfig(videoItem));
+        if (videoItem.syncProgress) {
+            mediaSource.setSyncProgressId(videoItem.vid); // continues play
+        }
+        return mediaSource;
+    }
+
+    private static MediaSource createMediaSource(VideoItem videoItem) {
+        if (videoItem.sourceType == VideoItem.SOURCE_TYPE_EMPTY) {
+            MediaSource mediaSource = MediaSource.createIdSource(videoItem.vid, PLAY_AUTH_TOKEN_EMPTY);
+            return mediaSource;
+        } else if (videoItem.sourceType == VideoItem.SOURCE_TYPE_VID) {
+            String playAuthToken = TextUtils.isEmpty(videoItem.playAuthToken) ? PLAY_AUTH_TOKEN_EMPTY : videoItem.playAuthToken;
+            MediaSource mediaSource = MediaSource.createIdSource(videoItem.vid, playAuthToken);
+            mediaSource.setSubtitleAuthToken(videoItem.subtitleAuthToken);
+            return mediaSource;
+        } else if (videoItem.sourceType == VideoItem.SOURCE_TYPE_URL) {
+            MediaSource mediaSource = MediaSource.createUrlSource(videoItem.vid, videoItem.url, videoItem.urlCacheKey);
+            mediaSource.setSubtitles(videoItem.subtitles);
+            return mediaSource;
+        } else if (videoItem.sourceType == VideoItem.SOURCE_TYPE_MODEL) {
+            MediaSource mediaSource = MediaSource.createModelSource(videoItem.vid, videoItem.videoModel);
+            Mapper.updateVideoModelMediaSource(mediaSource);
+            mediaSource.setSubtitleAuthToken(videoItem.subtitleAuthToken);
+            return mediaSource;
+        } else {
+            throw new IllegalArgumentException("unsupported source type! " + videoItem.sourceType);
+        }
+    }
+
+    @NonNull
+    public static VolcConfig createVolcConfig(VideoItem videoItem) {
+        VolcConfig volcConfig = new VolcConfig();
+        volcConfig.codecStrategyType = VideoSettings.intValue(VideoSettings.COMMON_CODEC_STRATEGY);
+        volcConfig.playerDecoderType = VideoSettings.intValue(VideoSettings.COMMON_HARDWARE_DECODE);
+        volcConfig.sourceEncodeType = VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265) ? Track.ENCODER_TYPE_H265 : Track.ENCODER_TYPE_H264;
+        volcConfig.enableSubtitle = true;
+        volcConfig.qualityConfig = VideoQuality.sceneGearConfig(videoItem.playScene);
+
+        volcConfig.tag = videoItem.tag;
+        volcConfig.subTag = videoItem.subTag;
+        return volcConfig;
     }
 
     @NonNull
     public static MediaSource toMediaSource(VideoItem videoItem, boolean syncProgress) {
-        final MediaSource mediaSource;
-        if (videoItem.mediaSource != null) {
-            mediaSource = videoItem.mediaSource;
-        } else {
-            if (videoItem.sourceType == VideoItem.SOURCE_TYPE_VID) {
-                mediaSource = MediaSource.createIdSource(videoItem.vid, videoItem.playAuthToken, videoItem.subtitleAuthToken);
-            } else if (videoItem.sourceType == VideoItem.SOURCE_TYPE_URL) {
-                mediaSource = MediaSource.createUrlSource(videoItem.vid, videoItem.url, videoItem.urlCacheKey);
-            } else if (videoItem.sourceType == VideoItem.SOURCE_TYPE_MODEL) {
-                mediaSource = MediaSource.createModelSource(videoItem.vid, videoItem.videoModel);
-                Mapper.updateVideoModelMediaSource(mediaSource);
-            } else {
-                throw new IllegalArgumentException("unsupported source type! " + videoItem.sourceType);
-            }
-        }
-        if (!TextUtils.isEmpty(videoItem.cover)) {
-            mediaSource.setCoverUrl(videoItem.cover);
-        }
-        mediaSource.setDuration(videoItem.duration);
-        mediaSource.putExtra(EXTRA_VIDEO_ITEM, videoItem);
-        mediaSource.putExtra(EXTRA_VE_CONFIG, createVEConfig(videoItem));
+        final MediaSource mediaSource = toMediaSource(videoItem);
         if (syncProgress) {
             mediaSource.setSyncProgressId(videoItem.vid); // continues play
         }
-        videoItem.mediaSource = mediaSource;
         return mediaSource;
     }
 
-    public static List<MediaSource> toMediaSources(List<VideoItem> videoItems, boolean syncProgress) {
+    public static List<MediaSource> toMediaSources(List<VideoItem> videoItems) {
+        if (videoItems == null || videoItems.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<MediaSource> sources = new ArrayList<>();
-        if (videoItems != null) {
-            for (VideoItem videoItem : videoItems) {
-                sources.add(VideoItem.toMediaSource(videoItem, syncProgress));
-            }
+        for (VideoItem videoItem : videoItems) {
+            sources.add(toMediaSource(videoItem));
         }
         return sources;
     }
 
-    @NonNull
-    public static PlayerConfig createVEConfig(VideoItem videoItem) {
-        PlayerConfig playerConfig = new PlayerConfig();
-        playerConfig.codecStrategyType = codecStrategyType();
-        playerConfig.playerDecoderType = playerDecoderType();
-        playerConfig.sourceEncodeType = sourceEncodeType();
-        playerConfig.enableSuperResolution = enableSuperResolution();
-        playerConfig.tag = videoItem.tag;
-        playerConfig.subTag = videoItem.subTag;
-        return playerConfig;
+    public static List<MediaSource> toMediaSources(List<VideoItem> videoItems, boolean syncProgress) {
+        if (videoItems == null || videoItems.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<MediaSource> sources = new ArrayList<>();
+        for (VideoItem videoItem : videoItems) {
+            sources.add(toMediaSource(videoItem, syncProgress));
+        }
+        return sources;
     }
 
-    private static int codecStrategyType() {
-        Option option = VideoSettings.option(VideoSettings.COMMON_CODEC_STRATEGY);
-        return option == null ? VideoSettings.CodecStrategy.CODEC_STRATEGY_DISABLE : option.intValue();
-    }
+    public static void set(MediaSource mediaSource, VideoItem videoItem) {
+        if (mediaSource == null) return;
 
-    private static int playerDecoderType() {
-        Option option = VideoSettings.option(VideoSettings.COMMON_HARDWARE_DECODE);
-        return option == null ? VideoSettings.DecoderType.AUTO : option.intValue();
-    }
-
-    private static int sourceEncodeType() {
-        Option option = VideoSettings.option(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265);
-        VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265);
-        return (option != null && option.booleanValue()) ? Track.ENCODER_TYPE_H265 : Track.ENCODER_TYPE_H264;
-    }
-
-    private static boolean enableSuperResolution() {
-        Option option = VideoSettings.option(VideoSettings.COMMON_SUPER_RESOLUTION);
-        return option != null && option.booleanValue();
+        if (!TextUtils.isEmpty(videoItem.cover)) {
+            mediaSource.setCoverUrl(videoItem.cover);
+        }
+        if (videoItem.duration > 0) {
+            mediaSource.setDuration(videoItem.duration);
+        }
+        mediaSource.putExtra(EXTRA_VIDEO_ITEM, videoItem);
     }
 
     @Nullable
@@ -463,5 +487,24 @@ public class VideoItem implements Parcelable {
     public static void playScene(VideoItem videoItem, int playScene) {
         if (videoItem == null) return;
         videoItem.playScene = playScene;
+    }
+
+
+    public static boolean itemEquals(VideoItem item1, VideoItem item2) {
+        if (item1 == item2) return true;
+        if (item1 == null || item2 == null) return false;
+        return TextUtils.equals(item1.vid, item2.vid);
+    }
+
+    public static void syncProgress(List<VideoItem> videoItems, boolean syncProgress) {
+        if (videoItems == null) return;
+        for (VideoItem videoItem : videoItems) {
+            syncProgress(videoItem, syncProgress);
+        }
+    }
+
+    public static void syncProgress(VideoItem videoItem, boolean syncProgress) {
+        if (videoItem == null) return;
+        videoItem.syncProgress = syncProgress;
     }
 }

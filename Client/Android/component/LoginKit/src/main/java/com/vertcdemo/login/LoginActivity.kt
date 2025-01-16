@@ -61,9 +61,8 @@ class LoginActivity : AppCompatActivity() {
         setContentView(mViewBinding.getRoot())
         mViewBinding.verifyConfirm.setOnClickListener { onClickConfirm() }
         mViewBinding.verifyRootLayout.setOnClickListener { IMEUtils.closeIME(it) }
-        mViewBinding.verifyPolicyText.setOnClickListener { mViewBinding.verifyCb.toggle() }
-        mViewBinding.verifyPolicyText.text = spannedText
-        mViewBinding.verifyPolicyText.movementMethod = LinkMovementMethod.getInstance()
+        mViewBinding.verifyPolicy.text = spannedText
+        mViewBinding.verifyPolicy.movementMethod = LinkMovementMethod.getInstance()
         val userNameFilter: InputFilter = LengthFilterWithCallback(18) { overflow: Boolean ->
             if (overflow) {
                 mViewBinding.verifyInputUserNameWaringTv.visibility = View.VISIBLE
@@ -73,10 +72,10 @@ class LoginActivity : AppCompatActivity() {
                 mViewBinding.verifyInputUserNameWaringTv.visibility = View.GONE
             }
         }
+        mViewBinding.verifyPolicy.setOnCheckedChangeListener { _,_ -> setupConfirmStatus() }
         val userNameFilters = arrayOf(userNameFilter)
         mViewBinding.verifyInputUserNameEt.setFilters(userNameFilters)
         mViewBinding.verifyInputUserNameEt.addTextChangedListener(mTextWatcher)
-        mViewBinding.verifyCb.setOnCheckedChangeListener { v: CompoundButton?, isChecked: Boolean -> setupConfirmStatus() }
         setupConfirmStatus()
 
         mViewBinding.appVersion.text =
@@ -104,7 +103,7 @@ class LoginActivity : AppCompatActivity() {
                         }
 
                         override fun updateDrawState(ds: TextPaint) {
-                            ds.setColor(Color.parseColor("#4080FF"))
+                            ds.setColor(Color.parseColor("#346CF9"))
                             ds.isUnderlineText = false
                         }
                     },
@@ -122,7 +121,7 @@ class LoginActivity : AppCompatActivity() {
                         }
 
                         override fun updateDrawState(ds: TextPaint) {
-                            ds.setColor(Color.parseColor("#4080FF"))
+                            ds.setColor(Color.parseColor("#346CF9"))
                             ds.isUnderlineText = false
                         }
                     },
@@ -141,7 +140,7 @@ class LoginActivity : AppCompatActivity() {
             mViewBinding.verifyConfirm.setEnabled(false)
         } else {
             val matchRegex = Pattern.matches(INPUT_REGEX, userName)
-            val isPolicyChecked = mViewBinding.verifyCb.isChecked
+            val isPolicyChecked = mViewBinding.verifyPolicy.isChecked
             if (isPolicyChecked && matchRegex) {
                 mViewBinding.verifyConfirm.setEnabled(true)
                 mViewBinding.verifyConfirm.setAlpha(1f)

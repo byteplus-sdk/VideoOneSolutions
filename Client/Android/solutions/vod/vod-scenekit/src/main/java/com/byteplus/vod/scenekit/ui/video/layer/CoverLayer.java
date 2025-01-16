@@ -115,7 +115,7 @@ public class CoverLayer extends BaseLayer {
     }
 
     protected void load() {
-        final ImageView imageView = getView();
+        final ImageView imageView = getImageView();
         if (imageView == null) return;
         final String coverUrl = resolveCoverUrl();
         Activity activity = activity();
@@ -125,6 +125,10 @@ public class CoverLayer extends BaseLayer {
                     .transform(new CenterCrop())
                     .into(imageView);
         }
+    }
+
+    protected ImageView getImageView() {
+        return getView();
     }
 
     String resolveCoverUrl() {

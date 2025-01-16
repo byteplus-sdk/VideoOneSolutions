@@ -9,11 +9,35 @@ import java.io.Serializable;
 
 public class SubtitleText implements Serializable {
     @SerializedName("pts")
-    public long pts;
+    private long pts;
     @SerializedName("duration")
-    public long duration;
-    @SerializedName("info")
-    public String text;
+    private long duration;
+    @SerializedName(value = "text", alternate = {"info"})
+    private String text;
+
+    public long getPts() {
+        return pts;
+    }
+
+    public void setPts(long pts) {
+        this.pts = pts;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
 
     @Override
     public String toString() {

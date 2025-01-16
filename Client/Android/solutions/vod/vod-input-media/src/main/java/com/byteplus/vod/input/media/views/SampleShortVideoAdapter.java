@@ -19,6 +19,7 @@ import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
+import com.byteplus.vod.scenekit.ext.VideoLayerHostExt;
 import com.byteplus.vod.scenekit.ui.video.layer.LoadingLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.LogLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PauseLayer;
@@ -166,7 +167,7 @@ public class SampleShortVideoAdapter extends RecyclerView.Adapter<SampleShortVid
 
     static VideoView createVideoView(ViewGroup parent, IShortVideoStrategyConfig config) {
         VideoView videoView = new VideoView(parent.getContext());
-        VideoLayerHost layerHost = new VideoLayerHost(parent.getContext(), config);
+        VideoLayerHost layerHost = new VideoLayerHostExt(parent.getContext(), config);
         layerHost.addLayer(new ShortVideoCoverLayer());
         layerHost.addLayer(new ShortVideoDetailsLayer());
         layerHost.addLayer(new LoadingLayer());

@@ -21,7 +21,7 @@ public interface RemoteApi {
             VideoType.LONG,
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface VideoType {
+    public @interface VideoType {
         int SHORT = 0;
         int FEED = 1;
         int LONG = 2;
@@ -30,7 +30,7 @@ public interface RemoteApi {
     interface Callback<T> {
         void onSuccess(T t);
 
-        void onError(Exception e);
+        void onError(Throwable e);
     }
 
     interface GetFeedStream {

@@ -20,6 +20,10 @@ public class Page<T> {
         this.total = total;
     }
 
+    public Page(List<T> list, int index) {
+        this(list, index, TOTAL_INFINITY);
+    }
+
     public Page(List<T> list, String playMode) {
         this.list = list;
         this.playMode = playMode;

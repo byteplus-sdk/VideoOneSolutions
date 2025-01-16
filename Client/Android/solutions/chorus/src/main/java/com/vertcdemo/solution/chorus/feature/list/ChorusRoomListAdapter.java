@@ -58,7 +58,11 @@ public class ChorusRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutChorus
         holder.binding.audienceCount.setText(formatAudienceCount(item.audienceCount + 1));
 
         holder.itemView.setOnClickListener(DebounceClickListener.create(v -> {
-            RoomInfo info = mItems.get(holder.getBindingAdapterPosition());
+            int pos = holder.getBindingAdapterPosition();
+            if (pos < 0 || pos >= mItems.size()) {
+                return;
+            }
+            RoomInfo info = mItems.get(pos);
             Bundle args = new Bundle();
             args.putParcelable(EXTRA_ROOM_INFO, info);
             args.putString(EXTRA_REFERRER, "list");

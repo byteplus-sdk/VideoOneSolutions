@@ -16,7 +16,7 @@ NSString *const PlayListFloatTableCellIdentify = @"PlayListFloatTableCellIdentif
 @property (nonatomic, strong) UILabel *timesWatchedLabel;
 @property (nonatomic, strong) UIView *videoTimeView;
 @property (nonatomic, strong) UIImageView *videoCoverImageView;
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *cellMaskView;
 @property (nonatomic, strong) LOTAnimationView *animationView;
 
 @end
@@ -49,7 +49,7 @@ NSString *const PlayListFloatTableCellIdentify = @"PlayListFloatTableCellIdentif
 
 - (void)setIsPlaying:(BOOL)isPlaying {
     _isPlaying = isPlaying;
-    self.maskView.hidden = !isPlaying;
+    self.cellMaskView.hidden = !isPlaying;
     self.videoTimeView.hidden = isPlaying;
     if (isPlaying) {
         [self.animationView play];
@@ -75,16 +75,16 @@ NSString *const PlayListFloatTableCellIdentify = @"PlayListFloatTableCellIdentif
         make.bottom.equalTo(self.videoCoverImageView).offset(-4.5);
     }];
     
-    [self.videoCoverImageView addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.videoCoverImageView addSubview:self.cellMaskView];
+    [self.cellMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.videoCoverImageView);
     }];
     
-    [self.maskView addSubview:self.animationView];
+    [self.cellMaskView addSubview:self.animationView];
     [self.animationView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(36.0, 36.0));
-        make.centerX.equalTo(self.maskView);
-        make.centerY.equalTo(self.maskView);
+        make.centerX.equalTo(self.cellMaskView);
+        make.centerY.equalTo(self.cellMaskView);
     }];
     
     [self.contentView addSubview:self.videoTitleLabel];
@@ -128,14 +128,14 @@ NSString *const PlayListFloatTableCellIdentify = @"PlayListFloatTableCellIdentif
     return _videoCoverImageView;
 }
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor colorFromRGBHexString:@"#000000" andAlpha:0.5 * 255];
-        _maskView.layer.cornerRadius = 4;
-        _maskView.layer.masksToBounds = YES;
+- (UIView *)cellMaskView {
+    if (!_cellMaskView) {
+        _cellMaskView = [[UIView alloc] init];
+        _cellMaskView.backgroundColor = [UIColor colorFromRGBHexString:@"#000000" andAlpha:0.5 * 255];
+        _cellMaskView.layer.cornerRadius = 4;
+        _cellMaskView.layer.masksToBounds = YES;
     }
-    return _maskView;
+    return _cellMaskView;
 }
 
 

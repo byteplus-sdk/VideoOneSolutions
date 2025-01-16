@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.videoone.vod.function.fragment;
 
+import static com.videoone.vod.function.VodFunctionActivity.EXTRA_VIDEO_ITEM;
+
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,8 +60,6 @@ import com.byteplus.vodfunction.databinding.VevodFunctionFragmentBinding;
 import com.videoone.avatars.Avatars;
 
 public class VodFunctionFragment extends BaseFragment {
-
-    public static final String EXTRA_VIDEO_ITEM = "extra_video_item";
 
     private VideoView mVideoView;
 
@@ -124,8 +124,16 @@ public class VodFunctionFragment extends BaseFragment {
         mBinding.bottomContainer.setVisibility(showBottomContainer ? View.VISIBLE : View.GONE);
 
         Bundle bundle = requireArguments();
-        VideoItem videoItem = initVideoItem(bundle);
+        VideoItem videoItem = getVideoItem(bundle);
         playVideo(videoItem);
+    }
+
+    protected VideoItem getVideoItem(Bundle bundle) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return bundle.getSerializable(EXTRA_VIDEO_ITEM, VideoItem.class);
+        } else {
+            return (VideoItem) bundle.getSerializable(EXTRA_VIDEO_ITEM);
+        }
     }
 
     @Override
@@ -265,9 +273,5 @@ public class VodFunctionFragment extends BaseFragment {
 
     protected boolean setupBottomContainer(FrameLayout container) {
         return false;
-    }
-
-    protected VideoItem initVideoItem(Bundle bundle) {
-        return bundle.getParcelable(EXTRA_VIDEO_ITEM);
     }
 }

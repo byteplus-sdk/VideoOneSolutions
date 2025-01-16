@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <bitmap android:src="@drawable/vevod_ic_mini_drama_tab_channel_normal" android:tint="#EBEDF0" />
+    </item>
+    <item>
+        <bitmap android:src="@drawable/vevod_ic_mini_drama_tab_channel_normal" android:tint="#B3FFFFFF" />
+    </item>
+</selector>
+

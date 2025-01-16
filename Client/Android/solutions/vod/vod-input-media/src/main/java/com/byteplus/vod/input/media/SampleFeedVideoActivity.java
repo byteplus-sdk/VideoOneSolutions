@@ -32,7 +32,7 @@ public class SampleFeedVideoActivity extends BaseActivity implements FeedVideoPa
 
     public static void intentInto(Activity activity, ArrayList<VideoItem> videoItems) {
         Intent intent = new Intent(activity, SampleFeedVideoActivity.class);
-        intent.putParcelableArrayListExtra(EXTRA_VIDEO_ITEMS, videoItems);
+        intent.putExtra(EXTRA_VIDEO_ITEMS, videoItems);
         activity.startActivity(intent);
     }
 
@@ -43,7 +43,7 @@ public class SampleFeedVideoActivity extends BaseActivity implements FeedVideoPa
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        ArrayList<VideoItem> videoItems = intent.getParcelableArrayListExtra(EXTRA_VIDEO_ITEMS);
+        ArrayList<VideoItem> videoItems = (ArrayList<VideoItem>) intent.getSerializableExtra(EXTRA_VIDEO_ITEMS);
 
         mSceneView = new FeedVideoSceneView(this, new NoMiniPlayerStrategyConfig());
         mSceneView.setRefreshEnabled(false);

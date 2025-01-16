@@ -75,6 +75,6 @@ dependencies {
     implementation libs.commons.net
 
     implementation libs.rtc.sdk
-    implementation libs.ttsdk.ttlivepull
+    implementation libs.ttsdk.ttlivepull.rtc
     implementation libs.ttsdk.ttlivepush.rtc
 }

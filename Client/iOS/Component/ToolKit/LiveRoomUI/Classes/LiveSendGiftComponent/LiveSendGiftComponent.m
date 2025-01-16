@@ -13,7 +13,7 @@
 
 @property (nonatomic, weak) UIView *superView;
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *giftMaskView;
 
 @property (nonatomic, strong) LiveGiftContentView *contentView;
 
@@ -35,8 +35,8 @@
 
 - (void)showWithRoomID:(NSString *)roomID {
     self.roomID = roomID;
-    [self.superView addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.superView addSubview:self.giftMaskView];
+    [self.giftMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.superView);
     }];
 
@@ -59,9 +59,9 @@
 }
 
 - (void)maskViewAction {
-    if (self.maskView.superview) {
-        [self.maskView removeFromSuperview];
-        self.maskView = nil;
+    if (self.giftMaskView.superview) {
+        [self.giftMaskView removeFromSuperview];
+        self.giftMaskView = nil;
     }
     if (self.contentView.superview) {
         [self.contentView removeFromSuperview];
@@ -119,14 +119,14 @@
     return _contentView;
 }
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor clearColor];
-        _maskView.userInteractionEnabled = YES;
+- (UIView *)giftMaskView {
+    if (!_giftMaskView) {
+        _giftMaskView = [[UIView alloc] init];
+        _giftMaskView.backgroundColor = [UIColor clearColor];
+        _giftMaskView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(maskViewAction)];
-        [_maskView addGestureRecognizer:tap];
+        [_giftMaskView addGestureRecognizer:tap];
     }
-    return _maskView;
+    return _giftMaskView;
 }
 @end

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="vevod_mini_drama_main_tab_indicator_light">#161823</color>
+    <color name="vevod_mini_drama_main_tab_indicator_dark">#FFFFFF</color>
+</resources>

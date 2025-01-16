@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.bean.StatusSongItem;
 import com.vertcdemo.solution.ktv.core.rts.annotation.SongStatus;
@@ -56,10 +57,14 @@ public class MusicLibraryAdapter extends RecyclerView.Adapter<BVH<ItemKtvSongsBi
         updateStatus(holder, item);
 
         if (mOnClickListener != null) {
-            holder.itemView.setOnClickListener(v -> {
-                StatusSongItem info = mItems.get(holder.getBindingAdapterPosition());
+            holder.itemView.setOnClickListener(DebounceClickListener.create(v -> {
+                int pos = holder.getBindingAdapterPosition();
+                if (pos < 0 || pos >= mItems.size()) {
+                    return;
+                }
+                StatusSongItem info = mItems.get(pos);
                 mOnClickListener.accept(info);
-            });
+            }));
         }
     }
 

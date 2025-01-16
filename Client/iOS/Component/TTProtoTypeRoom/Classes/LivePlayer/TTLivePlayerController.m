@@ -100,7 +100,7 @@
 
 - (void)playerStreamWith:(TTLiveModel *)liveModel {
     if (self.playerManager.isPlaying) {
-        if ([self.liveModel.roomId isEqualToString:liveModel.roomId]) {
+        if ([self.liveModel.roomId isEqualToString:liveModel.roomId] && self.isActive) {
             return;
         } else {
             [self stopPlayerStream];
@@ -143,6 +143,7 @@
     VOLogI(VOTTProto, @"playerContainerHidden: playerAddress: %@", self);
     self.playerContainer.hidden = YES;
     [self.playerManager stop];
+    _liveModel = nil;
     self.isActive = NO;
 }
 

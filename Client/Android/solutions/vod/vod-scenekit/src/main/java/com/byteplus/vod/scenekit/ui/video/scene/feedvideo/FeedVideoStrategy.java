@@ -3,8 +3,8 @@
 
 package com.byteplus.vod.scenekit.ui.video.scene.feedvideo;
 
-import com.byteplus.playerkit.player.ve.SceneFeed;
-import com.byteplus.playerkit.player.ve.VEPlayerStatic;
+import com.byteplus.playerkit.player.volcengine.VolcEngineStrategy;
+import com.byteplus.playerkit.player.volcengine.VolcScene;
 import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
 
@@ -15,7 +15,7 @@ public class FeedVideoStrategy {
     public static void setEnabled(boolean enable) {
         if (!VideoSettings.booleanValue(VideoSettings.FEED_VIDEO_ENABLE_PRELOAD)) return;
 
-        VEPlayerStatic.setSceneStrategyEnabled(SceneFeed.SCENE_FEED_VIDEO, enable);
+        VolcEngineStrategy.setEnabled(VolcScene.SCENE_FEED_VIDEO, enable);
     }
 
     public static void setItems(List<VideoItem> videoItems) {
@@ -23,7 +23,7 @@ public class FeedVideoStrategy {
 
         if (videoItems == null) return;
 
-        VEPlayerStatic.setMediaSources(VideoItem.toMediaSources(videoItems, true));
+        VolcEngineStrategy.setMediaSources(VideoItem.toMediaSources(videoItems, true));
     }
 
     public static void appendItems(List<VideoItem> videoItems) {
@@ -31,6 +31,6 @@ public class FeedVideoStrategy {
 
         if (videoItems == null) return;
 
-        VEPlayerStatic.addMediaSources(VideoItem.toMediaSources(videoItems, true));
+        VolcEngineStrategy.addMediaSources(VideoItem.toMediaSources(videoItems, true));
     }
 }

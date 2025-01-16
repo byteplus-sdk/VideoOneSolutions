@@ -11,12 +11,10 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.byteplus.playerkit.player.adapter.PlayerAdapter;
 import com.byteplus.playerkit.player.event.ActionPrepare;
 import com.byteplus.playerkit.player.event.ActionSetSurface;
 import com.byteplus.playerkit.player.event.StateCompleted;
 import com.byteplus.playerkit.player.event.StateError;
-import com.byteplus.playerkit.player.event.StateIDLE;
 import com.byteplus.playerkit.player.event.StatePaused;
 import com.byteplus.playerkit.player.event.StatePrepared;
 import com.byteplus.playerkit.player.event.StatePreparing;
@@ -27,6 +25,7 @@ import com.byteplus.playerkit.player.legacy.PlayerLegacy;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.source.Subtitle;
 import com.byteplus.playerkit.player.source.Track;
+import com.byteplus.playerkit.player.source.Track.TrackType;
 import com.byteplus.playerkit.utils.event.Dispatcher;
 
 import java.lang.annotation.Retention;
@@ -39,7 +38,7 @@ import java.util.List;
  *
  * <p> {@link AVPlayer} is default implement of <b>Player</b> interface. You can also use
  * this interface to implement your own media player with third part player SDK.
- * It's recommended to using {@link PlayerAdapter} to simplify
+ * It's recommended to using {@link com.byteplus.playerkit.player.adapter.PlayerAdapter} to simplify
  * your implements. <b>PlayerAdapter</b> is an adapter interface of MediaPlayer. The API of
  * <b>PlayerAdapter</b> api is very similar with android system player
  * {@link android.media.MediaPlayer}.
@@ -64,7 +63,7 @@ public interface Player {
      * {@link Dispatcher.EventListener}
      * Player state event would be one of
      * <ul>
-     *     <li>{@link StateIDLE} </li>
+     *     <li>{@link com.byteplus.playerkit.player.event.StateIDLE} </li>
      *     <li>{@link StatePreparing} </li>
      *     <li>{@link StatePrepared} </li>
      *     <li>{@link StateStarted} </li>
@@ -231,13 +230,94 @@ public interface Player {
     static String mapDecoderType(@DecoderType int type) {
         switch (type) {
             case DECODER_TYPE_UNKNOWN:
-                return "unknown";
+                return "Unknown";
             case DECODER_TYPE_SOFTWARE:
-                return "software";
+                return "Software";
             case DECODER_TYPE_HARDWARE:
-                return "hardware";
+                return "Hardware";
             default:
                 throw new IllegalArgumentException("unsupported decoder type:" + type);
+        }
+    }
+
+    /**
+     * Codec ID. One of
+     * {@link #CODEC_ID_UNKNOWN},
+     * {@link #CODEC_ID_H264},
+     * {@link #CODEC_ID_H265},
+     * {@link #CODEC_ID_H266}
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({CODEC_ID_UNKNOWN,
+            CODEC_ID_H264,
+            CODEC_ID_H265,
+            CODEC_ID_H266})
+    @interface CodecId {
+    }
+
+    int CODEC_ID_UNKNOWN = 0;
+    int CODEC_ID_H264 = 1;
+    int CODEC_ID_H265 = 2;
+    int CODEC_ID_H266 = 3;
+
+    static String mapCodecID(@CodecId int codecId) {
+        switch (codecId) {
+            case CODEC_ID_UNKNOWN:
+                return "unknown";
+            case CODEC_ID_H264:
+                return "H264";
+            case CODEC_ID_H265:
+                return "H265";
+            case CODEC_ID_H266:
+                return "H266";
+            default:
+                throw new IllegalArgumentException("Unsupported codecType " + codecId);
+        }
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({FRAME_TYPE_UNKNOWN,
+            FRAME_TYPE_VIDEO,
+            FRAME_TYPE_AUDIO})
+    @interface FrameType {
+    }
+
+    int FRAME_TYPE_UNKNOWN = 0;
+    int FRAME_TYPE_VIDEO = 1;
+    int FRAME_TYPE_AUDIO = 2;
+
+    /**
+     * Track change reason. One of
+     * {@link #TRACK_CHANGE_REASON_UNKNOWN},
+     * {@link #TRACK_CHANGE_REASON_USER_SELECT},
+     * {@link #TRACK_CHANGE_REASON_AUTO_SELECT}
+     * {@link #TRACK_CHANGE_REASON_DEFAULT_SELECT}
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({TRACK_CHANGE_REASON_UNKNOWN,
+            TRACK_CHANGE_REASON_USER_SELECT,
+            TRACK_CHANGE_REASON_AUTO_SELECT,
+            TRACK_CHANGE_REASON_DEFAULT_SELECT})
+    @interface TrackChangeReason {
+    }
+
+    int TRACK_CHANGE_REASON_UNKNOWN = 0;
+    int TRACK_CHANGE_REASON_USER_SELECT = 1;
+    int TRACK_CHANGE_REASON_AUTO_SELECT = 2;
+    int TRACK_CHANGE_REASON_DEFAULT_SELECT = 3;
+
+    static String mapTrackChangeReason(@TrackChangeReason int reason) {
+        switch (reason) {
+            case TRACK_CHANGE_REASON_UNKNOWN:
+                return "unknown";
+            case TRACK_CHANGE_REASON_USER_SELECT:
+                return "user";
+            case TRACK_CHANGE_REASON_AUTO_SELECT:
+                return "auto";
+            case TRACK_CHANGE_REASON_DEFAULT_SELECT:
+                return "default";
+            default:
+                throw new IllegalArgumentException("unsupported change reason:" + reason);
         }
     }
 
@@ -422,52 +502,71 @@ public interface Player {
     /**
      * Get current playing track.
      *
-     * @param trackType Track type. One of {@link Track.TrackType}
+     * @param trackType Track type. One of {@link TrackType}
      * @return current playing track
      */
     @Nullable
-    Track getCurrentTrack(@Track.TrackType int trackType);
+    Track getCurrentTrack(@TrackType int trackType);
 
     /**
      * Get current selected but not playing track. Once the track is playing return null.
      *
-     * @param trackType Track type. One of {@link Track.TrackType}
+     * @param trackType Track type. One of {@link TrackType}
      * @return pending to play track
      */
     @Nullable
-    Track getPendingTrack(@Track.TrackType int trackType);
+    Track getPendingTrack(@TrackType int trackType);
 
     /**
      * Get selected track. Return {@link #getPendingTrack(int)} if not null.
      * Otherwise, return {@link #getCurrentTrack(int)}
      *
-     * @param trackType Track type. One of {@link Track.TrackType}
+     * @param trackType Track type. One of {@link TrackType}
      * @return selected track
      */
     @Nullable
-    Track getSelectedTrack(@Track.TrackType int trackType);
+    Track getSelectedTrack(@TrackType int trackType);
 
     /**
-     * Get track list by {@link Track.TrackType}.
+     * Get track list by {@link TrackType}.
      *
-     * @param trackType Track type. One of {@link Track.TrackType}
+     * @param trackType Track type. One of {@link TrackType}
      * @return a list of track if contains; null if not contains
      */
     @Nullable
-    List<Track> getTracks(@Track.TrackType int trackType);
+    List<Track> getTracks(@TrackType int trackType);
 
     /**
-     * @param trackType Track type. One of {@link Track.TrackType}
+     * @param track desired track to play; null if auto
+     */
+    void selectTrack(@Nullable Track track);
+
+    /**
+     * @param trackType Track type. One of {@link TrackType}
      * @param track     desired track to play; null if auto
      */
-    void selectTrack(@Track.TrackType int trackType, @Nullable Track track)
+    void selectTrack(@TrackType int trackType, @Nullable Track track)
             throws UnsupportedOperationException;
 
+    @Nullable
+    List<Subtitle> getSubtitles();
+
+    void selectSubtitle(@Nullable Subtitle subtitle);
+
+    @Nullable
+    Subtitle getSelectedSubtitle();
+
+    @Nullable
+    Subtitle getPendingSubtitle();
+
+    @Nullable
+    Subtitle getCurrentSubtitle();
+
     /**
-     * @param trackType Track type. One of {@link Track.TrackType}
+     * @param trackType Track type. One of {@link TrackType}
      * @return true if player is support smooth track switching for
      */
-    boolean isSupportSmoothTrackSwitching(@Track.TrackType int trackType);
+    boolean isSupportSmoothTrackSwitching(@TrackType int trackType);
 
     /**
      * Set playback start time. It's recommend to use this api instead {@link #seekTo(long)} to set
@@ -543,7 +642,7 @@ public interface Player {
      * @see #reset()
      * @see #release()
      */
-    void stop() throws IllegalStateException;
+    /* void stop() throws IllegalStateException; */ // remove method for known issue
 
     /**
      * Resets the player to {@link #STATE_IDLE} state. Call prepare() + start()  to start playback
@@ -620,6 +719,8 @@ public interface Player {
 
     /**
      * Set playback speed factor
+     *
+     * @param speed (0, 2] in float. Recommend values [0.5, 1, 1.5, 2].
      */
     void setSpeed(float speed);
 
@@ -656,6 +757,16 @@ public interface Player {
     void setSuperResolutionEnabled(boolean enabled);
 
     boolean isSuperResolutionEnabled();
+
+    void setSubtitleEnabled(boolean enabled);
+
+    boolean isSubtitleEnabled();
+
+    @DecoderType
+    int getVideoDecoderType();
+
+    @CodecId
+    int getVideoCodecId();
 
     /**
      * @return true: IO buffering. Otherwise, false.
@@ -727,16 +838,6 @@ public interface Player {
      */
     @Nullable
     PlayerException getPlayerException();
-
-    List<Subtitle> getSubtitles();
-
-    void selectSubtitle(@Nullable Subtitle subtitle);
-
-    Subtitle getSelectedSubtitle();
-
-    void setSubtitleEnabled(boolean enabled);
-
-    boolean isSubtitleEnabled();
 
     String dump();
 }

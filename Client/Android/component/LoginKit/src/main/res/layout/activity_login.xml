@@ -75,7 +75,7 @@
             android:paddingHorizontal="16dp"
             android:singleLine="true"
             android:textColor="#020814"
-            android:textColorHint="#C9CDD4"
+            android:textColorHint="#737578"
             android:textSize="14sp" />
 
         <TextView
@@ -85,32 +85,22 @@
             android:layout_marginTop="16dp"
             android:textColor="#DB373F"
             android:textSize="14sp"
-            android:visibility="gone" />
+            android:visibility="invisible" />
     </LinearLayout>
 
-    <CheckBox
-        android:id="@+id/verify_cb"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/ic_circle"
-        android:button="@null"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/verify_input_layout" />
-
-    <TextView
-        android:id="@+id/verify_policy_text"
+    <androidx.appcompat.widget.AppCompatCheckBox
+        android:id="@+id/verify_policy"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        android:drawablePadding="8dp"
-        android:gravity="center_vertical"
-        android:textColor="#80838A"
+        android:button="@drawable/ic_circle"
+        android:lineSpacingExtra="4dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:textColor="#74767B"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/verify_cb"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/verify_input_layout"
         tools:text="@string/read_and_agree" />
 
@@ -127,14 +117,14 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/verify_policy_text" />
+        app:layout_constraintTop_toBottomOf="@id/verify_policy" />
 
     <TextView
         android:id="@+id/app_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:textColor="#80838A"
+        android:textColor="#74767B"
         app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

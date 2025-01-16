@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +24,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -59,8 +59,9 @@ public class MainTabFragment extends Fragment {
         VevodMainTabFragmentBinding binding = VevodMainTabFragmentBinding.bind(view);
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
             binding.actionBar.getRoot().setPadding(0, insets.top, 0, 0);
+            binding.bottomBar.setPadding(0, 0, 0, insets.bottom);
             return WindowInsetsCompat.CONSUMED;
         });
 
@@ -88,13 +89,13 @@ public class MainTabFragment extends Fragment {
             binding.tabSettings.setSelected(position == MainTabViewModel.TAB_SETTINGS);
             binding.tabSettings.setTypeface(position == MainTabViewModel.TAB_SETTINGS ? bold : normal);
 
-
+            WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(requireActivity().getWindow(), requireView());
             if (position == MainTabViewModel.TAB_SETTINGS) {
-                WindowCompat.getInsetsController(requireActivity().getWindow(), requireView())
-                        .setAppearanceLightStatusBars(true);
+                controller.setAppearanceLightStatusBars(true);
+                controller.setAppearanceLightNavigationBars(true);
             } else {
-                WindowCompat.getInsetsController(requireActivity().getWindow(), requireView())
-                        .setAppearanceLightStatusBars(false);
+                controller.setAppearanceLightStatusBars(false);
+                controller.setAppearanceLightNavigationBars(false);
             }
 
             if (position == MainTabViewModel.TAB_MAIN || position == MainTabViewModel.TAB_CHANNEL) {
@@ -140,11 +141,6 @@ public class MainTabFragment extends Fragment {
                 binding.tabSettings.setTextColor(color);
 
                 binding.creative.setImageResource(R.drawable.vevod_ic_tab_creative_dark);
-
-                Window window = requireActivity().getWindow();
-                window.setNavigationBarColor(Color.WHITE);
-
-
             } else {
                 binding.bottomBar.setBackgroundColor(Color.BLACK);
 
@@ -160,9 +156,6 @@ public class MainTabFragment extends Fragment {
                 binding.tabSettings.setTextColor(color);
 
                 binding.creative.setImageResource(R.drawable.vevod_ic_tab_creative_light);
-
-                Window window = requireActivity().getWindow();
-                window.setNavigationBarColor(Color.BLACK);
             }
         });
 

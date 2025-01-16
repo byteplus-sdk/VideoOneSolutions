@@ -43,3 +43,4 @@ include ':solutions:rtc-api-example:rtc-api-example-base'
 include ':solutions:rtc-api-example:rtc-api-example'
 
 include ':solutions:vod-live-feed'
+include ':solutions:vod-mini-drama'

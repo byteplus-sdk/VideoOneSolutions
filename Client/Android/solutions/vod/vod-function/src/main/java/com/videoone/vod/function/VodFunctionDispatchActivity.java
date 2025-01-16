@@ -27,6 +27,7 @@ import com.byteplus.vodcommon.data.remote.api2.Params;
 import com.byteplus.vodcommon.data.remote.api2.model.GetFeedStreamRequest;
 import com.vertcdemo.ui.dialog.SolutionProgressDialog;
 
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,16 +122,19 @@ public class VodFunctionDispatchActivity extends AppCompatActivity {
                 Log.d(TAG, "  videoItems isNullOrEmpty");
                 return;
             }
-            VideoItem videoItem = videoItems.get(0);
-            VideoItem.tag(videoItem, PlayScene.map(PlayScene.SCENE_FEED), null);
+
+            VideoItem.tag(videoItems, PlayScene.map(PlayScene.SCENE_FEED), null);
 
             Intent intent = new Intent(activity, VodFunctionActivity.class);
             if (Function.PLAYLIST.equals(mFunction)) {
-                intent.putParcelableArrayListExtra(EXTRA_VIDEO_LIST, (ArrayList<? extends Parcelable>) page.list);
+                intent.putExtra(EXTRA_VIDEO_LIST, new ArrayList<>(videoItems));
                 intent.putExtra(EXTRA_PLAY_MODE, page.playMode);
-            } else {
-                intent.putExtra(EXTRA_VIDEO_ITEM, videoItem);
             }
+
+            VideoItem videoItem = videoItems.get(0);
+            VideoItem.tag(videoItem, PlayScene.map(PlayScene.SCENE_FEED), null);
+            intent.putExtra(EXTRA_VIDEO_ITEM, videoItem);
+
             intent.putExtra(EXTRA_FUNCTION, mFunction);
             activity.startActivity(intent);
 
@@ -138,7 +142,7 @@ public class VodFunctionDispatchActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onError(Exception e) {
+        public void onError(Throwable e) {
             Log.d(TAG, "MyCallback: onError: " + e.getMessage());
             Activity activity = mActivityRef.get();
             if (activity == null) {

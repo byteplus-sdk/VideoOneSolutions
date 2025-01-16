@@ -3,13 +3,15 @@
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+
     <application>
         <activity
             android:name="com.vertc.api.example.examples.basic.QuickStartActivity"
             android:exported="false"
             android:icon="@drawable/example_quick_start"
             android:label="@string/example_quick_start"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -21,7 +23,8 @@
             android:exported="false"
             android:icon="@drawable/example_multi_room"
             android:label="@string/example_multi_room"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -33,7 +36,8 @@
             android:exported="false"
             android:icon="@drawable/example_cross_room_pk"
             android:label="@string/example_cross_room_pk"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -45,7 +49,8 @@
             android:exported="false"
             android:icon="@drawable/example_raw_audio_data"
             android:label="@string/example_raw_audio_data"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -57,7 +62,8 @@
             android:exported="false"
             android:icon="@drawable/example_audio_mixing"
             android:label="@string/example_audio_mixing"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -69,7 +75,8 @@
             android:exported="false"
             android:icon="@drawable/example_audio_effect_mixing"
             android:label="@string/example_audio_effect_mixing"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -81,7 +88,8 @@
             android:exported="false"
             android:icon="@drawable/example_voice_effect"
             android:label="@string/example_voice_effect"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -93,7 +101,8 @@
             android:exported="false"
             android:icon="@drawable/example_custom_audio_capture"
             android:label="@string/example_custom_audio_capture"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -105,7 +114,8 @@
             android:exported="false"
             android:icon="@drawable/example_picture_in_picture"
             android:label="@string/example_picture_in_picture"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -117,7 +127,8 @@
             android:exported="false"
             android:icon="@drawable/example_video_config"
             android:label="@string/example_video_config"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -128,7 +139,8 @@
             android:name="com.vertc.api.example.examples.video.VideoRotateConfigActivity"
             android:exported="false"
             android:icon="@drawable/example_video_rotation"
-            android:label="@string/example_video_rotation">
+            android:label="@string/example_video_rotation"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -140,7 +152,8 @@
             android:exported="false"
             android:icon="@drawable/example_screen_sharing"
             android:label="@string/example_screen_sharing"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -152,7 +165,8 @@
             android:exported="false"
             android:icon="@drawable/example_custom_video_capture"
             android:label="@string/example_custom_video_capture"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -164,7 +178,8 @@
             android:exported="false"
             android:icon="@drawable/example_custom_video_rendering"
             android:label="@string/example_custom_video_rendering"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -176,7 +191,8 @@
             android:exported="false"
             android:icon="@drawable/example_custom_video_encoding"
             android:label="@string/example_custom_video_encoding"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -188,7 +204,8 @@
             android:exported="false"
             android:icon="@drawable/example_cdn_stream"
             android:label="@string/example_cdn_stream"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -200,7 +217,8 @@
             android:exported="false"
             android:icon="@drawable/example_third_beauty"
             android:label="@string/example_third_beauty_byte"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -212,7 +230,8 @@
             android:exported="false"
             android:icon="@drawable/example_sei_messaging"
             android:label="@string/example_sei_messaging"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />
@@ -224,7 +243,8 @@
             android:exported="false"
             android:icon="@drawable/example_stream_sync_info"
             android:label="@string/example_stream_sync_info"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/RtcApiExampleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="rtc.intent.category.RTC_API_EXAMPLE" />

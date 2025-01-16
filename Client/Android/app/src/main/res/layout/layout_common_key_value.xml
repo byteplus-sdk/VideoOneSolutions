@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:gravity="end"
-        android:textColor="#80838a"
+        android:textColor="#74767B"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/more"

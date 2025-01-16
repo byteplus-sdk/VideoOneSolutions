@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_mini_drama">短剧</string>
+
+    <string name="vevod_mini_drama_tab_home">主页</string>
+    <string name="vevod_mini_drama_tab_channel">猜你喜欢</string>
+
+    <string name="vevod_mini_drama_main_tab_title_trending">热门 🔥</string>
+    <string name="vevod_mini_drama_main_tab_title_new">最新</string>
+    <string name="vevod_mini_drama_main_tab_title_recommend">推荐</string>
+
+    <string name="vevod_mini_drama_detail_video_episode_number_desc">第%d集</string>
+    <string name="vevod_mini_drama_episode_description">%1$s 第%2$d集 | %3$s</string>
+
+    <string name="vevod_video_bottom_bar_card_speed_desc">%.1fx 播放中</string>
+    <string name="vevod_mini_drama_play_next_drama_hint">本剧已看完，播放下一部：%1$s</string>
+
+    <string name="vevod_mini_drama_play_now">立即体验</string>
+    <string name="vevod_mini_drama_recommend_for_you">为您推荐</string>
+
+    <string name="vevod_mini_drama_video_detail_select_episode_total">全剧共 ·%1$d集</string>
+    <string name="vevod_mini_drama_unlock_all">解锁全部</string>
+    <string name="vevod_mini_drama_all_episodes_count">全剧共%1$d集</string>
+
+    <string name="vevod_mini_drama_episode_watch_ad_for_free">观看广告免费解锁</string>
+    <string name="vevod_mini_drama_episode_watch_ad_now">立即观看</string>
+    <string name="vevod_mini_drama_episode_unlock_all_episodes">解锁所有剧集</string>
+    <string name="vevod_mini_drama_episode_unit_one_episode">集</string>
+    <string name="vevod_mini_drama_unlock_failed">"解锁剧集失败"</string>
+    <string name="vevod_mini_drama_already_unlock_all">"已经解锁全部剧集了"</string>
+
+    <string name="vevod_mini_drama_ad_label">广告</string>
+    <string name="vevod_mini_drama_unlock_episodes">解锁剧集</string>
+    <string name="vevod_mini_drama_episodes_all">全</string>
+    <string name="vevod_mini_drama_episodes">集</string>
+    <string name="vevod_mini_drama_pay_for_usd">"支付 USD %1$.1f"</string>
+
+    <string name="vevod_mini_drama_playback_speed">"播放速度"</string>
+
+    <string name="vevod_mini_drama_unlock_multi_episodes">"解锁多集"</string>
+    <string name="vevod_mini_drama_permanent_viewing">"永久观看"</string>
+    <string name="vevod_mini_drama_no_refund">"不支持退款"</string>
+
+    <string name="vevod_episodes_recommend_for_you">为您推荐</string>
+</resources>
