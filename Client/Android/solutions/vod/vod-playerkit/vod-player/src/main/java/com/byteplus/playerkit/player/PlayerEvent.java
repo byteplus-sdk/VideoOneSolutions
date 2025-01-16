@@ -67,6 +67,7 @@ public interface PlayerEvent {
         /**
          * @see ActionStop
          */
+        @Deprecated
         public static final int STOP = 1005;
         /**
          * @see ActionRelease
@@ -115,6 +116,7 @@ public interface PlayerEvent {
         /**
          * @see StateStopped
          */
+        @Deprecated
         public static final int STOPPED = 2006;
         /**
          * @see StateReleased
@@ -209,8 +211,12 @@ public interface PlayerEvent {
 
         public static final int SUBTITLE_FILE_LOAD_FINISH = 3019;
 
-        public static final int SUBTITLE_TEXT_UPDATE = 3020;
+        public static final int SUBTITLE_WILL_CHANGE = 3020;
 
-        public static final int SUBTITLE_CHANGED = 3021;
+        public static final int SUBTITLE_TEXT_UPDATE = 3021;
+
+        public static final int SUBTITLE_CHANGED = 3022;
+
+        public static final int FRAME_INFO_UPDATE = 3023;
     }
 }

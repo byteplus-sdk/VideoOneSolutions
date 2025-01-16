@@ -58,7 +58,11 @@ public class LiveRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutLiveRoom
                 .into(holder.binding.userAvatar);
 
         holder.itemView.setOnClickListener(DebounceClickListener.create(v -> {
-            LiveRoomInfo info = mItems.get(holder.getBindingAdapterPosition());
+            int pos = holder.getBindingAdapterPosition();
+            if (pos < 0 || pos >= mItems.size()) {
+                return;
+            }
+            LiveRoomInfo info = mItems.get(pos);
             Bundle args = new Bundle();
             args.putString(EXTRA_ROOM_ID, info.roomId);
             args.putString(EXTRA_HOST_ID, info.anchorUserId);

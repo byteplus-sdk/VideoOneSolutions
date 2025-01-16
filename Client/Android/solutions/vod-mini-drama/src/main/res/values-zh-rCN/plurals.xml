@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="vevod_episodes_recommend_for_you">
+        <item quantity="other">为你推荐 · %1$d 个视频</item>
+    </plurals>
+</resources>

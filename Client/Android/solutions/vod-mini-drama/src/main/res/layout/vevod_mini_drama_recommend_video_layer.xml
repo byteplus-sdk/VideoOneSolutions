@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2024 bytedance
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  ~ Create Date : 2024/3/22
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="#33000000">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/vevod_mini_drama_top_shadow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/display_anchor"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/full_screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/vevod_bg_short_video_fullscreen_button"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="6dp"
+        android:text="@string/vevod_button_fullscreen"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/vevod_ic_fullscreen_20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/display_anchor"
+        tools:drawableStart="@drawable/vevod_ic_fullscreen_20" />
+
+    <TextView
+        android:id="@+id/comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="11dp"
+        android:layout_marginBottom="16dp"
+        android:drawablePadding="2dp"
+        android:gravity="center_horizontal"
+        android:shadowColor="#33000000"
+        android:shadowDx="0"
+        android:shadowDy="0.5"
+        android:shadowRadius="1"
+        android:textColor="#FFF"
+        android:textSize="14sp"
+        app:drawableTopCompat="@drawable/vevod_ic_comment_40"
+        app:layout_constraintBottom_toTopOf="@id/episodes_recommend_for_you"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:drawableTop="@drawable/vevod_ic_comment_40"
+        tools:text="4096" />
+
+    <LinearLayout
+        android:id="@+id/like_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/comment"
+        app:layout_constraintEnd_toEndOf="@id/comment">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/like"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:lottie_autoPlay="false"
+            app:lottie_cacheComposition="true"
+            app:lottie_fileName="like_icondata.json"
+            app:lottie_loop="false"
+            app:lottie_repeatMode="restart" />
+
+        <TextView
+            android:id="@+id/like_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="2dp"
+            android:gravity="center_horizontal"
+            android:shadowColor="#33000000"
+            android:shadowDx="0"
+            android:shadowDy="0.5"
+            android:shadowRadius="1"
+            android:textColor="#FFF"
+            android:textSize="14sp"
+            tools:text="1450" />
+    </LinearLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/avatar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginBottom="16dp"
+        android:padding="1dp"
+        app:layout_constraintBottom_toTopOf="@id/like_container"
+        app:layout_constraintEnd_toEndOf="@id/comment"
+        app:shapeAppearanceOverlay="@style/circleStyle"
+        app:strokeColor="#FFF"
+        app:strokeWidth="1dp"
+        tools:src="@drawable/avatar00" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/avatar_barrier"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="start"
+        app:constraint_referenced_ids="avatar, comment, like_container" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_start"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <FrameLayout
+        android:id="@+id/drama_title_normal_parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toTopOf="@id/username"
+        app:layout_constraintEnd_toStartOf="@id/avatar_barrier"
+        app:layout_constraintStart_toStartOf="@id/guideline_start">
+        <!-- Use the outer FrameLayout to restrict the max with of the inner LinearLayout -->
+
+        <LinearLayout
+            android:id="@+id/drama_title_normal_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/vevod_mini_drama_bg_recommend_title"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/vevod_mini_drama_ic_mini_drama_title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:shadowColor="#33000000"
+                android:shadowDy="0.5"
+                android:shadowRadius="1"
+                android:text="@string/vevod_mini_drama"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0.5dp"
+                android:layout_height="12dp"
+                android:layout_marginHorizontal="4dp"
+                android:background="#5CFFFFFF" />
+
+            <TextView
+                android:id="@+id/drama_title_normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:shadowColor="#33000000"
+                android:shadowDy="0.5"
+                android:shadowRadius="1"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="Star Trek" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="4dp"
+        android:maxLines="1"
+        android:shadowColor="#33000000"
+        android:shadowDy="0.5"
+        android:shadowRadius="1"
+        android:textColor="#FFFFFF"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/description"
+        app:layout_constraintEnd_toStartOf="@id/avatar_barrier"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        tools:text="\@Robert Anson Heinlein" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:shadowColor="#33000000"
+        android:shadowDy="0.5"
+        android:shadowRadius="1"
+        android:textColor="#E6FFFFFF"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@id/episodes_recommend_for_you"
+        app:layout_constraintEnd_toStartOf="@id/avatar_barrier"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        tools:text="Star Trek Episode 1 | Star Trek Episode 1" />
+
+    <TextView
+        android:id="@+id/episodes_recommend_for_you"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#6607080A"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="8dp"
+        android:text="@string/vevod_episodes_recommend_for_you"
+        android:textColor="#FFFFFF"
+        app:drawableEndCompat="@drawable/vevod_ic_recommend_episodes_next"
+        app:drawableStartCompat="@drawable/vevod_ic_recommend_episodes"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:drawableEnd="@drawable/vevod_ic_recommend_episodes_next"
+        tools:drawableStart="@drawable/vevod_ic_recommend_episodes"
+        tools:text="Recommend for you · 13 videos" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_style_normal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="drama_title_normal_parent, username, description"
+        tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/group_style_card"
+        android:layout_width="275dp"
+        android:layout_height="117dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/vevod_mini_drama_bg_recommend_card"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/episodes_recommend_for_you"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        tools:visibility="gone">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/drama_cover"
+            android:layout_width="36dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/roundCorner6"
+            tools:src="@drawable/vevod_mini_drama_cover_demo" />
+
+        <TextView
+            android:id="@+id/drama_title_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="12dp"
+            android:maxLines="1"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/drama_cover"
+            app:layout_constraintTop_toTopOf="@id/drama_cover"
+            tools:text="Star Trek" />
+
+        <TextView
+            android:id="@+id/drama_play_times"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="2dp"
+            android:drawablePadding="4dp"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            app:drawableStartCompat="@drawable/vevod_mini_drama_ic_drama_play_times"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/drama_cover"
+            app:layout_constraintTop_toBottomOf="@id/drama_title_card"
+            tools:drawableStart="@drawable/vevod_mini_drama_ic_drama_play_times"
+            tools:text="Star Trek" />
+
+        <TextView
+            android:id="@+id/play_now"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/vevod_mini_drama_bg_recommend_play_now"
+            android:gravity="center"
+            android:text="@string/vevod_mini_drama_play_now"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

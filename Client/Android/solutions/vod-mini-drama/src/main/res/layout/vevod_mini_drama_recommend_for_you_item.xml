@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="104dp"
+    android:background="@drawable/vevod_mini_drama_bg_recommend_for_you_item"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="10dp"
+    tools:layout_gravity="bottom"
+    tools:showIn="@layout/vevod_mini_drama_recommend_for_you_fragment">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/cover"
+        android:layout_width="64dp"
+        android:layout_height="84dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/roundCorner2"
+        tools:src="@drawable/vevod_mini_drama_cover_demo" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cover"
+        app:layout_constraintTop_toTopOf="@id/cover"
+        tools:text="Bismil Episode 2 | Naumaan Ijaz | Hareem Farooq" />
+
+    <TextView
+        android:id="@+id/duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="4dp"
+        android:textColor="#737A87"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintStart_toEndOf="@id/cover"
+        tools:text="03:25" />
+
+    <TextView
+        android:id="@+id/play_times"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="4dp"
+        android:drawablePadding="4dp"
+        android:textColor="#737A87"
+        android:textSize="14sp"
+        app:drawableStartCompat="@drawable/vevod_mini_drama_ic_drama_play_times_gray"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintStart_toEndOf="@id/duration"
+        tools:drawableStart="@drawable/vevod_mini_drama_ic_drama_play_times_gray"
+        tools:text="920.6w" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

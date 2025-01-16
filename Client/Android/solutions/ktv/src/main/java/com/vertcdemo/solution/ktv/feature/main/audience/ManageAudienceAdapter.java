@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
 import com.vertcdemo.solution.ktv.core.rts.annotation.UserStatus;
@@ -64,21 +65,33 @@ public class ManageAudienceAdapter extends RecyclerView.Adapter<BVH<ItemKtvManag
         holder.binding.name.setText(item.userName);
 
         if (mIsApplyView) {
-            holder.binding.cancel.setOnClickListener(v -> {
-                UserInfo info = mItems.get(holder.getBindingAdapterPosition());
+            holder.binding.cancel.setOnClickListener(DebounceClickListener.create(v -> {
+                int pos = holder.getBindingAdapterPosition();
+                if (pos < 0 || pos >= mItems.size()) {
+                    return;
+                }
+                UserInfo info = mItems.get(pos);
                 mListener.onOption(OnOptionSelected.ACTION_CANCEL, info);
-            });
-            holder.binding.ok.setOnClickListener(v -> {
-                UserInfo info = mItems.get(holder.getBindingAdapterPosition());
+            }));
+            holder.binding.ok.setOnClickListener(DebounceClickListener.create(v -> {
+                int pos = holder.getBindingAdapterPosition();
+                if (pos < 0 || pos >= mItems.size()) {
+                    return;
+                }
+                UserInfo info = mItems.get(pos);
                 mListener.onOption(OnOptionSelected.ACTION_OK, info);
-            });
+            }));
         } else {
             updateStatus(holder, item);
 
-            holder.binding.ok.setOnClickListener(v -> {
-                UserInfo info = mItems.get(holder.getBindingAdapterPosition());
+            holder.binding.ok.setOnClickListener(DebounceClickListener.create(v -> {
+                int pos = holder.getBindingAdapterPosition();
+                if (pos < 0 || pos >= mItems.size()) {
+                    return;
+                }
+                UserInfo info = mItems.get(pos);
                 mListener.onOption(OnOptionSelected.ACTION_OK, info);
-            });
+            }));
         }
     }
 

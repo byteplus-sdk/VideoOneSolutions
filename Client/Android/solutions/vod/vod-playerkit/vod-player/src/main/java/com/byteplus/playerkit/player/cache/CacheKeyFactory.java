@@ -12,6 +12,9 @@ import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.source.Track;
 import com.byteplus.playerkit.utils.MD5;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 public interface CacheKeyFactory {
 
@@ -31,7 +34,14 @@ public interface CacheKeyFactory {
 
         @Override
         public String generateCacheKey(@NonNull String url) {
-            return MD5.getMD5(url);
+            String path;
+            try {
+                URL u = new URL(url);
+                path = u.getPath();
+            } catch (MalformedURLException e) {
+                path = url;
+            }
+            return MD5.getMD5(path);
         }
     };
 

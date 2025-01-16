@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.byteplus.vod.minidrama.scene.main.DramaMainActivity">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/action_bar" />
+
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom"
+        android:background="#000000"
+        android:paddingVertical="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/tab_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/vevod_mini_drama_tab_home"
+            android:textColor="@color/vevod_mini_drama_main_tab_text_color_light"
+            android:textSize="12sp"
+            app:drawableTopCompat="@drawable/vevod_ic_mini_drama_tab_home_light"
+            tools:drawableTop="@drawable/vevod_ic_mini_drama_tab_home_light" />
+
+        <TextView
+            android:id="@+id/tab_channel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/vevod_mini_drama_tab_channel"
+            android:textColor="@color/vevod_mini_drama_main_tab_text_color_light"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:drawableTopCompat="@drawable/vevod_ic_mini_drama_tab_channel_light"
+            tools:drawableTop="@drawable/vevod_ic_mini_drama_tab_channel_light" />
+    </LinearLayout>
+
+    <include
+        android:id="@+id/action_bar"
+        layout="@layout/vevod_mini_drama_title_layout" />
+</androidx.constraintlayout.widget.ConstraintLayout>

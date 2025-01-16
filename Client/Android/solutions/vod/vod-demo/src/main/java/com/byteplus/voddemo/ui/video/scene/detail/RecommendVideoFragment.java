@@ -131,7 +131,7 @@ public class RecommendVideoFragment extends Fragment implements RecommendVideoAd
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 L.d(this, "refresh", e, "error");
                 if (getActivity() == null) return;
                 dismissRefreshing();
@@ -156,7 +156,7 @@ public class RecommendVideoFragment extends Fragment implements RecommendVideoAd
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     L.d(this, "loadMore", "error", mBook.nextPageIndex());
                     if (getActivity() == null) return;
                     dismissLoadingMore();

@@ -22,7 +22,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.byteplus.playerkit.player.ve.VEPlayerStatic;
+import com.byteplus.playerkit.player.volcengine.VolcDebugTools;
 import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.ui.base.BaseActivity;
 import com.byteplus.vod.scenekit.ui.base.BaseFragment;
@@ -93,7 +93,7 @@ public class VideoActivity extends BaseActivity {
         }
 
         if (VideoSettings.booleanValue(VideoSettings.DEBUG_ENABLE_DEBUG_TOOL)) {
-            VEPlayerStatic.setDebugToolContainerView(findViewById(R.id.debugTool));
+            VolcDebugTools.setContainerView(findViewById(R.id.debugTool));
         }
     }
 
@@ -101,7 +101,7 @@ public class VideoActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (VideoSettings.booleanValue(VideoSettings.DEBUG_ENABLE_DEBUG_TOOL)) {
-            VEPlayerStatic.releaseDebugTool();
+            VolcDebugTools.release();
         }
     }
 
@@ -111,14 +111,10 @@ public class VideoActivity extends BaseActivity {
                 return ShortVideoFragment.newInstance();
             }
             case SCENE_FEED: {
-                FeedVideoFragment fragment = FeedVideoFragment.newInstance();
-                fragment.setDetailSceneEventListener(mDetailVideoSceneEventListener);
-                return fragment;
+                return FeedVideoFragment.newInstance();
             }
             case SCENE_LONG: {
-                LongVideoFragment fragment = LongVideoFragment.newInstance();
-                fragment.setDetailSceneEventListener(mDetailVideoSceneEventListener);
-                return fragment;
+                return LongVideoFragment.newInstance();
             }
             case SCENE_DETAIL: {
                 return DetailVideoFragment.newInstance(bundle);
@@ -140,34 +136,6 @@ public class VideoActivity extends BaseActivity {
         }
         throw new IllegalArgumentException("unsupported " + scene);
     }
-
-    private final DetailVideoFragment.DetailVideoSceneEventListener
-            mDetailVideoSceneEventListener = new DetailVideoFragment.DetailVideoSceneEventListener() {
-        @Override
-        public void onEnterDetail() {
-            UIUtils.setSystemBarTheme(
-                    VideoActivity.this,
-                    Color.BLACK,
-                    false,
-                    false,
-                    Color.WHITE,
-                    true,
-                    false);
-        }
-
-        @Override
-        public void onExitDetail() {
-            UIUtils.setSystemBarTheme(
-                    VideoActivity.this,
-                    Color.WHITE,
-                    true,
-                    false,
-                    Color.WHITE,
-                    true,
-                    false
-            );
-        }
-    };
 
     private void sceneTheme(int scene) {
         switch (scene) {
@@ -233,8 +201,8 @@ public class VideoActivity extends BaseActivity {
                         Color.BLACK,
                         false,
                         false,
-                        Color.WHITE,
-                        true,
+                        Color.BLACK,
+                        false,
                         false
                 );
                 break;

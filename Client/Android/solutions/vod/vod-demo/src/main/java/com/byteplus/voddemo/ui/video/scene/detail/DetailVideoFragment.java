@@ -20,7 +20,9 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -62,8 +64,8 @@ import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.ui.video.scene.feedvideo.FeedVideoPageView;
 import com.byteplus.vod.scenekit.utils.FormatHelper;
 import com.byteplus.vod.scenekit.utils.ViewUtils;
-import com.byteplus.voddemo.R;
 import com.byteplus.vodcommon.data.remote.RemoteApi;
+import com.byteplus.voddemo.R;
 import com.byteplus.voddemo.databinding.VevodDetailVideoFragmentBinding;
 import com.byteplus.voddemo.ui.video.scene.detail.bean.RecommendInfo;
 import com.videoone.avatars.Avatars;
@@ -94,12 +96,6 @@ public class DetailVideoFragment extends BaseFragment {
 
     private DetailViewModel mDetailModel;
 
-    public interface DetailVideoSceneEventListener {
-        void onEnterDetail();
-
-        void onExitDetail();
-    }
-
     public DetailVideoFragment() {
     }
 
@@ -107,7 +103,7 @@ public class DetailVideoFragment extends BaseFragment {
     public static Bundle createBundle(VideoItem item, MediaSource mediaSource, boolean continuesPlay,
                                       @RemoteApi.VideoType int videoType) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(EXTRA_VIDEO_ITEM, item);
+        bundle.putSerializable(EXTRA_VIDEO_ITEM, item);
         bundle.putSerializable(EXTRA_MEDIA_SOURCE, mediaSource);
         bundle.putBoolean(EXTRA_CONTINUES_PLAYBACK, continuesPlay);
         bundle.putInt(EXTRA_RECOMMEND_TYPE, videoType);
@@ -116,7 +112,7 @@ public class DetailVideoFragment extends BaseFragment {
 
     public static Bundle createBundle(VideoItem item, @RemoteApi.VideoType int videoType) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(EXTRA_VIDEO_ITEM, item);
+        bundle.putSerializable(EXTRA_VIDEO_ITEM, item);
         bundle.putInt(EXTRA_RECOMMEND_TYPE, videoType);
         return bundle;
     }
@@ -194,7 +190,7 @@ public class DetailVideoFragment extends BaseFragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             mContinuesPlayback = bundle.getBoolean(EXTRA_CONTINUES_PLAYBACK);
-            VideoItem videoItem = mVideoItem = bundle.getParcelable(EXTRA_VIDEO_ITEM);
+            VideoItem videoItem = mVideoItem = (VideoItem) bundle.getSerializable(EXTRA_VIDEO_ITEM);
             mKeepPlaybackState = bundle.getBoolean(EXTRA_KEEP_PLAYBACK_STATE, false);
 
             String vid = videoItem == null ? null : videoItem.getVid();
@@ -215,6 +211,9 @@ public class DetailVideoFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(requireActivity().getWindow(), view);
+        controller.setAppearanceLightNavigationBars(false);
+
         super.onViewCreated(view, savedInstanceState);
 
         view.setOnClickListener(v -> {/* consume click event */});
@@ -222,8 +221,9 @@ public class DetailVideoFragment extends BaseFragment {
         VevodDetailVideoFragmentBinding binding = VevodDetailVideoFragmentBinding.bind(view);
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
             binding.guidelineTop.setGuidelineBegin(insets.top);
+            binding.guidelineBottom.setGuidelineEnd(insets.bottom);
             return WindowInsetsCompat.CONSUMED;
         });
 
@@ -261,7 +261,7 @@ public class DetailVideoFragment extends BaseFragment {
 
             assert mVideoView != null;
             if (mVideoView == mSharedVideoView) {
-                // Prevent reuse shared VideoView for recommend Item
+                // Prevent reuse shared VideoView for recommend ViewItem
                 mVideoView.stopPlayback();
                 ViewUtils.removeFromParent(mVideoView);
 

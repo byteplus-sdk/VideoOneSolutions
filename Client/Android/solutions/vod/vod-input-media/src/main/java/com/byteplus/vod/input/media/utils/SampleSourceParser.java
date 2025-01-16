@@ -1,5 +1,9 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+
 package com.byteplus.vod.input.media.utils;
 
+import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -11,8 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 
 public class SampleSourceParser {
@@ -48,17 +50,19 @@ public class SampleSourceParser {
             case VideoItem.SOURCE_TYPE_VID: {
                 String playAuthToken = object.optString("playAuthToken");
                 String subtitleAuthToken = object.optString("subtitleAuthToken");
-                videoItem = VideoItem.createVidItem(vid, playAuthToken, duration, cover, title, subtitleAuthToken);
+                videoItem = VideoItem.createVidItem(vid, playAuthToken, subtitleAuthToken, duration, cover, title);
                 break;
             }
             case VideoItem.SOURCE_TYPE_URL: {
                 String httpUrl = object.optString("httpUrl");
-                videoItem = VideoItem.createUrlItem(vid, httpUrl, null, duration, cover, title);
+                videoItem = VideoItem.createUrlItem(vid, httpUrl, cover);
+                videoItem.setTitle(title);
+                videoItem.setDuration(duration);
                 break;
             }
             case VideoItem.SOURCE_TYPE_MODEL: {
                 String videoModel = object.optString("videoModel");
-                videoItem = VideoItem.createVideoModelItem(vid, videoModel, duration, cover, title);
+                videoItem = VideoItem.createVideoModelItem(vid, videoModel, "", duration, cover, title);
                 break;
             }
             default:
@@ -78,32 +82,16 @@ public class SampleSourceParser {
                 File file = new File(url);
                 if (!file.exists()) continue;
             }
-            if (!url.startsWith("http") && !url.startsWith("file")) continue;
+            String scheme = Uri.parse(url).getScheme();
+            if (!"http".equals(scheme)
+                    && !"https".equals(scheme)
+                    && !"file".equals(scheme)) continue;
 
-            VideoItem videoItem = VideoItem.createUrlItem(
-                    md5sum(url),
-                    url,
-                    null,
-                    0,
-                    null,
-                    i + ": " + url
-            );
+            VideoItem videoItem = VideoItem.createUrlItem(url, null);
+            videoItem.setTitle(i + ": " + url);
             videoItems.add(videoItem);
         }
 
         return videoItems;
-    }
-
-    @NonNull
-    public static String md5sum(String s) {
-        if (s == null) return "";
-        String result = "";
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(s.getBytes());
-            return (new BigInteger(1, md.digest())).toString(16);
-        } catch (Exception e) {
-            return result;
-        }
     }
 }

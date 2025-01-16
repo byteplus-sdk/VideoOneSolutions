@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minWidth="375dp"
+    tools:background="@drawable/vevod_mini_drama_bg_unlock_all_landscape_dialog"
+    tools:layout_gravity="center">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/vevod_mini_drama_unlock_multi_episodes"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/close"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:contentDescription="@android:string/cancel"
+        android:padding="4dp"
+        android:scaleType="center"
+        android:src="@drawable/vevod_mini_drama_ic_close_circle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/vevod_mini_drama_bg_unlock_all_dialog_content_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/drama_cover"
+            android:layout_width="40dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/roundCorner4"
+            tools:src="@drawable/vevod_mini_drama_cover_demo" />
+
+        <TextView
+            android:id="@+id/drama_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:background="@color/transparent"
+            android:textColor="#161823"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/drama_cover"
+            app:layout_constraintTop_toTopOf="@id/drama_cover"
+            tools:text="Kiss me last time" />
+
+        <TextView
+            android:id="@+id/drama_all_episodes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@color/transparent"
+            android:textColor="#BF161823"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="@id/drama_title"
+            app:layout_constraintStart_toStartOf="@id/drama_title"
+            app:layout_constraintTop_toBottomOf="@id/drama_title"
+            tools:text="All episodes 22" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="10dp"
+            android:background="#14161823"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/drama_cover" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow_tips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            app:constraint_referenced_ids="tips1, tips2"
+            app:flow_horizontalAlign="start"
+            app:flow_horizontalBias="0"
+            android:background="@color/transparent"
+            app:flow_horizontalGap="12dp"
+            app:flow_horizontalStyle="packed"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/drama_cover" />
+
+        <TextView
+            android:id="@+id/tips1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:drawablePadding="4dp"
+            android:text="@string/vevod_mini_drama_permanent_viewing"
+            android:textColor="#161823"
+            android:textSize="14sp"
+            app:drawableStartCompat="@drawable/vevod_mini_drama_ic_permanent_viewing"
+            tools:drawableStart="@drawable/vevod_mini_drama_ic_permanent_viewing"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/tips2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:drawablePadding="4dp"
+            android:text="@string/vevod_mini_drama_no_refund"
+            android:textColor="#161823"
+            android:textSize="14sp"
+            app:drawableStartCompat="@drawable/vevod_mini_drama_ic_no_refund"
+            tools:drawableStart="@drawable/vevod_mini_drama_ic_no_refund"
+            tools:ignore="MissingConstraints" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/card_unlock_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/vevod_mini_drama_bg_unlock_sku_card"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/card_unlock_all"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/flow_tips">
+
+
+            <TextView
+                android:id="@+id/sku_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#161823"
+                android:textFontWeight="600"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/sku_count_price"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="10" />
+
+            <TextView
+                android:id="@+id/episodes_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:text="@string/vevod_mini_drama_episodes"
+                android:textColor="#161823"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/sku_count"
+                app:layout_constraintStart_toEndOf="@id/sku_count" />
+
+            <TextView
+                android:id="@+id/sku_count_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#161823"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sku_count"
+                tools:text="USD 50.00" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/card_unlock_all"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/vevod_mini_drama_bg_unlock_sku_card"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="@id/card_unlock_count"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/card_unlock_count"
+            app:layout_constraintTop_toTopOf="@id/card_unlock_count">
+
+            <TextView
+                android:id="@+id/sku_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vevod_mini_drama_episodes_all"
+                android:textColor="#161823"
+                android:textFontWeight="600"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/sku_all_price_discount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/episodes_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:text="@string/vevod_mini_drama_episodes"
+                android:textColor="#161823"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/sku_all"
+                app:layout_constraintStart_toEndOf="@id/sku_all" />
+
+            <TextView
+                android:id="@+id/discount_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/vevod_mini_drama_bg_unlock_discount_label"
+                android:paddingHorizontal="4dp"
+                android:textColor="#FFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/sku_all"
+                app:layout_constraintStart_toEndOf="@id/episodes_2"
+                tools:ignore="MissingConstraints"
+                tools:text="60%" />
+
+            <TextView
+                android:id="@+id/sku_all_price_discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#161823"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sku_all"
+                tools:text="USD 50.00" />
+
+            <TextView
+                android:id="@+id/sku_all_price_original"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:textColor="#BF161823"
+                android:textSize="12sp"
+                app:layout_constraintBaseline_toBaselineOf="@id/sku_all_price_discount"
+                app:layout_constraintStart_toEndOf="@id/sku_all_price_discount"
+                tools:text="(USD 500.00)" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/action"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/vevod_mini_drama_bg_unlock_pay_button"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/content"
+        tools:text="Pay for USD 50.00" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp"
+        tools:layout_constraintGuide_end="8dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

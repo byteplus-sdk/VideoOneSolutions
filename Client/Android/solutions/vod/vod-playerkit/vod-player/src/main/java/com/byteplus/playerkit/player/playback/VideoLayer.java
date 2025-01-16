@@ -15,13 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.byteplus.playerkit.player.Player;
-import com.byteplus.playerkit.player.config.IStrategy;
+import com.byteplus.playerkit.player.playback.ext.IStrategy;
+import com.byteplus.playerkit.player.playback.VideoView.VideoViewListener;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.utils.Asserts;
 import com.byteplus.playerkit.utils.L;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * {@code VideoLayer} is a holder class of layer view. See {@link VideoLayerHost} class doc
@@ -29,7 +27,7 @@ import java.util.List;
  *
  * @see VideoLayerHost
  */
-public abstract class VideoLayer extends VideoView.VideoViewListener.Adapter
+public abstract class VideoLayer extends VideoViewListener.Adapter
         implements VideoLayerHost.VideoLayerHostListener {
 
     private View mLayerView;
@@ -56,8 +54,8 @@ public abstract class VideoLayer extends VideoView.VideoViewListener.Adapter
             unbindVideoView(videoView);
             layerHost.removeVideoLayerHostListener(this);
             L.v(this, "onUnbindLayerHost", layerHost);
-            onUnbindLayerHost(layerHost);
             mLayerHost = null;
+            onUnbindLayerHost(layerHost);
         }
     }
 
@@ -244,9 +242,7 @@ public abstract class VideoLayer extends VideoView.VideoViewListener.Adapter
      * @return the created layer view.
      */
     @Nullable
-    protected View createView(@NonNull ViewGroup parent) {
-        return null;
-    }
+    protected abstract View createView(@NonNull ViewGroup parent);
 
     @Nullable
     public final <V extends View> V getView() {
@@ -258,11 +254,9 @@ public abstract class VideoLayer extends VideoView.VideoViewListener.Adapter
      */
     @Nullable
     public final Context context() {
-        Context context = mLayerView == null ? null : mLayerView.getContext();
-        if (context == null) {
-            context = mLayerHost == null ? null : mLayerHost.hostView().getContext();
-        }
-        return context;
+        if (mLayerView != null) return mLayerView.getContext();
+        if (mLayerHost != null) return mLayerHost.hostView().getContext();
+        return null;
     }
 
     /**
@@ -397,7 +391,7 @@ public abstract class VideoLayer extends VideoView.VideoViewListener.Adapter
      * @return the layer view.
      */
     @Nullable
-    protected final View createView() {
+    public final View createView() {
         final VideoLayerHost layerHost = mLayerHost;
         if (layerHost == null) return null;
 
@@ -525,31 +519,11 @@ public abstract class VideoLayer extends VideoView.VideoViewListener.Adapter
     protected void handleEvent(int code, @Nullable Object obj) {
     }
 
-    @Nullable
-    protected final <T extends VideoLayer> T findLayer(String tag) {
-        VideoLayerHost layerHost = layerHost();
-        if (layerHost == null) return null;
-        return (T) layerHost.findLayer(tag);
-    }
-
-    @Nullable
-    protected final <T extends VideoLayer> T findLayer(Class<T> clazz) {
-        VideoLayerHost layerHost = layerHost();
-        if (layerHost == null) return null;
-        return layerHost.findLayer(clazz);
-    }
-
-    @NonNull
-    protected final <T extends VideoLayer> List<T> findLayers(Class<T> clazz) {
-        VideoLayerHost layerHost = layerHost();
-        if (layerHost == null) return Collections.emptyList();
-        return layerHost.findLayers(clazz);
-    }
-
+    // region VideoOne Enhancement
     private boolean mPictureInPicturePaddingShow = false;
+
     @Override
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         if (isInPictureInPictureMode) {
             if (isShowing()) {
                 dismiss();
@@ -562,11 +536,5 @@ public abstract class VideoLayer extends VideoView.VideoViewListener.Adapter
             mPictureInPicturePaddingShow = false;
         }
     }
-
-    @Nullable
-    public <T> T getConfig() {
-        if (mLayerHost == null) return null;
-        IStrategy config = mLayerHost.getConfig();
-        return (T) config;
-    }
+    // endregion
 }

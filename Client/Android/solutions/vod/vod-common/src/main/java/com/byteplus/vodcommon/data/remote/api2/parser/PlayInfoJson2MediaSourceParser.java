@@ -5,11 +5,10 @@ package com.byteplus.vodcommon.data.remote.api2.parser;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.source.Track;
-import com.byteplus.playerkit.player.ve.Mapper;
+import com.byteplus.playerkit.player.volcengine.Mapper;
+import com.byteplus.playerkit.utils.Numbers;
 import com.byteplus.playerkit.utils.Parser;
 
 import org.json.JSONArray;
@@ -21,13 +20,27 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PlayInfoJson2MediaSourceParser implements Parser<MediaSource> {
+    public final String mPlayInfoJson;
 
+    public PlayInfoJson2MediaSourceParser(String playInfoJson) {
+        this.mPlayInfoJson = playInfoJson;
+    }
+
+    /**
+     * @see <a href="https://www.volcengine.com/docs/4/2918#vodplayinfomodel">VodPlayInfoModel</a>
+     */
     @Override
-    public MediaSource parse(@NonNull String source) throws JSONException {
-        JSONObject result = new JSONObject(source);
-        double duration = result.optDouble("Duration", 0);
+    public MediaSource parse() throws JSONException {
+        JSONObject result = new JSONObject(mPlayInfoJson);
+        float duration = Numbers.safeParseFloat(result.optString("Duration"), 0f);
         String fileType = result.optString("FileType");
         boolean enableAdaptive = result.optBoolean("EnableAdaptive");
+
+        int totalCount = result.optInt("TotalCount");
+
+        JSONArray thumbInfoList = result.optJSONArray("ThumbInfoList"); // 雪碧图列表
+        JSONArray subtitleInfoList = result.optJSONArray("SubtitleInfoList"); // 字幕信息数组
+        JSONObject barrageMaskInfo = result.optJSONObject("BarrageMaskInfo"); // 蒙板弹幕信息
 
         MediaSource mediaSource = new MediaSource(result.optString("Vid"), MediaSource.SOURCE_TYPE_URL);
         List<Track> tracks = parseTracks(result);
@@ -62,6 +75,9 @@ public class PlayInfoJson2MediaSourceParser implements Parser<MediaSource> {
         return tracks;
     }
 
+    /**
+     * @see <a href="https://www.volcengine.com/docs/4/2918#vodplayinfo">VodPlayInfo</a>
+     */
     public static Track playInfo2Track(JSONObject result, JSONObject playInfo) {
         Track track = new Track();
 
@@ -74,9 +90,9 @@ public class PlayInfoJson2MediaSourceParser implements Parser<MediaSource> {
         @Track.TrackType final int trackType = fileType2TrackType(playInfo.optString("FileType"));
         track.setTrackType(trackType); // must set for dash
 
-        track.setQuality(Mapper.definition2Quality(trackType, playInfo.optString(trackType == Track.TRACK_TYPE_AUDIO ? "Quality" : "Definition"))); // must set if using {@link com.byteplus.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer}
+        track.setQuality(Mapper.definition2Quality(trackType, playInfo.optString(trackType == Track.TRACK_TYPE_AUDIO ? "Quality" : "Definition"))); // must set if using {@link com.bytedance.volc.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer}
         track.setFormat(format2Format(playInfo.optString("Format"))); // must set for (dash or smooth track switching streaming)
-        track.setEncoderType(encoderType2EncoderType(playInfo.optString("Codec"))); // must set for (dash or smooth track switching streaming)
+        track.setEncoderType(Mapper.videoModelEncodeType2TrackEncodeType(playInfo.optString("Codec"))); // must set for (dash or smooth track switching streaming)
 
         // LogoType // optional
 
@@ -99,23 +115,9 @@ public class PlayInfoJson2MediaSourceParser implements Parser<MediaSource> {
 
         // Volume
 
-        double duration = result.optDouble("Duration", 0); // optional set
+        float duration = Numbers.safeParseFloat(result.optString("Duration"), 0f); // optional set
         track.setDuration((long) (duration * 1000));
         return track;
-    }
-
-    public static int encoderType2EncoderType(String encoderType) {
-        if (encoderType != null) {
-            switch (encoderType) {
-                case "h264":
-                    return Track.ENCODER_TYPE_H264;
-                case "h265":
-                    return Track.ENCODER_TYPE_H265;
-                case "h266":
-                    return Track.ENCODER_TYPE_H266;
-            }
-        }
-        return Track.ENCODER_TYPE_H264;
     }
 
     public static int format2Format(String format) {

@@ -79,7 +79,7 @@ public class SubtitleLayer extends AnimateLayer {
                     InfoSubtitleTextUpdate e = event.cast(InfoSubtitleTextUpdate.class);
                     SubtitleText subtitleText = e.subtitleText;
                     if (subtitleText != null && mSubText != null) {
-                        mSubText.setText(subtitleText.text);
+                        mSubText.setText(subtitleText.getText());
                     }
                     break;
                 }

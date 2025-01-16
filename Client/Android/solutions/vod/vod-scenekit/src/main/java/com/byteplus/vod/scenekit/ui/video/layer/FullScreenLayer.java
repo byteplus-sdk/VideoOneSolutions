@@ -49,12 +49,7 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
 
     private boolean mEnableToggleFullScreenBySensor = true;
 
-    private final OnBackPressedCallback mBackPressedCallback = new OnBackPressedCallback(false) {
-        @Override
-        public void handleOnBackPressed() {
-            exitFullScreen(true);
-        }
-    };
+    private OnBackPressedCallback mBackPressedCallback;
 
     public static boolean isFullScreen(VideoView videoView) {
         FullScreenLayer fullScreenLayer = fullScreenLayer(videoView);
@@ -163,10 +158,10 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
                 }
             });
             Context context = videoView.getContext();
-            if (context instanceof FragmentActivity) {
+            if (context instanceof FragmentActivity && getBackPressedCallback() != null) {
                 ((FragmentActivity) context)
                         .getOnBackPressedDispatcher()
-                        .addCallback((LifecycleOwner) videoView.getContext(), mBackPressedCallback);
+                        .addCallback((LifecycleOwner) videoView.getContext(), getBackPressedCallback());
             }
         }
 
@@ -182,7 +177,9 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
     protected void onUnBindVideoView(@NonNull VideoView videoView) {
         mOrientationHelper.disable();
         unBindLifeCycle();
-        mBackPressedCallback.remove();
+        if (getBackPressedCallback() != null) {
+            getBackPressedCallback().remove();
+        }
     }
 
     private void bindLifeCycle(@NonNull Lifecycle lifecycle) {
@@ -316,6 +313,18 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
 
     }
 
+    protected OnBackPressedCallback getBackPressedCallback() {
+        if (mBackPressedCallback == null) {
+            mBackPressedCallback = new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {
+                    exitFullScreen(true);
+                }
+            };
+        }
+        return mBackPressedCallback;
+    }
+
     private void exitFullScreen() {
         if (!isFullScreen()) return;
 
@@ -328,7 +337,9 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
         if (mSceneInfo == null) return;
 
         L.d(this, "exitFullScreen");
-        mBackPressedCallback.setEnabled(false);
+        if (getBackPressedCallback() != null) {
+            getBackPressedCallback().setEnabled(false);
+        }
 
         VideoLayerHost host = layerHost();
         if (host != null) {
@@ -356,7 +367,9 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
         if (parent == null) return;
 
         L.d(this, "enterFullScreen");
-        mBackPressedCallback.setEnabled(true);
+        if (getBackPressedCallback() != null) {
+            getBackPressedCallback().setEnabled(true);
+        }
 
         mSceneInfo = PlaySceneNavigator.PlaySceneInfo.current(videoView);
 

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="100dp"
+    android:layout_height="181dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/drama_new_cardview"
+        android:layout_width="100dp"
+        android:layout_height="133dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/drama_new_imageview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="-1dp"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/drama_new_imageview_mark"
+            android:layout_width="27dp"
+            android:layout_height="16dp"
+            android:layout_gravity="top|start"
+            android:layout_marginStart="-1dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/vevod_ic_mini_drama_new_mark" />
+
+        <TextView
+            android:id="@+id/drama_new_textview_playtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="6dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:drawableStartCompat="@drawable/vevod_mini_drama_theater_grid_item_play_count" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/drama_new_textview_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="start"
+        android:maxLines="2"
+        android:textAlignment="textStart"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/drama_new_cardview"
+        app:layout_constraintStart_toStartOf="@id/drama_new_cardview"
+        app:layout_constraintTop_toBottomOf="@id/drama_new_cardview" />
+</androidx.constraintlayout.widget.ConstraintLayout>

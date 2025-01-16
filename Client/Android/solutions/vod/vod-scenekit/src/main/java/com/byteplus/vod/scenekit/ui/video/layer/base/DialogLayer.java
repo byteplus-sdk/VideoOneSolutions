@@ -19,6 +19,8 @@ import com.byteplus.vod.scenekit.ui.video.layer.Layers;
 
 public abstract class DialogLayer extends AnimateLayer implements VideoLayerHost.BackPressedHandler {
 
+    private boolean mDismissOtherLayers = true;
+
     @Nullable
     @Override
     protected final View createView(@NonNull ViewGroup parent) {
@@ -35,6 +37,10 @@ public abstract class DialogLayer extends AnimateLayer implements VideoLayerHost
         } else {
             return false;
         }
+    }
+
+    public void setDismissOtherLayers(boolean dismiss) {
+        mDismissOtherLayers = dismiss;
     }
 
     protected abstract int backPressedPriority();
@@ -61,6 +67,9 @@ public abstract class DialogLayer extends AnimateLayer implements VideoLayerHost
     }
 
     private void dismissLayers() {
+        if (!mDismissOtherLayers) {
+            return;
+        }
         for (int i = 0; i < layerHost().layerSize(); i++) {
             VideoLayer layer = layerHost().findLayer(i);
             if (layer instanceof AnimateLayer) {

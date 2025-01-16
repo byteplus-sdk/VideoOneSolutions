@@ -22,9 +22,9 @@ public class MainTabActivity extends BaseActivity {
                 Color.TRANSPARENT,
                 true,
                 true,
-                Color.WHITE,
+                Color.TRANSPARENT,
                 true,
-                false
+                true
         );
 
         setContentView(R.layout.vevod_main_tab_activity);

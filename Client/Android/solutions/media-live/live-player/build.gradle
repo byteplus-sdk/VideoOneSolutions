@@ -35,7 +35,7 @@ dependencies {
     implementation project(path: ':solutions:media-live:live-common')
 
     implementation libs.ttsdk.ttlivepush.rtc
-    implementation libs.ttsdk.ttlivepull
+    implementation libs.ttsdk.ttlivepull.rtc
 
     implementation libs.zxing
 }

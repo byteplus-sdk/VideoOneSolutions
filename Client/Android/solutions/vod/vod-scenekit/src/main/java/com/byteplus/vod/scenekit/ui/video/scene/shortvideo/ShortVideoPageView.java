@@ -244,5 +244,4 @@ public class ShortVideoPageView {
         }
         return itemView == null ? null : itemView.findViewById(R.id.videoView);
     }
-
 }

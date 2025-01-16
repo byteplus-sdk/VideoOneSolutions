@@ -1,3 +1,6 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+
 package com.byteplus.vodlive.layer
 
 import android.animation.Animator
@@ -6,7 +9,6 @@ import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Surface
 import android.view.View

@@ -89,7 +89,7 @@ public class ShortVideoFragment extends BaseFragment {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 L.d(this, "refresh", e, "error");
                 if (getActivity() == null) return;
                 mSceneView.dismissRefreshing();
@@ -114,7 +114,7 @@ public class ShortVideoFragment extends BaseFragment {
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     L.d(this, "loadMore", "error", mBook.nextPageIndex());
                     if (getActivity() == null) return;
                     mSceneView.dismissLoadingMore();

@@ -21,8 +21,8 @@ import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.cache.CacheLoader;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.source.Track;
-import com.byteplus.playerkit.player.ve.PlayerConfig;
-import com.byteplus.playerkit.player.ve.VEPlayerStatic;
+import com.byteplus.playerkit.player.volcengine.VolcConfig;
+import com.byteplus.playerkit.player.volcengine.VolcPlayerInit;
 import com.byteplus.playerkit.utils.FileUtils;
 import com.byteplus.vod.scenekit.annotation.CompleteAction;
 import com.byteplus.vod.settingskit.CenteredToast;
@@ -92,9 +92,9 @@ public class VideoSettings {
     }
 
     public static class CodecStrategy {
-        public static final int CODEC_STRATEGY_DISABLE = PlayerConfig.CODEC_STRATEGY_DISABLE;
-        public static final int CODEC_STRATEGY_COST_SAVING_FIRST = PlayerConfig.CODEC_STRATEGY_COST_SAVING_FIRST;
-        public static final int CODEC_STRATEGY_HARDWARE_DECODE_FIRST = PlayerConfig.CODEC_STRATEGY_HARDWARE_DECODE_FIRST;
+        public static final int CODEC_STRATEGY_DISABLE = VolcConfig.CODEC_STRATEGY_DISABLE;
+        public static final int CODEC_STRATEGY_COST_SAVING_FIRST = VolcConfig.CODEC_STRATEGY_COST_SAVING_FIRST;
+        public static final int CODEC_STRATEGY_HARDWARE_DECODE_FIRST = VolcConfig.CODEC_STRATEGY_HARDWARE_DECODE_FIRST;
     }
 
     public static class FormatType {
@@ -457,12 +457,12 @@ public class VideoSettings {
 
         settings.add(SettingItem.createCopyableTextItem(CATEGORY_COMMON_VIDEO,
                 R.string.vevod_option_common_device_id,
-                new SettingItem.Getter(VEPlayerStatic::getDeviceId)
+                new SettingItem.Getter(VolcPlayerInit::getDeviceId)
         ));
 
         settings.add(SettingItem.createCopyableTextItem(CATEGORY_COMMON_VIDEO,
                 R.string.vevod_option_common_ttsdk_version,
-                new SettingItem.Getter(VEPlayerStatic::getSDKVersion)
+                new SettingItem.Getter(VolcPlayerInit::getSDKVersion)
         ));
 
         final CleanCacheHolder holder = new CleanCacheHolder();

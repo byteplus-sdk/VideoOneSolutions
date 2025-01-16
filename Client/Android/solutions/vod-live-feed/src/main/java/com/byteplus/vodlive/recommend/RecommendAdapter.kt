@@ -1,3 +1,6 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+
 package com.byteplus.vodlive.recommend
 
 import android.annotation.SuppressLint
@@ -22,6 +25,7 @@ import com.byteplus.playerkit.player.playback.DisplayView
 import com.byteplus.playerkit.player.playback.VideoLayerHost
 import com.byteplus.playerkit.player.playback.VideoView
 import com.byteplus.vod.scenekit.data.model.VideoItem
+import com.byteplus.vod.scenekit.ext.VideoLayerHostExt
 import com.byteplus.vod.scenekit.ui.base.VideoViewExtras
 import com.byteplus.vod.scenekit.ui.video.layer.LoadingLayer
 import com.byteplus.vod.scenekit.ui.video.layer.LockLayer
@@ -196,7 +200,7 @@ internal class VodViewHolder(
         detailsLayer = VideoDetailsLayer()
         fullScreenLayer = ShortVideoFullScreenLayer()
 
-        layerHost = VideoLayerHost(context, RecommendVideoStrategy)
+        layerHost = VideoLayerHostExt(context, RecommendVideoStrategy)
         layerHost.addLayer(fullScreenLayer)
         layerHost.addLayer(detailsLayer)
 

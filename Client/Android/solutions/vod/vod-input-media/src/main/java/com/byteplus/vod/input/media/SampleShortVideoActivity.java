@@ -20,7 +20,7 @@ public class SampleShortVideoActivity extends BaseActivity {
 
     public static void intentInto(Activity activity, ArrayList<VideoItem> videoItems) {
         Intent intent = new Intent(activity, SampleShortVideoActivity.class);
-        intent.putParcelableArrayListExtra(EXTRA_VIDEO_ITEMS, videoItems);
+        intent.putExtra(EXTRA_VIDEO_ITEMS, videoItems);
         activity.startActivity(intent);
     }
 
@@ -28,7 +28,7 @@ public class SampleShortVideoActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        ArrayList<VideoItem> videoItems = intent.getParcelableArrayListExtra(EXTRA_VIDEO_ITEMS);
+        ArrayList<VideoItem> videoItems = (ArrayList<VideoItem>) intent.getSerializableExtra(EXTRA_VIDEO_ITEMS);
 
         SampleShortVideoPageView pageView = new SampleShortVideoPageView(this);
 

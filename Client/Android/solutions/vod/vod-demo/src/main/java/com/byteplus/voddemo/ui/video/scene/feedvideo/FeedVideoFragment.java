@@ -5,9 +5,11 @@ package com.byteplus.voddemo.ui.video.scene.feedvideo;
 
 import static com.byteplus.vod.scenekit.ui.video.scene.PlayScene.SCENE_DETAIL;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,8 +46,6 @@ public class FeedVideoFragment extends BaseFragment implements FeedVideoPageView
     private String mAccount;
     private final Book<VideoItem> mBook = new Book<>(10);
     private FeedVideoSceneView mSceneView;
-
-    private DetailVideoFragment.DetailVideoSceneEventListener mListener;
 
     public FeedVideoFragment() {
         // Required empty public constructor
@@ -113,7 +113,7 @@ public class FeedVideoFragment extends BaseFragment implements FeedVideoPageView
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(Throwable e) {
                 L.d(this, "refresh", e, "error");
                 if (getActivity() == null) return;
                 mSceneView.dismissRefreshing();
@@ -139,7 +139,7 @@ public class FeedVideoFragment extends BaseFragment implements FeedVideoPageView
                 }
 
                 @Override
-                public void onError(Exception e) {
+                public void onError(Throwable e) {
                     L.d(this, "loadMore", e, "error", mBook.nextPageIndex());
                     if (getActivity() == null) return;
                     mSceneView.dismissLoadingMore();
@@ -151,10 +151,6 @@ public class FeedVideoFragment extends BaseFragment implements FeedVideoPageView
             mSceneView.finishLoadingMore();
             L.d(this, "loadMore", "end");
         }
-    }
-
-    public void setDetailSceneEventListener(DetailVideoFragment.DetailVideoSceneEventListener listener) {
-        mListener = listener;
     }
 
     @Override
@@ -190,7 +186,6 @@ public class FeedVideoFragment extends BaseFragment implements FeedVideoPageView
             arguments.putBoolean(DetailVideoFragment.EXTRA_KEEP_PLAYBACK_STATE, true);
             final DetailVideoFragment detail = DetailVideoFragment.newInstance(arguments);
             detail.setFeedVideoViewHolder(holder);
-            detail.getLifecycle().addObserver(mDetailLifeCycle);
             activity.getSupportFragmentManager()
                     .beginTransaction()
                     .addToBackStack(null)
@@ -198,22 +193,4 @@ public class FeedVideoFragment extends BaseFragment implements FeedVideoPageView
                     .commit();
         }
     }
-
-    final LifecycleEventObserver mDetailLifeCycle = new LifecycleEventObserver() {
-        @Override
-        public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
-            switch (event) {
-                case ON_CREATE:
-                    if (mListener != null) {
-                        mListener.onEnterDetail();
-                    }
-                    break;
-                case ON_DESTROY:
-                    if (mListener != null) {
-                        mListener.onExitDetail();
-                    }
-                    break;
-            }
-        }
-    };
 }

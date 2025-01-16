@@ -16,7 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.byteplus.playerkit.player.Player;
-import com.byteplus.playerkit.player.config.IStrategy;
+import com.byteplus.playerkit.player.playback.ext.IStrategy;
+import com.byteplus.playerkit.player.playback.ext.Tag;
 import com.byteplus.playerkit.utils.Asserts;
 import com.byteplus.playerkit.utils.L;
 
@@ -79,7 +80,6 @@ public class VideoLayerHost {
     private final List<VideoLayerHostListener> mListeners = new CopyOnWriteArrayList<>();
     private final SparseArray<BackPressedHandler> mHandlers = new SparseArray<>();
     private final FrameLayout mHostView;
-    private final IStrategy mConfig;
     private VideoView mVideoView;
 
     private boolean mLocked;
@@ -102,14 +102,8 @@ public class VideoLayerHost {
         void onLayerHostDetachedFromVideoView(@NonNull VideoView videoView);
     }
 
-    @Deprecated
     public VideoLayerHost(Context context) {
-        this(context, null);
-    }
-
-    public VideoLayerHost(Context context, IStrategy config) {
         mHostView = new FrameLayout(context);
-        mConfig = config;
     }
 
     void addVideoLayerHostListener(VideoLayerHostListener listener) {
@@ -222,37 +216,19 @@ public class VideoLayerHost {
     }
 
     /**
-     * Find layer by layer class.
+     * Find layers by layer class.
      *
-     * @param clazz the implementation class of {@link VideoLayer}
+     * @param layerClazz the implementation class of {@link VideoLayer}
      * @param <T>        cast to requested type simply.
      * @return the {@link VideoLayer} instance of class
      */
-    public final <T extends VideoLayer> T findLayer(Class<T> clazz) {
+    public final <T extends VideoLayer> T findLayer(Class<T> layerClazz) {
         for (VideoLayer layer : mLayers) {
-            if (layer != null && clazz.isInstance(layer)) {
-                return clazz.cast(layer);
+            if (layer != null && layerClazz.isInstance(layer)) {
+                return (T) layer;
             }
         }
         return null;
-    }
-
-    /**
-     * Find layers by layer class.
-     *
-     * @param clazz the implementation class of {@link VideoLayer}
-     * @param <T>   cast to requested type simply.
-     * @return the {@link VideoLayer} instance of class
-     */
-    @NonNull
-    public final <T extends VideoLayer> List<T> findLayers(Class<T> clazz) {
-        ArrayList<T> layers = new ArrayList<>();
-        for (VideoLayer layer : mLayers) {
-            if (layer != null && clazz.isInstance(layer)) {
-                layers.add(clazz.cast(layer));
-            }
-        }
-        return layers;
     }
 
     /**
@@ -472,10 +448,6 @@ public class VideoLayerHost {
         return mHostView;
     }
 
-    public IStrategy getConfig() {
-        return mConfig;
-    }
-
     final int indexOfLayerView(@NonNull VideoLayer layer) {
         Asserts.checkNotNull(layer);
 
@@ -539,4 +511,46 @@ public class VideoLayerHost {
             layer.onViewRemovedFromHostView(hostView);
         }
     }
+
+    // region VideoOne Enhancement
+
+    /**
+     * Find layers by layer class.
+     *
+     * @param clazz the implementation class of {@link VideoLayer}
+     * @param <T>   cast to requested type simply.
+     * @return the {@link VideoLayer} instance of class
+     */
+    @NonNull
+    public final <T extends VideoLayer> List<T> findLayers(Class<T> clazz) {
+        ArrayList<T> layers = new ArrayList<>();
+        for (VideoLayer layer : mLayers) {
+            if (layer != null && clazz.isInstance(layer)) {
+                layers.add(clazz.cast(layer));
+            }
+        }
+        return layers;
+    }
+
+    /**
+     * Find layers by layer class.
+     *
+     * @param tag the tag class of {@link VideoLayer}
+     * @return the {@link VideoLayer} instance of class
+     */
+    @NonNull
+    public final List<? extends VideoLayer> findLayersByTag(@NonNull Class<? extends Tag> tag) {
+        ArrayList<VideoLayer> layers = new ArrayList<>();
+        for (VideoLayer layer : mLayers) {
+            if (tag.isInstance(layer)) {
+                layers.add(layer);
+            }
+        }
+        return layers;
+    }
+
+    public IStrategy getConfig() {
+        return null;
+    }
+    // endregion
 }

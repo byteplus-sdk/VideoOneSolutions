@@ -14,7 +14,14 @@ import java.util.concurrent.TimeUnit
 
 object SolutionRetrofit {
     private const val TAG = "SolutionRetrofit"
+
+    // ad_tag_start: oss
     private const val DEBUG = true
+    // ad_tag_end: oss
+    // ad_tag_start:store
+    // private const val DEBUG = false
+    // ad_tag_end: store
+
 
     private val retrofit: Retrofit by lazy {
         val httpClient = OkHttpClient.Builder()
@@ -38,7 +45,7 @@ object SolutionRetrofit {
     @JvmStatic
     fun <API> getApi(service: Class<API>): API = retrofit.create(service)
 
-    private fun OkHttpClient.Builder.logging(): OkHttpClient.Builder {
+    fun OkHttpClient.Builder.logging(): OkHttpClient.Builder {
         if (DEBUG) {
             val interceptor = HttpLoggingInterceptor { Log.d(TAG, it) }
             interceptor.level = HttpLoggingInterceptor.Level.BODY

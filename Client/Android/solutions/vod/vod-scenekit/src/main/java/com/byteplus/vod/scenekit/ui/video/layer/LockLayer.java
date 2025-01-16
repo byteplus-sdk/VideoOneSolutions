@@ -13,13 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.playback.VideoLayerHost;
 import com.byteplus.vod.scenekit.R;
 import com.byteplus.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.byteplus.vod.scenekit.utils.UIUtils;
 
-public class LockLayer extends AnimateLayer {
+public class LockLayer extends AnimateLayer implements GestureCheckActive {
 
     private ImageView mImageView;
 
@@ -75,9 +74,9 @@ public class LockLayer extends AnimateLayer {
         VideoLayerHost layerHost = layerHost();
         if (layerHost != null) {
             VolumeBrightnessIconLayer layer = layerHost.findLayer(VolumeBrightnessIconLayer.class);
-           return layer != null;
+            return layer != null;
         }
-       return false;
+        return false;
     }
 
     private void syncLockedState(boolean locked) {

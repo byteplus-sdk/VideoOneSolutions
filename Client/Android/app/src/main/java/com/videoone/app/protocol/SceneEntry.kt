@@ -8,6 +8,7 @@ private const val TAG = "SceneEntry"
 
 
 /**
+ * @see MiniDramaEntry
  * @see VodLiveEntry
  * @see PlaybackEditEntry
  * @see KTVEntry
@@ -18,6 +19,7 @@ class SceneEntry(
 ) : ISceneEntry by entry {
     companion object {
         private val entryNames = listOf(
+            "com.videoone.app.protocol.MiniDramaEntry",
             "com.videoone.app.protocol.VodLiveEntry",
             "com.videoone.app.protocol.KTVEntry",
             "com.videoone.app.protocol.PlaybackEditEntry",

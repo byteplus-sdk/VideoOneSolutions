@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="0dp"
+    android:paddingEnd="8dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/drama_trending_cardview"
+        android:layout_width="68dp"
+        android:layout_height="90dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/drama_trending_imageview"
+            android:layout_width="68dp"
+            android:layout_height="90dp"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/drama_trending_imageview_mark"
+            android:layout_width="32dp"
+            android:layout_height="14dp"
+            android:layout_gravity="start|top"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/drama_trending_textview_mark"
+            android:layout_width="15dp"
+            android:layout_height="16dp"
+            android:layout_gravity="start|top"
+            android:background="@drawable/vevod_ic_mini_drama_trending_item_mark_bg"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/drama_trending_textview_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="start"
+        android:textAlignment="textStart"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/drama_trending_cardview"
+        app:layout_constraintTop_toTopOf="@id/drama_trending_cardview" />
+
+    <TextView
+        android:id="@+id/drama_trending_textview_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:textColor="#737A87"
+        android:textSize="12sp"
+        app:drawableStartCompat="@drawable/vevod_ic_mini_drama_trending_item_fire"
+        app:layout_constraintBottom_toBottomOf="@id/drama_trending_cardview"
+        app:layout_constraintStart_toEndOf="@id/drama_trending_cardview" />
+</androidx.constraintlayout.widget.ConstraintLayout>

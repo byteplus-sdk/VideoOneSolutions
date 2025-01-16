@@ -87,13 +87,13 @@ public class SubtitleSelectDialogLayer extends DialogListLayer<Subtitle> {
         list.add(new Item<>(null, context.getString(R.string.vevod_subtitle_dialog_off)));
         if (subtitles != null) {
             for (Subtitle subtitle : subtitles) {
-                if ("ASR".equals(subtitle.source)) {
+                if ("ASR".equals(subtitle.getSource())) {
                     if (list.size() > 1) {
-                        list.add(1, new Item<>(subtitle, getLanguage(context, subtitle.languageId)));
+                        list.add(1, new Item<>(subtitle, getLanguage(context, subtitle.getLanguageId())));
                         continue;
                     }
                 }
-                list.add(new Item<>(subtitle, getLanguage(context, subtitle.languageId)));
+                list.add(new Item<>(subtitle, getLanguage(context, subtitle.getLanguageId())));
             }
         }
         return list;

@@ -19,7 +19,7 @@ import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 
 import java.util.List;
 
-public class PlaylistLayer extends DialogLayer {
+public class PlaylistLayer extends ListBaseLayer {
 
     public interface IPlaylistLayerCallback {
         List<VideoItem> getVideoList();
@@ -68,19 +68,7 @@ public class PlaylistLayer extends DialogLayer {
     }
 
     @Override
-    public void onVideoViewPlaySceneChanged(int fromScene, int toScene) {
-        if (!PlayScene.isFullScreenMode(toScene)) {
-            dismiss();
-        }
-    }
-
-    @Override
-    protected int backPressedPriority() {
-        return Layers.BackPriority.PLAYLIST_DIALOG_BACK_PRIORITY;
-    }
-
-    public int getPlaylistSize() {
+    public int getSize() {
         return mCallback.getVideoList().size();
     }
-
 }

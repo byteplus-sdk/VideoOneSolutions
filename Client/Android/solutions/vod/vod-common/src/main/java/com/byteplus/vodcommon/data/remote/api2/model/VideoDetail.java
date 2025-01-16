@@ -62,10 +62,10 @@ public class VideoDetail {
             VideoItem item = VideoItem.createVidItem(
                     detail.vid,
                     detail.playAuthToken,
+                    detail.subtitleAuthToken,
                     (long) (detail.duration * 1000),
                     detail.coverUrl,
-                    detail.caption,
-                    detail.subtitleAuthToken);
+                    detail.caption);
             fillVideoItem(item, detail);
             return item;
         } else if (detail.videoModel != null) {
@@ -74,6 +74,7 @@ public class VideoDetail {
                     VideoItem videoItem = VideoItem.createVideoModelItem(
                             detail.vid,
                             detail.videoModel,
+                            detail.subtitleAuthToken,
                             (long) (detail.duration * 1000),
                             detail.coverUrl,
                             detail.caption);
@@ -86,7 +87,7 @@ public class VideoDetail {
                     try {
                         // Demonstrate parse VideoModel JSON to MediaSource object
                         // You should implement your own Parser with your AppServer data structure.
-                        source = new PlayInfoJson2MediaSourceParser().parse(detail.videoModel);
+                        source = new PlayInfoJson2MediaSourceParser(detail.videoModel).parse();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

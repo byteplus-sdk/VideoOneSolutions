@@ -5,6 +5,10 @@
 package com.byteplus.playerkit.player;
 
 import static com.byteplus.playerkit.player.Player.mapState;
+import static com.byteplus.playerkit.player.source.Track.TRACK_TYPE_AUDIO;
+import static com.byteplus.playerkit.player.source.Track.TRACK_TYPE_VIDEO;
+import static com.byteplus.playerkit.player.source.Track.TrackType;
+import static com.byteplus.playerkit.player.source.Track.mapTrackType;
 
 import android.content.Context;
 import android.os.Looper;
@@ -23,13 +27,13 @@ import com.byteplus.playerkit.player.event.ActionSetLooping;
 import com.byteplus.playerkit.player.event.ActionSetSpeed;
 import com.byteplus.playerkit.player.event.ActionSetSurface;
 import com.byteplus.playerkit.player.event.ActionStart;
-import com.byteplus.playerkit.player.event.ActionStop;
 import com.byteplus.playerkit.player.event.InfoAudioRenderingStart;
 import com.byteplus.playerkit.player.event.InfoBufferingEnd;
 import com.byteplus.playerkit.player.event.InfoBufferingStart;
 import com.byteplus.playerkit.player.event.InfoBufferingUpdate;
 import com.byteplus.playerkit.player.event.InfoCacheUpdate;
 import com.byteplus.playerkit.player.event.InfoDataSourceRefreshed;
+import com.byteplus.playerkit.player.event.InfoFrameInfoUpdate;
 import com.byteplus.playerkit.player.event.InfoProgressUpdate;
 import com.byteplus.playerkit.player.event.InfoSeekComplete;
 import com.byteplus.playerkit.player.event.InfoSeekingStart;
@@ -38,6 +42,7 @@ import com.byteplus.playerkit.player.event.InfoSubtitleFileLoadFinish;
 import com.byteplus.playerkit.player.event.InfoSubtitleInfoReady;
 import com.byteplus.playerkit.player.event.InfoSubtitleStateChanged;
 import com.byteplus.playerkit.player.event.InfoSubtitleTextUpdate;
+import com.byteplus.playerkit.player.event.InfoSubtitleWillChange;
 import com.byteplus.playerkit.player.event.InfoTrackChanged;
 import com.byteplus.playerkit.player.event.InfoTrackInfoReady;
 import com.byteplus.playerkit.player.event.InfoTrackWillChange;
@@ -52,14 +57,12 @@ import com.byteplus.playerkit.player.event.StatePrepared;
 import com.byteplus.playerkit.player.event.StatePreparing;
 import com.byteplus.playerkit.player.event.StateReleased;
 import com.byteplus.playerkit.player.event.StateStarted;
-import com.byteplus.playerkit.player.event.StateStopped;
 import com.byteplus.playerkit.player.legacy.PlayerLegacy;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.source.Subtitle;
 import com.byteplus.playerkit.player.source.SubtitleText;
 import com.byteplus.playerkit.player.source.Track;
 import com.byteplus.playerkit.player.utils.ProgressRecorder;
-import com.byteplus.playerkit.player.utils.ProgressTracker;
 import com.byteplus.playerkit.utils.Asserts;
 import com.byteplus.playerkit.utils.ExtraObject;
 import com.byteplus.playerkit.utils.L;
@@ -116,7 +119,7 @@ public class AVPlayer extends ExtraObject implements Player {
         setState(STATE_IDLE);
     }
 
-    private static class Listener implements PlayerAdapter.Listener, ProgressTracker.ProgressTaskListener {
+    private static class Listener implements PlayerAdapter.Listener {
 
         private final WeakReference<AVPlayer> mPlayerRef;
 
@@ -216,7 +219,7 @@ public class AVPlayer extends ExtraObject implements Player {
         }
 
         @Override
-        public void onInfo(@NonNull PlayerAdapter mp, int what, int extra) {
+        public void onInfo(@NonNull PlayerAdapter mp, int what, @Nullable Object extra) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
             switch (what) {
@@ -237,8 +240,27 @@ public class AVPlayer extends ExtraObject implements Player {
                 case PlayerAdapter.Info.MEDIA_INFO_BUFFERING_START: {
                     player.mIsBuffering = true;
                     player.mBufferIndex++;
-                    L.d(player, "onInfo", "buffering start", player.mBufferIndex);
-                    player.mDispatcher.obtain(InfoBufferingStart.class, player).init(player.mBufferIndex).dispatch();
+                    int bufferingType = 0;
+                    int bufferingStage = 0;
+                    int bufferingReason = 0;
+                    if (extra instanceof Object[]) {
+                        final Object[] params = (Object[]) extra;
+                        if (params.length >= 3) {
+                            bufferingType = (int) params[0];
+                            bufferingStage = (int) params[1];
+                            bufferingReason = (int) params[2];
+                        }
+                    }
+                    L.d(player, "onInfo", "buffering start", player.mBufferIndex,
+                            InfoBufferingStart.mapBufferingType(bufferingType),
+                            InfoBufferingStart.mapBufferingStage(bufferingStage),
+                            InfoBufferingStart.mapBufferingReason(bufferingReason));
+                    player.mDispatcher.obtain(InfoBufferingStart.class, player).init(
+                                    player.mBufferIndex,
+                                    bufferingType,
+                                    bufferingStage,
+                                    bufferingReason)
+                            .dispatch();
                     break;
                 }
                 case PlayerAdapter.Info.MEDIA_INFO_BUFFERING_END: {
@@ -269,26 +291,26 @@ public class AVPlayer extends ExtraObject implements Player {
         }
 
         @Override
-        public void onSourceInfoLoadStart(PlayerAdapter mp, int type, MediaSource source) {
+        public void onMediaSourceUpdateStart(PlayerAdapter mp, int type, MediaSource source) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onSourceInfoLoadStart", type, source);
+            L.d(player, "onMediaSourceUpdateStart", type, source);
         }
 
         @Override
-        public void onSourceInfoLoadComplete(PlayerAdapter mp, int type, MediaSource source) {
+        public void onMediaSourceUpdated(PlayerAdapter mp, int type, MediaSource source) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onSourceInfoLoadComplete", type, source);
+            L.d(player, "onMediaSourceUpdated", type, source);
             int refreshType = 0;
-            if (type == PlayerAdapter.SourceLoadInfo.SOURCE_INFO_PLAY_INFO_FETCHED) {
+            if (type == PlayerAdapter.MediaSourceUpdateReason.MEDIA_SOURCE_UPDATE_REASON_PLAY_INFO_FETCHED) {
                 refreshType = InfoDataSourceRefreshed.REFRESHED_TYPE_PLAY_INFO_FETCHED;
-            } else if (type == PlayerAdapter.SourceLoadInfo.SOURCE_INFO_SUBTITLE_INFO_FETCHED) {
-                refreshType = InfoDataSourceRefreshed.REFRESHED_TYPE_SUBTITLE;
-            } else if (type == PlayerAdapter.SourceLoadInfo.SOURCE_INFO_MASK_INFO_FETCHED) {
-                refreshType = InfoDataSourceRefreshed.REFRESHED_TYPE_MASK;
+            } else if (type == PlayerAdapter.MediaSourceUpdateReason.MEDIA_SOURCE_UPDATE_REASON_SUBTITLE_INFO_FETCHED) {
+                refreshType = InfoDataSourceRefreshed.REFRESHED_TYPE_SUBTITLE_INFO_FETCHED;
+            } else if (type == PlayerAdapter.MediaSourceUpdateReason.MEDIA_SOURCE_UPDATE_REASON_MASK_INFO_FETCHED) {
+                refreshType = InfoDataSourceRefreshed.REFRESHED_TYPE_MASK_INFO_FETCHED;
             }
             if (refreshType > 0) {
                 player.mDispatcher.obtain(InfoDataSourceRefreshed.class, player).init(refreshType).dispatch();
@@ -296,11 +318,11 @@ public class AVPlayer extends ExtraObject implements Player {
         }
 
         @Override
-        public void onSourceInfoLoadError(PlayerAdapter mp, int type, PlayerException e) {
+        public void onMediaSourceUpdateError(PlayerAdapter mp, int type, PlayerException e) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onSourceInfoLoadError", e, type);
+            L.d(player, "onMediaSourceUpdateError", e, type);
         }
 
         @Override
@@ -313,48 +335,32 @@ public class AVPlayer extends ExtraObject implements Player {
         }
 
         @Override
-        public long onTrackingProgress() {
-            final AVPlayer player = mPlayerRef.get();
-            if (player == null) return -1;
-
-            long duration = player.getDuration();
-            long currentPosition = player.getCurrentPosition();
-            if (duration >= 0 && currentPosition >= 0) {
-                player.recordProgress();
-                long delay = Math.min(Math.max(duration / 1000, 200), 1000);
-                player.notifyProgressUpdate(currentPosition, duration);
-                return delay;
-            }
-            return -1;
-        }
-
-        @Override
-        public void onTrackInfoReady(@NonNull PlayerAdapter mp, @Track.TrackType int trackType, @NonNull List<Track> tracks) {
+        public void onTrackInfoReady(@NonNull PlayerAdapter mp, @TrackType int trackType, @NonNull List<Track> tracks) {
             // select default resolution
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onTrackInfoReady", Track.mapTrackType(trackType), Track.dump(tracks));
+            L.d(player, "onTrackInfoReady", mapTrackType(trackType), Track.dump(tracks));
             player.mDispatcher.obtain(InfoTrackInfoReady.class, player).init(trackType, tracks).dispatch();
         }
 
         @Override
-        public void onTrackWillChange(@NonNull PlayerAdapter mp, @Track.TrackType int trackType,
+        public void onTrackWillChange(@NonNull PlayerAdapter mp, @TrackType int trackType,
                                       @Nullable Track current, @NonNull Track target) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onTrackWillChange", Track.mapTrackType(trackType), Track.dump(current), Track.dump(target));
+            L.d(player, "onTrackWillChange", mapTrackType(trackType), Track.dump(current), Track.dump(target));
             player.mDispatcher.obtain(InfoTrackWillChange.class, player).init(trackType, current, target).dispatch();
         }
 
         @Override
-        public void onTrackChanged(@NonNull PlayerAdapter mp, @Track.TrackType int trackType,
-                                   @NonNull Track pre, @NonNull Track current) {
+        public void onTrackChanged(@NonNull PlayerAdapter mp, @TrackType int trackType,
+                                   @Nullable Track pre, @NonNull Track current) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onTrackChanged", Track.mapTrackType(trackType), Track.dump(pre), Track.dump(current));
+            L.d(player, "onTrackChanged", mapTrackType(trackType), Track.dump(pre), Track.dump(current));
 
             if (player.isCompleted() && !player.isSupportSmoothTrackSwitching(trackType)) {
                 player.start();
@@ -363,48 +369,73 @@ public class AVPlayer extends ExtraObject implements Player {
         }
 
         @Override
-        public void onSubtitleStateChanged(@NonNull PlayerAdapter pm, boolean enabled) {
+        public void onSubtitleStateChanged(@NonNull PlayerAdapter mp, boolean enabled) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
             L.d(player, "onSubtitleStateChanged", enabled);
+
             player.mDispatcher.obtain(InfoSubtitleStateChanged.class, player).init(enabled).dispatch();
         }
 
         @Override
-        public void onSubtitleInfoReady(@NonNull PlayerAdapter pm, List<Subtitle> subtitles) {
+        public void onSubtitleInfoReady(@NonNull PlayerAdapter mp, List<Subtitle> subtitles) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onSubtitleInfoReady", subtitles);
+            L.d(player, "onSubtitleInfoReady", Subtitle.dump(subtitles));
+
             player.mDispatcher.obtain(InfoSubtitleInfoReady.class, player).init(subtitles).dispatch();
         }
 
         @Override
-        public void onSubtitleFileLoadFinish(@NonNull PlayerAdapter pm, int success, String info) {
+        public void onSubtitleFileLoadFinish(@NonNull PlayerAdapter mp, int success, String info) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onSubtitleFileLoadFinish", info);
+            L.d(player, "onSubtitleFileLoadFinish", success, info);
+
             player.mDispatcher.obtain(InfoSubtitleFileLoadFinish.class, player).init(success, info).dispatch();
         }
 
         @Override
-        public void onSubtitleChanged(@NonNull PlayerAdapter pm, Subtitle subtitle) {
+        public void onSubtitleWillChange(@NonNull PlayerAdapter mp, Subtitle current, Subtitle target) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onSubtitleChanged", subtitle);
-            player.mDispatcher.obtain(InfoSubtitleChanged.class, player).init(subtitle).dispatch();
+            L.d(player, "onSubtitleWillChange", Subtitle.dump(current), Subtitle.dump(target));
+
+            player.mDispatcher.obtain(InfoSubtitleWillChange.class, player).init(current, target).dispatch();
         }
 
         @Override
-        public void onSubtitleTextUpdate(@NonNull PlayerAdapter pm, @NonNull SubtitleText subtitleText) {
+        public void onSubtitleChanged(@NonNull PlayerAdapter mp, Subtitle pre, Subtitle current) {
             final AVPlayer player = mPlayerRef.get();
             if (player == null) return;
 
-            L.d(player, "onSubtitleTextUpdate", subtitleText);
+            L.d(player, "onSubtitleChanged", Subtitle.dump(pre), Subtitle.dump(current));
+
+            player.mDispatcher.obtain(InfoSubtitleChanged.class, player).init(pre, current).dispatch();
+        }
+
+        @Override
+        public void onSubtitleTextUpdate(@NonNull PlayerAdapter mp, @NonNull SubtitleText subtitleText) {
+            final AVPlayer player = mPlayerRef.get();
+            if (player == null) return;
+
+            L.v(player, "onSubtitleTextUpdate", SubtitleText.dump(subtitleText));
+
             player.mDispatcher.obtain(InfoSubtitleTextUpdate.class, player).init(subtitleText).dispatch();
+        }
+
+        @Override
+        public void onFrameInfoUpdate(@NonNull PlayerAdapter mp, int frameType, long pts, long clockTime) {
+            final AVPlayer player = mPlayerRef.get();
+            if (player == null) return;
+
+            // L.v(player, "onFrameInfoUpdate", frameType, pts, clockTime);
+
+            player.mDispatcher.obtain(InfoFrameInfoUpdate.class, player).init(frameType, pts, clockTime).dispatch();
         }
     }
 
@@ -516,7 +547,7 @@ public class AVPlayer extends ExtraObject implements Player {
 
         try {
             handleSourceSet(source);
-        } catch (IOException e) {
+        } catch (IllegalStateException | IOException e) {
             moveToErrorState(new PlayerException(PlayerException.CODE_ERROR_ACTION, "setDataSource", e));
             return;
         }
@@ -572,57 +603,95 @@ public class AVPlayer extends ExtraObject implements Player {
 
     @Nullable
     @Override
-    public Track getCurrentTrack(@Track.TrackType int trackType) {
+    public Track getCurrentTrack(@TrackType int trackType) {
         if (checkIsRelease("getCurrentTrack")) return null;
 
-        Asserts.checkOneOf(trackType, Track.TRACK_TYPE_VIDEO, Track.TRACK_TYPE_AUDIO);
+        Asserts.checkOneOf(trackType, TRACK_TYPE_VIDEO, TRACK_TYPE_AUDIO);
         return mPlayer.getCurrentTrack(trackType);
     }
 
     @Nullable
     @Override
-    public Track getPendingTrack(@Track.TrackType int trackType) {
+    public Track getPendingTrack(@TrackType int trackType) {
         if (checkIsRelease("getPendingTrack")) return null;
 
-        Asserts.checkOneOf(trackType, Track.TRACK_TYPE_VIDEO, Track.TRACK_TYPE_AUDIO);
+        Asserts.checkOneOf(trackType, TRACK_TYPE_VIDEO, TRACK_TYPE_AUDIO);
         return mPlayer.getPendingTrack(trackType);
     }
 
     @Nullable
     @Override
-    public Track getSelectedTrack(@Track.TrackType int trackType) {
-        Track track = getPendingTrack(trackType);
-        if (track == null) {
-            track = getCurrentTrack(trackType);
-        }
-        return track;
+    public Track getSelectedTrack(@TrackType int trackType) {
+        if (checkIsRelease("getSelectedTrack")) return null;
+
+        Asserts.checkOneOf(trackType, TRACK_TYPE_VIDEO, TRACK_TYPE_AUDIO);
+        return mPlayer.getSelectedTrack(trackType);
     }
 
     @Nullable
     @Override
-    public List<Track> getTracks(@Track.TrackType int trackType) {
+    public List<Track> getTracks(@TrackType int trackType) {
         if (checkIsRelease("getTracks")) return null;
 
-        Asserts.checkOneOf(trackType, Track.TRACK_TYPE_VIDEO, Track.TRACK_TYPE_AUDIO);
+        Asserts.checkOneOf(trackType, TRACK_TYPE_VIDEO, TRACK_TYPE_AUDIO);
         return mPlayer.getTracks(trackType);
     }
 
     @Override
-    public void selectTrack(@Track.TrackType int trackType, @Nullable Track track)
+    public void selectTrack(@Nullable Track track) {
+        if (track == null) return; // TODO AUTO
+        selectTrack(track.getTrackType(), track);
+    }
+
+    @Override
+    public void selectTrack(@TrackType int trackType, @Nullable Track track)
             throws UnsupportedOperationException {
         if (checkIsRelease("selectTrack")) return;
 
-        Asserts.checkOneOf(trackType, Track.TRACK_TYPE_VIDEO, Track.TRACK_TYPE_AUDIO);
+        Asserts.checkOneOf(trackType, TRACK_TYPE_VIDEO, TRACK_TYPE_AUDIO);
         final Track selected = getSelectedTrack(trackType);
         final Track target = track;
-        L.d(this, "selectTrack", Track.mapTrackType(trackType), "selected: " +
+        L.d(this, "selectTrack", mapTrackType(trackType), "selected: " +
                 Track.dump(selected), "target: " + Track.dump(target));
         if (target == null || Objects.equals(target, selected)) return;
         mPlayer.selectTrack(trackType, target);
     }
 
+    @Nullable
     @Override
-    public boolean isSupportSmoothTrackSwitching(@Track.TrackType int trackType) {
+    public List<Subtitle> getSubtitles() {
+        return mPlayer.getSubtitles();
+    }
+
+    @Override
+    public void selectSubtitle(@Nullable Subtitle subtitle) {
+        final Subtitle selected = mPlayer.getSelectedSubtitle();
+        L.d(this, "selectSubtitle", "selected:" + Subtitle.dump(selected),
+                "target:" + Subtitle.dump(subtitle));
+        if (subtitle == null || Objects.equals(selected, subtitle)) return;
+        mPlayer.selectSubtitle(subtitle);
+    }
+
+    @Nullable
+    @Override
+    public Subtitle getSelectedSubtitle() {
+        return mPlayer.getSelectedSubtitle();
+    }
+
+    @Nullable
+    @Override
+    public Subtitle getPendingSubtitle() {
+        return mPlayer.getPendingSubtitle();
+    }
+
+    @Nullable
+    @Override
+    public Subtitle getCurrentSubtitle() {
+        return mPlayer.getCurrentSubtitle();
+    }
+
+    @Override
+    public boolean isSupportSmoothTrackSwitching(@TrackType int trackType) {
         return mPlayer.isSupportSmoothTrackSwitching(trackType);
     }
 
@@ -708,7 +777,7 @@ public class AVPlayer extends ExtraObject implements Player {
         mDispatcher.obtain(StatePaused.class, this).dispatch();
     }
 
-    @Override
+    /*@Override
     public void stop() throws IllegalStateException {
         if (checkIsRelease("stop")) return;
 
@@ -727,7 +796,7 @@ public class AVPlayer extends ExtraObject implements Player {
         }
         setState(STATE_STOPPED);
         mDispatcher.obtain(StateStopped.class, this).dispatch();
-    }
+    }*/
 
     @Override
     public void reset() {
@@ -798,8 +867,9 @@ public class AVPlayer extends ExtraObject implements Player {
             case STATE_PREPARED:
                 return mPlayer.getCurrentPosition();
             case STATE_ERROR:
-                if (mMediaSource != null) {
-                    return ProgressRecorder.getProgress(mMediaSource.getSyncProgressId());
+                final MediaSource mediaSource = mMediaSource;
+                if (mediaSource != null) {
+                    return ProgressRecorder.getProgress(mediaSource.getSyncProgressId());
                 } else {
                     return 0L;
                 }
@@ -917,6 +987,32 @@ public class AVPlayer extends ExtraObject implements Player {
     }
 
     @Override
+    public void setSubtitleEnabled(boolean enabled) {
+        if (checkIsRelease("setSubtitleEnabled")) return;
+
+        mPlayer.setSubtitleEnabled(enabled);
+    }
+
+    @Override
+    public boolean isSubtitleEnabled() {
+        if (checkIsRelease("isSubtitleEnabled")) return false;
+
+        return mPlayer.isSubtitleEnabled();
+    }
+
+    @Override
+    public int getVideoDecoderType() {
+        if (checkIsRelease("getVideoDecoderType")) return Player.DECODER_TYPE_UNKNOWN;
+        return mPlayer.getVideoDecoderType();
+    }
+
+    @Override
+    public int getVideoCodecId() {
+        if (checkIsRelease("getVideoCodecId")) return Player.CODEC_ID_UNKNOWN;
+        return mPlayer.getVideoCodecId();
+    }
+
+    @Override
     public boolean isBuffering() {
         return mIsBuffering;
     }
@@ -1017,31 +1113,6 @@ public class AVPlayer extends ExtraObject implements Player {
         return mPlayerException;
     }
 
-    @Override
-    public List<Subtitle> getSubtitles() {
-        return mPlayer.getSupportSubtitles();
-    }
-
-    @Override
-    public void selectSubtitle(@Nullable Subtitle subtitle) {
-        mPlayer.selectSubtitle(subtitle);
-    }
-
-    @Override
-    public Subtitle getSelectedSubtitle() {
-        return mPlayer.getSelectedSubtitle();
-    }
-
-    @Override
-    public void setSubtitleEnabled(boolean enabled) {
-        mPlayer.setSubtitleEnabled(enabled);
-    }
-
-    @Override
-    public boolean isSubtitleEnabled() {
-        return mPlayer.isSubtitleEnabled();
-    }
-
     private void notifyProgressUpdate(long currentPosition, long duration) {
         currentPosition = Math.max(currentPosition, 0);
         duration = Math.max(duration, 0);
@@ -1060,20 +1131,24 @@ public class AVPlayer extends ExtraObject implements Player {
     @Override
     public String dump() {
         String playerInfo = mPlayer == null ? null : mPlayer.dump();
-        return String.format("%s state:%s %s", L.obj2String(this), mapState(mState), playerInfo);
+        return String.format("%s %s %s", L.obj2String(this), mapState(mState), playerInfo);
     }
 
     private void recordProgress() {
+        final MediaSource mediaSource = mMediaSource;
+        if (mediaSource == null) return;
         if (isInPlaybackState() && !isCompleted() || isError()) {
             long position = getCurrentPosition();
             long duration = getDuration();
             if (position > 1000 && duration > 0 && position < duration - 1000) {
-                ProgressRecorder.recordProgress(mMediaSource.getSyncProgressId(), position);
+                ProgressRecorder.recordProgress(mediaSource.getSyncProgressId(), position);
             }
         }
     }
 
     private void clearProgress() {
-        ProgressRecorder.removeProgress(mMediaSource.getSyncProgressId());
+        final MediaSource mediaSource = mMediaSource;
+        if (mediaSource == null) return;
+        ProgressRecorder.removeProgress(mediaSource.getSyncProgressId());
     }
 }

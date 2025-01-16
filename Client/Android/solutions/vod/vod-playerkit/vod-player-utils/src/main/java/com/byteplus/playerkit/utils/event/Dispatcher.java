@@ -19,8 +19,34 @@ public class Dispatcher {
         void onEvent(Event event);
     }
 
+    public static class EventListeners implements EventListener {
+
+        private final CopyOnWriteArrayList<EventListener> mListeners = new CopyOnWriteArrayList<>();
+
+        public final void addEventListener(EventListener listener) {
+            this.mListeners.addIfAbsent(listener);
+        }
+
+        public final void removeEventListener(EventListener listener) {
+            if (listener != null) {
+                this.mListeners.remove(listener);
+            }
+        }
+
+        public final void removeAllEventListener() {
+            this.mListeners.clear();
+        }
+
+        @Override
+        public void onEvent(Event event) {
+            for (EventListener listener : mListeners) {
+                listener.onEvent(event);
+            }
+        }
+    }
+
     private final H mHandler;
-    private final CopyOnWriteArrayList<EventListener> mListeners = new CopyOnWriteArrayList<>();
+    private final EventListeners mListeners = new EventListeners();
 
     public Dispatcher(Looper looper) {
         this.mHandler = new H(looper, this);
@@ -32,38 +58,34 @@ public class Dispatcher {
     }
 
     public final void addEventListener(EventListener listener) {
-        this.mListeners.addIfAbsent(listener);
+        this.mListeners.addEventListener(listener);
     }
 
     public final void removeEventListener(EventListener listener) {
-        if (listener != null) {
-            this.mListeners.remove(listener);
-        }
+        this.mListeners.removeEventListener(listener);
     }
 
     public final void removeAllEventListener() {
-        this.mListeners.clear();
+        this.mListeners.removeAllEventListener();
     }
 
     public void dispatchEvent(Event event) {
-        if (Looper.myLooper() == mHandler.getLooper()) {
-            dispatch(event);
+        if (Thread.currentThread() != this.mHandler.getLooper().getThread()) {
+            this.mHandler.obtainMessage(0, event).sendToTarget();
         } else {
-            mHandler.obtainMessage(0, event).sendToTarget();
+            dispatch(event);
         }
     }
 
     public void release() {
         mHandler.post(() -> {
             mHandler.removeCallbacksAndMessages(null);
-            mListeners.clear();
+            mListeners.removeAllEventListener();
         });
     }
 
     private void dispatch(Event event) {
-        for (EventListener listener : mListeners) {
-            listener.onEvent(event);
-        }
+        mListeners.onEvent(event);
         if (event.dispatcher() == this) {
             if (Config.EVENT_POOL_ENABLE) {
                 Pool.release(event);

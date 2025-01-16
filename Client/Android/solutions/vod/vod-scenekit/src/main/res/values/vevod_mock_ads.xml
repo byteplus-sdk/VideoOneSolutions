@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_mock_short_video_ad_layer_title">VolcEngine Vod</string>
+    <string name="vevod_mock_short_video_ad_layer_ad">AD</string>
+    <string name="vevod_mock_short_video_ad_layer_content">Professional one-stop solution, build audio and video business at a minimum discount of 10%!</string>
+    <string name="vevod_mock_short_video_ad_layer_button_text">Check the details</string>
+</resources>

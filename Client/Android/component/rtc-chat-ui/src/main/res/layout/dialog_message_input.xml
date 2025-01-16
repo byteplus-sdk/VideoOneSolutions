@@ -31,7 +31,7 @@
         android:paddingBottom="16dp"
         android:singleLine="true"
         android:textColor="#000"
-        android:textColorHint="#80838A"
+        android:textColorHint="#74767B"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@id/bottom"
         app:layout_constraintLeft_toLeftOf="parent"

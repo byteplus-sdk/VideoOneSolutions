@@ -50,7 +50,7 @@ dependencies {
     implementation libs.bundles.viewmodel.ktx
 
     implementation libs.ttsdk.player.premium
-    implementation libs.ttsdk.ttlivepull
+    implementation libs.ttsdk.ttlivepull.rtc
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

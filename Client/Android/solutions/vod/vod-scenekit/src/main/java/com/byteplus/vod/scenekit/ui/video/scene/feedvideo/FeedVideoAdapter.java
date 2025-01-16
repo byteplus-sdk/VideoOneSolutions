@@ -28,6 +28,7 @@ import com.byteplus.playerkit.utils.event.Event;
 import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
 import com.byteplus.vod.scenekit.databinding.VevodFeedVideoItemBinding;
+import com.byteplus.vod.scenekit.ext.VideoLayerHostExt;
 import com.byteplus.vod.scenekit.ui.base.VideoViewExtras;
 import com.byteplus.vod.scenekit.ui.video.layer.CoverLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.FullScreenLayer;
@@ -173,7 +174,7 @@ public class FeedVideoAdapter extends RecyclerView.Adapter<FeedVideoAdapter.View
             videoViewContainer = binding.videoViewContainer;
             VideoView videoView = sharedVideoView = binding.videoView;
 
-            VideoLayerHost layerHost = new VideoLayerHost(itemView.getContext(), config);
+            VideoLayerHost layerHost = new VideoLayerHostExt(itemView.getContext(), config);
             layerHost.addLayer(new GestureLayer());
             layerHost.addLayer(new CoverLayer());
             layerHost.addLayer(new FeedVideoCoverShadowLayer());

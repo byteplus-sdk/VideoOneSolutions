@@ -14,6 +14,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.vertcdemo.core.SolutionDataManager
 import com.vertcdemo.core.event.AppTokenExpiredEvent
@@ -29,6 +30,7 @@ private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity(), ServiceConnection {
     private val mLogin = ILoginImpl()
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)

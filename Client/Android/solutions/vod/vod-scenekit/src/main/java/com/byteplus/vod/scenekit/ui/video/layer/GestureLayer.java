@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.PlayerEvent;
+import com.byteplus.playerkit.player.playback.VideoLayer;
 import com.byteplus.playerkit.player.playback.VideoLayerHost;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.utils.L;
@@ -19,6 +20,8 @@ import com.byteplus.playerkit.utils.event.Event;
 import com.byteplus.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.base.PlaybackEventLayer;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
+
+import java.util.List;
 
 
 public class GestureLayer extends PlaybackEventLayer {
@@ -116,32 +119,20 @@ public class GestureLayer extends PlaybackEventLayer {
 
         L.d(this, "showController");
 
-        // TODO opt layer dismiss logic
         final Player player = player();
         boolean autoDismiss = player == null || !player.isPaused();
 
-        AnimateLayer timeProgressLayer = host.findLayer(TimeProgressBarLayer.class);
-        AnimateLayer playPauseLayer = host.findLayer(PlayPauseLayer.class);
-        AnimateLayer titleBarLayer = host.findLayer(TitleBarLayer.class);
-        AnimateLayer volumeBrightnessIconLayer = host.findLayer(VolumeBrightnessIconLayer.class);
-
-        AnimateLayer lockLayer = host.findLayer(LockLayer.class);
-
-        if (timeProgressLayer != null) {
-            timeProgressLayer.animateShow(autoDismiss);
-        }
-        if (playPauseLayer != null) {
-            playPauseLayer.animateShow(autoDismiss);
-        }
-        if (titleBarLayer != null) {
-            titleBarLayer.animateShow(autoDismiss);
-        }
-        if (isActive(playScene())) {
-            if (volumeBrightnessIconLayer != null) {
-                volumeBrightnessIconLayer.animateShow(autoDismiss);
+        List<? extends VideoLayer> layers = host.findLayersByTag(GestureControllable.class);
+        final boolean active = isActive(playScene());
+        for (VideoLayer layer : layers) {
+            if (layer instanceof GestureCheckActive && !active) {
+                continue;
             }
-            if (lockLayer != null) {
-                lockLayer.animateShow(autoDismiss);
+
+            if (layer instanceof AnimateLayer animateLayer) {
+                animateLayer.animateShow(autoDismiss);
+            } else {
+                layer.show();
             }
         }
     }
@@ -155,27 +146,16 @@ public class GestureLayer extends PlaybackEventLayer {
         if (host == null) return;
 
         L.d(this, "dismissController");
-        AnimateLayer timeProgressLayer = host.findLayer(TimeProgressBarLayer.class);
-        AnimateLayer playPauseLayer = host.findLayer(PlayPauseLayer.class);
-        AnimateLayer titleBarLayer = host.findLayer(TitleBarLayer.class);
-        AnimateLayer volumeBrightnessIconLayer = host.findLayer(VolumeBrightnessIconLayer.class);
-
-        AnimateLayer lockLayer = host.findLayer(LockLayer.class);
-
-        if (timeProgressLayer != null) {
-            timeProgressLayer.animateDismiss(force);
-        }
-        if (playPauseLayer != null) {
-            playPauseLayer.animateDismiss(force);
-        }
-        if (titleBarLayer != null) {
-            titleBarLayer.animateDismiss(force);
-        }
-        if (volumeBrightnessIconLayer != null) {
-            volumeBrightnessIconLayer.animateDismiss(force);
-        }
-        if (lockLayer != null) {
-            lockLayer.animateDismiss(force);
+        List<? extends VideoLayer> layers = host.findLayersByTag(GestureControllable.class);
+        for (VideoLayer layer : layers) {
+            if (layer instanceof GestureCheckActive &&!isActive(playScene())) {
+                continue;
+            }
+            if (layer instanceof AnimateLayer animateLayer) {
+                animateLayer.animateDismiss(force);
+            } else {
+                layer.dismiss();
+            }
         }
     }
 

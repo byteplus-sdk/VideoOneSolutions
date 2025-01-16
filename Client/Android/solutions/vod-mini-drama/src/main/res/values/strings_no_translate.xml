@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_mini_drama_at" translatable="false">"@%1$s"</string>
+    <string name="vevod_mini_drama_vertical_line" translatable="false">"%1$s | %2$s"</string>
+    <string name="vevod_mini_drama_episode_range" translatable="false">%1$d-%2$d</string>
+    <string name="vevod_mini_drama_one" translatable="false">"1"</string>
+
+    <string name="vevod_mini_drama_x_seconds" translatable="false">"%1$ds"</string>
+
+    <string name="vevod_mini_drama_price_usd" translatable="false">"USD%1$.1f"</string>
+</resources>

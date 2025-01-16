@@ -8,9 +8,9 @@ class Factory {
     static <T extends Event> T create(Class<T> clazz) {
         try {
             return clazz.newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException | InstantiationException |
+                 NullPointerException e ) {
+            throw new RuntimeException(e);
         }
-        throw new NullPointerException();
     }
 }

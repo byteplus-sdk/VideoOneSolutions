@@ -8,20 +8,24 @@ import com.byteplus.playerkit.utils.event.Event;
 
 public class InfoSubtitleChanged extends Event {
 
-    public Subtitle subtitle;
+    public Subtitle pre;
+    public Subtitle current;
+
 
     public InfoSubtitleChanged() {
         super(PlayerEvent.Info.SUBTITLE_CHANGED);
     }
 
-    public InfoSubtitleChanged init(Subtitle subtitle) {
-        this.subtitle = subtitle;
+    public InfoSubtitleChanged init(Subtitle pre, Subtitle current) {
+        this.pre = pre;
+        this.current = current;
         return this;
     }
 
     @Override
     public void recycle() {
         super.recycle();
-        this.subtitle = null;
+        this.pre = null;
+        this.current = null;
     }
 }

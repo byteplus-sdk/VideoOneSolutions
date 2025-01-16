@@ -30,7 +30,7 @@ android {
 
         manifestPlaceholders = [appName: project.APP_NAME]
 
-        setProperty("archivesBaseName", "VideoOne-$APP_VERSION_NAME")
+        setProperty("archivesBaseName", "VideoOne-$APP_VERSION_NAME-$APP_VERSION_CODE-${new Date().format("yyyyMMddHHmm")}")
     }
 
     buildFeatures {
@@ -74,6 +74,8 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.material
 
+    implementation libs.splashscreen
+
     implementation libs.bundles.navigation
 
     testImplementation libs.junit
@@ -98,5 +100,6 @@ dependencies {
     implementation project(':solutions:media-live:live-entrance')
     implementation project(':solutions:rtc-api-example:rtc-api-example-entry')
     implementation project(':solutions:vod-live-feed')
+    implementation project(':solutions:vod-mini-drama')
     // endregion
 }
