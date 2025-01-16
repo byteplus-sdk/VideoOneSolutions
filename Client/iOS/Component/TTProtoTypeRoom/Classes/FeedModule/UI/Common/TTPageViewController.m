@@ -205,7 +205,7 @@ static NSString *TTPageViewControllerExceptionKey = @"TTPageViewControllerExcept
     if (viewController) return viewController;
     viewController = [self.dataSource pageViewController:self pageForItemAtIndex:index];
     if (!viewController) {
-        [NSException raise:TTPageViewControllerExceptionKey format:@"VEPageViewController(%p) pageViewController:pageForItemAtIndex: must return a no nil instance", self];
+        [NSException raise:TTPageViewControllerExceptionKey format:@"TTPageViewController(%p) pageViewController:pageForItemAtIndex: must return a no nil instance", self];
     }
     
     [self addChildViewController:viewController];

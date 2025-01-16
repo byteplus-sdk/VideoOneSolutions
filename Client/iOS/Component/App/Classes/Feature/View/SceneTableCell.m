@@ -30,16 +30,6 @@
     self.contentView.backgroundColor = [UIColor clearColor];
     self.backgroundColor = [UIColor clearColor];
 
-    self.bgImgV = [[UIImageView alloc] init];
-    self.bgImgV.contentMode = UIViewContentModeScaleAspectFit;
-    [self.contentView addSubview:self.bgImgV];
-    [self.bgImgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(self.contentView);
-        make.trailing.equalTo(self.contentView);
-        make.top.equalTo(self.contentView).mas_offset(8);
-        make.bottom.equalTo(self.contentView).mas_offset(-8);
-    }];
-
     UIView *contentView = [[UIView alloc] init];
     [self.contentView addSubview:contentView];
     [contentView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -47,6 +37,16 @@
         make.trailing.equalTo(self.contentView).mas_offset(-16);
         make.top.equalTo(self.contentView).mas_offset(8);
         make.bottom.equalTo(self.contentView).mas_offset(-8);
+    }];
+    
+    self.bgImgV = [[UIImageView alloc] init];
+    self.bgImgV.contentMode = UIViewContentModeScaleAspectFit;
+    [contentView addSubview:self.bgImgV];
+    [self.bgImgV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.equalTo(contentView);
+        make.trailing.equalTo(contentView);
+        make.top.equalTo(contentView);
+        make.bottom.equalTo(contentView);
     }];
 
     self.arrowImgV = [[UIImageView alloc] init];

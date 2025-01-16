@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, KTVSeatItemStatue) {
 @property (nonatomic, strong) UIImageView *avatarBgImageView;
 @property (nonatomic, strong) UILabel *userNameLabel;
 @property (nonatomic, strong) UIImageView *centerImageView;
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *itemMaskView;
 @property (nonatomic, strong) UIImageView *singerImageView;
 
 @property (nonatomic, strong) KTVSongModel *songModel;
@@ -33,7 +33,7 @@ typedef NS_ENUM(NSInteger, KTVSeatItemStatue) {
         [self addSubview:self.animationView];
         [self addSubview:self.avatarBgImageView];
         [self addSubview:self.userNameLabel];
-        [self addSubview:self.maskView];
+        [self addSubview:self.itemMaskView];
         [self addSubview:self.centerImageView];
         [self addSubview:self.singerImageView];
         
@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, KTVSeatItemStatue) {
             make.centerX.equalTo(self);
         }];
         
-        [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+        [self.itemMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.equalTo(self.avatarBgImageView);
         }];
         
@@ -106,7 +106,7 @@ typedef NS_ENUM(NSInteger, KTVSeatItemStatue) {
 - (void)updateUI:(KTVSeatItemStatue)statue
        seatModel:(KTVSeatModel *)seatModel {
     self.animationView.hidden = YES;
-    self.maskView.hidden = YES;
+    self.itemMaskView.hidden = YES;
     
     if (statue == KTVSeatItemStatueNull) {
         self.avatarBgImageView.image = [UIImage imageNamed:@"seat_bg_null" bundleName:HomeBundleName];
@@ -135,7 +135,7 @@ typedef NS_ENUM(NSInteger, KTVSeatItemStatue) {
                                              subBundleName:AvatarBundleName];
         self.centerImageView.image = [UIImage imageNamed:@"seat_mic_s" bundleName:HomeBundleName];
         self.centerImageView.hidden = NO;
-        self.maskView.hidden = NO;
+        self.itemMaskView.hidden = NO;
     } else {
         //error
     }
@@ -225,15 +225,15 @@ typedef NS_ENUM(NSInteger, KTVSeatItemStatue) {
     return _userNameLabel;
 }
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor colorFromRGBHexString:@"#040404" andAlpha:0.8 * 255];
-        _maskView.layer.cornerRadius = 16;
-        _maskView.layer.masksToBounds = YES;
-        _maskView.hidden = YES;
+- (UIView *)itemMaskView {
+    if (!_itemMaskView) {
+        _itemMaskView = [[UIView alloc] init];
+        _itemMaskView.backgroundColor = [UIColor colorFromRGBHexString:@"#040404" andAlpha:0.8 * 255];
+        _itemMaskView.layer.cornerRadius = 16;
+        _itemMaskView.layer.masksToBounds = YES;
+        _itemMaskView.hidden = YES;
     }
-    return _maskView;
+    return _itemMaskView;
 }
 
 - (UIImageView *)centerImageView {

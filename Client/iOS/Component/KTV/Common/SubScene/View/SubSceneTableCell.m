@@ -9,7 +9,7 @@
 
 @interface SubSceneTableCell ()
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *cellMaskView;
 @property (nonatomic, strong) UIImageView *backgroundImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *desFirstLabel;
@@ -31,34 +31,34 @@
     self.contentView.backgroundColor = [UIColor clearColor];
     self.backgroundColor = [UIColor clearColor];
     
-    [self.contentView addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.contentView addSubview:self.cellMaskView];
+    [self.cellMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.contentView).mas_offset(16);
         make.right.equalTo(self.contentView).mas_offset(-16);
         make.top.equalTo(self.contentView).mas_offset(0);
         make.bottom.equalTo(self.contentView).mas_offset(-24);
     }];
 
-    [self.maskView addSubview:self.backgroundImageView];
+    [self.cellMaskView addSubview:self.backgroundImageView];
     [self.backgroundImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.maskView);
+        make.edges.equalTo(self.cellMaskView);
     }];
     
-    [self.maskView addSubview:self.desSecondLabel];
+    [self.cellMaskView addSubview:self.desSecondLabel];
     [self.desSecondLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(@44);
         make.bottom.equalTo(@-16);
         make.right.lessThanOrEqualTo(self.backgroundImageView.mas_right);
     }];
     
-    [self.maskView addSubview:self.desFirstLabel];
+    [self.cellMaskView addSubview:self.desFirstLabel];
     [self.desFirstLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(@44);
         make.bottom.equalTo(@-36);
         make.right.lessThanOrEqualTo(self.backgroundImageView.mas_right);
     }];
 
-    [self.maskView addSubview:self.titleLabel];
+    [self.cellMaskView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(@24);
         make.bottom.equalTo(@-60);
@@ -99,11 +99,11 @@
 
 #pragma mark - Getter
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
+- (UIView *)cellMaskView {
+    if (!_cellMaskView) {
+        _cellMaskView = [[UIView alloc] init];
     }
-    return _maskView;
+    return _cellMaskView;
 }
 
 - (UIImageView *)backgroundImageView {

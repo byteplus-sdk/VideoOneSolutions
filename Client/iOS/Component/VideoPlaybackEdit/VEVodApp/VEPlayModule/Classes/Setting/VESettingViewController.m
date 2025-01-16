@@ -1,7 +1,6 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VESettingViewController.h"
-#import "UIColor+RGB.h"
 #import "VESettingDisplayCell.h"
 #import "VESettingDisplayDetailCell.h"
 #import "VESettingEntranceCell.h"
@@ -11,6 +10,7 @@
 #import <Masonry/Masonry.h>
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
+#import <ToolKit/UIColor+String.h>
 
 extern NSString *universalActionSectionKey;
 extern NSString *universalDidSectionKey;
@@ -62,7 +62,7 @@ extern NSString *universalVideoUrlSectionKey;
 - (UIView *)navView {
     if (!_navView) {
         _navView = [[UIView alloc] init];
-        _navView.backgroundColor = [UIColor veveod_colorWithRGB:0xF7F8FA alpha:1.0];
+        _navView.backgroundColor = [UIColor colorFromRGBHexString:@"#F7F8FA"];
 
         BaseButton *button = [[BaseButton alloc] init];
         button.backgroundColor = [UIColor clearColor];
@@ -141,7 +141,7 @@ extern NSString *universalVideoUrlSectionKey;
             UILabel *headerLabel = [UILabel new];
             headerLabel.text = [NSString stringWithFormat:@"    %@", [[VESettingManager universalManager] sectionKeyLocalized:sectionKey]];
             headerLabel.font = [UIFont systemFontOfSize:14.0];
-            headerLabel.textColor = [UIColor veveod_colorWithRGB:0x86909C alpha:1.0];
+            headerLabel.textColor = [UIColor colorFromRGBHexString:@"#86909C"];
             headerLabel;
         });
     }
@@ -165,7 +165,7 @@ extern NSString *universalVideoUrlSectionKey;
 - (UITableView *)tableView {
     if (!_tableView) {
         _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
-        _tableView.backgroundColor = [UIColor veveod_colorWithRGB:0xF7F8FA alpha:1.0];
+        _tableView.backgroundColor = [UIColor colorFromRGBHexString:@"#F7F8FA"];
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.estimatedRowHeight = 0.0;

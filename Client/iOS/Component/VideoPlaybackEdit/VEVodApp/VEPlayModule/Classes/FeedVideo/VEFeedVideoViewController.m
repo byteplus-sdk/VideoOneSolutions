@@ -14,7 +14,7 @@
 
 static NSString *VEFeedVideoNormalCellReuseID = @"VEFeedVideoNormalCellReuseID";
 
-@interface VEFeedVideoViewController () <UITableViewDelegate, UITableViewDataSource, VEFeedVideoNormalCellDelegate, VEVideoDetailProtocol, VEVideoPlaybackDelegate>
+@interface VEFeedVideoViewController () <UITableViewDelegate, UITableViewDataSource, VEFeedVideoNormalCellDelegate, VEVideoDetailProtocol,VEVideoPlaybackDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *videoModels;

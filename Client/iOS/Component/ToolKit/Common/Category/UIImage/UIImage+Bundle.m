@@ -44,7 +44,11 @@
 }
 
 + (UIImage *)avatarImageForUid:(NSString *)uid {
-    return [UIImage imageNamed:[BaseUserModel getAvatarNameWithUid:uid] bundleName:ToolKitBundleName subBundleName:AvatarBundleName];
+    NSString *imageName = [BaseUserModel getAvatarNameWithUid:uid];
+    if (!imageName || imageName.length == 0) {
+        imageName = @"avatar00.png";
+    }
+    return [UIImage imageNamed:imageName bundleName:ToolKitBundleName subBundleName:AvatarBundleName];
 }
 
 @end

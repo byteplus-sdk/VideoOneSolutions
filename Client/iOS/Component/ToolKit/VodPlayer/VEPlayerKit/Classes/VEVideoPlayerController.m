@@ -276,10 +276,13 @@
 }
 
 - (void)setPlaybackVolume:(CGFloat)playbackVolume {
+    VOLogI(VOVodPlayer, @"playbackVolume: %f",playbackVolume);
     self.videoEngine.volume = playbackVolume;
 }
 
 - (CGFloat)playbackVolume {
+    VOLogI(VOVodPlayer, @"currentVolume: %f",self.videoEngine.volume);
+    
     return self.videoEngine.volume;
 }
 

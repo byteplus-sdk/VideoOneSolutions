@@ -7,7 +7,7 @@
 
 @interface ChorusTextInputView ()
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *chorusMaskView;
 @property (nonatomic, strong) UIImageView *borderImageView;
 @property (nonatomic, strong) UITextField *textField;
 @property (nonatomic, strong) BaseButton *senderButton;
@@ -19,8 +19,8 @@
 - (instancetype)initWithMessage:(NSString *)message {
     self = [super init];
     if (self) {
-        [self addSubview:self.maskView];
-        [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+        [self addSubview:self.chorusMaskView];
+        [self.chorusMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.equalTo(self);
         }];
         
@@ -76,12 +76,12 @@
 
 #pragma mark - Getter
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor colorFromRGBHexString:@"#0E0825" andAlpha:0.95 * 255];
+- (UIView *)chorusMaskView {
+    if (!_chorusMaskView) {
+        _chorusMaskView = [[UIView alloc] init];
+        _chorusMaskView.backgroundColor = [UIColor colorFromRGBHexString:@"#0E0825" andAlpha:0.95 * 255];
     }
-    return _maskView;
+    return _chorusMaskView;
 }
 
 - (UIImageView *)borderImageView {

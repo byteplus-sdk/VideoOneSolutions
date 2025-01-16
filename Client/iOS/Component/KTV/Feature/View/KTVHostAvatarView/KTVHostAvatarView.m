@@ -10,7 +10,7 @@
 @property (nonatomic, strong) UIImageView *avatarBgImageView;
 @property (nonatomic, strong) UILabel *userNameLabel;
 @property (nonatomic, strong) UIImageView *centerImageView;
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *avatarMaskView;
 @property (nonatomic, strong) UIImageView *singerImageView;
 
 @property (nonatomic, strong) GCDTimer *timer;
@@ -44,11 +44,11 @@
         
         if (userModel.mic) {
             self.centerImageView.hidden = YES;
-            self.maskView.hidden = YES;
+            self.avatarMaskView.hidden = YES;
             self.animationView.hidden = userModel.isSpeak ? NO : YES;
         } else {
             self.centerImageView.hidden = NO;
-            self.maskView.hidden = NO;
+            self.avatarMaskView.hidden = NO;
             self.animationView.hidden = YES;
         }
         [self updateUserNameUI];
@@ -93,7 +93,7 @@
     [self addSubview:self.animationView];
     [self addSubview:self.avatarBgImageView];
     [self addSubview:self.userNameLabel];
-    [self addSubview:self.maskView];
+    [self addSubview:self.avatarMaskView];
     [self addSubview:self.centerImageView];
     [self addSubview:self.singerImageView];
     
@@ -103,7 +103,7 @@
         make.centerX.equalTo(self);
     }];
     
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.avatarMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.avatarBgImageView);
     }];
     
@@ -190,15 +190,15 @@
     return _userNameLabel;
 }
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor colorFromRGBHexString:@"#040404" andAlpha:0.8 * 255];
-        _maskView.layer.cornerRadius = 16;
-        _maskView.layer.masksToBounds = YES;
-        _maskView.hidden = YES;
+- (UIView *)avatarMaskView {
+    if (!_avatarMaskView) {
+        _avatarMaskView = [[UIView alloc] init];
+        _avatarMaskView.backgroundColor = [UIColor colorFromRGBHexString:@"#040404" andAlpha:0.8 * 255];
+        _avatarMaskView.layer.cornerRadius = 16;
+        _avatarMaskView.layer.masksToBounds = YES;
+        _avatarMaskView.hidden = YES;
     }
-    return _maskView;
+    return _avatarMaskView;
 }
 
 - (UIImageView *)centerImageView {

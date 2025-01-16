@@ -1,8 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VELongVideoViewLayout.h"
-#import "UIColor+RGB.h"
-
+#import <ToolKit/UIColor+String.h>
 #define VELongTopCellWidth          (UIScreen.mainScreen.bounds.size.width)
 #define VELongTopCellHeight         (VELongTopCellWidth * (9.00 / 16.00))
 
@@ -155,7 +154,7 @@
         _titleLabel = [UILabel new];
         _titleLabel.textAlignment = NSTextAlignmentLeft;
         _titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
-        _titleLabel.textColor = [UIColor veveod_colorWithRGB:0x0C0D0F alpha:1.0];
+        _titleLabel.textColor = [UIColor colorFromRGBHexString:@"0x0C0D0F" andAlpha:255.0];
         _titleLabel.frame = CGRectMake(0.0, 0.0, (UIScreen.mainScreen.bounds.size.width), VELongHeaderHeight);
     }
     return _titleLabel;

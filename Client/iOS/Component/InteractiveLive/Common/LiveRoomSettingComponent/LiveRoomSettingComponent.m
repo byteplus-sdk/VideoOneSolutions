@@ -12,7 +12,7 @@
 
 @property (nonatomic, weak) UIView *superView;
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *settingMaskView;
 
 @property (nonatomic, weak) LiveSettingQualityView *qualityView;
 
@@ -31,8 +31,8 @@
 }
 
 - (void)show {
-    [self.superView addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.superView addSubview:self.settingMaskView];
+    [self.settingMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.superView);
     }];
 
@@ -121,9 +121,9 @@
 }
 
 - (void)maskViewAction {
-    if (self.maskView.superview) {
-        [self.maskView removeFromSuperview];
-        self.maskView = nil;
+    if (self.settingMaskView.superview) {
+        [self.settingMaskView removeFromSuperview];
+        self.settingMaskView = nil;
     }
 
     if (self.createRoomSettingView.superview) {
@@ -148,15 +148,15 @@
     return _createRoomSettingView;
 }
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor clearColor];
-        _maskView.userInteractionEnabled = YES;
+- (UIView *)settingMaskView {
+    if (!_settingMaskView) {
+        _settingMaskView = [[UIView alloc] init];
+        _settingMaskView.backgroundColor = [UIColor clearColor];
+        _settingMaskView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(maskViewAction)];
-        [_maskView addGestureRecognizer:tap];
+        [_settingMaskView addGestureRecognizer:tap];
     }
-    return _maskView;
+    return _settingMaskView;
 }
 
 @end

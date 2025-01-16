@@ -9,7 +9,7 @@
 
 @interface LiveAddGuestsContentView () <LiveAddGuestsTopViewDelegate, LiveAddGuestsApplicationListsViewDelegate, LiveAddGuestsOnlineListsViewDelegate>
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *guestMaskView;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong) UIImageView *topImageView;
 @property (nonatomic, strong) LiveAddGuestsTopView *topView;
@@ -150,8 +150,8 @@
 }
 
 - (void)addSubviewConstraints {
-    [self addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self addSubview:self.guestMaskView];
+    [self.guestMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self);
     }];
 
@@ -239,15 +239,15 @@
     return _applicationListView;
 }
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor clearColor];
-        _maskView.userInteractionEnabled = YES;
+- (UIView *)guestMaskView {
+    if (!_guestMaskView) {
+        _guestMaskView = [[UIView alloc] init];
+        _guestMaskView.backgroundColor = [UIColor clearColor];
+        _guestMaskView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(maskViewAction)];
-        [_maskView addGestureRecognizer:tap];
+        [_guestMaskView addGestureRecognizer:tap];
     }
-    return _maskView;
+    return _guestMaskView;
 }
 
 @end

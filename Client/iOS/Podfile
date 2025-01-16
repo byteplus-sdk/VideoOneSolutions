@@ -87,6 +87,11 @@ def scene_TTProtoTypeRoom_pods
 
 end
 
+def scene_MiniDrama_pods
+     pod 'TTSDK', $TT_SDK_VERSION,  :subspecs => ['Player']
+    pod 'MiniDrama', :path => './Component/MiniDrama'
+end
+
 target 'VideoOne' do
   common_pods
   scene_InteractiveLive_pods
@@ -96,6 +101,7 @@ target 'VideoOne' do
   scene_MediaLive_pods
   develop_rtc_pods
   scene_TTProtoTypeRoom_pods
+  scene_MiniDrama_pods
   pod 'SDWebImage', '~> 5.12.0'
   
 end

@@ -10,7 +10,7 @@
 
 @interface LiveMediaComponent () <LiveHostMediaViewDelegate, LiveGuestsMediaViewDelegate>
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *mediaMaskView;
 
 @property (nonatomic, weak) UIView *mediaView;
 
@@ -61,8 +61,8 @@
         mediaViewHeight = 163 + [DeviceInforTool getVirtualHomeHeight];
         mediaView = guestsMediaView;
     }
-    [windowVC.view addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [windowVC.view addSubview:self.mediaMaskView];
+    [self.mediaMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(windowVC.view);
     }];
 
@@ -93,9 +93,9 @@
         self.mediaView = nil;
     }
 
-    if (self.maskView.superview) {
-        [self.maskView removeFromSuperview];
-        self.maskView = nil;
+    if (self.mediaMaskView.superview) {
+        [self.mediaMaskView removeFromSuperview];
+        self.mediaMaskView = nil;
     }
 }
 
@@ -224,9 +224,9 @@
 #pragma mark - Private Action
 
 - (void)maskViewAction {
-    if (self.maskView.superview) {
-        [self.maskView removeFromSuperview];
-        self.maskView = nil;
+    if (self.mediaMaskView.superview) {
+        [self.mediaMaskView removeFromSuperview];
+        self.mediaMaskView = nil;
     }
 
     if (self.mediaView.superview) {
@@ -237,15 +237,15 @@
 
 #pragma mark - Getter
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor clearColor];
-        _maskView.userInteractionEnabled = YES;
+- (UIView *)mediaMaskView {
+    if (!_mediaMaskView) {
+        _mediaMaskView = [[UIView alloc] init];
+        _mediaMaskView.backgroundColor = [UIColor clearColor];
+        _mediaMaskView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(maskViewAction)];
-        [_maskView addGestureRecognizer:tap];
+        [_mediaMaskView addGestureRecognizer:tap];
     }
-    return _maskView;
+    return _mediaMaskView;
 }
 
 @end

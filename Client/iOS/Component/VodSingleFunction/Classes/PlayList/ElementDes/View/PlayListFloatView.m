@@ -7,7 +7,7 @@
 
 @interface PlayListFloatView () <UITableViewDelegate, UITableViewDataSource>
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *listMaskView;
 
 @property (nonatomic, strong) UIView *contentView;
 
@@ -28,8 +28,8 @@
 
 
 - (void)createUIComponent {
-    [self addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self addSubview:self.listMaskView];
+    [self.listMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self);
     }];
     [self addSubview:self.contentView];
@@ -110,15 +110,15 @@
 
 #pragma mark - Getter
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor clearColor];
-        _maskView.userInteractionEnabled = YES;
+- (UIView *)listMaskView {
+    if (!_listMaskView) {
+        _listMaskView = [[UIView alloc] init];
+        _listMaskView.backgroundColor = [UIColor clearColor];
+        _listMaskView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(maskViewAction)];
-        [_maskView addGestureRecognizer:tap];
+        [_listMaskView addGestureRecognizer:tap];
     }
-    return _maskView;
+    return _listMaskView;
 }
 
 - (UIView *)contentView {

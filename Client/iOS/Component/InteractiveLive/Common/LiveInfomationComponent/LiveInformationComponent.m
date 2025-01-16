@@ -7,7 +7,7 @@
 
 @interface LiveInformationComponent ()
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *infoMaskView;
 
 @property (nonatomic, weak) UIView *superView;
 
@@ -33,8 +33,8 @@
     if (![self.linkSession isInteracting]) {
         [[ToastComponent shareToastComponent] showLoading];
     }
-    [self.superView addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.superView addSubview:self.infoMaskView];
+    [self.infoMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.superView);
     }];
 
@@ -151,9 +151,9 @@
 }
 
 - (void)dismiss {
-    if (self.maskView.superview) {
-        [self.maskView removeFromSuperview];
-        self.maskView = nil;
+    if (self.infoMaskView.superview) {
+        [self.infoMaskView removeFromSuperview];
+        self.infoMaskView = nil;
     }
 
     if (self.contentView.superview) {
@@ -174,15 +174,15 @@
     return _contentView;
 }
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor clearColor];
-        _maskView.userInteractionEnabled = YES;
+- (UIView *)infoMaskView {
+    if (!_infoMaskView) {
+        _infoMaskView = [[UIView alloc] init];
+        _infoMaskView.backgroundColor = [UIColor clearColor];
+        _infoMaskView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
-        [_maskView addGestureRecognizer:tap];
+        [_infoMaskView addGestureRecognizer:tap];
     }
-    return _maskView;
+    return _infoMaskView;
 }
 
 @end
