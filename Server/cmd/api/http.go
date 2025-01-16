@@ -19,9 +19,9 @@ package api
 import (
 	"fmt"
 
-	"github.com/byteplus/VideoOneServer/internal/application/live_feed/live_feed_handler"
-
 	"github.com/byteplus/VideoOneServer/cmd/handler"
+	"github.com/byteplus/VideoOneServer/internal/application/drama/drama_handler"
+	"github.com/byteplus/VideoOneServer/internal/application/live_feed/live_feed_handler"
 	"github.com/byteplus/VideoOneServer/internal/application/login/login_handler"
 	"github.com/byteplus/VideoOneServer/internal/application/vod/vod_handler"
 	"github.com/byteplus/VideoOneServer/internal/pkg/config"
@@ -69,6 +69,15 @@ func (api *HttpApi) Run() error {
 		liveFeed.POST("/v1/getFeedStreamOnlyLive", live_feed_handler.GetFeedStreamOnlyLive)
 		liveFeed.POST("/v1/switchFeedLiveRoom", live_feed_handler.SwitchFeedStreamRoom)
 		liveFeed.POST("/v1/liveSendMessage", live_feed_handler.SendMessage)
+	}
+	// drama
+	{
+		liveFeed := rr.Group("/drama")
+		liveFeed.POST("/v1/getDramaChannel", drama_handler.GetDramaChannel)
+		liveFeed.POST("/v1/getDramaFeed", drama_handler.GetDramaFeed)
+		liveFeed.POST("/v1/getDramaList", drama_handler.GetDramaList)
+		liveFeed.POST("/v1/getDramaDetail", drama_handler.GetDramaDetail)
+		liveFeed.GET("/v1/getVideoComments", drama_handler.GetVideoComments)
 	}
 	return api.r.Run(fmt.Sprintf("0.0.0.0:%s", api.Port))
 }
