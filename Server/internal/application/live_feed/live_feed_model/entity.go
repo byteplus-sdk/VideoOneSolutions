@@ -25,7 +25,7 @@ type LiveFeed struct {
 	RoomDesc   string    `json:"room_desc" gorm:"column:room_desc"`
 	CoverUrl   string    `json:"cover_url" gorm:"column:cover_url"`
 	RoomID     string    `json:"room_id" gorm:"column:room_id"`
-	RTCAppID   string    `json:"rtc_app_id" gorm:"column:rtc_app_id"`
+	RTCAppID   string    `json:"rtc_app_id" gorm:"-"`
 	StreamID   string    `json:"-" gorm:"column:stream_id"`
 	CreateTime time.Time `json:"-" gorm:"column:create_time"`
 	UpdateTime time.Time `json:"-" gorm:"column:update_time"`

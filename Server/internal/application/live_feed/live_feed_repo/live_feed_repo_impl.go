@@ -23,6 +23,7 @@ import (
 
 	"github.com/byteplus/VideoOneServer/internal/application/live_feed/live_feed_model"
 	"github.com/byteplus/VideoOneServer/internal/models/custom_error"
+	"github.com/byteplus/VideoOneServer/internal/pkg/config"
 	"github.com/byteplus/VideoOneServer/internal/pkg/db"
 	"github.com/byteplus/VideoOneServer/internal/pkg/logs"
 	"github.com/byteplus/VideoOneServer/internal/pkg/redis_cli"
@@ -50,6 +51,9 @@ func (l *LiveFeedRepoImpl) GetLiveFeed(ctx context.Context, offset, pageSize int
 	rand.Shuffle(len(resp), func(i, j int) {
 		resp[i], resp[j] = resp[j], resp[i]
 	})
+	for i := range resp {
+		resp[i].RTCAppID = config.Configs().RTCAppID
+	}
 
 	return resp, nil
 }
