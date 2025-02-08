@@ -252,7 +252,7 @@ CREATE TABLE `drama`
     `title`             varchar(512)        NOT NULL DEFAULT '' COMMENT 'drama title',
     `description`       varchar(100)        NOT NULL DEFAULT '' COMMENT 'description',
     `drama_id`          varchar(100)        NOT NULL DEFAULT '' COMMENT 'drama_id',
-    `cover_url`         varchar(512)        NOT NULL DEFAULT '' COMMENT 'song cover download url ',
+    `cover_url`         varchar(512)        NOT NULL DEFAULT '' COMMENT 'cover download url ',
     `total_number`      int(11)             NOT NULL DEFAULT '0' COMMENT 'total_number',
     `free_number`       int(11)             NOT NULL DEFAULT '0' COMMENT 'free_number',
     `video_orientation` int(11)             NOT NULL DEFAULT '0' COMMENT 'orientation，0:Portrait，1:Horizontal ',
