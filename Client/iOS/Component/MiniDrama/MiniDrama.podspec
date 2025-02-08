@@ -23,6 +23,7 @@ Pod::Spec.new do |s|
       'Classes/Player/**/*.{h,m}'
     ]
     subspec.dependency 'ToolKit/Common'
+    subspec.dependency 'ToolKit/VodPlayer'
   end
   
   s.subspec 'Main' do |subspec|
@@ -38,6 +39,7 @@ Pod::Spec.new do |s|
     subspec.dependency 'Reachability'
     subspec.dependency 'MBProgressHUD', '~> 1.2.0'
     subspec.dependency 'ToolKit/Common'
+    subspec.dependency 'ToolKit/VodPlayer'
   end
 
   s.subspec 'Entry' do |subspec|
