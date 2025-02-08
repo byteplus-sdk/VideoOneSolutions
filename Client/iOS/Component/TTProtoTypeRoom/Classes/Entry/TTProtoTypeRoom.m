@@ -10,6 +10,8 @@
 #import <TTSDK/TVLManager.h>
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
+#import <ToolKit/JoinRTSParams.h>
+
 
 @implementation TTProtoTypeRoom
 
@@ -20,7 +22,7 @@
         self.des = LocalizedStringFromBundle(@"tt_scene_des", @"TTProto");
         self.bundleName = @"TTProto";
         self.iconName = @"vod_live_bg_entry";
-        self.scenesName = @"tt_proto";
+        self.scenesName = @"livefeed";
     }
     return self;
 }
@@ -34,12 +36,22 @@
 
 - (void)enterWithCallback:(void (^)(BOOL))block {
     [super enterWithCallback:block];
-    MixFeedViewController *vc = [[MixFeedViewController alloc] init];
-    UIViewController *topVC = [DeviceInforTool topViewController];
-    [topVC.navigationController pushViewController:vc animated:YES];
-    if (block) {
-        block(YES);
-    }
+    
+    NSDictionary *inputInfo = @{
+            @"scenes_name": @"livefeed"
+    };
+    [[ToastComponent shareToastComponent] showLoading];
+    __weak __typeof(self) wself = self;
+    [JoinRTSParams getJoinRTSParams:inputInfo
+                              block:^(JoinRTSParamsModel *_Nonnull model) {
+        [[ToastComponent shareToastComponent] dismiss];
+        MixFeedViewController *vc = [[MixFeedViewController alloc] init];
+        UIViewController *topVC = [DeviceInforTool topViewController];
+        [topVC.navigationController pushViewController:vc animated:YES];
+        if (block) {
+            block(YES);
+        }
+    }];
 }
 
 
