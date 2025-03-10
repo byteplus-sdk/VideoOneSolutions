@@ -74,7 +74,7 @@
         <item name="behavior_draggable">false</item>
     </style>
 
-    <style name="VeVodMiniDramaBottomSheetLight" parent="Theme.Design.Light.BottomSheetDialog">
+    <style name="VeVodMiniDramaBottomSheetLight" parent="ThemeOverlay.Material3.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/VeVodMiniDramaBottomSheetLightStyle</item>
     </style>
 
@@ -102,7 +102,7 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="VeVodMiniDramaFullscreenDialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+    <style name="VeVodMiniDramaFullscreenDialog" parent="Theme.Material3.Light.Dialog.Alert">
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowBackground">@null</item>
         <item name="android:windowNoTitle">true</item>

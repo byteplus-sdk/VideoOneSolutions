@@ -6,14 +6,11 @@ package com.vertcdemo.solution.interactivelive.core;
 import static com.ss.bytertc.engine.VideoCanvas.RENDER_MODE_HIDDEN;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 import android.view.TextureView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
@@ -31,23 +28,20 @@ import com.ss.bytertc.engine.data.StreamIndex;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.NetworkQualityStats;
+import com.ss.bytertc.engine.video.IVideoEffect;
 import com.ss.bytertc.engine.video.VideoCaptureConfig;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.event.RTCNetworkQualityEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
-import com.vertcdemo.core.protocol.EffectFactory;
-import com.vertcdemo.core.protocol.IEffect;
 import com.vertcdemo.core.rtc.IRTCManager;
 import com.vertcdemo.core.rts.RTCRoomEventHandlerWithRTS;
 import com.vertcdemo.core.rts.RTCVideoEventHandlerWithRTS;
 import com.vertcdemo.core.utils.AppUtil;
-import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveRoleType;
 import com.vertcdemo.solution.interactivelive.event.PublishVideoStreamEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
-import com.vertcdemo.ui.CenteredToast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -172,8 +166,6 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         Log.d(TAG, "setVideoEncoderConfig: " + config);
         rtcVideo.setVideoEncoderConfig(config);
 
-        initVideoEffect(rtcVideo);
-
         mRTCVideo = rtcVideo;
     }
 
@@ -184,7 +176,6 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         stopLive();
         leaveRTSRoom();
 
-        destroyEffectDialog();
         if (mRTCVideo != null) {
             RTCVideo.destroyRTCVideo();
             mRTCVideo = null;
@@ -243,7 +234,7 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         assert mRTCRoom != null : "createRTCRoom: failed to createRoom: roomId=" + roomId;
         mRTCRoom.setRTCRoomEventHandler(mRTCRoomEventHandler);
         UserInfo userInfo = new UserInfo(userId, null);
-        RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_COMMUNICATION,
+        RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_INTERACTIVE_PODCAST,
                 true,
                 true,
                 true);
@@ -537,7 +528,7 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         mRTSRoom = mRTCVideo.createRTCRoom(rtsRoomId);
         mRTSRoom.setRTCRoomEventHandler(mRTSRoomEventHandler);
         UserInfo userInfo = new UserInfo(userId, null);
-        RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_COMMUNICATION, false, false, false);
+        RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_INTERACTIVE_PODCAST, false, false, false);
         mRTSRoom.joinRoom(token, userInfo, roomConfig);
     }
 
@@ -551,29 +542,8 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         mRTSRoom = null;
     }
 
-    private IEffect mEffect;
-
-    private void initVideoEffect(@NonNull RTCVideo video) {
-        IEffect effect = mEffect = EffectFactory.create();
-        if (effect != null) {
-            effect.init(video.getVideoEffectInterface());
-        }
-    }
-
-    public void openEffectDialog(Context context, FragmentManager fragmentManager) {
-        IEffect effect = mEffect;
-        if (effect != null) {
-            effect.showEffectDialog(context, null, fragmentManager);
-        } else {
-            CenteredToast.show(R.string.not_support_beauty_error, Toast.LENGTH_LONG);
-        }
-    }
-
-    public void destroyEffectDialog() {
-        IEffect effect = mEffect;
-        if (effect != null) {
-            effect.destroyEffectDialog();
-        }
-        mEffect = null;
+    public IVideoEffect getVideoEffectInterface() {
+        assert mRTCVideo != null;
+        return mRTCVideo.getVideoEffectInterface();
     }
 }

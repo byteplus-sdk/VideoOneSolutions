@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.os.SystemClock
+import android.view.Surface
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,10 @@ class LivePlayer(
     var scene: PlayerScene = PlayerScene.DEFAULT,
     val identity: String = "${SystemClock.uptimeMillis()}"
 ) {
+    init {
+        playerLog(TAG, "CREATE [$identity]")
+    }
+
     var roomId: String = ""
         private set
 
@@ -87,7 +92,7 @@ class LivePlayer(
         }
     }
 
-    private val player: VideoLiveManager by lazy {
+    private val player: VeLivePlayer by lazy {
         VideoLiveManager(context.applicationContext).apply {
             val config = VeLivePlayerConfiguration().apply {
                 enableSei = false
@@ -144,8 +149,8 @@ class LivePlayer(
         videoView?.detachFromParent()
         videoView = null
 
-        playerLog(TAG, "[$identity] release")
-        player.release()
+        playerLog(TAG, "RELEASE [$identity]")
+        player.destroy()
     }
 
     private var videoView: TextureView? = null
@@ -180,7 +185,11 @@ class LivePlayer(
     }
 
     fun setSurfaceTexture(surface: SurfaceTexture?) {
-        player.setSurfaceTexture(surface)
+        if (surface == null) {
+            player.setSurface(null)
+        } else {
+            player.setSurface(Surface(surface))
+        }
     }
 
     fun onFirstSurfaceTextureUpdated() {

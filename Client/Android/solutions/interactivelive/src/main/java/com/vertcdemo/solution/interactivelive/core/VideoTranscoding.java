@@ -28,7 +28,7 @@ import java.util.List;
 
 public abstract class VideoTranscoding {
 
-    enum PushMode {
+    public enum PushMode {
         RTC,
         LIVE_CORE
     }

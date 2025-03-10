@@ -11,6 +11,7 @@ import androidx.annotation.StringRes
 import com.vertcdemo.base.R
 import com.vertcdemo.core.utils.AppUtil.applicationContext
 
+@Suppress("DEPRECATION")
 object CenteredToast {
     @JvmStatic
     @JvmOverloads

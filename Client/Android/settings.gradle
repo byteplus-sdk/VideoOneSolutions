@@ -3,6 +3,7 @@ rootProject.name = "VideoOne"
 include ':app'
 include ':component:avatars'
 include ':component:solution-base'
+include ':component:effectkit'
 
 include ':component:rtc-toolkit'
 include ':component:rtc-chat-ui'
@@ -17,11 +18,11 @@ include ':solutions:chorus'
 
 // vod
 include ':solutions:vod:vod-common'
-include ':solutions:vod:vod-demo'
 include ':solutions:vod:vod-function'
+include ':solutions:vod:vod-scene-entry'
+include ':solutions:vod:vod-demo'
 include ':solutions:vod:vod-input-media'
 // vod-playerkit
-include ':solutions:vod:vod-playerkit'
 include ':solutions:vod:vod-playerkit:vod-player-utils'
 include ':solutions:vod:vod-playerkit:vod-player'
 include ':solutions:vod:vod-playerkit:vod-player-ve'

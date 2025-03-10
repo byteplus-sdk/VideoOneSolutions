@@ -4,6 +4,7 @@
 package com.vertcdemo.solution.interactivelive.event;
 
 import com.google.gson.annotations.SerializedName;
+import com.vertcdemo.core.annotation.Event;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 
 import java.util.List;
@@ -35,14 +36,16 @@ public abstract class AudienceLinkStatusEvent {
                 '}';
     }
 
-    public static class Join extends AudienceLinkStatusEvent {
+    @Event
+    public static final class Join extends AudienceLinkStatusEvent {
         @Override
         public boolean isJoin() {
             return true;
         }
     }
 
-    public static class Leave extends AudienceLinkStatusEvent {
+    @Event
+    public static final class Leave extends AudienceLinkStatusEvent {
         @Override
         public boolean isJoin() {
             return false;

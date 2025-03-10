@@ -180,6 +180,7 @@ class LiveFeedViewModelFactory : ViewModelProvider.Factory {
             LiveFeedViewModel::class.java -> {
                 val manager = extras[RoomManagerKey]!!
                 val initial = extras[LiveItemKey]
+                @Suppress("UNCHECKED_CAST")
                 LiveFeedViewModel(manager, initial) as T
             }
 

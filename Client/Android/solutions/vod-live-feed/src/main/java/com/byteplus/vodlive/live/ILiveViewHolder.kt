@@ -19,7 +19,7 @@ interface ILiveViewHolder {
 
     fun bindPlayer(player: LivePlayer)
 
-    fun unbindPlayer()
+    fun unbindPlayer(): LivePlayer?
 
     fun start(scene: PlayerScene) {
         playerLog(TAG, "startLive: scene=$scene, playerScene=${playerScene}")

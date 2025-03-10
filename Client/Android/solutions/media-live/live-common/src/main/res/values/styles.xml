@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="LiveTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="LiveTheme" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -12,7 +12,7 @@
         <item name="android:switchStyle">@style/LiveSwitch</item>
     </style>
 
-    <style name="LiveTheme.Transparent">
+    <style name="LiveTheme.Immersion">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>

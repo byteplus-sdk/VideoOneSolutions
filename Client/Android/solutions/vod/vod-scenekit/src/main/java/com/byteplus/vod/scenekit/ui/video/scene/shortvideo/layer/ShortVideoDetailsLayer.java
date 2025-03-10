@@ -6,6 +6,7 @@ package com.byteplus.vod.scenekit.ui.video.scene.shortvideo.layer;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -30,7 +32,7 @@ import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.vod.scenekit.R;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
 import com.byteplus.vod.scenekit.databinding.VevodShortVideoDetailsLayerBinding;
-import com.byteplus.vod.scenekit.ui.base.OuterActions;
+import com.byteplus.vod.scenekit.ext.IComment;
 import com.byteplus.vod.scenekit.ui.base.VideoViewExtras;
 import com.byteplus.vod.scenekit.ui.config.IImageCoverConfig;
 import com.byteplus.vod.scenekit.ui.video.layer.FullScreenLayer;
@@ -112,7 +114,9 @@ public class ShortVideoDetailsLayer extends BaseLayer {
             if (activity == null) {
                 return;
             }
-            OuterActions.showCommentDialog(activity, item.getVid());
+            Intent intent = new Intent(IComment.ACTION_SHOW_PORTRAIT);
+            intent.putExtra(IComment.EXTRA_VID, item.getVid());
+            LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
         });
 
         loadCover(item);

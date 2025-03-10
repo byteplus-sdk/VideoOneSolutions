@@ -29,10 +29,14 @@ android {
 
 dependencies {
     implementation libs.appcompat
+    implementation libs.activity
     implementation libs.constraintlayout
+    implementation libs.material
+    implementation libs.bundles.viewmodel
 
-    implementation project(path: ':solutions:media-live:live-common')
-
+    implementation project(':component:solution-base')
+    implementation project(':component:effectkit')
+    implementation project(':solutions:media-live:live-common')
 
     implementation libs.ttsdk.ttlivepush.rtc
 

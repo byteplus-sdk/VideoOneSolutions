@@ -24,8 +24,8 @@ import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.utils.L;
 import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.playerkit.utils.event.Event;
+import com.byteplus.vod.scenekit.annotation.CompleteAction;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
-import com.byteplus.vod.scenekit.ui.config.ICompleteAction;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.ui.video.scene.shortvideo.IShortVideoStrategyConfig;
 import com.byteplus.vod.scenekit.ui.video.scene.shortvideo.ShortVideoStrategy;
@@ -74,7 +74,7 @@ public class SampleShortVideoPageView extends FrameLayout implements LifecycleEv
                     case PlayerEvent.State.COMPLETED: {
                         final Player player = event.owner(Player.class);
                         if (player != null && !player.isLooping() &&
-                                mStrategyConfig.completeAction() == ICompleteAction.NEXT) {
+                                mStrategyConfig.completeAction() == CompleteAction.NEXT) {
                             final int currentPosition = getCurrentItem();
                             final int nextPosition = currentPosition + 1;
                             if (nextPosition < mShortVideoAdapter.getItemCount()) {

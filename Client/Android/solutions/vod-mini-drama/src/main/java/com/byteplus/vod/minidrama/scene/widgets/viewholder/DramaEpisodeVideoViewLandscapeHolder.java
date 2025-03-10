@@ -126,7 +126,6 @@ public class DramaEpisodeVideoViewLandscapeHolder extends DramaEpisodeVideoViewH
         layerHost.addLayer(new SubtitleLayer());
         layerHost.addLayer(new SubtitleSelectDialogLayer());
         layerHost.attachToVideoView(videoView);
-        videoView.setBackgroundColor(ContextCompat.getColor(parent.getContext(), android.R.color.black));
         videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT);
         videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);
         new PlaybackController().bind(videoView);

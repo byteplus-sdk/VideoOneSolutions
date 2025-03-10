@@ -9,6 +9,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
@@ -45,6 +46,7 @@ class LiveFeedFragment : Fragment(R.layout.fragment_live_feed), GiftDialog.IGift
     private val viewModel: LiveFeedViewModel by viewModels(
         extrasProducer = {
             MutableCreationExtras().apply {
+                @Suppress("DEPRECATION")
                 set(
                     LiveItemKey,
                     requireActivity().intent.getParcelableExtra(EXTRA_LIVE_ROOM) as LiveFeedItem?
@@ -95,6 +97,10 @@ class LiveFeedFragment : Fragment(R.layout.fragment_live_feed), GiftDialog.IGift
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        WindowCompat.getInsetsController(
+            requireActivity().window, view
+        ).isAppearanceLightStatusBars = false
+
         val binding = FragmentLiveFeedBinding.bind(view)
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets ->
@@ -102,10 +108,12 @@ class LiveFeedFragment : Fragment(R.layout.fragment_live_feed), GiftDialog.IGift
             windowInsets
         }
 
-        val adapter = LiveFeedAdapter()
+        val adapter = LiveFeedAdapter(liveController)
 
         binding.viewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
+        binding.viewPager.offscreenPageLimit = 1
         binding.viewPager.adapter = adapter
+
 
         // Handle load more
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -189,6 +197,7 @@ class LiveFeedFragment : Fragment(R.layout.fragment_live_feed), GiftDialog.IGift
     fun onActionEvent(event: ActionEvent) {
         when (event) {
             is CloseAction -> {
+                @Suppress("DEPRECATION")
                 requireActivity().onBackPressed()
             }
 

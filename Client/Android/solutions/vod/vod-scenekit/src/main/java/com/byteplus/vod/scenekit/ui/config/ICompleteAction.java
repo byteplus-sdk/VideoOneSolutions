@@ -5,10 +5,9 @@ package com.byteplus.vod.scenekit.ui.config;
 
 
 import com.byteplus.playerkit.player.playback.ext.IStrategy;
+import com.byteplus.vod.scenekit.annotation.CompleteAction;
 
 public interface ICompleteAction extends IStrategy {
-    int LOOP = 0;
-    int NEXT = 1;
-
+    @CompleteAction
     int completeAction();
 }

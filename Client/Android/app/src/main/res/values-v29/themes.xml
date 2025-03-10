@@ -2,8 +2,8 @@
 <resources>
 
     <style name="AppTheme.Immersion">
-        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 </resources>

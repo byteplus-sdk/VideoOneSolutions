@@ -50,7 +50,7 @@ class SolutionCommonDialog : DialogFragment() {
             binding.button1.visibility = View.GONE
         } else {
             binding.button1.setText(positive)
-            binding.button1.setOnClickListener { v: View? ->  // Positive
+            binding.button1.setOnClickListener { // Positive
                 dismiss()
                 requestKey?.let { key ->
                     val result = Bundle().apply {
@@ -67,7 +67,7 @@ class SolutionCommonDialog : DialogFragment() {
             binding.button2.visibility = View.GONE
         } else {
             binding.button2.setText(negative)
-            binding.button2.setOnClickListener { v: View? ->  // Negative
+            binding.button2.setOnClickListener { // Negative
                 dismiss()
                 requestKey?.let { key ->
                     val result = Bundle().apply {

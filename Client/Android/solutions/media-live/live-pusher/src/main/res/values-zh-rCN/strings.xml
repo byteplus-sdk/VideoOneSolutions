@@ -77,4 +77,6 @@
     <string name="medialive_downloaded">下载完成</string>
     <string name="medialive_xxx_downloading">文件 %s 下载中…</string>
     <string name="medialive_effect">美颜</string>
+
+    <string name="not_support_beauty_error">开源版本的代码中未集成美颜功能，请下载官网提供的 Demo 体验。</string>
 </resources>

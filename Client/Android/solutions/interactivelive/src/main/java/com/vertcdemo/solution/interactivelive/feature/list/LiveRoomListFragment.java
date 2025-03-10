@@ -3,9 +3,6 @@
 
 package com.vertcdemo.solution.interactivelive.feature.list;
 
-import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel.RTC_STATUS_DONE;
-import static com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel.RTC_STATUS_NONE;
-
 import android.Manifest;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,8 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.NavGraph;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -33,13 +28,11 @@ import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveRoomsBinding;
-import com.vertcdemo.solution.interactivelive.feature.InteractiveLiveViewModel;
 import com.vertcdemo.ui.CenteredToast;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 /**
@@ -48,13 +41,11 @@ import java.util.Objects;
 public class LiveRoomListFragment extends Fragment {
 
     LiveRoomListViewModel mViewModel;
-    InteractiveLiveViewModel mLiveViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(LiveRoomListViewModel.class);
-        mLiveViewModel = new ViewModelProvider(requireActivity()).get(InteractiveLiveViewModel.class);
 
         getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override
@@ -89,15 +80,13 @@ public class LiveRoomListFragment extends Fragment {
         });
 
         binding.back.setOnClickListener(v -> {
-            requireActivity().onBackPressed();
+            requireActivity()
+                    .getOnBackPressedDispatcher()
+                    .onBackPressed();
         });
 
         binding.swipeLayout.setOnRefreshListener(() -> {
-            final Integer statusValue = mLiveViewModel.rtcStatus.getValue();
-            assert statusValue != null;
-            if (statusValue == RTC_STATUS_DONE) {
-                mViewModel.requestRoomList();
-            }
+            mViewModel.requestRoomList();
         });
 
         LiveRoomListAdapter roomListAdapter = new LiveRoomListAdapter(requireContext());
@@ -121,17 +110,6 @@ public class LiveRoomListFragment extends Fragment {
             binding.empty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
-        mLiveViewModel.rtcStatus.observe(getViewLifecycleOwner(), status -> {
-            switch (status) {
-                case RTC_STATUS_NONE:
-                    break;
-                case RTC_STATUS_DONE:
-                    binding.swipeLayout.setRefreshing(true);
-                    mViewModel.requestRoomList();
-                    break;
-            }
-        });
-
         mViewModel.licenseResult.observe(getViewLifecycleOwner(), licenseResult -> {
             if (licenseResult.isEmpty()) {
                 mViewModel.checkLicense(requireContext().getApplicationContext());
@@ -141,6 +119,9 @@ public class LiveRoomListFragment extends Fragment {
                 binding.licenseTips.setOnClickListener(v -> {/*consume the click event*/});
             }
         });
+
+        binding.swipeLayout.setRefreshing(true);
+        mViewModel.requestRoomList();
     }
 
     final ActivityResultLauncher<String[]> launcher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), results -> {
@@ -150,11 +131,8 @@ public class LiveRoomListFragment extends Fragment {
                 return;
             }
         }
-        NavController navController = Navigation.findNavController(requireView());
-        NavGraph graph = navController.getGraph();
-        NavGraph roomGraph = Objects.requireNonNull((NavGraph) graph.findNode(R.id.room));
-        roomGraph.setStartDestination(R.id.create_live_room);
 
-        navController.navigate(R.id.create_live_room);
+        Navigation.findNavController(requireView())
+                .navigate(R.id.create_live_room);
     });
 }

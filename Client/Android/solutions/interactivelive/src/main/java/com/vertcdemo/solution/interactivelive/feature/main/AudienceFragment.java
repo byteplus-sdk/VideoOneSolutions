@@ -24,7 +24,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -35,17 +37,18 @@ import com.bumptech.glide.Glide;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.annotation.MediaStatus;
 import com.vertcdemo.core.chat.ChatAdapter;
-import com.vertcdemo.core.chat.gift.GiftDialog;
 import com.vertcdemo.core.chat.annotation.GiftType;
 import com.vertcdemo.core.chat.gift.GiftAnimateHelper;
+import com.vertcdemo.core.chat.gift.GiftDialog;
 import com.vertcdemo.core.chat.input.MessageInputDialog;
 import com.vertcdemo.core.event.RTCReconnectToRoomEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.http.bean.RTCAppInfo;
 import com.vertcdemo.core.http.callback.OnFailure;
-import com.vertcdemo.core.utils.ErrorTool;
 import com.vertcdemo.core.net.HttpException;
 import com.vertcdemo.core.utils.DebounceClickListener;
+import com.vertcdemo.core.utils.ErrorTool;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.bean.LiveRoomInfo;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
@@ -58,6 +61,7 @@ import com.vertcdemo.solution.interactivelive.core.annotation.LiveMode;
 import com.vertcdemo.solution.interactivelive.core.annotation.LivePermitType;
 import com.vertcdemo.solution.interactivelive.core.annotation.MessageType;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveAudienceBinding;
+import com.vertcdemo.solution.interactivelive.effect.InteractiveLiveEffectFragment;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkFinishEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkInviteEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkKickEvent;
@@ -78,6 +82,7 @@ import com.vertcdemo.solution.interactivelive.feature.main.audiencelink.RequestA
 import com.vertcdemo.solution.interactivelive.http.LiveService;
 import com.vertcdemo.solution.interactivelive.http.response.JoinRoomResponse;
 import com.vertcdemo.solution.interactivelive.http.response.ReconnectResponse;
+import com.vertcdemo.solution.interactivelive.util.RTCEngineViewModel;
 import com.vertcdemo.ui.CenteredToast;
 import com.videoone.avatars.Avatars;
 
@@ -92,6 +97,7 @@ import java.util.Map;
 
 
 public class AudienceFragment extends Fragment implements GiftDialog.IGiftSender {
+
     private static final String TAG = "AudienceFragment";
 
     @RoomStatus
@@ -122,7 +128,7 @@ public class AudienceFragment extends Fragment implements GiftDialog.IGiftSender
     void setLinkMicStatus(@LiveLinkMicStatus int linkMicStatus) {
         mBinding.audienceLink.setSelected(linkMicStatus == LiveLinkMicStatus.AUDIENCE_INTERACTING);
         // Beauty Effect disabled for audience
-        // mBinding.liveBeauty.setVisibility(linkMicStatus == LiveLinkMicStatus.AUDIENCE_INTERACTING ? VISIBLE : View.GONE);
+        // mBinding.liveBeauty.setVisibility(linkMicStatus == LiveLinkMicStatus.AUDIENCE_INTERACTING ? View.VISIBLE : View.GONE);
         if (mSelfInfo != null) {
             mSelfInfo.linkMicStatus = linkMicStatus;
         }
@@ -213,6 +219,10 @@ public class AudienceFragment extends Fragment implements GiftDialog.IGiftSender
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        RTCEngineViewModel.inject(this,
+                R.id.room_audience,
+                RTCAppInfo.require(requireActivity()));
 
         mViewModel = new ViewModelProvider(this).get(AudienceViewModel.class);
 
@@ -727,7 +737,17 @@ public class AudienceFragment extends Fragment implements GiftDialog.IGiftSender
 
     // Beauty
     void onBeautyButtonClicked(View view) {
-        LiveRTCManager.ins().openEffectDialog(requireContext(), getParentFragmentManager());
+        FragmentManager fragmentManager = getChildFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("effect-dialog");
+        if (fragment != null) {
+            return;
+        }
+
+        DialogFragment dialog = new InteractiveLiveEffectFragment();
+        Bundle args = new Bundle();
+        args.putInt(InteractiveLiveEffectFragment.EXTRA_NAVIGATION_ID, R.id.room_audience);
+        dialog.setArguments(args);
+        dialog.showNow(fragmentManager, "effect-dialog");
     }
 
     // endregion

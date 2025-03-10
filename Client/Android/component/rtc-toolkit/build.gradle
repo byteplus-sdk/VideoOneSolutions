@@ -41,12 +41,14 @@ android {
 dependencies {
     implementation libs.appcompat
     implementation libs.material
+    implementation libs.bundles.navigation
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
     implementation libs.rtc.sdk
+    implementation libs.ttsdk.ttlivepush.rtc
 
     implementation project(':component:solution-base')
 

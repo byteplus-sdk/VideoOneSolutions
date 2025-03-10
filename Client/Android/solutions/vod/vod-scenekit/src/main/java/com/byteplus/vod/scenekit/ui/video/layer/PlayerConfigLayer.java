@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.PlayerEvent;
 import com.byteplus.playerkit.utils.event.Event;
+import com.byteplus.vod.scenekit.annotation.CompleteAction;
 import com.byteplus.vod.scenekit.ui.config.ICompleteAction;
 import com.byteplus.vod.scenekit.ui.video.layer.base.PlaybackEventLayer;
 
@@ -27,7 +28,7 @@ public class PlayerConfigLayer extends PlaybackEventLayer {
             Player player = event.owner(Player.class);
 
             ICompleteAction config = getConfig();
-            boolean looping = config != null && config.completeAction() == ICompleteAction.LOOP;
+            boolean looping = config != null && config.completeAction() == CompleteAction.LOOP;
             player.setLooping(looping);
         }
     }

@@ -19,8 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
-# uploader
--keep class com.pandora.common.applog.**{*;}
--keep class com.pandora.ttuploader2.** {*;}
--keep class com.ss.bduploader.** {*;}

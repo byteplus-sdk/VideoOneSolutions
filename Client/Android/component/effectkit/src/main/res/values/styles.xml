@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Set TabLayout TextSize -->
+    <style name="TabLayoutTextSize">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="EffectBottomSheetDialogTheme" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="android:navigationBarColor">@color/effect_bottom_sheet_panel</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="bottomSheetStyle">@style/EffectBottomSheetStyle</item>
+    </style>
+
+    <style name="EffectBottomSheetStyle" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="android:elevation">0dp</item>
+        <item name="elevation">0dp</item>
+        <item name="paddingBottomSystemWindowInsets">false</item>
+        <item name="behavior_draggable">false</item>
+    </style>
+
+    <style name="roundCorner3">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">3dp</item>
+    </style>
+
+    <style name="EffectSliderStyle" parent="Widget.Material3.Slider">
+        <item name="trackHeight">4dp</item>
+        <item name="trackStopIndicatorSize">0dp</item>
+        <item name="trackInsideCornerSize">0dp</item>
+
+        <item name="thumbColor">#FFF</item>
+        <item name="thumbHeight">18dp</item>
+        <item name="thumbWidth">18dp</item>
+        <item name="thumbTrackGapSize">0dp</item>
+    </style>
+
+</resources>

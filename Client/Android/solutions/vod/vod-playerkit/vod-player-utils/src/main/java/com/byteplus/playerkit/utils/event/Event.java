@@ -7,9 +7,7 @@ package com.byteplus.playerkit.utils.event;
 import android.os.SystemClock;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Keep;
 
-@Keep
 public class Event {
     private final int code;
     private Object owner;

@@ -1,5 +1,9 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 package com.vertcdemo.core.http.bean;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -7,6 +11,8 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Objects;
 
 public class RTCAppInfo implements Parcelable {
     public static final String KEY_APP_INFO = "key_app_info";
@@ -51,5 +57,10 @@ public class RTCAppInfo implements Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(appId);
         dest.writeString(bid);
+    }
+
+    public static RTCAppInfo require(@NonNull Activity activity) {
+        Intent intent = activity.getIntent();
+        return Objects.requireNonNull(intent.getParcelableExtra(RTCAppInfo.KEY_APP_INFO));
     }
 }

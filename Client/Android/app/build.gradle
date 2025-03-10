@@ -4,6 +4,12 @@ plugins {
     id 'kotlin-kapt'
 }
 
+def gitRevision() {
+    return providers.exec {
+        commandLine 'git rev-parse --short HEAD'.split(' ')
+    }.standardOutput.asText.get().trim()
+}
+
 android {
     namespace 'com.vertcdemo.app'
     compileSdk project.compileSdkVersion
@@ -27,10 +33,11 @@ android {
         buildConfigField('String', 'TERMS_OF_SERVICE_URL', "\"$TERMS_OF_SERVICE_URL\"")
         buildConfigField('String', 'PRIVACY_POLICY_URL', "\"$PRIVACY_POLICY_URL\"")
         buildConfigField('String', 'GITHUB_REPO', "\"$GITHUB_REPO\"")
+        buildConfigField('@androidx.annotation.Keep String', 'GIT_REVISION', "\"${gitRevision()}\"")
 
         manifestPlaceholders = [appName: project.APP_NAME]
 
-        setProperty("archivesBaseName", "VideoOne-$APP_VERSION_NAME-$APP_VERSION_CODE-${new Date().format("yyyyMMddHHmm")}")
+        setProperty("archivesBaseName", "VideoOne-$APP_VERSION_NAME-$APP_VERSION_CODE")
     }
 
     buildFeatures {
@@ -40,7 +47,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -66,7 +73,7 @@ android {
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.22"))
+    implementation(platform(libs.kotlin.bom))
 
     implementation libs.appcompat
     implementation libs.activity
@@ -89,17 +96,17 @@ dependencies {
 
     implementation project(':component:solution-base')
     implementation project(':component:loginkit')
-    implementation project(':component:rtc-toolkit')
     implementation project(':component:avatars')
 
     // region Solutions
-    implementation project(':solutions:interactivelive')
-    implementation project(':solutions:ktv')
-    implementation project(':solutions:vod:vod-demo')
-    implementation project(':solutions:vod:vod-function')
-    implementation project(':solutions:media-live:live-entrance')
-    implementation project(':solutions:rtc-api-example:rtc-api-example-entry')
-    implementation project(':solutions:vod-live-feed')
     implementation project(':solutions:vod-mini-drama')
+    implementation project(':solutions:vod-live-feed')
+    implementation project(':solutions:ktv')
+    implementation project(':solutions:vod:vod-scene-entry')
+    implementation project(':solutions:interactivelive')
+
+    implementation project(':solutions:media-live:live-entrance')
+    implementation project(':solutions:vod:vod-function')
+    implementation project(':solutions:rtc-api-example:rtc-api-example-entry')
     // endregion
 }

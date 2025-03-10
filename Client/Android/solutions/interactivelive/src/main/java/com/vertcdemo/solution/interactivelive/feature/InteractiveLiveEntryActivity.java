@@ -17,7 +17,10 @@ import com.vertcdemo.core.ui.SolutionLoadingActivity;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.core.utils.ErrorTool;
 import com.vertcdemo.solution.interactivelive.BuildConfig;
+import com.vertcdemo.solution.interactivelive.http.LiveService;
 import com.vertcdemo.ui.CenteredToast;
+
+import java.util.Objects;
 
 public class InteractiveLiveEntryActivity extends SolutionLoadingActivity {
 
@@ -38,6 +41,7 @@ public class InteractiveLiveEntryActivity extends SolutionLoadingActivity {
                     onFailure(HttpException.unknown("Invalid RTCAppInfo response."));
                     return;
                 }
+                LiveService.get().setAppId(Objects.requireNonNull(data.appId));
                 Intent intent = new Intent(AppUtil.getApplicationContext(), InteractiveLiveActivity.class);
                 intent.putExtra(RTCAppInfo.KEY_APP_INFO, data);
                 startActivity(intent);

@@ -24,7 +24,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
@@ -32,12 +34,15 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.vertcdemo.core.SolutionDataManager;
+import com.vertcdemo.core.http.bean.RTCAppInfo;
 import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveCreateRoomBinding;
+import com.vertcdemo.solution.interactivelive.effect.InteractiveLiveEffectFragment;
 import com.vertcdemo.solution.interactivelive.feature.main.settings.LiveSettingDialog;
 import com.vertcdemo.solution.interactivelive.http.response.CreateRoomResponse;
+import com.vertcdemo.solution.interactivelive.util.RTCEngineViewModel;
 import com.vertcdemo.ui.CenteredToast;
 import com.videoone.avatars.Avatars;
 
@@ -69,6 +74,10 @@ public class CreateLiveRoomFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        RTCEngineViewModel.inject(this,
+                R.id.room_host,
+                RTCAppInfo.require(requireActivity()));
+
         mViewModel = new ViewModelProvider(this).get(CreateLiveRoomViewModel.class);
         getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override
@@ -115,9 +124,7 @@ public class CreateLiveRoomFragment extends Fragment {
             LiveRTCManager.ins().switchCamera();
         });
 
-        binding.beauty.setOnClickListener(v -> {
-            LiveRTCManager.ins().openEffectDialog(requireContext(), getParentFragmentManager());
-        });
+        binding.beauty.setOnClickListener(v -> openEffectDialog());
 
         binding.settings.setOnClickListener(v -> {
             LiveSettingDialog settingDialog = new LiveSettingDialog();
@@ -173,6 +180,20 @@ public class CreateLiveRoomFragment extends Fragment {
             }
         });
     }
+
+    // region Effect
+    void openEffectDialog() {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("effect-dialog");
+        if (fragment != null) {
+            return;
+        }
+
+        DialogFragment dialog = new InteractiveLiveEffectFragment();
+        dialog.showNow(fragmentManager, "effect-dialog");
+    }
+
+    // endregion Effect
 
     void requestStartLive() {
         mRequestStartLive = true;

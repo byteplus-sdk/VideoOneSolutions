@@ -11,11 +11,11 @@
         tools:layout="@layout/fragment_live_rooms">
         <action
             android:id="@+id/create_live_room"
-            app:destination="@id/room" />
+            app:destination="@id/room_host" />
 
         <action
             android:id="@+id/audience_view"
-            app:destination="@id/room" />
+            app:destination="@id/room_audience" />
 
         <action
             android:id="@+id/live_core_config"
@@ -28,7 +28,7 @@
         tools:layout="@layout/fragment_live_core_config" />
 
     <navigation
-        android:id="@+id/room"
+        android:id="@+id/room_host"
         app:startDestination="@id/create_live_room">
 
         <fragment
@@ -58,6 +58,12 @@
             android:name="com.vertcdemo.solution.interactivelive.feature.main.LiveSummaryFragment"
             tools:layout="@layout/fragment_live_summary" />
 
+
+    </navigation>
+
+    <navigation
+        android:id="@+id/room_audience"
+        app:startDestination="@id/audience_view">
         <fragment
             android:id="@+id/audience_view"
             android:name="com.vertcdemo.solution.interactivelive.feature.main.AudienceFragment"

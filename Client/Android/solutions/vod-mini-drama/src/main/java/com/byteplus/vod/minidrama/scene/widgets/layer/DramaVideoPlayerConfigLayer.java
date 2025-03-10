@@ -8,16 +8,16 @@ import androidx.annotation.Nullable;
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.PlayerEvent;
 import com.byteplus.playerkit.utils.event.Event;
-import com.byteplus.vod.scenekit.ui.config.ICompleteAction;
+import com.byteplus.vod.scenekit.annotation.CompleteAction;
 import com.byteplus.vod.scenekit.ui.video.layer.base.PlaybackEventLayer;
 
 public class DramaVideoPlayerConfigLayer extends PlaybackEventLayer {
     public static DramaVideoPlayerConfigLayer loop() {
-        return new DramaVideoPlayerConfigLayer(ICompleteAction.LOOP);
+        return new DramaVideoPlayerConfigLayer(CompleteAction.LOOP);
     }
 
     public static DramaVideoPlayerConfigLayer next() {
-        return new DramaVideoPlayerConfigLayer(ICompleteAction.NEXT);
+        return new DramaVideoPlayerConfigLayer(CompleteAction.NEXT);
     }
 
     private final int mConfig;
@@ -36,7 +36,7 @@ public class DramaVideoPlayerConfigLayer extends PlaybackEventLayer {
     protected void onPlaybackEvent(Event event) {
         if (event.code() == PlayerEvent.Action.PREPARE) {
             Player player = event.owner(Player.class);
-            boolean looping = mConfig == ICompleteAction.LOOP;
+            boolean looping = mConfig == CompleteAction.LOOP;
             player.setLooping(looping);
         }
     }

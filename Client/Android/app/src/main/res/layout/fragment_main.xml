@@ -81,6 +81,12 @@
             tools:drawableTopCompat="@drawable/ic_tab_functions" />
     </FrameLayout>
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_tabs"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="tab_scenes,tab_function" />
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"
         android:layout_width="44dp"

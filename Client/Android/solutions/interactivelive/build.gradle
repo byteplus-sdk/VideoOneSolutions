@@ -65,6 +65,7 @@ dependencies {
     implementation project(':component:rtc-toolkit')
     implementation project(':component:rtc-chat-ui')
     implementation project(':component:avatars')
+    implementation project(':component:effectkit')
 
     implementation libs.eventbus
     implementation libs.gson

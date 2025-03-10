@@ -15,7 +15,10 @@ import com.vertcdemo.core.net.HttpException;
 import com.vertcdemo.core.ui.SolutionLoadingActivity;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.solution.chorus.core.ErrorCodes;
+import com.vertcdemo.solution.chorus.http.ChorusService;
 import com.vertcdemo.ui.CenteredToast;
+
+import java.util.Objects;
 
 public class ChorusEntryActivity extends SolutionLoadingActivity {
     public static final String SOLUTION_NAME_ABBR = "owc";
@@ -38,6 +41,7 @@ public class ChorusEntryActivity extends SolutionLoadingActivity {
                     onFailure(HttpException.unknown("Invalid RTCAppInfo response."));
                     return;
                 }
+                ChorusService.get().setAppId(Objects.requireNonNull(data.appId));
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.setClass(AppUtil.getApplicationContext(), ChorusActivity.class);
                 intent.putExtra(RTCAppInfo.KEY_APP_INFO, data);

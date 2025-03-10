@@ -22,9 +22,8 @@ private val entryNames = listOf(
     "com.videoone.app.protocol.RTCApiExampleFunction"
 )
 
-class FunctionEntryFragment : Fragment(R.layout.fragment_function_entry) {
-
-    private val entries: List<IFunctionTabEntry> by lazy {
+object FunctionEntry {
+    val entries: List<IFunctionTabEntry> by lazy {
         entryNames.mapNotNull { entryClass ->
             try {
                 val clazz = Class.forName(entryClass)
@@ -35,6 +34,9 @@ class FunctionEntryFragment : Fragment(R.layout.fragment_function_entry) {
             }
         }
     }
+}
+
+class FunctionEntryFragment : Fragment(R.layout.fragment_function_entry) {
 
     private var mBinding: FragmentFunctionEntryBinding? = null
 
@@ -51,17 +53,18 @@ class FunctionEntryFragment : Fragment(R.layout.fragment_function_entry) {
         }
 
         val context = requireContext()
-        binding.viewPager.adapter = TabAdapter(this, entries)
+        binding.viewPager.adapter = TabAdapter(this, FunctionEntry.entries)
         TabLayoutMediator(binding.tabs, binding.viewPager) { tab, position ->
             val tabLayout: View = LayoutInflater.from(context)
                 .inflate(R.layout.layout_function_tablayout_item, binding.tabs, false);
             val tabView: TextView = tabLayout.findViewById(R.id.tab_text)
-            tabView.text = getString(entries[position].title)
+            tabView.text = getString(FunctionEntry.entries[position].title)
             tab.customView = tabView
         }.attach()
     }
 
-    class TabAdapter(fragment: Fragment, entries: List<IFunctionTabEntry>) : FragmentStateAdapter(fragment) {
+    class TabAdapter(fragment: Fragment, entries: List<IFunctionTabEntry>) :
+        FragmentStateAdapter(fragment) {
         private val entryList = entries
         override fun getItemCount(): Int = entryList.size
 

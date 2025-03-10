@@ -4,21 +4,18 @@
 package com.byteplus.vodlive.live
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import com.byteplus.vodlive.R
+import com.vertcdemo.core.utils.fixNavigationBar
 
 const val EXTRA_LIVE_ROOM = "extra_live_room"
 
 class LiveFeedActivity : AppCompatActivity(R.layout.activity_live_feed) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        fixNavigationBar()
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        WindowCompat.getInsetsController(window, findViewById(android.R.id.content)).apply {
-            isAppearanceLightStatusBars = false
-            isAppearanceLightNavigationBars = true
-        }
     }
 }

@@ -1,0 +1,79 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+def safeExtGet(prop) {
+    if (rootProject.hasProperty(prop)) {
+        return rootProject.property(prop)
+    } else if (project.hasProperty(prop)) {
+        return project.property(prop)
+    } else {
+        return ""
+    }
+}
+
+android {
+    namespace 'com.vertcdemo.effect'
+    compileSdk project.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion project.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField('String', 'CV_LICENSE_FILENAME', "\"${safeExtGet('CV_LICENSE_FILENAME')}\"")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+        viewBinding true
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.constraintlayout
+    implementation libs.material
+
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    implementation libs.kotlinx.coroutines.android
+    implementation libs.bundles.viewmodel.ktx
+
+    implementation libs.glide
+    implementation libs.gson
+    implementation libs.okhttp
+    implementation libs.viewpager
+
+    implementation project(':component:solution-base')
+
+    implementation libs.rtc.sdk
+    implementation libs.ttsdk.ttlivepush.rtc
+
+    // NOTE:
+    // To enable BytePlus Effects, you need to follow the instructions below to integrate the BytePlus Effects SDK.
+    // for BytePlus RTC: https://docs.byteplus.com/en/docs/byteplus-rtc/docs-114717
+    // for BytePlus MediaLive: https://docs.byteplus.com/en/docs/byteplus-media-live/docs-implementing-basic-features#implementing-beauty-ar-and-special-effects
+}

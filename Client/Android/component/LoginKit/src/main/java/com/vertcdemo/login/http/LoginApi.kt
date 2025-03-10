@@ -4,11 +4,10 @@ package com.vertcdemo.login.http
 
 import com.vertcdemo.core.entity.LoginInfo
 import com.vertcdemo.core.net.EventBody
-import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface LoginApi {
     @POST("login")
-    fun login(@Body request: EventBody): Call<LoginInfo>
+    suspend fun login(@Body request: EventBody): LoginInfo?
 }

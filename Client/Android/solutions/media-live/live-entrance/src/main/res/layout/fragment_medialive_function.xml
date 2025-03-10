@@ -1,129 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:background="#33000000">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:text="@string/medialive_push_section_title"
-            android:textColor="#737A87"
-            android:textSize="14sp" />
+        android:layout_height="match_parent"
+        tools:background="#33000000">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/medialive_function_bg_card"
+            android:layout_marginHorizontal="16dp"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/live_push_camera"
                 android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:layout_gravity="center_vertical"
-                android:drawablePadding="12dp"
-                android:gravity="center_vertical|start"
-                android:paddingHorizontal="16dp"
-                android:text="@string/medialive_camera_entry_title"
-                android:textColor="#161823"
-                android:textSize="16sp"
-                app:drawableEndCompat="@drawable/medialive_ic_forward"
-                app:drawableStartCompat="@drawable/medialive_entry_camera"
-                tools:drawableEnd="@drawable/medialive_ic_forward"
-                tools:drawableStart="@drawable/medialive_entry_camera" />
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:text="@string/medialive_push_section_title"
+                android:textColor="#737A87"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/medialive_function_bg_card"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/live_push_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="12dp"
+                    android:gravity="center_vertical|start"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/medialive_camera_entry_title"
+                    android:textColor="#161823"
+                    android:textSize="16sp"
+                    app:drawableEndCompat="@drawable/medialive_ic_forward"
+                    app:drawableStartCompat="@drawable/medialive_entry_camera"
+                    tools:drawableEnd="@drawable/medialive_ic_forward"
+                    tools:drawableStart="@drawable/medialive_entry_camera" />
+
+                <TextView
+                    android:id="@+id/live_push_audio"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="12dp"
+                    android:gravity="center_vertical|start"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/medialive_voice_entry_title"
+                    android:textColor="#161823"
+                    android:textSize="16sp"
+                    app:drawableEndCompat="@drawable/medialive_ic_forward"
+                    app:drawableStartCompat="@drawable/medialive_entry_voice"
+                    tools:drawableEnd="@drawable/medialive_ic_forward"
+                    tools:drawableStart="@drawable/medialive_entry_voice" />
+
+                <TextView
+                    android:id="@+id/live_push_screen"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="12dp"
+                    android:gravity="center_vertical|start"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/medialive_screen_entry_title"
+                    android:textColor="#161823"
+                    android:textSize="16sp"
+                    app:drawableEndCompat="@drawable/medialive_ic_forward"
+                    app:drawableStartCompat="@drawable/medialive_entry_screen"
+                    tools:drawableEnd="@drawable/medialive_ic_forward"
+                    tools:drawableStart="@drawable/medialive_entry_screen" />
+
+                <TextView
+                    android:id="@+id/live_push_file"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="12dp"
+                    android:gravity="center_vertical|start"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/medialive_file_entry_title"
+                    android:textColor="#161823"
+                    android:textSize="16sp"
+                    app:drawableEndCompat="@drawable/medialive_ic_forward"
+                    app:drawableStartCompat="@drawable/medialive_entry_video_file"
+                    tools:drawableEnd="@drawable/medialive_ic_forward"
+                    tools:drawableStart="@drawable/medialive_entry_video_file" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/live_push_audio"
                 android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:layout_gravity="center_vertical"
-                android:drawablePadding="12dp"
-                android:gravity="center_vertical|start"
-                android:paddingHorizontal="16dp"
-                android:text="@string/medialive_voice_entry_title"
-                android:textColor="#161823"
-                android:textSize="16sp"
-                app:drawableEndCompat="@drawable/medialive_ic_forward"
-                app:drawableStartCompat="@drawable/medialive_entry_voice"
-                tools:drawableEnd="@drawable/medialive_ic_forward"
-                tools:drawableStart="@drawable/medialive_entry_voice" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingStart="16dp"
+                android:text="@string/medialive_pull_section_title"
+                android:textColor="#737A87"
+                android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/live_push_screen"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:layout_gravity="center_vertical"
-                android:drawablePadding="12dp"
-                android:gravity="center_vertical|start"
-                android:paddingHorizontal="16dp"
-                android:text="@string/medialive_screen_entry_title"
-                android:textColor="#161823"
-                android:textSize="16sp"
-                app:drawableEndCompat="@drawable/medialive_ic_forward"
-                app:drawableStartCompat="@drawable/medialive_entry_screen"
-                tools:drawableEnd="@drawable/medialive_ic_forward"
-                tools:drawableStart="@drawable/medialive_entry_screen" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/medialive_function_bg_card"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/live_push_file"
-                android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:layout_gravity="center_vertical"
-                android:drawablePadding="12dp"
-                android:gravity="center_vertical|start"
-                android:paddingHorizontal="16dp"
-                android:text="@string/medialive_file_entry_title"
-                android:textColor="#161823"
-                android:textSize="16sp"
-                app:drawableEndCompat="@drawable/medialive_ic_forward"
-                app:drawableStartCompat="@drawable/medialive_entry_video_file"
-                tools:drawableEnd="@drawable/medialive_ic_forward"
-                tools:drawableStart="@drawable/medialive_entry_video_file" />
+                <TextView
+                    android:id="@+id/live_pull"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="12dp"
+                    android:gravity="center_vertical|start"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/medialive_pull_entry_title"
+                    android:textColor="#161823"
+                    android:textSize="16sp"
+                    app:drawableEndCompat="@drawable/medialive_ic_forward"
+                    app:drawableStartCompat="@drawable/medialive_entry_pull_stream"
+                    tools:drawableEnd="@drawable/medialive_ic_forward"
+                    tools:drawableStart="@drawable/medialive_entry_pull_stream" />
+            </LinearLayout>
         </LinearLayout>
+    </ScrollView>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:paddingStart="16dp"
-            android:text="@string/medialive_pull_section_title"
-            android:textColor="#737A87"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/medialive_function_bg_card"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/live_pull"
-                android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:layout_gravity="center_vertical"
-                android:drawablePadding="12dp"
-                android:gravity="center_vertical|start"
-                android:paddingHorizontal="16dp"
-                android:text="@string/medialive_pull_entry_title"
-                android:textColor="#161823"
-                android:textSize="16sp"
-                app:drawableEndCompat="@drawable/medialive_ic_forward"
-                app:drawableStartCompat="@drawable/medialive_entry_pull_stream"
-                tools:drawableEnd="@drawable/medialive_ic_forward"
-                tools:drawableStart="@drawable/medialive_entry_pull_stream" />
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
-
+    <TextView
+        android:id="@+id/license_tips"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:visibility="gone"
+        tools:text="LicenseCheck result"
+        tools:visibility="gone" />
+</FrameLayout>

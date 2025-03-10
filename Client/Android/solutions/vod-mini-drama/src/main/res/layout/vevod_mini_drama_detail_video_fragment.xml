@@ -21,7 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="#000000"
+    tools:background="#000000"
     tools:context="com.byteplus.vod.minidrama.scene.detail.DramaDetailVideoFragment">
 
     <androidx.constraintlayout.widget.Guideline

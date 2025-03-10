@@ -3,7 +3,7 @@
 
 package com.vertcdemo.solution.ktv.feature.main.room;
 
-import static com.vertcdemo.solution.ktv.utils.ViewModelProviderHelper.navGraphViewModelProvider;
+import static com.vertcdemo.core.utils.ViewModelProviderHelper.navGraphViewModelProvider;
 
 import android.os.Bundle;
 import android.view.View;

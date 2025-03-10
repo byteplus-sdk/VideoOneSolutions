@@ -13,7 +13,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.Insets
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
@@ -64,7 +63,7 @@ import com.byteplus.vodlive.utils.playerLog
 import com.vertcdemo.base.ReportDialog
 import com.vertcdemo.core.utils.DebounceClickListener
 
-internal class RecommendAdapter :
+internal class RecommendAdapter(private val controller: LiveController) :
     Adapter<RecommendViewHolder>() {
 
     companion object {
@@ -176,6 +175,14 @@ internal class RecommendAdapter :
             }
         }).dispatchUpdatesTo(this)
     }
+
+    override fun onViewDetachedFromWindow(holder: RecommendViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        if (holder is LiveViewHolder) {
+            val player = holder.unbindPlayer() ?: return
+            controller.recycle(player)
+        }
+    }
 }
 
 internal open class RecommendViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -230,7 +237,6 @@ internal class VodViewHolder(
         layerHost.addLayer(SpeedSelectDialogLayer())
 
         layerHost.attachToVideoView(videoView)
-        videoView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black))
 
         //videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT); // fit mode
         videoView.displayMode = DisplayModeHelper.DISPLAY_MODE_ASPECT_FILL // immersive mode
@@ -313,9 +319,11 @@ internal class LiveViewHolder(
         this.player = player
     }
 
-    override fun unbindPlayer() {
-        player?.detach()
+    override fun unbindPlayer(): LivePlayer? {
+        val player = this.player ?: return null
         this.player = null
+        player.detach()
+        return player
     }
 
     private lateinit var item: LiveFeedItem

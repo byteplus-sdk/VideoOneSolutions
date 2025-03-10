@@ -32,6 +32,7 @@ public class PlaylistFragment extends VodFunctionFragment implements PlayListIte
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle =requireArguments();
+        @SuppressWarnings("unchecked")
         List<VideoItem> videoList = (List<VideoItem>) bundle.getSerializable(VodFunctionActivity.EXTRA_VIDEO_LIST);
         String playMode = bundle.getString(VodFunctionActivity.EXTRA_PLAY_MODE, "loop");
         mPlaylistController = new PlaylistController(videoList, playMode, new PlaylistController.IPlaylistCallback() {

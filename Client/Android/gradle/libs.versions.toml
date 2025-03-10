@@ -4,26 +4,26 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
-activity = "1.9.2"
-kotlinGradlePlugin = "1.9.22"
-fragment-ktx = "1.8.4"
+activity = "1.9.3"
+kotlinVersion = "1.9.22"
+fragment-ktx = "1.8.5"
 material = "1.12.0"
-constraintlayout = "2.1.4"
+constraintlayout = "2.2.0"
 recyclerview = "1.3.2"
 gridlayout = "1.0.0"
 swiperefreshlayout = "1.1.0"
 eventbus = "3.3.1"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
-gson = "2.10.1"
-glide = "4.13.2"
+gson = "2.11.0"
+glide = "4.16.0"
 glideTransformations = "4.3.0"
-navigation = "2.7.7"
-lifecycle = "2.8.6"
+navigation = "2.8.5"
+lifecycle = "2.8.7"
 
-camerax = "1.3.4"
+camerax = "1.4.1"
 
-viewpager = "1.0.0"
+viewpager = "1.1.0"
 viewpager2 = "1.1.0"
 
 fadingedgelayout = "1.0.0"
@@ -40,7 +40,8 @@ ext-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 activity = { module = "androidx.activity:activity", version.ref = "activity" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
+kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlinVersion" }
 fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment-ktx" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
@@ -83,14 +84,16 @@ zxing = { module = "com.journeyapps:zxing-android-embedded", version = "3.6.0" }
 fadingedgelayout = { module = "com.github.bosphere.android-fadingedgelayout:fadingedgelayout", version.ref = "fadingedgelayout" }
 
 rtc-sdk = { module = "com.byteplus:BytePlusRTC", version.ref = "rtcVersion" }
-
-ttsdk-player-premium = { module = "com.bytedanceapi:ttsdk-player_premium", version.ref = "ttsdk" }
-ttsdk-ttlivepush-rtc = { module = "com.bytedanceapi:ttsdk-ttlivepush_rtc", version.ref = "ttsdk" }
-ttsdk-ttlivepull-rtc = { module = "com.bytedanceapi:ttsdk-ttlivepull_rtc", version.ref = "ttsdk" }
-ttsdk-ttuploader = { module = "com.bytedanceapi:ttsdk-ttuploader", version.ref = "ttsdk" }
+# ttsdk commons
 ttsdk-ttlicense2 = { module = "com.bytedanceapi:ttsdk-ttlicense2", version.ref = "ttsdk" }
 ttsdk-ttcommon = { module = "com.bytedanceapi:ttsdk-ttcommon", version.ref = "ttsdk" }
+# ttsdk medialive
+ttsdk-ttlivepush-rtc = { module = "com.bytedanceapi:ttsdk-ttlivepush_rtc", version.ref = "ttsdk" }
+ttsdk-ttlivepull-rtc = { module = "com.bytedanceapi:ttsdk-ttlivepull_rtc", version.ref = "ttsdk" }
+# ttsdk vod
+ttsdk-player-premium = { module = "com.bytedanceapi:ttsdk-player_premium", version.ref = "ttsdk" }
 ttsdk-ttvideoengine-debugtool = { module = "com.bytedanceapi:ttvideoengine-debugtool", version = "0.3.0.1" }
+ttsdk-ttuploader = { module = "com.bytedanceapi:ttsdk-ttuploader", version.ref = "ttsdk" }
 
 applog-lite = { module = "com.bytedance.applog:RangersAppLog-Lite-global", version = "6.14.3" }
 

@@ -3,15 +3,13 @@
 
 package com.byteplus.live.entrance;
 
-import static com.pandora.common.env.config.LogConfig.LogLevel.Debug;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,17 +19,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.byteplus.live.player.ui.activity.InputPullUrlActivity;
 import com.byteplus.live.pusher.ui.activities.LiveCaptureType;
 import com.byteplus.live.pusher.ui.activities.LivePushActivity;
-import com.pandora.common.applog.AppLogWrapper;
-import com.pandora.common.env.Env;
-import com.pandora.common.env.config.Config;
-import com.pandora.common.env.config.LogConfig;
 import com.pandora.common.globalsettings.GlobalSdkParams;
-import com.pandora.ttlicense2.LicenseManager;
 
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public class MediaLiveFunctionFragment extends PermissionFragment {
 
@@ -47,38 +39,6 @@ public class MediaLiveFunctionFragment extends PermissionFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(MediaLiveViewModel.class);
-        mViewModel.prepareResource(requireContext());
-        initTTSDK();
-    }
-
-    public void initTTSDK() {
-        if (TextUtils.isEmpty(BuildConfig.LIVE_TTSDK_APP_ID)) {
-            throw new RuntimeException("Please setup LIVE_TTSDK_APP_ID in gradle.properties!");
-        }
-
-        if (TextUtils.isEmpty(BuildConfig.LIVE_TTSDK_LICENSE_URI)) {
-            throw new RuntimeException("Please setup LIVE_TTSDK_LICENSE_URI in gradle.properties!");
-        }
-
-        Context context = requireContext().getApplicationContext();
-        Env.openDebugLog(true);
-        Env.openAppLog(true);
-        LicenseManager.turnOnLogcat(true);
-        String logPath = Objects.requireNonNull(context.getExternalFilesDir("TTSDK")).getAbsolutePath();
-        LogConfig config = new LogConfig.Builder(context)
-                .setLogPath(logPath)
-                .setLogLevel(Debug)
-                .build();
-        Env.init(new Config.Builder()
-                .setApplicationContext(context)
-                .setAppID(BuildConfig.LIVE_TTSDK_APP_ID)
-                .setAppName(BuildConfig.LIVE_TTSDK_APP_NAME)
-                .setAppChannel(BuildConfig.LIVE_TTSDK_APP_CHANNEL)
-                .setLicenseUri(BuildConfig.LIVE_TTSDK_LICENSE_URI)
-                .setLicenseCallback(new LogLicenseManagerCallback())
-                .setLogConfig(config)
-                .build());
-        showBuildInfo();
     }
 
     @Override
@@ -113,6 +73,17 @@ public class MediaLiveFunctionFragment extends PermissionFragment {
                     () -> Toast.makeText(requireContext(), "Missing required permission(s)", Toast.LENGTH_LONG).show()
             );
         });
+
+        mViewModel.licenseResult.observe(getViewLifecycleOwner(), licenseResult -> {
+            if (licenseResult.isEmpty()) {
+                mViewModel.checkLicense();
+            } else if (!licenseResult.isOk()) {
+                final TextView licenseTips = view.findViewById(R.id.license_tips);
+                licenseTips.setText(licenseResult.message);
+                licenseTips.setVisibility(View.VISIBLE);
+                licenseTips.setOnClickListener(v -> {/*consume the click event*/});
+            }
+        });
     }
 
     private void startLivePushPage(Context context, @LiveCaptureType int liveCaptureType) {
@@ -132,17 +103,6 @@ public class MediaLiveFunctionFragment extends PermissionFragment {
         Intent intent = new Intent(context, LivePushActivity.class);
         intent.putExtra(LivePushActivity.EXTRA_CAPTURE_TYPE, liveCaptureType);
         context.startActivity(intent);
-    }
-
-    private static void showBuildInfo() {
-        Log.d(TAG, "[showBuildInfo] " + "TTSDK: " + Env.getVersion() +
-                "\n  Flavor: " + Env.getFlavor() +
-                "\n  BuildType: " + Env.getBuildType() +
-                "\n  VersionCode: " + Env.getVersionCode() +
-                "\n  AppID: " + Env.getAppID() +
-                "\n  DeviceId: " + AppLogWrapper.getDid() +
-                "\n  UUID: " + AppLogWrapper.getUserUniqueID() +
-                "\n  License 2.0 is open");
     }
 
     static {

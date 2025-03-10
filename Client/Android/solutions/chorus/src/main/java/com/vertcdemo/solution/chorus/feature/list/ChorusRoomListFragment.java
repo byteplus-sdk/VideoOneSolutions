@@ -3,9 +3,6 @@
 
 package com.vertcdemo.solution.chorus.feature.list;
 
-import static com.vertcdemo.solution.chorus.feature.ChorusViewModel.RTC_STATUS_DONE;
-import static com.vertcdemo.solution.chorus.feature.ChorusViewModel.RTC_STATUS_NONE;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -29,16 +26,13 @@ import com.bytedance.chrous.R;
 import com.bytedance.chrous.databinding.FragmentChorusRoomsBinding;
 import com.vertcdemo.core.utils.DebounceClickListener;
 import com.vertcdemo.solution.chorus.bean.RoomInfo;
-import com.vertcdemo.solution.chorus.feature.ChorusViewModel;
 import com.vertcdemo.ui.CenteredToast;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class ChorusRoomListFragment extends Fragment {
     ChorusRoomListViewModel mViewModel;
-    ChorusViewModel mChorusViewModel;
 
     public ChorusRoomListFragment() {
         super(R.layout.fragment_chorus_rooms);
@@ -48,7 +42,6 @@ public class ChorusRoomListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ChorusRoomListViewModel.class);
-        mChorusViewModel = new ViewModelProvider(requireActivity()).get(ChorusViewModel.class);
     }
 
     @Override
@@ -65,24 +58,16 @@ public class ChorusRoomListFragment extends Fragment {
             return WindowInsetsCompat.CONSUMED;
         });
 
-        binding.back.setOnClickListener(v -> requireActivity().onBackPressed());
+        binding.back.setOnClickListener(v -> requireActivity()
+                .getOnBackPressedDispatcher()
+                .onBackPressed());
 
         binding.refresh.setOnClickListener(DebounceClickListener.create(v -> {
-            int status = Objects.requireNonNull(mChorusViewModel.rtcStatus.getValue());
-            if (status == RTC_STATUS_DONE) {
-                binding.swipeLayout.setRefreshing(true);
-                mViewModel.requestRoomList();
-            }
+            binding.swipeLayout.setRefreshing(true);
+            mViewModel.requestRoomList();
         }));
 
-        binding.swipeLayout.setOnRefreshListener(() -> {
-            int status = Objects.requireNonNull(mChorusViewModel.rtcStatus.getValue());
-            if (status == RTC_STATUS_DONE) {
-                mViewModel.requestRoomList();
-            } else {
-                binding.swipeLayout.setRefreshing(false);
-            }
-        });
+        binding.swipeLayout.setOnRefreshListener(() -> mViewModel.requestRoomList());
 
         ChorusRoomListAdapter roomListAdapter = new ChorusRoomListAdapter(requireContext());
         binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -108,16 +93,8 @@ public class ChorusRoomListFragment extends Fragment {
             binding.empty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
-        mChorusViewModel.rtcStatus.observe(getViewLifecycleOwner(), status -> {
-            switch (status) {
-                case RTC_STATUS_NONE:
-                    break;
-                case RTC_STATUS_DONE:
-                    binding.swipeLayout.setRefreshing(true);
-                    mViewModel.requestRoomList();
-                    break;
-            }
-        });
+        binding.swipeLayout.setRefreshing(true);
+        mViewModel.requestRoomList();
     }
 
     final ActivityResultLauncher<String> launcher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {

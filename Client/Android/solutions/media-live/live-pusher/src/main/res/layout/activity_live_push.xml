@@ -5,7 +5,8 @@
     android:id="@+id/activity_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/live_bg_gray_deep">
+    android:background="@color/live_bg_gray_deep"
+    android:keepScreenOn="true">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_top"

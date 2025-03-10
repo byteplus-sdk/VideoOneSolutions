@@ -97,7 +97,6 @@ public class DramaVideoItemViewHolder extends VideoViewHolder {
             layerHost.addLayer(new LogLayer());
         }
         layerHost.attachToVideoView(videoView);
-        videoView.setBackgroundColor(parent.getResources().getColor(android.R.color.black));
         //videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT); // fit mode
         videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FILL); // immersive mode
         videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);

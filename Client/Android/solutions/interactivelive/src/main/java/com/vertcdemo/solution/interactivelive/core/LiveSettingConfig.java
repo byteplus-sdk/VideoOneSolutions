@@ -6,7 +6,7 @@ package com.vertcdemo.solution.interactivelive.core;
 import com.ss.bytertc.engine.VideoEncoderConfig;
 import com.ss.bytertc.engine.video.VideoCaptureConfig;
 
-class LiveSettingConfig {
+public class LiveSettingConfig {
     public int width;
     public int height;
     public int frameRate;

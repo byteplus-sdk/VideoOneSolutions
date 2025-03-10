@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:paddingVertical="4dp"
+    tools:background="#000">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="top|center_horizontal"
+        tools:src="#999999" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:gravity="top|center_horizontal"
+        android:maxLines="2"
+        android:minLines="2"
+        android:textColor="@color/color_effect_item_text"
+        android:textSize="@dimen/text_title_size"
+        tools:text="Beauty" />
+
+    <ImageView
+        android:id="@+id/indicator"
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_beauty_option_indicator"
+        android:visibility="invisible"
+        tools:visibility="visible" />
+</LinearLayout>

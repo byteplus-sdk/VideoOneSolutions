@@ -9,30 +9,32 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.vertcdemo.app.databinding.FragmentMainBinding
-import com.vertcdemo.core.SolutionDataManager
-import com.vertcdemo.core.event.AppTokenExpiredEvent
-import com.vertcdemo.core.event.RefreshUserNameEvent
-import com.vertcdemo.core.eventbus.SolutionEventBus
+import com.vertcdemo.login.UserViewModel
+import com.videoone.app.protocol.SceneEntry
 import com.videoone.avatars.Avatars
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 class MainFragment : VersionFragment(R.layout.fragment_main) {
-    private lateinit var mViewModel: MainViewModel
-    private var mBinding: FragmentMainBinding? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-    }
+    private val mViewModel by viewModels<MainViewModel>()
+    private val userViewModel by activityViewModels<UserViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        userViewModel.logged.observe(viewLifecycleOwner) {
+            if (!it) {
+                findNavController()
+                    .navigate(R.id.login)
+            }
+        }
+
         super.onViewCreated(view, savedInstanceState)
-        val binding = FragmentMainBinding.bind(view).also { mBinding = it }
+
+        val binding = FragmentMainBinding.bind(view)
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets: WindowInsetsCompat ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -68,35 +70,27 @@ class MainFragment : VersionFragment(R.layout.fragment_main) {
             binding.iconScenes.typeface = if (position == 1) bold else normal
         }
 
-        updateUserInfo(binding)
-
-        SolutionEventBus.register(this)
-    }
-
-    private fun updateUserInfo(binding: FragmentMainBinding) {
-        if (SolutionDataManager.userId.isNullOrEmpty()) {
-            binding.avatar.visibility = View.GONE
-        } else {
-            binding.avatar.visibility = View.VISIBLE
-            Glide.with(binding.avatar)
-                .load(Avatars.byUserId(SolutionDataManager.userId))
-                .into(binding.avatar)
+        userViewModel.user.observe(viewLifecycleOwner) { user ->
+            val userId = user.userId
+            if (userId.isEmpty()) {
+                binding.avatar.visibility = View.GONE
+            } else {
+                binding.avatar.visibility = View.VISIBLE
+                Glide.with(binding.avatar)
+                    .load(Avatars.byUserId(userId))
+                    .into(binding.avatar)
+            }
         }
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        SolutionEventBus.unregister(this)
-    }
+        val sceneCount = SceneEntry.entries.size
+        val functionCount = FunctionEntry.entries.size
+        if (sceneCount == 0 || functionCount == 0) {
+            binding.groupTabs.visibility = View.GONE
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onTokenExpiredEvent(event: AppTokenExpiredEvent?) {
-
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onRefreshUserNameEvent(event: RefreshUserNameEvent) {
-        mBinding?.let { updateUserInfo(it) }
+            if (sceneCount == 0 && functionCount != 0) {
+                mViewModel.currentTab.value = 1
+            }
+        }
     }
 
     class TabAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {

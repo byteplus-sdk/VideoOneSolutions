@@ -3,7 +3,6 @@
 
 package com.byteplus.vod.minidrama.scene.main;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
@@ -42,8 +41,9 @@ public class DramaMainFragment extends Fragment {
         VevodMiniDramaMainFragmentBinding binding = VevodMiniDramaMainFragmentBinding.bind(view);
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
-            binding.actionBar.getRoot().setPadding(0, insets.top, 0, 0);
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            binding.guidelineTop.setGuidelineBegin(insets.top);
+            binding.guidelineBottom.setGuidelineEnd(insets.bottom);
             return windowInsets;
         });
 
@@ -65,16 +65,12 @@ public class DramaMainFragment extends Fragment {
             binding.tabChannel.setTypeface(tab == MainFragmentViewModel.Tab.CHANNEL ? bold : normal);
 
             if (tab == MainFragmentViewModel.Tab.HOME) {
-                binding.actionBar.getRoot().setBackgroundColor(Color.BLACK);
-
                 ConstraintSet constraints = new ConstraintSet();
                 constraints.clone(binding.getRoot());
 
                 constraints.connect(R.id.view_pager, ConstraintSet.TOP, R.id.action_bar, ConstraintSet.BOTTOM);
                 constraints.applyTo(binding.getRoot());
             } else {
-                binding.actionBar.getRoot().setBackgroundColor(Color.TRANSPARENT);
-
                 ConstraintSet constraints = new ConstraintSet();
                 constraints.clone(binding.getRoot());
                 constraints.connect(R.id.view_pager, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
@@ -84,6 +80,16 @@ public class DramaMainFragment extends Fragment {
 
         binding.tabHome.setOnClickListener(v -> viewModel.currentTab.setValue(MainFragmentViewModel.Tab.HOME));
         binding.tabChannel.setOnClickListener(v -> viewModel.currentTab.setValue(MainFragmentViewModel.Tab.CHANNEL));
+
+        viewModel.licenseResult.observe(getViewLifecycleOwner(), licenseResult -> {
+            if (licenseResult.isEmpty()) {
+                viewModel.checkLicense(requireContext().getApplicationContext());
+            } else if (!licenseResult.isOk()) {
+                binding.licenseTips.setText(licenseResult.message);
+                binding.licenseTips.setVisibility(View.VISIBLE);
+                binding.licenseTips.setOnClickListener(v -> {/*consume the click event*/});
+            }
+        });
     }
 
     static class DramaScenesAdapter extends FragmentStateAdapter {

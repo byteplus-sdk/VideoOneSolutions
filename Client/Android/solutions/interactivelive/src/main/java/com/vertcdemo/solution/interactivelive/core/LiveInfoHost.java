@@ -5,7 +5,7 @@ package com.vertcdemo.solution.interactivelive.core;
 
 import androidx.annotation.NonNull;
 
-class LiveInfoHost {
+public class LiveInfoHost {
     public final String roomId;
     public final String userId;
     public final String pushUrl;

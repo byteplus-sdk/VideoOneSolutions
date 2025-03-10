@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorGrey">#8CFFFFFF</color>
+    <color name="color_fill_3">#000000</color>
+    <color name="toast_background">#CC000000</color>
+    <color name="dot_point_on">#30D8D8</color>
+    <color name="inactive_progress_bg">#4DFFFFFF</color>
+    <color name="divider_line">#26FFFFFF</color>
+    <color name="opacity_10_white">#1AFFFFFF</color>
+    <color name="colorChecked">#33cccc</color>
+    <color name="colorUnChecked">#aaaaaa</color>
+    <color name="selected_color">#1E90FF</color>
+    <color name="track_selected_color">#87CEFA</color>
+    <color name="grid_focused">#3F78B5</color>
+    <color name="colorBg">#F4F5F7</color>
+
+    <color name="effect_bottom_sheet_panel">#000000</color>
+
+</resources>
