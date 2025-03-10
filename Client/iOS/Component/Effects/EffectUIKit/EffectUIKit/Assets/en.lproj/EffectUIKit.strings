@@ -1,0 +1,1857 @@
+"ablum_have_been_saved" = "Image is saved to the album";
+
+"video_have_been_saved" = "Video is saved to the album";
+
+"video_upload" = "Video Upload";
+
+"age" = "Age";
+
+"anger" = "Angry";
+
+"animoji" = "Avatar Drive";
+
+"animoji_bagequan" = "Bulldog";
+
+"animoji_boy" = "Boy";
+
+"animoji_caihongzhu" = "Rainbow Piggy";
+
+"animoji_duoshanbingqilin" = "Ice Cream Boy";
+
+"animoji_fensebianbian" = "Pink Poop";
+
+"animoji_gewanggugu" = "Pigeon King GooGoo";
+
+"animoji_girl" = "Girl";
+
+"animoji_keaizhu" = "Cute Piggy";
+
+"animoji_maoernvhai" = "Cat Girl";
+
+"applaud" = "Handclap";
+
+"ar_scan" = "AR Scan";
+
+"arscan_merry" = "Santa Claus";
+
+"back_light" = "In a poor light.";
+
+"beauty" = "Beauty Score";
+
+"beauty_body_arm_slim" = "Arm";
+
+"beauty_body_breast_enlarge" = "Breast";
+
+"beauty_body_hip_enhance" = "Hip";
+
+"beauty_body_leg_long" = "Leg Length";
+
+"beauty_body_leg_slim" = "Leg Size";
+
+"beauty_body_neck_enhance" = "Neck";
+
+"beauty_body_shrink_head" = "Head";
+
+"beauty_body_thin" = "Body";
+
+"beauty_body_waist_slim" = "Waist";
+
+"beauty_face_brighten_eye" = "Eye Shine";
+
+"beauty_face_double_eyelid" = "Eyelids";
+
+"beauty_face_eye_plump" = "Aegyo-sal";
+
+"beauty_face_remove_pouch" = "Darkcircle";
+
+"beauty_face_sharpen" = "Sharpen";
+
+"beauty_face_smile_folds" = "Laugh Line";
+
+"beauty_face_smooth" = "Buffing";
+
+"beauty_face_whiten" = "Toning";
+
+"beauty_face_clarity" = "Clarity";
+
+"beauty_face_whiten_teeth" = "Teeth Whitening";
+
+"beauty_reshape_brow_distance" = "Distance";
+
+"beauty_reshape_brow_group" = "Eyebrow";
+
+"beauty_reshape_brow_position" = "Position";
+
+"beauty_reshape_brow_ridge" = "RIdge";
+
+"beauty_reshape_brow_size" = "Thickness";
+
+"beauty_reshape_brow_tile" = "Incline";
+
+"beauty_reshape_brow_width" = "Length";
+
+"beauty_reshape_cheek" = "Cheek";
+
+"beauty_reshape_chin" = "Chin Length";
+
+"beauty_reshape_eye" = "Size";
+
+"beauty_reshape_eye_group" = "Eye";
+
+"beauty_reshape_eye_height" = "Height";
+
+"beauty_reshape_eye_inner_corner" = "Inner Corner";
+
+"beauty_reshape_eye_lower_eyelid" = "Downturn";
+
+"beauty_reshape_eye_move" = "Position";
+
+"beauty_reshape_eye_outer_corner" = "Outer Corner";
+
+"beauty_reshape_eye_pupil_size" = "Pupil Size";
+
+"beauty_reshape_eye_rotate" = "Upturn";
+
+"beauty_reshape_eye_spacing" = "Distance";
+
+"beauty_reshape_eye_width" = "Width";
+
+"beauty_reshape_face_cut" = "Upper Width";
+
+"beauty_reshape_face_group" = "Face";
+
+"beauty_reshape_face_overall" = "Lower Width";
+
+"beauty_reshape_face_boy"     = "Handsome";
+"beauty_reshape_face_girl"    = "Beauty";
+"beauty_reshape_face_nature"  = "Natural Face";
+
+"beauty_reshape_face_small" = "Size";
+
+"beauty_reshape_face_vface" = "V Shape";
+
+"beauty_reshape_forehead" = "Hairline";
+
+"beauty_reshape_jaw" = "Jaw";
+
+"beauty_reshape_mouth_group" = "Mouth";
+
+"beauty_reshape_mouth_move" = "Position";
+
+"beauty_reshape_mouth_smile" = "Smile";
+
+"beauty_reshape_mouth_width" = "Width";
+
+"beauty_reshape_mouth_zoom" = "Size";
+
+"beauty_reshape_nose_bridge" = "Bridge";
+
+"beauty_reshape_nose_group" = "Nose";
+
+"beauty_reshape_nose_lean" = "Wing";
+
+"beauty_reshape_nose_long" = "Lift";
+
+"beauty_reshape_nose_root" = "Root";
+
+"beauty_reshape_nose_size" = "Size";
+
+"beauty_reshape_nose_tip" = "Tip";
+
+"black" = "Black";
+
+"blusher_color_fentao" = "粉桃";
+
+"blusher_color_qianfen" = "浅粉";
+
+"blusher_color_qianzi" = "浅紫";
+
+"blusher_color_shanhu" = "珊瑚";
+
+"blusher_color_xingren" = "杏仁";
+
+"blusher_mitao" = "Peachy";
+
+"blusher_qiaopi" = "Joyful";
+
+"blusher_qise" = "Tinct";
+
+"blusher_richang" = "Daily";
+
+"blusher_rixi" = "Japanese";
+
+"blusher_shaishang" = "Sunburn";
+
+"blusher_suzui" = "Hangover";
+
+"blusher_tiancheng" = "Sweet Orange";
+
+"blusher_weixun" = "Tipsy";
+
+"blusher_xinji" = "Calculating";
+
+"blusher_yuanqi" = "Vivid";
+
+"brown" = "Indian";
+
+"btn_back" = "Step back";
+
+"btn_cluster_start" = "Start clustering";
+
+"btn_picker" = "Select image";
+
+"c1_desc" = "Classification Algorithm";
+
+"c2_desc" = "Classification Algorithm";
+
+"camera" = "Camera";
+
+"car_blur" = "Blurry or Not";
+
+"car_blur_not" = "Blurry";
+
+"car_blur_ok" = "Normal";
+
+"car_brand_detect" = "License Plate Detection";
+
+"car_detect" = "Vehicle Detection";
+
+"car_direction_youce" = "Right";
+
+"car_direction_youcehou" = "Right behind";
+
+"car_direction_youceqian" = "Right front";
+
+"car_direction_zhengqian" = "Front";
+
+"car_direction_zhengzhou" = "Behind";
+
+"car_direction_zuoce" = "Left";
+
+"car_direction_zuocehou" = "Left behind";
+
+"car_direction_zuoceqian" = "Left front";
+
+"car_gray" = "Bright or not";
+
+"car_gray_not" = "Too dark";
+
+"car_gray_ok" = "Normal";
+
+"choose" = "Select one face image";
+
+"close" = "Turn off";
+
+"closing_eye" = "Blinking";
+
+"cloudy" = "Cloudy";
+
+"confuse" = "Confused";
+
+"cost" = "Time elapsed";
+
+"current_face" = "Current face number";
+
+"default_effect" = "Default Beauty";
+
+"detect" = "Detection";
+
+"detect_count" = "Total number of detections";
+
+"dist" = "Distance (m):";
+
+"effect" = "Effects";
+
+"expression" = "Expression";
+
+"eye_bingtangshanzha" = "Hawthorn";
+
+"eye_dadizong" = "Ground Brown";
+
+"eye_hanxi" = "Korean";
+
+"eye_jiaotangzong" = "Caramel Brown";
+
+"eye_meizihong" = "Plum Red";
+
+"eye_naichase" = "Milktea Brown";
+
+"eye_nvshen" = "Beauty";
+
+"eye_qizhifen" = "Gorgeous Pink";
+
+"eye_shaonvfen" = "Girlish Pink";
+
+"eye_wanxiahong" = "Sunset Red";
+
+"eye_xingzi" = "Apricot";
+
+"eye_yuanqiju" = "Vivid Orange";
+
+"eyebrow_biaozhun" = "Standard";
+
+"eyebrow_color_hei" = "黑";
+
+"eyebrow_color_zong" = "棕";
+
+"eyebrow_cuhei" = "Heavy & Black";
+
+"eyebrow_heise" = "Black";
+
+"eyebrow_liuyemei" = "Lanceted";
+
+"eyebrow_rongrongmei" = "Furry";
+
+"eyebrow_xihei" = "Thin & Black";
+
+"eyebrow_yeshengmei" = "Wild";
+
+"eyebrow_zongse" = "Brown";
+
+"eyelash_chibang" = "Wingy";
+
+"eyelash_color_hei" = "黑";
+
+"eyelash_color_zong" = "棕";
+
+"eyelash_juanqiao" = "Curling";
+
+"eyelash_manhua" = "Manga";
+
+"eyelash_xiachui" = "Drooping";
+
+"eyelash_ziran" = "Natural";
+
+"eyelight_juguangdeng" = "Spotlight";
+
+"eyelight_yueyaguang" = "Moonglow";
+
+"eyelight_ziranguang" = "Natural";
+
+"eyeplump_chulian" = "First love";
+
+"eyeplump_manhuayan" = "Cortoon eyes";
+
+"eyeplump_suyan" = "Without makeup";
+
+"eyeplump_taohua" = "Peach";
+
+"eyeplump_xiachui" = "Droop";
+
+"eyeplump_ziran" = "Natural";
+
+"face_106_desc" = "106 Keypoints & Body Motion";
+
+"face_280_desc" = "Pupil & Lip";
+
+"face_attr_desc" = "Face Properties";
+
+"face_attr_title" = "Property";
+
+"face_cluster_choose_photos" = "Upload Image";
+
+"face_cluster_faceless" = "People not recognized";
+
+"face_cluster_person" = "Character";
+
+"face_count" = "Current face number";
+
+"face_mask_desc" = "Face Seg";
+
+"face_more_than_one" = "More than one face detected";
+
+"face_verify_not_same_face" = "Same face not detected";
+
+"face_verify_same_face" = "Same face detected";
+
+"facial_fajixian" = "Hairline";
+
+"facial_gaoguang" = "Highlight";
+
+"facial_jingzhi" = "Dedicate";
+
+"facial_xiaov" = "V line";
+
+"facial_ziran" = "Natural";
+
+"fear" = "Fear";
+
+"feature_adaptive_sharpen" = "Adaptive Sharpening";
+
+"feature_taint_detect" = "Taint Scene Detection";
+
+"feature_cine_move" = "Camera Movement";
+
+"feature_cine_move_snake" = "Fluctuation Mode";
+
+"feature_cine_move_heart_beat" = "Heartbeat Mode";
+
+"feature_cine_move_breath" = "Breathing Mode";
+
+"feature_cine_move_rot360" = "POV Mode";
+
+"feature_photo_night_scene" = "Photo night scene";
+
+"feature_algorithm" = "Algorithms";
+
+"feature_amazing_sticker" = "Advanced Stickers";
+
+"feature_game" = "Lite Game";
+
+"feature_animoji" = "Avatar Drive";
+
+"feature_ar" = "AR";
+
+"feature_ar_try_on" = "Try-on";
+
+"feature_ar_bracelet" = "AR Bracelet Try-on";
+
+"feature_ar_glasses" = "AR Glasses Try-on";
+
+"feature_ar_hat" = "AR Hat Try-on";
+
+"feature_ar_landmark" = "Landmark AR";
+
+"feature_ar_nail" = "AR Nails Try-on";
+
+"feature_ar_object" = "Product AR";
+
+"feature_ar_ring" = "AR Ring Try-on";
+
+"feature_ar_scan" = "AR Scan";
+
+"feature_ar_shoe" = "AR Shoes Try-on";
+
+"feature_sky_land" = "Sky & Ground AR";
+
+"feature_ar_slam" = "AR Slam";
+
+"feature_ar_nail_slam" = "SLAM";
+
+"feature_facefitting" = "3D Face";
+
+"feature_ar_watch" = "AR Watch Try-on";
+
+"feature_beauty" = "Beauty & Body Effects";
+
+"feature_beauty_pro" = "Beauty & Body Effects Pro";
+
+"feature_body" = "Body Motion Detection";
+
+"feature_skeleton_3d" = "3D Skeleton";
+
+"feature_skeleton_3d" = "3D Limbs";
+
+"feature_c1" = "Scene Recognition (C1)";
+
+"feature_c2" = "Scene Recognition (C3)";
+
+"feature_car" = "Vehicle Detection";
+
+"feature_cat_face" = "Pet Face";
+
+"feature_ck" = "Creation Kit";
+
+"feature_concentrate" = "Concentration Estimation";
+
+"feature_effect" = "Effects";
+
+"feature_face" = "Face";
+
+"feature_face_cluster" = "Face Clustering";
+
+"feature_face_verify" = "Face Verification";
+
+"feature_gaze_estimation" = "Gaze Detection";
+
+"feature_hair_parse" = "Hair Segmentation";
+
+"feature_hand" = "Gesture Recognition";
+
+"feature_head_seg" = "Head Segmentation";
+
+"feature_human_distance" = "Distance Estimation";
+
+"feature_dynamic_gesture" = "Dynamic Gesture Recognition";
+
+"feature_slam" = "SLAM";
+
+"feature_slam_world_coord" = "world coordinate";
+
+"feature_slam_point_cloud" = "feature points";
+
+"feature_slam_follow" = "follow";
+
+"tab_dynamic_gesture" = "Dynamic Gesture Recognition";
+"dynamic_gesture_no_results" = "No results";
+"dyngest_result_swiping_left" = "Swiping Left";
+"dyngest_result_swiping_right" = "Swiping Right";
+"dyngest_result_swiping_down" = "Swiping Down";
+"dyngest_result_swiping_up" = "Swiping Up";
+"dyngest_result_sliding_two_fingers_left" = "Sliding Two Fingers Left";
+"dyngest_result_sliding_two_fingers_right" = "Sliding Two Fingers Right";
+"dyngest_result_sliding_two_fingers_down" = "Sliding Two Fingers Down";
+"dyngest_result_sliding_two_fingers_up" = "Sliding Two Fingers Up";
+"dyngest_result_zooming_in_with_full_hand" = "Zooming In With Full Hand";
+"dyngest_result_zooming_out_with_full_hand" = "Zooming Out With Full Hand";
+"dyngest_result_zooming_in_with_two_fingers" = "Zoom In with Two Fingers";
+"dyngest_result_zooming_out_with_two_fingers" = "Zoom Out with Two Fingers";
+"dyngest_result_thump_up" = "Thump Up";
+"dyngest_result_thump_down" = "Thump Down";
+"dyngest_result_shaking_hand" = "Shaking Hand";
+"dyngest_result_stop_sign" = "Stop Sign";
+"dyngest_result_drumming_fingers" = "Drumming Fingers";
+"dyngest_result_no_gesture" = "Other";
+
+"feature_skin_segmentation" = "Skin Segmentation";
+
+"skin_segmentation_desc" = "Skin Segmentation Algorithm";
+
+"feature_bach_skeleton" = "Body Contour";
+
+"bach_skeleton_desc" = "Body Landmarks Tracking";
+
+"feature_chroma_keying" = "Chroma Keying";
+
+"chroma_keying_desc" = "Chroma Keying Algorithm";
+
+"feature_image_quality" = "Image Quality";
+
+"feature_light" = "Light Condition Recognition";
+
+"feature_matting_sticker" = "Virtual Background";
+
+"feature_background_blur" = "Background Blur";
+
+"feature_night_scene" = "Night Scene Augmentation";
+
+"feature_portrait" = "Background Segmentation";
+
+"feature_qr_scan" = "QR Code Scan";
+
+"feature_sky_seg" = "Sky Segmentation";
+
+"feature_sport" = "Scene Solution";
+
+"feature_sport_assistance" = "Fitness Assistant";
+
+"feature_sticker" = "Stickers";
+
+"feature_style_makeup" = "Advanced Makeup Set";
+
+"feature_style_makeup_local" = "Advanced Makeup Set";
+
+"feature_video_cls" = "Video Classification";
+
+"feature_video_sr" = "Super Resolution";
+
+"feature_video_fvi" = "Video Frame Insertion";
+
+"female" = "Female";
+
+"filter_F1" = "Natural";
+
+"filter_F2" = "Soda";
+
+"filter_F3" = "California";
+
+"filter_F4" = "Yummy";
+
+"filter_F5" = "Spicy";
+
+"filter_L1" = "Island";
+
+"filter_L2" = "Early Summer";
+
+"filter_L3" = "Night";
+
+"filter_L4" = "Red Brown";
+
+"filter_L5" = "Clear";
+
+"filter_Po1" = "Gentle";
+
+"filter_Po10" = "Advanced Grey";
+
+"filter_Po2" = "Sweet Love";
+
+"filter_Po3" = "First Sight";
+
+"filter_Po4" = "Dark";
+
+"filter_Po5" = "Bubble Tea";
+
+"filter_Po6" = "Soft";
+
+"filter_Po7" = "Sunset";
+
+"filter_Po8" = "Cool Oxygen";
+
+"filter_Po9" = "Beach Portrait";
+
+"filter_S1" = "Movie";
+
+"filter_S2" = "Vintage Red";
+
+"filter_S3" = "Journey";
+
+"filter_S4" = "Warm Yellow";
+
+"filter_S5" = "Blue Film";
+
+"filter_beihaidao" = "Hokkaido";
+
+"filter_campan" = "Grandiflorum";
+
+"filter_chalk" = "Snow White";
+
+"filter_cream" = "Creamy";
+
+"filter_heibai" = "Black and White";
+
+"filter_hongchun" = "Red Lips";
+
+"filter_jiaopian" = "Film";
+
+"filter_jingmi" = "Quiet";
+
+"filter_jiuri" = "Old Days";
+
+"filter_julandiao" = "Orange Blue";
+
+"filter_lolita" = "Doll";
+
+"filter_makalong" = "Macaroon";
+
+"filter_mitao" = "Peach";
+
+"filter_musi" = "Mousse";
+
+"filter_normal" = "Off";
+
+"filter_nuanyang" = "Sun";
+
+"filter_oxgen" = "Oxygen";
+
+"filter_paomo" = "Foam";
+
+"filter_riza" = "Japan Magazine";
+
+"filter_tuise" = "Color Fading";
+
+"filter_wuyu" = "Story";
+
+"filter_xiyatu" = "Seattle";
+
+"filter_yinhua" = "Sakura";
+
+"frame_count" = "FPS:";
+
+"frame_time" = "Rendering time:";
+
+"gaze_inside" = "Within the screen";
+
+"gender" = "Gender";
+
+"gesture" = "Gestures:";
+
+"gesture_applaud" = "Handclap";
+
+"gesture_punching" = "Punch";
+
+"gesture_title" = "Gesture";
+
+"hair_anlan" = "Dark Blue";
+
+"hair_molv" = "Dark Green";
+
+"hair_shenzong" = "Dark Brown";
+
+"hand_detect_desc" = "Gesture Recognition of 47 kinds";
+
+"happiness" = "Happiness";
+
+"happy" = "Happy";
+
+"head_segment_desc" = "Head Segmentation Algorithm";
+
+"hot_feature" = "Popular Features";
+
+"indoor_weak" = "Indoor: Low Light";
+
+"indoor_white" = "Indoor: White";
+
+"indoor_yellow" = "Indoor: Yellow";
+
+"input_resolution" = "Input resolution:";
+
+"slam_begin" = "Tap anywhere to place object";
+
+"slam_status" = "Tracking State: ";
+
+"license_expired" = "License file expires, please check whether license file is correct and updated.";
+
+"light_cls_credibility" = "Confidence Score";
+
+"light_cls_type" = "Type";
+
+"lip_color_caomeibobo" = "草莓啵啵";
+
+"lip_color_huolongguo" = "火龙果";
+
+"lip_color_mitao" = "蜜桃";
+
+"lip_color_rouhefen" = "柔和粉";
+
+"lip_color_yuanqi" = "元气";
+
+"lip_doushafen" = "Puree Pink";
+
+"lip_fuguhong" = "Vintage Red";
+
+"lip_liangze" = "Flash";
+
+"lip_meizise" = "Plam Red";
+
+"lip_shanhuse" = "Coral Red";
+
+"lip_shaonvfen" = "Girlish Pink";
+
+"lip_sironghong" = "Velvet Red";
+
+"lip_wumian" = "Foggy";
+
+"lip_xiguahong" = "Watermelon Red";
+
+"lip_xiyouse" = "Pomelo Red";
+
+"lip_yaochun" = "Bitten";
+
+"lip_yuanqiju" = "Vivid Orange";
+
+"lip_yunran" = "Polishing";
+
+"lip_zangjuse" = "Dark Orange";
+
+"live" = "Live streaming";
+
+"logo" = "EffectsAR AI";
+
+"makeup_blusher" = "Blusher";
+
+"makeup_eyebrow" = "Eyebrows";
+
+"makeup_eyelash" = "Eyelashes";
+
+"makeup_eyelight" = "Eyelight";
+
+"makeup_eyeplump" = "Aegyo-sal";
+
+"makeup_eyeshadow" = "Eye";
+
+"makeup_facial" = "Contour";
+
+"makeup_hair" = "Hair Dye";
+
+"makeup_lip" = "Lipstick";
+
+"makeup_pupil" = "Pupil";
+
+"male" = "Male";
+
+"mouth_mask_desc" = "Lip Segmentation";
+
+"nausea" = "Nausea";
+
+"night" = "Night";
+
+"no" = "False";
+
+"no_face_detected" = "Face not detected";
+
+"nod" = "Nodding";
+
+"open_face106_fist" = "Turn on 106 Face Landmarks first";
+
+"open_face280_fist" = "Please turn on 280 Face Landmarks first";
+
+"open_slam_first" = "Please Turn On SLAM First";
+
+"open_mouth" = "Mouth Open";
+
+"pet_face_desc" = "90 Points & Motions";
+
+"pet_left_eye" = "Left eye";
+
+"pet_mouth" = "Mouth";
+
+"pet_right_eye" = "Right Eye";
+
+"pet_type" = "Pet Type";
+
+"pet_type_cat" = "Cat";
+
+"pet_type_dog" = "Dog";
+
+"pitch" = "Pitch";
+
+"poker_face" = "Poker Face";
+
+"pout" = "Pout";
+
+"product" = "BytePlus Effects SDK";
+
+"profile" = "Performance";
+
+"enhance_framerate" = "Enhance Framerate";
+
+"metal_rendering" = "Metal Rendering";
+
+"punching" = "Punch";
+
+"pupil_chujianhui" = "First Sight Grey";
+
+"pupil_huilv" = "Celadon";
+
+"pupil_huitong" = "Greylish";
+
+"pupil_hunxuezong" = "Mixed Brown";
+
+"pupil_huoxing" = "Mars";
+
+"pupil_kekezong" = "Cocoa Brown";
+
+"pupil_mitaofen" = "Peach Pink";
+
+"pupil_shuiguanghei" = "Waterlight Black";
+
+"pupil_xingkonglan" = "Star Blue";
+
+"pupil_xinxinzi" = "Xinxin";
+
+"pupil_yuansheng" = "Original";
+
+"race" = "Skin color";
+
+"raise_eyebrow" = "Eyebrow Raise";
+
+"resolution" = "Resolution";
+
+"roll" = "Roll";
+
+"sad" = "Sad";
+
+"slam_version_plane" = "Plane Detection Enabled";
+
+"slam_world_coord" = "world coordinate";
+
+"slam_feature_points" = "feature points";
+
+"slam_version_region" = "Enable Follow Mode";
+
+"slam_tracking_error" = "tracking error";
+
+"slam_tracking_init" = "tracking init";
+
+"slam_tracking_ok" = "tracking";
+
+"slam_tracking_lost" = "tracking lost";
+
+"scan_qr_code" = "Scan QR code";
+
+"segment_hair_desc" = "Hair Dyeing Algorithm";
+
+"segment_segment_desc" = "Body Segmentation Algorithm";
+
+"portait_matting_desc" = "Background Segmentation Algorithm";
+
+"segment_sky_desc" = "Sky Segmentation Algorithm";
+
+"3D_mask" = "3D Mask";
+
+"setting_face" = "106 Face";
+
+"setting_face_extra" = "280 Face";
+
+"setting_face_mask" = "Face Seg";
+
+"setting_mouth_mask" = "Lip Seg";
+
+"setting_teeth_mask" = "Teeth Seg";
+
+"shake_head" = "Head Shaking";
+
+"similarity" = "Similarity Score";
+
+"skeleton_detect_desc" = "Body Landmarks Tracking";
+
+"skeleton3d_detect_desc" = "3D Limb Tracking";
+
+"sport_assistance_count_suffix" = "Count";
+
+"sport_assistance_deep_squat" = "Squat";
+
+"sport_assistance_exit" = "Exit";
+
+"sport_assistance_fit_outline" = "Align with contour";
+
+"sport_assistance_open_close_jump" = "Jumping Jack";
+
+"sport_assistance_plank" = "Plank";
+
+"sport_assistance_push_up" = "Push-up";
+
+"sport_assistance_recognize_success" = "Recognized";
+
+"sport_assistance_save" = "Save";
+
+"sport_assistance_save_album" = "Image is saved to the album";
+
+"sport_assistance_sit_up" = "Sit-up";
+
+"sport_assistance_start_sport" = "Start Exercise";
+
+"sport_assistance_time_calculate" = "Timer";
+
+"sport_assistance_time_min" = "min";
+
+"sport_assistance_time_sec" = "sec";
+
+"sport_assistance_time_suffix" = "Duration (Seconds)";
+
+"start" = "Start";
+
+"sticker" = "Stickers";
+
+"sticker_2d" = "2D";
+
+"sticker_3d" = "3D";
+
+"sticker_amazing" = "Advanced Stickers";
+
+"sticker_ar_2D" = "2D AR";
+
+"sticker_ar_baozang" = "Ruins of St.Paul";
+
+"sticker_ar_bowuguan" = "Museum AR";
+
+"sticker_ar_door" = "Anywhere Door AR";
+
+"sticker_ar_jumao" = "Cat AR";
+
+"sticker_ar_land" = "Ground AR";
+
+"sticker_ar_landmark" = "Landmark AR";
+
+"sticker_ar_lianhua" = "Lotus AR";
+
+"sticker_ar_meilihao" = "Going Merry AR";
+
+"sticker_ar_pen" = "Paintbrush AR";
+
+"sticker_ar_red_pocket" = "Red Pocket AR";
+
+"sticker_ar_sky" = "Sky AR";
+
+"sticker_ar_sky_land" = "Sky/Ground AR";
+
+"sticker_ar_wanglaoji" = "Can";
+
+"sticker_ar_wulong" = "Dragon Painting AR";
+
+"sticker_ar_xuetang" = "学堂门启";
+
+"sticker_ar_zhuti" = "Cylinder AR";
+
+"sticker_baby_gan" = "Baby Effects";
+
+"sticker_biaobaiqixi" = "Qixi Festival";
+
+"sticker_chitushaonv" = "Cookie Eating Pet";
+
+"sticker_cinamiheti" = "Robot";
+
+"sticker_complex" = "Complex";
+
+"sticker_dianjita" = "Electric Guitar";
+
+"resource_download_progress" = "Download the resource";
+
+"request_license_progress" = "request the license";
+
+"request_license_fail" = "Failed to obtain authorization";
+
+"sticker_eldermakup" = "Elderly Makeup";
+
+"sticker_glasses" = "AR Glasses Try-on ";
+
+"sticker_gongzhumianju" = "Princess Mask";
+
+"sticker_haoqilongbao" = "Curious Baby Dinosaur";
+
+"sticker_hat_beilei" = "Beret";
+
+"sticker_heimaoyanjing" = "Cat with Glasses";
+
+"sticker_huahua" = "Flower";
+
+"sticker_huanletuchiluobo" = "Rabbit eats carrot";
+
+"sticker_huanlongshu" = "Dragon Summon";
+
+"sticker_jiamian" = "Masquerade";
+
+"sticker_jiancedanshenyinyuan" = "Predict marriage status";
+
+"sticker_katongnan" = "Cartoon Boy";
+
+"sticker_katongnv" = "Cartoon Girl";
+
+"sticker_kejiganqueaixiong" = "Robot Bear";
+
+"sticker_kidmakup" = "Kid Makeup";
+
+"sticker_konglongceshi" = "Dinosaur Test";
+
+"sticker_konglongshiguangji" = "Dinosaur Timemachine";
+
+"sticker_kongquegongzhu" = "Peacock Princess";
+
+"sticker_kuailexiaopingzi" = "Happy Little Bottle";
+
+"sticker_landiaoxueying" = "Blue Snowman";
+
+"sticker_lizishengdan" = "Snowy Christmas";
+
+"sticker_luzhihuakuang" = "Recording Frame";
+
+"sticker_lv_black" = "Black LV";
+
+"sticker_makeup" = "Makeup Sticker";
+
+"sticker_maobing" = "Cat God";
+
+"sticker_matting_bg" = "Virtual Background";
+
+"sticker_blur_bg" = "Background Blur";
+
+"sticker_blur_bg_default" = "Default";
+
+"sticker_blur_bg_strong" = "Enhanced Edition";
+
+"sticker_blur_bg_in" = "Adjustable";
+
+"sticker_meihaoxinqing" = "Good Mood";
+
+"sticker_mengguiyaotang" = "Halloween";
+
+"sticker_merry_chrismas_tip" = "Scan specified object for animation";
+
+"sticker_mofabaoshi" = "Magic Stone";
+
+"sticker_nail_xiari" = "Summer Nails";
+
+"sticker_nuannuandoupeng" = "Fire Cloak";
+
+"sticker_only_gan" = "Light Makeup only";
+
+"sticker_only_gan_tips" = "Click on the screen to remove the flash~";
+
+"sticker_placement" = "Space Placement";
+
+"sticker_qianduoduo" = "Money Glasses";
+
+"sticker_qianshuiting" = "Submarine Lite Game";
+
+"sticker_ring_ido" = "mountains";
+
+"sticker_ring_zuanjie" = "Diamond Ring";
+
+"sticker_sd_gan" = "Single & Double Eyelid";
+
+"sticker_sd_gan_tips" = "Blink for a surprise~";
+
+"sticker_shahua" = "Sand Painting";
+
+"sticker_shangke" = "Classes Begin";
+
+"sticker_shengrikuaile" = "Happy Birthday";
+
+"sticker_shenshi" = "Gentleman";
+
+"sticker_shuihaimeigeqiutian" = "Autumn";
+
+"sticker_shuiliandong" = "Waterfall";
+
+"stickers_aixinpiaola" = "Falling Heart";
+
+"sticker_tiaowuhuoji" = "Dancing Turkey";
+
+"sticker_tip_biaobaiqixi" = "Try making a heart gesture";
+
+"sticker_tip_cinamiheti" = "Reach out your hand and blink";
+
+"sticker_tip_dianjita" = "With the cat";
+
+"sticker_tip_haoqilongbao" = "Make an OK gesture";
+
+"sticker_tip_huahua" = "Try raising your eyebrows";
+
+"sticker_tip_huanlongshu" = "Look up first, then open your mouth";
+
+"sticker_tip_jiamian" = "Hide your face to switch masks";
+
+"sticker_tip_jiancedanshenyinyuan" = "Reach out your hand";
+
+"sticker_tip_kejiganqueaixiong" = "Try blinking";
+
+"sticker_tip_konglongceshi" = "Blink and nod";
+
+"sticker_tip_konglongshiguangji" = "Nodding";
+
+"sticker_tip_kongquegongzhu" = "Spread/open your fingers to become a peacock princess";
+
+"sticker_tip_kuailexiaopingzi" = "Use your finger to smear the bottle which makes you the happiest on the screen";
+
+"sticker_tip_landiaoxueying" = "Blue Snowman";
+
+"sticker_tip_lizishengdan" = "Make a heart gesture to summon elk";
+
+"sticker_tip_luzhihuakuang" = "Click on the screen";
+
+"sticker_tip_meihaoxinqing" = "Smile";
+
+"sticker_tip_mengguiyaotang" = "Spread/open your hand";
+
+"sticker_tip_mofabaoshi" = "Spread/open your 5 fingers, then make a fist";
+
+"sticker_tip_nuannuandoupeng" = "Pout";
+
+"sticker_tip_qianduoduo" = "Making a pistol gesture";
+
+"sticker_tip_qianshuiting" = "Move your face to avoid obstacles";
+
+"sticker_tip_shahua" = "Try making a Yeah gesture";
+
+"sticker_tip_shangke" = "Nodding";
+
+"sticker_tip_shuihaimeigeqiutian" = "Open mouth & Sneeze";
+
+"sticker_tip_shuiliandong" = "Hand reaching out, head shaking, head nodding";
+
+"sticker_tip_snap_with_cats" = "Taking videos with cat";
+
+"sticker_tip_tiaowuhuoji" = "Try making a shooting gesture to the screen";
+
+"sticker_tip_tryshoe" = "Try pointing rear camera towards your foot";
+
+"sticker_tip_weilandongrizhuang" = "Try blinking and pouting";
+
+"sticker_tip_xiaribingshuang" = "Show your plam";
+
+"sticker_tip_xiatiandefeng" = "Summer Wind";
+
+"sticker_tip_yanlidoushini" = "Try blinking";
+
+"sticker_tip_zhangshangyouxiji" = "Pout or tap the screen button";
+
+"sticker_tip_zhuluojimaoxian" = "Shake your head and turn into different dinosaurs";
+
+"sticker_tip_zisemeihuo" = "Try nodding and blinking";
+
+"sticker_trybracelet01" = "AR Bracelets Try-on 1";
+
+"sticker_trybracelet02" = "AR Bracelets Try-on 2";
+
+"sticker_tryhat01" = "Peaked Cap";
+
+"sticker_tryshoe" = "AR Shoes Try-on ";
+
+"sticker_tryshoe01" = "AR Shoes Try-on 1";
+
+"sticker_tryshoe02" = "AR Shoes Try-on 2";
+
+"sticker_tryshoe03" = "AR Shoes Try-on 3";
+
+"sticker_trywatch01" = "AR Watches Try-on 1";
+
+"sticker_trywatch02" = "AR Watches Try-on 2";
+
+"sticker_weilandongrizhuang" = "Blue Winter";
+
+"sticker_weixiaoyaotou" = "Smile and shake your head";
+
+"sticker_wochaotian" = "Super Sweet";
+
+"sticker_xiaribingshuang" = "Cool Summer";
+
+"sticker_xiatiandefeng" = "Making a pistol gesture";
+
+"sticker_ya" = "Yeah";
+
+"sticker_yanlidoushini" = "Apple of My Eye";
+
+"sticker_zhangshangyouxiji" = "Game Console";
+
+"sticker_zhaocaimao" = "Lucky Cat";
+
+"sticker_zhuluojimaoxian" = "Jurassic Adventure";
+
+"sticker_zhutouzhuer" = "Piggy";
+
+"sticker_zisemeihuo" = "Purple Charm";
+
+"style_makeup_aidou" = "Idol";
+
+"style_makeup_baicha" = "White Tea";
+
+"style_makeup_baixi" = "Bright White";
+
+"style_makeup_bingchuan" = "Icey Blue";
+
+"style_makeup_cwei" = "Center Star";
+
+"style_makeup_duanmei" = "Broken Eyebrows";
+
+"style_makeup_filter" = "Filter";
+
+"style_makeup_hanxi" = "Korean";
+
+"style_makeup_makeup" = "Makeup";
+
+"style_makeup_meiyouxiaoxiong" = "No Bears";
+
+"style_makeup_nuannan" = "Warm Man";
+
+"style_makeup_oumei" = "European & American";
+
+"style_makeup_qise" = "Energy";
+
+"style_makeup_shensui" = "Deep";
+
+"style_makeup_tianmei" = "Sweet";
+
+"style_makeup_wennuan" = "Warm";
+
+"style_makeup_youya" = "Elegant";
+
+"style_makeup_yuanqi" = "Vivid";
+
+"style_makeup_zhigan" = "Quality";
+
+"sunny" = "Sunny";
+
+"surprise" = "Surprise";
+
+"switch_effect_resource" = "Switch material";
+
+"tab_beauty_body" = "Body Shaping";
+
+"tab_beauty_reshape" = "Face Shaping";
+
+"tab_c1" = "Scene Recognition (C1)";
+
+"tab_c2" = "Scene Recognition (C3)";
+
+"tab_distance" = "Distance Estimation";
+
+"tab_distance_desc" = "Distance from face to the camera";
+
+"tab_face" = "Face";
+
+"tab_face_beautification" = "Beauty";
+
+"tab_face_clustering" = "Face Clustering";
+
+"tab_face_makeup" = "Makeup";
+
+"tab_face_verify" = "Face Verification";
+
+"tab_filter" = "Filters";
+
+"tab_quality" = "Image Quality";
+
+"tab_black_technology" = "Hack";
+
+"black_technology_anti_acne_spot" = "Acne Removal";
+
+"style_makeup_ailingzhuang" = "Eileen-style";
+
+"style_makeup_ailingzhuang_tost" = "Click to remove freckles~";
+
+"style_makeup_dongnanyachunyu" = "SEA-style";
+
+"style_makeup_dongnanyachunyu_tost" = "Click to adjust resolution settings~";
+
+"style_makeup_manhuashaonyu" = "Manga-style";
+
+"style_makeup_zhiyafangzhuang" = "Jiah-style";
+
+"tab_portrait" = "Portrait";
+
+"tab_cuisine" = "Food";
+
+"tab_landscape" = "Landscape";
+
+"tab_vintage"   = "Retro";
+
+"tab_stylization"   = "Stylization";
+
+"filter_lengbaipi" = "Pale";
+"filter_touliang"  = "Lucency";
+"filter_liangju"   = "Bright Orange";
+"filter_hutaomu"   = "Walnut";
+"filter_shenhe"    = "Dark Brown";
+
+
+"filter_degula"     = "Dracula";
+"filter_lise"       = "Maroon";
+"filter_yelin"      = "Coconut Forest";
+"filter_nuanshi"    = "Warm Food";
+"filter_qipaoshui"  = "Sparkling Water";
+
+
+"filter_liaoli"     = "Cuisine";
+"filter_tanshao"    = "Grill";
+"filter_jingdu"     = "Kyoto";
+"filter_haian"      = "Coast";
+"filter_lyuyan"     = "Green";
+
+
+"filter_wanying"    = "Evening Cherry";
+"filter_qingcheng"  = "Green Orange";
+"filter_aizhicheng" = "City of love";
+"filter_kangtaishi" = "CT";
+"filter_aikefa"     = "EK";
+
+"filter_fushi"      = "FJ";
+"filter_heijin"     = "Black Gold";
+"filter_heben"      = "Hepburn";
+
+
+"tab_light" = "Light Recognition";
+
+"tab_light_desc" = "Detection of 7 types of lights";
+
+"tab_student_id_ocr" = "Student number recognition";
+
+"tab_style_makeup" = "Advanced Makeup Set";
+
+"tab_video_cls" = "Video Classification";
+
+"teeth_mask_desc" = "Teeth Segmentation";
+
+"upload_image" = "Upload Image";
+
+"upload_title" = "Upload photo";
+
+"video_cls_no_results" = "No results";
+
+"video_sr" = "Video Super Resolution";
+
+"video_sr_camera_type" = "Camera capture streams only";
+
+"recording_not_allow" = "Recording allowed only when the local video is playing";
+
+"video_sr_ios_version" = "Video Super Resolution currently supports iOS 11 and above";
+
+"min_speed" = "0.1x";
+
+"max_speed" = "1x";
+
+"white" = "White";
+
+"yaw" = "Yaw";
+
+"yellow" = "Yellow";
+
+"yes" = "True";
+
+"metal_open" = "Metal Rendering Enabled";
+"metal_close" = "Metal Rendering Disabled";
+"metal_not_support" = "Device Not Support Metal";
+
+"feature_beauty_pro" = "Beauty & Body Effects Pro";
+"feature_ar_slam" = "AR Slam";
+"feature_ar_object" = "Product AR";
+"feature_ar_landmark" = "Landmark AR";
+"feature_sky_land" = "Sky & Ground AR";
+"feature_ar_ring" = "AR Ring Try-on";
+"feature_ar_hat" = "AR Hat Try-on";
+"feature_ar_glasses" = "AR Glasses Try-on";
+"feature_ar_nail" = "AR Nails Try-on";
+
+"beauty_reshape_face_group" = "Face";
+"beauty_reshape_face_overall"="Lower Width";
+"beauty_reshape_face_cut"="Upper Width";
+"beauty_reshape_face_small"="Size";
+"beauty_reshape_cheek"="Cheek";
+"beauty_reshape_jaw"="Jaw";
+"beauty_reshape_face_vface" = "V Shape";
+"beauty_reshape_chin"="Chin Length";
+"beauty_reshape_forehead"="Hairline";
+"beauty_face_smile_folds"="Laugh Line";
+"beauty_face_size"="Face";
+"beauty_eye_size"="Eye";
+"beauty_reshape_eye_group" = "Eye";
+"beauty_reshape_eye"="Size";
+"beauty_reshape_eye_rotate"="Upturn";
+"beauty_reshape_eye_spacing"="Distance";
+"beauty_reshape_eye_move"="Position";
+"beauty_reshape_eye_height" = "Height";
+"beauty_reshape_eye_width" = "Width";
+"beauty_reshape_eye_lower_eyelid" = "Downturn";
+"beauty_reshape_eye_pupil_size" = "Pupil Size";
+"beauty_reshape_eye_inner_corner" = "Inner Corner";
+"beauty_reshape_eye_outer_corner" = "Outer Corner";
+"beauty_face_double_eyelid"="Eyelids";
+"beauty_face_remove_pouch"="Darkcircle";
+"beauty_face_eye_plump"="Aegyo-sal";
+
+"beauty_reshape_nose_group" = "Nose";
+"beauty_reshape_nose_size" = "Size";
+"beauty_reshape_nose_lean"="Wing";
+"beauty_reshape_nose_long"="Lift";
+"beauty_reshape_nose_bridge" = "Bridge";
+"beauty_reshape_nose_tip" = "Tip";
+"beauty_reshape_nose_root" = "Root";
+
+"beauty_reshape_brow_group" = "Eyebrow";
+"beauty_reshape_brow_size" = "Thickness";
+"beauty_reshape_brow_position" = "Position";
+"beauty_reshape_brow_tile" = "Incline";
+"beauty_reshape_brow_ridge" = "RIdge";
+"beauty_reshape_brow_distance" = "Distance";
+"beauty_reshape_brow_width" = "Length";
+
+"beauty_reshape_mouth_group" = "Mouth";
+"beauty_reshape_mouth_zoom"="Size";
+"beauty_reshape_mouth_smile"="Smile";
+"beauty_reshape_mouth_move"="Position";
+"beauty_reshape_mouth_width" = "Width";
+"beauty_face_whiten_teeth"="Teeth Whitening";
+
+"makeup_eyelight" = "Eyelight";
+"makeup_eyeplump" = "Aegyo-sal";
+
+"blusher_weixun"="Tipsy";
+"blusher_mitao"="Peachy";
+"blusher_shaishang"="Sunburn";
+"blusher_yuanqi" = "Vivid";
+"blusher_qise" = "Tinct";
+"blusher_rixi" = "Japanese";
+"blusher_suzui" = "Hangover";
+"blusher_color_qianfen" = "浅粉";
+"blusher_color_xingren" = "杏仁";
+"blusher_color_shanhu" = "珊瑚";
+"blusher_color_fentao" = "粉桃";
+"blusher_color_qianzi" = "浅紫";
+
+"facial_jingzhi" = "Dedicate";
+"facial_ziran" = "Natural";
+"facial_xiaov" = "V line";
+"facial_fajixian" = "Hairline";
+"facial_gaoguang" = "Highlight";
+
+"eye_hanxi" = "Korean";
+"eye_nvshen" = "Beauty";
+"eye_xingzi" = "Apricot";
+"eye_bingtangshanzha" = "Hawthorn";
+
+"eyebrow_zongse" = "Brown";
+"eyebrow_cuhei" = "Heavy & Black";
+"eyebrow_heise" = "Black";
+"eyebrow_xihei" = "Thin & Black";
+"eyebrow_biaozhun" = "Standard";
+"eyebrow_rongrongmei" = "Furry";
+"eyebrow_yeshengmei" = "Wild";
+"eyebrow_liuyemei" = "Lanceted";
+"eyebrow_color_hei" = "黑";
+"eyebrow_color_zong" = "棕";
+
+"lip_wumian" = "Foggy";
+"lip_yaochun" = "Bitten";
+"lip_yunran" = "Polishing";
+"lip_liangze" = "Flash";
+"lip_color_yuanqi" = "元气";
+"lip_color_rouhefen" = "柔和粉";
+"lip_color_mitao" = "蜜桃";
+"lip_color_huolongguo" = "火龙果";
+"lip_color_caomeibobo" = "草莓啵啵";
+
+"pupil_yuansheng" = "Original";
+"pupil_xinxinzi" = "Xinxin";
+"pupil_huoxing" = "Mars";
+"pupil_huilv" = "Celadon";
+"pupil_huitong" = "Greylish";
+
+"eyelight_ziranguang" = "Natural";
+"eyelight_yueyaguang" = "Moonglow";
+"eyelight_juguangdeng" = "Spotlight";
+
+"eyeplump_suyan" = "Without makeup";
+"eyeplump_chulian" = "First love";
+"eyeplump_manhuayan" = "Cortoon eyes";
+"eyeplump_xiachui" = "Droop";
+"eyeplump_taohua" = "Peach";
+"eyeplump_ziran" = "Natural";
+
+"eyelash_ziran" = "Natural";
+"eyelash_juanqiao" = "Curling";
+"eyelash_chibang" = "Wingy";
+"eyelash_manhua" = "Manga";
+"eyelash_xiachui" = "Drooping";
+"eyelash_color_hei" = "黑";
+"eyelash_color_zong" = "棕";
+
+
+"sticker_placement" = "Space Placement";
+"sticker_ar_pen" = "Paintbrush AR";
+"sticker_ar_door" ="Anywhere Door AR";
+"sticker_ar_2D" ="2D AR";
+"sticker_ar_zhuti" ="Cylinder AR";
+"sticker_ar_landmark" ="Landmark AR";
+"sticker_ar_sky_land" ="Sky/Ground AR";
+"sticker_ar_sky" ="Sky AR";
+"sticker_ar_land" ="Ground AR";
+"sticker_ar_jumao" = "Cat AR";
+"sticker_ar_lianhua" ="Lotus AR";
+"sticker_ar_wulong" ="Dragon Painting AR";
+"sticker_ar_bowuguan" ="Museum AR";
+"sticker_ar_xuetang" ="学堂门启";
+"sticker_ar_wanglaoji" ="Can";
+"sticker_ar_baozang" ="Ruins of St.Paul";
+"sticker_ar_meilihao" ="Going Merry AR";
+"sticker_ar_red_pocket" = "Red Pocket AR";
+"sticker_glasses" = "AR Glasses Try-on ";
+"sticker_tryhat01" = "Peaked Cap";
+"sticker_hat_beilei" = "Beret";
+"sticker_ring_ido" = "mountains";
+"sticker_ring_zuanjie" = "Diamond Ring";
+"sticker_nail_xiari" = "Summer Nails";
+
+"style_makeup_baicha" = "White Tea";
+"style_makeup_meiyouxiaoxiong" = "No Bears";
+"style_makeup_bingchuan" = "Icey Blue";
+
+//运动健身
+"sport_assistance_open_close_jump" = "Jumping Jack";
+"sport_assistance_plank" = "Plank";
+"sport_assistance_push_up" = "Push-up";
+"sport_assistance_sit_up" = "Sit-up";
+"sport_assistance_deep_squat" = "Squat";
+"sport_assistance_lunge" = "Lunge";
+"sport_assistance_lunge_squat" = "Jumping Lunge";
+"sport_assistance_high_run" = "High-Knee Run";
+"sport_assistance_kneeling_pushup" = "Kneeling Push-up";
+"sport_assistance_hip_bridge" = "Hip Bridge";
+"sport_assistance_adjust_device" = "Adjust your phone angle to keep the arrow inside the circle";
+"sport_assistance_time_calculate" = "Timer";
+"sport_assistance_time_min" = "min";
+"sport_assistance_time_sec" = "sec";
+"sport_assistance_start_sport" = "Start Exercise";
+"sport_assistance_fit_outline" = "Align with contour";
+"sport_assistance_recognize_success" = "Recognized";
+"sport_assistance_count_suffix" = "Count";
+"sport_assistance_time_suffix" = "Duration (Seconds)";
+"sport_assistance_exit" = "Exit";
+"sport_assistance_save" = "Save";
+"sport_assistance_save_album" = "Image is saved to the album";
+"threshold" = "Difficulty";
+
+"bracelet_lucky_clover_bracelet" = "Clover Bracelet";
+
+"bracelet_pandora_bracelet" = "Pandora Bracelet";
+
+"demo_use_only" = "For effect demonstration only, welcome to discuss with us";
+
+"earring_agate_earring" = "Agate Earrings";
+
+"earring_ear_stud" = "Ear Stud";
+
+"earring_lv_ear_stud" = "LV Earrings";
+
+"earring_tassel_earring" = "Tassel Earrings";
+
+"feature_ar_earrings" = "AR Earrings Try-on";
+
+"feature_ar_hair_dye" = "AR Hair Dye";
+
+"feature_ar_lipstick" = "AR Lipstick Try-on";
+
+"feature_ar_necklace" = "AR Necklace Try-on";
+
+"feature_ar_purse" = "AR Purse Try-on";
+
+"feature_ar_try_on" = "AR Try-on";
+
+"glasses_black_frame_glasses" = "Black-Rimmed Glasses";
+
+"glasses_black_sunglasses" = "Black Sunglasses";
+
+"glasses_sunglasses" = "Sunglasses";
+
+"hair_dye_black_green" = "Dark Green";
+
+"hair_dye_blue_haze" = "Hazy Blue";
+
+"hair_dye_dark_blue" = "Dark Blue";
+
+"hair_dye_dark_brown" = "Dark Brown";
+
+"hair_dye_foggy_gray" = "White Grey";
+
+"hair_dye_part_a" = "Hair Section A";
+
+"hair_dye_part_b" = "Hair Section B";
+
+"hair_dye_part_c" = "Hair Section C";
+
+"hair_dye_part_d" = "Hair Section D";
+
+"hair_dye_rose_red" = "Rosy Red";
+
+"hat_beret" = "Beret";
+
+"hat_cap" = "Peaked Cap";
+
+"hat_light_blue_pearl_bucket_hat" = "Blue Pearl Hat";
+
+"lipstick_caomeihong" = "Strawberry";
+
+"lipstick_doushase" = "Cameo Brown";
+
+"lipstick_meiguidousha" = "Rosy Brown";
+
+"lipstick_naikameigui" = "Rosy Coffee";
+
+"lipstick_naiyouxiyou" = "Creamy Grapefruit";
+
+"lipstick_nanguase" = "Pumpkin";
+
+"lipstick_rixinaicha" = "Mike Tea";
+
+"lipstick_rouwufen" = "Misty Pink";
+
+"lipstick_shanhuluose" = "Coral";
+
+"lipstick_sijialihong" = "Scarlett Red";
+
+"lipstick_sironghong" = "Velvet Red";
+
+"lipstick_yinghuase" = "Sakura";
+
+"nail_blue" = "Blue";
+
+"nail_brick_red" = "Brick Red";
+
+"nail_burning_red" = "Red";
+
+"nail_milky_white" = "Creamy White";
+
+"nail_pink" = "Pink";
+
+"necklace_china_sweater_chain" = "Porcelain Sweater Chain";
+
+"necklace_choker" = "Necklet";
+
+"necklace_lucky_clover_necklace" = "Clover Necklace";
+
+"necklace_necklace" = "Necklace";
+
+"necklace_pearl_necklace" = "Pearl Necklace";
+
+"purse_black_cross_body_bag" = "Black Messenger Bag";
+
+"purse_lv_cross_body_bag" = "LV Messenger Bag";
+
+"purse_pink_sling_bag" = "Pinky Shoulder Bag";
+
+"ring_assistant_driller" = "Side Diamond";
+
+"ring_hearts_and_arrows_diamond" = "Heart & Arrow";
+
+"ring_master_driller" = "Master Diamond";
+
+"ring_mounting" = "Ring Mount";
+
+"ring_six_pointed_star" = "Hexagram Star";
+
+"ring_six_prongs_diamond" = "Six-claw Diamond Ring";
+
+"shoe_beige_flat_sneaker" = "Creamy Skateboard Shoes";
+
+"shoe_black_sneaker" = "Black Sneakers";
+
+"shoe_flat_sneaker" = "Skateboard Shoes";
+
+"shoe_gray_green_running_shoes" = "Grey&Green Shoes";
+
+"shoe_gray_white_sneaker" = "Gray&White Sneakers";
+
+"shoe_pink_sneaker" = "Pink Sneakers";
+
+"tab_hair_dye_full" = "Hair Dyeing";
+
+"tab_hair_dye_highlight" = "Highlight Dyeing";
+
+"tab_lipstick_glossy" = "Glossy";
+
+"tab_lipstick_matte" = "Matte";
+
+"watch_leather_strap_watch" = "Leather Watch";
+
+"watch_stainless_steel_watch" = "Steel Watch";
+
+"feature_night_enhance" = "Photo Night Scene Augmentation";
+
+"mutil_photo_night_scene_process" = "Photo night scene processing";
+
+"feature_smart_hd" = "Onekey Enhance";
+
+"feature_vida" = "Video Integrated Dimension Assessment";
+
+"image_quality_brightness" = "Brightness";
+
+"image_quality_contrast" = "Contrast";
+
+"image_quality_fade" = "Fading";
+
+"image_quality_highlight" = "Highlight";
+
+"image_quality_light" = "Light perception";
+
+"image_quality_particles" = "Particles";
+
+"image_quality_saturation" = "Saturation";
+
+"image_quality_shadow" = "Shadow";
+
+"image_quality_temperature" = "Temperature";
+
+"image_quality_tonal" = "Tone";
+
+"image_quality_vignetting" = "Vignette";
+
+"sticker_baqibianshen" = "Hype Transform";
+
+"sticker_bianlao" = "Old GAN";
+
+"sticker_dongtaizhaopian" = "Dynamic Photo";
+
+"sticker_duzui" = "Pouting";
+
+"sticker_guangtoutiaozhan" = "Bald Challenge";
+
+"sticker_gufenmeiren" = "Eastern-Traditional";
+
+"sticker_hunshazhao" = "Wedding Dress";
+
+"sticker_jiaxiao" = "Fake Laugh";
+
+"sticker_mengnalisha" = "Mona Lisa";
+
+"sticker_mofashuicai" = "Magic Watercolor";
+
+"sticker_nilingzhuang" = "Counter-age Makeup";
+
+"sticker_qinglvxiezhen" = "Cute Couple";
+
+"sticker_sansuizhao" = "Baby GAN";
+
+"sticker_shenxianyanzhi" = "Celestial Beauty";
+
+"sticker_tip_baqibianshen" = "Raise head to transform";
+
+"sticker_tip_dongtaizhaopian" = "Aim the camera at the photo and try it~";
+
+"sticker_tip_guangtoutiaozhan" = "Blink for a surprise";
+
+"sticker_tip_gufenmeiren" = "Block your face or tap the screen to switch";
+
+"sticker_tip_hunshazhao" = "Blink to take wedding photos~";
+
+"sticker_tip_jiaxiao" = "Touch the screen and perform your inner drama";
+
+"sticker_tip_mengnalisha" = "Nod and transform into Mona Lisa~";
+
+"sticker_tip_mofashuicai" = "Nod or touch screen to transform~";
+
+"sticker_tip_qinglvxiezhen" = "Upload the photo of your loved ones and click on the screen to take a photo!";
+
+"sticker_tip_qinglvxiezhen_faceleave" = "Please face the screen";
+
+"sticker_tip_shenxianyanzhi" = "Try blinking";
+
+"sticker_tip_xinchunhesuizhao" = "Blink or touch the screen to take a New Year's photo~";
+
+"sticker_xinchunhesuizhao" = "Chinese New Year";
+
+"style_makeup_wumei" = "Dark Plum";
+
+"style_makeup_yapizhuang" = "Yuppie Makeup";
+
+"style_makeup_yeshengmeigui" = "Wild Rose";
+
+"style_makeup_feihong" = "Scarlett";
+
+"style_makeup_xuancai" = "Dazzling Look";
+
+"style_makeup_qizhi" = "Temperament";
+
+"style_makeup_fenxia" = "Pink summer";
+
+"style_makeup_heisirong" = "Black velvet";
+
+"style_makeup_insfeng" = "Insta style II";
+
+"style_makeup_mitaofen" = "Peach Pinky III";
+
+"style_makeup_naicha" = "Bubble Tea";
+
+"style_makeup_naixiong" = "Fierce";
+
+"style_makeup_nvsheng" = "Beauty";
+
+"style_makeup_shuiwu" = "Water mist";
+
+"style_makeup_tiansang" = "Sweet sour";
+
+"vida_face" = "Face Aesthetics";
+
+"vida_aes" = "Aesthetics";
+
+"vida_clarity" = "Clarity";
+
+"taint_detect" = "Taint Probability";
+
+ "tab_face_taozhuang" = "Set";
+"downloadModelResourceKey" = "Are you sure you want to use the mobile network to download resources? \n Other fees may be incurred";
+
+"cancel" = "Cancel";
+
+"download" = "Download";
+
+"Loading the resource package" = "Loading the resource package";
+
+"online_resources_error"  = "Failed to load online resources. Use local resources";
+
+"load_finish" = "Loaded";
+
+"sticker_3dStyle" = "3D Stylization";
+
+"tab_face_taozhuang_tips" = "You can perform fine-tuning in Beauty Effects and Face Shaping.";
+
+"resource_download_failed" = "Failed to download the resource. Please try again later.";
+
+"beauty_suit_face_defaut" = "Defaut Face";
+
+"beauty_suit_face_juvenile" = "Baby-like";
+
+"beauty_suit_face_round" = "For round face only";
+
+"beauty_suit_face_square" = "For square face only";
+
+"beauty_suit_face_long" = "For long face only";
+
+"LoadingTheResourcePackage" = "resource loading";

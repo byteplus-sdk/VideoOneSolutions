@@ -1,10 +1,5 @@
-//
-//  MDVideoPlayerController+DebugTool.h
-//  VOLCDemo
-//
-//  Created by wangzhiyong on 2021/12/6.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDVideoPlayerController.h"
 #import <TTSDK/TTVideoEngineDebugTools.h>
 

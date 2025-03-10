@@ -1,14 +1,7 @@
-//
-//  MDEventConst.h
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/9/9.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDEventMessageBus.h"
 #import "MDEventPoster+Private.h"
-
-// 静态string，谁post谁实现。
 #pragma mark ----- task message
 
 extern NSString *const MDTaskPlayCoreTransfer;

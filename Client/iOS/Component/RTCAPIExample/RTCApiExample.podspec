@@ -17,7 +17,10 @@ Pod::Spec.new do |spec|
     'APIExample' => ['RTCAPIExample/*.xcassets',
                      'RTCAPIExample/*.bundle']
   }
-  
+  unless defined?($RTC_SDK)
+    raise "Error: Variable $RTC_SDK is not defined in the podspec file."
+  end
+
   spec.dependency $RTC_SDK
   spec.dependency 'SnapKit'
   spec.dependency 'IQKeyboardManagerSwift'

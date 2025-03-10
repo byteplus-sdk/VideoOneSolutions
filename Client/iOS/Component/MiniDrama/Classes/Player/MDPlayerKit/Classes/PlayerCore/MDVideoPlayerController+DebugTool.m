@@ -1,10 +1,5 @@
-//
-//  MDVideoPlayerController+DebugTool.m
-//  VOLCDemo
-//
-//  Created by wangzhiyong on 2021/12/6.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDVideoPlayerController+DebugTool.h"
 #import <objc/runtime.h>
 #import <RangersAppLog/BDAutoTrack.h>
@@ -37,7 +32,6 @@
 }
 
 + (NSString *)deviceID {
-    // 这里需要业务填写自己的 Appid
     NSString *appId = @"";
     return appId.length > 0 ? [[BDAutoTrack trackWithAppID:appId] rangersDeviceID] : @"请查看源码，替换 Appid";
 }

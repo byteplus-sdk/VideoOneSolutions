@@ -1,8 +1,5 @@
-//
-//  MiniDramaDetailPlayerModuleLoader.m
-//  ModularPlayerDemo
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaDetailPlayerModuleLoader.h"
 #import "MDPlayerLoadingModule.h"
 #import "MiniDramaPlayButtonModule.h"

@@ -1,8 +1,5 @@
-//
-//  MDLoopScatterPerform.m
-//  MDPlayerKit.common
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDLoopScatterPerform.h"
 
 @interface MDLoopScatterPerform()

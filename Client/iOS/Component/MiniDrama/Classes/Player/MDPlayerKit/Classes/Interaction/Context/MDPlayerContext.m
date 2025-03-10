@@ -1,8 +1,5 @@
-//
-//  MDPlayerContext.m
-//  MDPlayerKit
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPlayerContext.h"
 #import "MDPlayerContextItem.h"
 #import "MDPlayerContextStorage.h"
@@ -167,7 +164,6 @@ id MDPlayerObserveKeysFunction(MDPlayerContext *context, NSArray<NSString *> *ke
 }
 
 - (void)recordObserver:(id)observer withHandler:(MDPlayerContextItemHandler *)handler {
-    //允许observe为空，不为空，则把observer和handler建立映射
     if (observer) {
         BTD_MUTEX_LOCK(self->_mutexLock);
         NSPointerArray *handlerArray = [self.observerMap objectForKey:observer];

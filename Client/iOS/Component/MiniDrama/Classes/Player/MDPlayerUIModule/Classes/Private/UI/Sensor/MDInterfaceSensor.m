@@ -1,10 +1,5 @@
-//
-//  MDInterfaceSensor.m
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/9/25.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDInterfaceSensor.h"
 #import "MDInterfaceProtocol.h"
 #import "MDInterfaceElementDescription.h"
@@ -214,7 +209,6 @@ static const CGFloat lockTimeinterval = 5.0;
     if (elementDes) {
         NSString *event = elementDes.elementAction(self);
         if (event && [[MDEventPoster currentPoster] screenIsLocking] && ![event isEqualToString:MDUIEventClearScreen]) {
-            // 感应层在锁屏情况下，屏蔽除清屏以外的所有事件发送
             return;
         }
         if (elementDes.elementNotify) {

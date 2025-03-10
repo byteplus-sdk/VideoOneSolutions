@@ -1,11 +1,5 @@
-//
-//  MDVideoPlayerController.h
-//  VOLCDemo
-//
-//  Created by wangzhiyong on 2021/11/11.
-//  Copyright © 2021 ByteDance. All rights reserved.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 @import UIKit;
 #import "MDVideoPlayback.h"
 #import "MDPlayerUIModule.h"

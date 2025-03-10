@@ -1,7 +1,5 @@
-//
-//  NSObject+BTDAdditions.h
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #else

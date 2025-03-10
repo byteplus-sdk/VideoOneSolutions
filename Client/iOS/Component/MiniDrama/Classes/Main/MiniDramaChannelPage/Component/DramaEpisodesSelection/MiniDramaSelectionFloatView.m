@@ -1,10 +1,5 @@
-//
-//  MiniDramaSelectionFloatView.m
-//  MiniDrama
-//
-//  Created by ByteDance on 2024/12/2.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaSelectionFloatView.h"
 #import "MiniDramaSelectionViewController.h"
 #import "MiniDramaSelectionCell.h"

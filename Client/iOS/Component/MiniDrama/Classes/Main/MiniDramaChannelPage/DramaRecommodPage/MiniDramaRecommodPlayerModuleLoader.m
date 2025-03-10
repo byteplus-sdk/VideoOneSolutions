@@ -1,10 +1,5 @@
-//
-//  MiniDramaRecommodPlayerModuleLoader.m
-//  MDPlayModule
-//
-//  Created by zyw on 2024/7/16.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaRecommodPlayerModuleLoader.h"
 #import "MDPlayerLoadingModule.h"
 #import "MiniDramaPlayButtonModule.h"

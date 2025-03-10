@@ -1,10 +1,5 @@
-//
-//  TTLiveRoomCellController.m
-//  TTProtoTypeRoom
-//
-//  Created by ByteDance on 2024/9/11.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "TTLiveRoomCellController.h"
 #import "LiveHostAvatarView.h"
 #import "LivePeopleNumView.h"
@@ -311,7 +306,6 @@
     } else if (itemButton.currentState == LiveRoomItemButtonStateGift) {
         [self.sendGifgComponent showWithRoomID:self.liveModel.roomId];
     } else if (itemButton.currentState == LiveRoomItemButtonStateLike) {
-        // 点赞
         [self loadDataWithSendLikeMessage];
     }
 }

@@ -1,10 +1,5 @@
-//
-//  MiniDramaPayViewController.m
-//  Pods
-//
-//  Created by zyw on 2024/7/23.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaPayViewController.h"
 #import <Masonry/Masonry.h>
 #import <ToolKit/ToolKit.h>

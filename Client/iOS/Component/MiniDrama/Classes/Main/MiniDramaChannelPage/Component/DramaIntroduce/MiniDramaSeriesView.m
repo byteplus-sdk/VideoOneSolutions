@@ -1,8 +1,5 @@
-//
-//  MiniDramaSeriesView.m
-//  JSONModel
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaSeriesView.h"
 #import <Masonry/Masonry.h>
 #import <ToolKit/UIImage+Bundle.h>

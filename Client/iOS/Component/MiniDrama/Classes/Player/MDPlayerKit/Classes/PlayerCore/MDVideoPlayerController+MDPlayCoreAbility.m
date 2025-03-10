@@ -1,10 +1,5 @@
-//
-//  MDVideoPlayerController+MDPlayCoreAbility.m
-//  VOLCDemo
-//
-//  Created by real on 2022/1/11.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDVideoPlayerController+MDPlayCoreAbility.h"
 #import "MDPlayerUIModule.h"
 #import <ToolKit/ToolKit.h>

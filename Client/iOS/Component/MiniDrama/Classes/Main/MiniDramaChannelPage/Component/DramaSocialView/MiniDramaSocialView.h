@@ -1,10 +1,5 @@
-//
-//  MiniDramaSocialView.h
-//  MiniDrama
-//
-//  Created by ByteDance on 2024/11/19.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "MiniDramaBaseVideoModel.h"

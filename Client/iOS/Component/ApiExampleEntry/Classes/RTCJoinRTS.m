@@ -1,10 +1,5 @@
-//
-//  RTCJoinRTS.m
-//  App
-//
-//  Created by ByteDance on 2024/6/7.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "RTCJoinRTS.h"
 #import <ToolKit/ToolKit.h>
 #import <ToolKit/Localizator.h>

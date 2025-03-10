@@ -1,11 +1,5 @@
-//
-//  MiniDramaPageViewController.m
-//  VOLCDemo
-//
-//  Created by real on 2022/7/12.
-//  Copyright © 2022 ByteDance. All rights reserved.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPageViewController.h"
 #import <objc/message.h>
 #import <ToolKit/ToolKit.h>

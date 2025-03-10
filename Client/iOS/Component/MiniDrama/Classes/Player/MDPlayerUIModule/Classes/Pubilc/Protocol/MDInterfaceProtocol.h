@@ -1,14 +1,5 @@
-//
-//  MDInterfaceProtocol.h
-//  Pods
-//
-//  Created by real on 2021/9/10.
-//
-
-/**
- * This file helps you to give a scene detail elements.
- * The protocol 'MDInterfaceElementDataSource' describes all the elements of the scene you would create.
- */
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 @protocol MDInterfaceElementDescription;
 
 @protocol MDInterfaceElementDataSource <NSObject>

@@ -225,8 +225,6 @@
     }));
 }
 - (void)updateAudioSubscribeWithChorusStatus:(ChorusStatus)status {
-    
-    // 恢复订阅所有人音视频流
     NSMutableSet<NSString *> *set = [NSMutableSet set];
     [set addObject:[ChorusDataManager shared].roomModel.hostUid];
     if ([ChorusDataManager shared].leadSingerUserModel) {

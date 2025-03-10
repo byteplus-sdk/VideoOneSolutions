@@ -1,9 +1,5 @@
-//
-//  MediaLiveVoice.m
-//  MediaLive
-//
-//  Created by ByteDance on 2024/5/31.
-//
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <ToolKit/ToolKit.h>
 #import <ToolKit/Localizator.h>
 #import "MediaLiveVoice.h"

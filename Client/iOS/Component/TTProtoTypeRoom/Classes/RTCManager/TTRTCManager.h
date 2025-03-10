@@ -1,10 +1,5 @@
-//
-//  TTRTCManager.h
-//  AFNetworking
-//
-//  Created by ByteDance on 2024/9/12.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 #import <ToolKit/BaseRTCManager.h>
 

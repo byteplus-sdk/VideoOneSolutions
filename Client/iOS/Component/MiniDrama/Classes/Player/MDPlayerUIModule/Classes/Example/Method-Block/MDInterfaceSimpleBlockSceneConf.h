@@ -1,12 +1,2 @@
-////
-////  MDInterfaceLongVideoScene.h
-////  MDPlayerUIModule
-////
-////  Created by real on 2021/9/24.
-////
-//
-//#import "MDInterfaceProtocol.h"
-//
-//@interface MDInterfaceSimpleBlockSceneConf : NSObject <MDInterfaceElementDataSource>
-//
-//@end
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0

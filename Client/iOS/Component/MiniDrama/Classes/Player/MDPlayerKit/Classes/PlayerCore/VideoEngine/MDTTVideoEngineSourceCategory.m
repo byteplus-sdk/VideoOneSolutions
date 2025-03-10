@@ -1,11 +1,5 @@
-//
-//  MDTTVideoEngineSourceCategory.m
-//  VOLCDemo
-//
-//  Created by real on 2022/8/22.
-//  Copyright © 2022 ByteDance. All rights reserved.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDTTVideoEngineSourceCategory.h"
 #import <objc/message.h>
 

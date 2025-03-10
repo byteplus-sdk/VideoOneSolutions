@@ -1,8 +1,5 @@
-//
-//  MDPlayerViewService.m
-//  MDPlayerKit
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPlayerViewService.h"
 #import "BTDMacros.h"
 #import "MDPlayerModuleManager.h"

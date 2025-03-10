@@ -1,10 +1,5 @@
-//
-//  MDInterfacePlayElement.m
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/12/28.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDInterfacePlayElement.h"
 #import "MDPlayerUIModule.h"
 #import <Masonry/Masonry.h>

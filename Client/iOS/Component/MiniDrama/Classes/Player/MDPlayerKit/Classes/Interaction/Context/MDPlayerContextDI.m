@@ -1,8 +1,5 @@
-//
-//  MDPlayerContextDI.m
-//  MDPlayerKit
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPlayerContextDI.h"
 #import "MDPlayerContextStorage.h"
 #import "BTDMacros.h"

@@ -1,7 +1,5 @@
-//
-//  UIView+BTDAdditions.m
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "UIView+BTDAdditions.h"
 #import "NSObject+BTDAdditions.h"
 #import <objc/runtime.h>
@@ -186,7 +184,6 @@
 }
 
 - (UIEdgeInsets)btd_safeAreaInsets {
-    // iOS 13 SDK禁止访问statusBar的私有方法，直接使用系统的替代
     if (@available(iOS 13.0, *)) {
         return self.safeAreaInsets;
     }

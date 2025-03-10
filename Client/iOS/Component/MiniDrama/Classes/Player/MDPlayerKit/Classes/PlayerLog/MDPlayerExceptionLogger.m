@@ -1,12 +1,7 @@
-//
-//  MDPlayerKitLogger.m
-//  MDPlayerKit
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPlayerExceptionLogger.h"
 #import "BTDMacros.h"
-
-//异常上报的前缀
 static NSString *const ExceptionLogPrefix = @"MDPlayer_";
 
 @interface MDPlayerExceptionLogger ()

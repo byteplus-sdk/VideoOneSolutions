@@ -1,10 +1,5 @@
-//
-//  MDVideoPlayerController+Observer.m
-//  VOLCDemo
-//
-//  Created by wangzhiyong on 2021/12/5.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDVideoPlayerController+Observer.h"
 #import "MDVideoPlayerController+Tips.h"
 #import <Reachability/Reachability.h>
@@ -21,8 +16,6 @@
     [self removeObserver];
     [[Reachability reachabilityForInternetConnection] startNotifier];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(netStatusChanged) name:kReachabilityChangedNotification object:nil];
-	
-//	 画中画场景 不再控制后台暂停
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationEnterBackground) name: UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActiveNotification) name: UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willResignActiveNotification) name: UIApplicationWillResignActiveNotification object:nil];

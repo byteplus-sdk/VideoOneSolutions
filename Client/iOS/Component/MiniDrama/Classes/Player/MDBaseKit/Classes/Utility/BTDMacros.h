@@ -1,8 +1,5 @@
-//
-//  BTDMacros.h
-//  Pods
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <pthread/pthread.h>

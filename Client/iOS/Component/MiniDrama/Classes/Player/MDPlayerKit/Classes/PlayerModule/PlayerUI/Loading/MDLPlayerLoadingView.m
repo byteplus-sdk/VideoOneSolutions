@@ -1,7 +1,5 @@
-//
-//  MDLPlayerLoadingView.m
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDLPlayerLoadingView.h"
 #import "MDActivityIndicator.h"
 #import "NSTimer+BTDAdditions.h"
@@ -9,18 +7,15 @@
 #import <Masonry/Masonry.h>
 #import "MDPlayerUtility.h"
 
-static const CGFloat kFullScreenTipLoadingViewH = 32; // 全屏提示框大小
-static const CGFloat kInLineTipLoadingViewH = 28; //半屏提示框大小
-static const CGFloat kLabelFont = 11.0; // 文本字体大小
-static const CGFloat kLabelTopOffset = 8.0; //文本离转圈上间距
-static const NSTimeInterval kRefreshNetSpeedTimeInterval = 1;//刷新网速时间间隔，默认1s
+static const CGFloat kFullScreenTipLoadingViewH = 32;
+static const CGFloat kInLineTipLoadingViewH = 28;
+static const CGFloat kLabelFont = 11.0;
+static const CGFloat kLabelTopOffset = 8.0;
+static const NSTimeInterval kRefreshNetSpeedTimeInterval = 1;
 
 @interface MDLPlayerLoadingView ()
-/// 转圈动画视图
 @property (nonatomic, strong) MDActivityIndicator *loadingView;
-/// 网速提示Label
 @property (nonatomic, strong) UILabel *loadingTip;
-/// 刷新loading显示网速的定时器
 @property (nonatomic, strong) NSTimer *refreshNetSpeedTimer;
 
 @property (nonatomic, assign) CGFloat offsetCenterY;
@@ -117,9 +112,6 @@ static const NSTimeInterval kRefreshNetSpeedTimeInterval = 1;//刷新网速时�
         [self _buildConstraints];
     }
 }
-
-/// 显示或隐藏网速视图
-/// @param show 显示 / 隐藏
 - (void)showLoadingNetWorkSpeed:(BOOL)show{
     self.loadingView.hidden = !show;
     if (show) {
@@ -129,7 +121,6 @@ static const NSTimeInterval kRefreshNetSpeedTimeInterval = 1;//刷新网速时�
         [self stopRefreshNetSpeedTimer];
     }
 }
-/// 配置网速
 - (void)configLoadingNetworkSpeed {
     if ([self.dataSource respondsToSelector:@selector(netWorkSpeedInfo)]) {
         [self setLoadingText:self.dataSource.netWorkSpeedInfo];

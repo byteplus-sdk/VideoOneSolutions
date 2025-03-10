@@ -1,10 +1,5 @@
-//
-//  MiniDramaSpeedTipView.h
-//  MDPlayModule
-//
-//  Created by zyw on 2024/7/16.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

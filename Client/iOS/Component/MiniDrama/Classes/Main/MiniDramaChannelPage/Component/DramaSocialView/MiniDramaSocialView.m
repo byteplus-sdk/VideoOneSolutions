@@ -1,10 +1,5 @@
-//
-//  MiniDramaSocialView.m
-//  MiniDrama
-//
-//  Created by ByteDance on 2024/11/19.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaSocialView.h"
 #import "VEInterfaceDiggButton.h"
 #import "VEInterfaceSocialButton.h"
@@ -118,7 +113,6 @@ typedef NS_ENUM(NSUInteger, MDFunctionType) {
 }
 
 - (void)showCommentAction {
-    // 展示评论页面
     MiniDramaCommentView *commentView = [[MiniDramaCommentView alloc] initWithFrame:[UIScreen mainScreen].bounds axis:self.axis];
     commentView.videoModel = self.videoModel;
     [commentView showInView:[DeviceInforTool topViewController].view];

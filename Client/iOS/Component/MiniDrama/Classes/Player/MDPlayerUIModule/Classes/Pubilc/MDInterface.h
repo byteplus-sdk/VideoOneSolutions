@@ -1,17 +1,5 @@
-//
-//  MDInterface.h
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/9/18.
-//
-
-/**
- * This Class gives you a uncomplicated way to build a play control view.
- * To achieve this goal，you should provide a instance which implement protocol 'MDPlayCoreAbilityProtocol' and 'MDInterfaceElementDataSource'.
- * The protocol 'MDPlayCoreAbilityProtocol' describes the play ability of the player you choose.
- * The protocol 'MDInterfaceElementDataSource' describes the play control UI's detail you want.
- * However, this is a universal tool, so we have to ask for the screen rotation and page back method of your global logic by the protocol 'MDInterfaceDelegate'.
- */
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 @protocol MDPlayCoreAbilityProtocol;
 @protocol MDInterfaceElementDataSource;
 

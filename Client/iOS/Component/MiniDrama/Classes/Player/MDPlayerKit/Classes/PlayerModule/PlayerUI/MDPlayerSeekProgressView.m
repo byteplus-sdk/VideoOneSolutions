@@ -1,8 +1,5 @@
-//
-//  MDPlayerSeekProgressView.m
-//  MDPlayModule
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPlayerSeekProgressView.h"
 #import <Masonry/Masonry.h>
 

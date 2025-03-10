@@ -1,10 +1,5 @@
-//
-//  TTAvatarView.m
-//  TTProtoTypeRoom
-//
-//  Created by ByteDance on 2024/9/20.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "TTAvatarView.h"
 #import "UIImage+Bundle.h"
 #import "UIColor+String.h"

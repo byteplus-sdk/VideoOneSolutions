@@ -1,8 +1,5 @@
-//
-//  MiniDramaSelectionViewController.m
-//  MDPlayModule
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaSelectionViewController.h"
 #import "MiniDramaSelectionCell.h"
 #import <Masonry/Masonry.h>

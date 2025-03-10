@@ -1,20 +1,5 @@
-//
-//  MDPlayProtocol.h
-//  Pods
-//
-//  Created by real on 2021/9/14.
-//
-
-/**
- * This file helps you to give a role class make me know the ability of your player.
- * The protocol 'MDPlayCoreAbilityProtocol' describes the player active ability.
- * The protocol 'MDPlayCoreCallBackAbilityProtocol' lists the player callback methods.
- */
-
-/**
- * Player state enum, you should transfer player origin state to this state.
- * If player could not matching all the state, you can give 'MDPlaybackStateUnknown' or 'NSNotFound' for backup.
- */
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 typedef enum : NSUInteger {
     MDPlaybackStateUnknown,
     MDPlaybackStateError,

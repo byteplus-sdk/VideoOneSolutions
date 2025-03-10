@@ -1,3 +1,5 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "VodSingleFunction.h"
 #import <TTSDK/TTVideoEngine.h>
 #import <AppConfig/BuildConfig.h>

@@ -1,10 +1,5 @@
-//
-//  MiniDramaCarouselCell.h
-//  Pods
-//
-//  Created by ByteDance on 2024/11/15.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaCollectionViewBaseCell.h"
 
 @interface MiniDramaCarouselCell : MiniDramaCollectionViewBaseCell

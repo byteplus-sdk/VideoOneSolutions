@@ -1,10 +1,5 @@
-//
-//  MDInterfaceSelectionMenu.m
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/10/09.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDInterfaceSelectionMenu.h"
 #import "MDEventConst.h"
 #import <Masonry/Masonry.h>

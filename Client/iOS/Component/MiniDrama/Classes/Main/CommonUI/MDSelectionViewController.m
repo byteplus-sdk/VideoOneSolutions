@@ -1,8 +1,5 @@
-//
-//  MDSelectionViewController.m
-//  VOLCDemo
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDSelectionViewController.h"
 
 static const NSInteger MXPreloadViewControllers = 1;
@@ -119,7 +116,6 @@ static void *KVOContext_MDSelectionViewController = &KVOContext_MDSelectionViewC
     if (self.currentPage != lastPage) {
         [self removeChildViewControllerOfPage:lastPage];
     }
-    // UIEdgeInsetsInsetRect,用于在给定的 CGRect 基础上应用 UIEdgeInsets 的偏移
     CGRect visibleBounds = UIEdgeInsetsInsetRect(self.scrollView.bounds, self.scrollView.contentInset);
     visibleBounds.origin.x = CGRectGetWidth(visibleBounds) * page;
     visibleBounds.origin.y = 0;

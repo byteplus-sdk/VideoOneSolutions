@@ -1,8 +1,5 @@
-//
-//  UIColor+RGB.m
-//  MDPlayModule
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "UIColor+RGB.h"
 
 @implementation UIColor (RGB)
