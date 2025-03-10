@@ -4,6 +4,7 @@
 package com.vertcdemo.solution.ktv.event;
 
 import com.google.gson.annotations.SerializedName;
+import com.vertcdemo.core.annotation.Event;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
 
 public class AudienceChangedEvent {
@@ -22,13 +23,15 @@ public class AudienceChangedEvent {
                 '}';
     }
 
-    public static class Join extends AudienceChangedEvent {
+    @Event
+    public static final class Join extends AudienceChangedEvent {
         public Join() {
             isJoin = true;
         }
     }
 
-    public static class Leave extends AudienceChangedEvent {
+    @Event
+    public static final class Leave extends AudienceChangedEvent {
         public Leave() {
             isJoin = false;
         }

@@ -9,7 +9,7 @@ import static com.vertcdemo.solution.ktv.feature.KTVActivity.EXTRA_REFERRER;
 import static com.vertcdemo.solution.ktv.feature.KTVActivity.EXTRA_ROOM_INFO;
 import static com.vertcdemo.solution.ktv.feature.KTVActivity.EXTRA_RTC_TOKEN;
 import static com.vertcdemo.solution.ktv.feature.KTVActivity.EXTRA_USER_INFO;
-import static com.vertcdemo.solution.ktv.utils.ViewModelProviderHelper.navGraphViewModelProvider;
+import static com.vertcdemo.core.utils.ViewModelProviderHelper.navGraphViewModelProvider;
 
 import android.Manifest;
 import android.app.Application;
@@ -52,6 +52,7 @@ import com.vertcdemo.core.event.JoinRTSRoomErrorEvent;
 import com.vertcdemo.core.event.RTCReconnectToRoomEvent;
 import com.vertcdemo.core.event.RTSLogoutEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
+import com.vertcdemo.core.http.bean.RTCAppInfo;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.solution.ktv.R;
 import com.vertcdemo.solution.ktv.bean.PickedSongInfo;
@@ -87,6 +88,7 @@ import com.vertcdemo.solution.ktv.feature.main.state.UserRoleState;
 import com.vertcdemo.solution.ktv.feature.main.viewmodel.KTVRoomViewModel;
 import com.vertcdemo.solution.ktv.http.KTVService;
 import com.vertcdemo.solution.ktv.lrc.LrcView;
+import com.vertcdemo.solution.ktv.utils.RTCEngineViewModel;
 import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
@@ -136,6 +138,10 @@ public class KTVRoomFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        RTCEngineViewModel.inject(this,
+                R.id.ktv_room_graph, RTCAppInfo.require(requireActivity()));
+
         mViewModel = navGraphViewModelProvider(this, R.id.ktv_room_graph).get(KTVRoomViewModel.class);
 
         Bundle arguments = requireArguments();

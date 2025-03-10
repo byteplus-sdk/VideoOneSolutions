@@ -29,7 +29,8 @@ import com.vertcdemo.core.chat.gift.GiftAnimateHelper
 import com.vertcdemo.core.utils.DebounceClickListener
 import com.videoone.avatars.Avatars
 
-class LiveFeedAdapter : RecyclerView.Adapter<LiveFeedHolder>() {
+internal class LiveFeedAdapter(private val controller: LiveController) :
+    RecyclerView.Adapter<LiveFeedHolder>() {
 
     private var items: List<LiveFeedItem> = emptyList()
 
@@ -76,6 +77,11 @@ class LiveFeedAdapter : RecyclerView.Adapter<LiveFeedHolder>() {
     }
 
     fun getItem(position: Int): LiveFeedItem = items[position]
+
+    override fun onViewDetachedFromWindow(holder: LiveFeedHolder) {
+        val player = holder.unbindPlayer() ?: return
+        controller.recycle(player)
+    }
 }
 
 class LiveFeedHolder(
@@ -92,9 +98,11 @@ class LiveFeedHolder(
         this.player = player
     }
 
-    override fun unbindPlayer() {
-        this.player?.detach()
+    override fun unbindPlayer(): LivePlayer? {
+        val player = this.player ?: return null
         this.player = null
+        player.detach()
+        return player
     }
 
     val roomId: String

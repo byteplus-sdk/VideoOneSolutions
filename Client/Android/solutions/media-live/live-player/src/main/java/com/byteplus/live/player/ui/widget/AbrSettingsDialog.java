@@ -168,9 +168,8 @@ public class AbrSettingsDialog extends DialogFragment {
     }
 
     void scanUrl() {
-        IntentIntegrator integrator = new IntentIntegrator(requireActivity());
-        integrator.setOrientationLocked(false);
-        integrator.createScanIntent();
+        IntentIntegrator integrator = new IntentIntegrator(requireActivity())
+                .setOrientationLocked(false);
         scanLauncher.launch(integrator.createScanIntent());
     }
 

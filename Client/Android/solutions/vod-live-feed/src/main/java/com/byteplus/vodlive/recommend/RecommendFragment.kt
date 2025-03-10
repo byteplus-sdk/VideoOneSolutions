@@ -6,6 +6,7 @@ package com.byteplus.vodlive.recommend
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -31,6 +32,8 @@ import kotlinx.coroutines.launch
 class RecommendFragment : Fragment(R.layout.fragment_recommend) {
     private val viewModel: RecommendViewModel by viewModels()
 
+    private var playType = PlayType.NONE
+
     private val playbackController = PlaybackController()
 
     private val liveController by lazy { LiveController(requireContext(), PlayerScene.RECOMMEND) }
@@ -40,8 +43,18 @@ class RecommendFragment : Fragment(R.layout.fragment_recommend) {
     private val lifecycleObserver = LifecycleEventObserver { source, event ->
         liveController.onStateChanged(source, event)
         when (event) {
-            Lifecycle.Event.ON_START -> resumePlay()
-            Lifecycle.Event.ON_STOP -> pausePlay()
+            Lifecycle.Event.ON_START -> {
+                if (playType == PlayType.VOD) {
+                    resumePlay()
+                }
+            }
+
+            Lifecycle.Event.ON_STOP -> {
+                if (playType == PlayType.VOD) {
+                    pausePlay()
+                }
+            }
+
             else -> {}
         }
     }
@@ -53,11 +66,15 @@ class RecommendFragment : Fragment(R.layout.fragment_recommend) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        WindowCompat.getInsetsController(
+            requireActivity().window, view
+        ).isAppearanceLightStatusBars = false
+
         val binding = FragmentRecommendBinding.bind(view).also {
             this.binding = it
         }
 
-        val adapter = RecommendAdapter()
+        val adapter = RecommendAdapter(liveController)
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -67,6 +84,7 @@ class RecommendFragment : Fragment(R.layout.fragment_recommend) {
         }
 
         binding.back.setOnClickListener {
+            @Suppress("DEPRECATION")
             requireActivity().onBackPressed()
         }
 
@@ -75,6 +93,7 @@ class RecommendFragment : Fragment(R.layout.fragment_recommend) {
         }
 
         binding.viewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
+        binding.viewPager.offscreenPageLimit = 1
         binding.viewPager.adapter = adapter
 
         // Handle load more
@@ -116,12 +135,14 @@ class RecommendFragment : Fragment(R.layout.fragment_recommend) {
 
                 when (val holder = position.findViewHolder<RecommendViewHolder>()) {
                     is LiveViewHolder -> {
+                        playType = PlayType.LIVE
                         playbackController.stopPlayback()
 
                         liveController.select(holder, adapter.getItem(position) as LiveFeedItem)
                     }
 
                     is VodViewHolder -> {
+                        playType = PlayType.VOD
                         liveController.stop()
 
                         togglePlayback(position)
@@ -247,5 +268,9 @@ class RecommendFragment : Fragment(R.layout.fragment_recommend) {
          * Enable this to resume play when onResume even if use paused
          */
         private const val FORCE_RESUME_PLAY = true
+
+        enum class PlayType {
+            LIVE, VOD, NONE
+        }
     }
 }

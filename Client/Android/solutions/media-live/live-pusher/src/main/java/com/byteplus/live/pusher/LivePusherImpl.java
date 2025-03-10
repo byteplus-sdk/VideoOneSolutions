@@ -101,6 +101,7 @@ import com.ss.avframework.live.VeLivePusher;
 import com.ss.avframework.live.VeLivePusherConfiguration;
 import com.ss.avframework.live.VeLivePusherDef;
 import com.ss.avframework.live.VeLivePusherObserver;
+import com.ss.avframework.live.VeLiveVideoEffectManager;
 import com.ss.avframework.live.VeLiveVideoFrame;
 
 import org.json.JSONObject;
@@ -161,7 +162,7 @@ public class LivePusherImpl implements LivePusher,
     }
 
     @Override
-    public Object getEffectHandler() {
+    public VeLiveVideoEffectManager getEffectHandler() {
         return mLivePusher.getVideoEffectManager();
     }
 

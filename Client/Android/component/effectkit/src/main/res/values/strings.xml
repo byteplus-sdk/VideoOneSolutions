@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="close">Turn off</string>
+    <string name="beauty_face_whiten">Toning</string>
+    <string name="beauty_face_smooth">Buffing</string>
+    <string name="beauty_reshape_face_group">Face</string>
+    <string name="beauty_reshape_eye_group">Eye</string>
+    <string name="beauty_face_sharpen">Sharpen</string>
+    <string name="beauty_face_clarity">Clarity</string>
+    <string name="filter_normal">Off</string>
+    <string name="filter_lianaichaotian">Sweet Love</string>
+    <string name="filter_ziran">Natural</string>
+    <string name="filter_hongzong">Red Brown</string>
+    <string name="filter_musi">Mousse</string>
+    <string name="filter_cream">Creamy</string>
+    <string name="filter_lolita">Doll</string>
+    <string name="filter_qianxia">Early Summer</string>
+    <string name="filter_mitao">Peach</string>
+    <string name="sticker_heimaoyanjing">Cat with Glasses</string>
+    <string name="sticker_huahua">Flower</string>
+    <string name="sticker_aixinpiaola">Falling Heart</string>
+    <string name="style_makeup_aidou">Idol</string>
+    <string name="style_makeup_qise">Energy</string>
+    <string name="tab_face_beautification">Beauty</string>
+    <string name="tab_filter">Filters</string>
+    <string name="tab_sticker">Stickers</string>
+</resources>

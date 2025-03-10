@@ -36,9 +36,8 @@ import com.ss.bytertc.engine.data.StreamSycnInfoConfig;
 import com.ss.bytertc.engine.type.AudioProfileType;
 import com.ss.bytertc.engine.type.AudioScenarioType;
 import com.ss.bytertc.engine.type.ChannelProfile;
-import com.ss.bytertc.engine.type.LocalStreamStats;
 import com.ss.bytertc.engine.type.MediaStreamType;
-import com.ss.bytertc.engine.type.RemoteStreamStats;
+import com.ss.bytertc.engine.type.NetworkQualityStats;
 import com.ss.bytertc.engine.type.VoiceReverbType;
 import com.vertcdemo.core.SolutionDataManager;
 import com.vertcdemo.core.common.AppExecutors;
@@ -165,9 +164,9 @@ public class KTVRTCManager implements IRTCManager {
         }
     };
 
-    private final RTCRoomEventHandlerWithRTS mRTCRoomEventHandler = new RTCRoomEventHandlerWithRTS(mRTSClient, true) {
+    private boolean isEnableAudioCapture = false;
 
-        private float mRemoteAudioLossRate;
+    private final RTCRoomEventHandlerWithRTS mRTCRoomEventHandler = new RTCRoomEventHandlerWithRTS(mRTSClient, true) {
 
         @Override
         public void onRoomStateChanged(String roomId, String uid, int state, String extraInfo) {
@@ -176,14 +175,21 @@ public class KTVRTCManager implements IRTCManager {
         }
 
         @Override
-        public void onLocalStreamStats(LocalStreamStats stats) {
-            AudioStatsEvent event = new AudioStatsEvent(stats.audioStats.rtt, stats.audioStats.audioLossRate, mRemoteAudioLossRate);
-            SolutionEventBus.post(event);
+        public void onNetworkQuality(NetworkQualityStats localQuality, NetworkQualityStats[] remoteQualities) {
+            if (isEnableAudioCapture) {
+                notifyLocalRTTUpdated(localQuality.rtt);
+            } else {
+                if (remoteQualities.length > 0) {
+                    notifyLocalRTTUpdated(remoteQualities[0].rtt);
+                } else {
+                    notifyLocalRTTUpdated(0);
+                }
+            }
         }
 
-        @Override
-        public void onRemoteStreamStats(RemoteStreamStats stats) {
-            mRemoteAudioLossRate = stats.audioStats.audioLossRate;
+        private void notifyLocalRTTUpdated(int rtt) {
+            AudioStatsEvent event = new AudioStatsEvent(rtt);
+            SolutionEventBus.post(event);
         }
     };
 
@@ -279,6 +285,7 @@ public class KTVRTCManager implements IRTCManager {
         } else {
             mRTCVideo.stopAudioCapture();
         }
+        isEnableAudioCapture = start;
     }
 
     public void startAudioPublish(boolean publish) {

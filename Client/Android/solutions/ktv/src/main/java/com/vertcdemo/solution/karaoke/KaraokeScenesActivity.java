@@ -8,35 +8,27 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 
+import com.vertcdemo.core.utils.HyperOS;
 import com.vertcdemo.solution.ktv.databinding.ActivityKaraokeScenesBinding;
 
 public class KaraokeScenesActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Window window = getWindow();
 
-        WindowCompat.setDecorFitsSystemWindows(window, false);
-
-        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, window.getDecorView());
-        controller.setAppearanceLightStatusBars(true);
-        controller.setAppearanceLightNavigationBars(true);
+        EdgeToEdge.enable(this);
+        HyperOS.fixNavigationBar(this);
 
         ActivityKaraokeScenesBinding binding = ActivityKaraokeScenesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        WindowCompat.getInsetsController(window, binding.getRoot())
-                .setAppearanceLightStatusBars(true);
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.guidelineTop, (v, windowInsets) -> {
             final Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());

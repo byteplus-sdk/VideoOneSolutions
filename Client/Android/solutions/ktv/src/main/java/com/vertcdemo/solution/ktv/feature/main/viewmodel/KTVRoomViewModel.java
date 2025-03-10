@@ -289,7 +289,7 @@ public class KTVRoomViewModel extends ViewModel {
     public void stopInteract() {
         KTVRTCManager.ins().setUserVisibility(false);
         KTVRTCManager.ins().startAudioCapture(false);
-        KTVRTCManager.ins().startAudioPublish(myInfo.isMicOn());
+        KTVRTCManager.ins().startAudioPublish(false);
     }
     // endregion
 

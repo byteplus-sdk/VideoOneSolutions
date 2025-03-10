@@ -4,7 +4,7 @@
 package com.vertcdemo.solution.chorus.feature.room.song;
 
 
-import static com.vertcdemo.solution.chorus.utils.ViewModelProviderHelper.navGraphViewModelProvider;
+import static com.vertcdemo.core.utils.ViewModelProviderHelper.navGraphViewModelProvider;
 
 import android.Manifest;
 import android.content.pm.PackageManager;

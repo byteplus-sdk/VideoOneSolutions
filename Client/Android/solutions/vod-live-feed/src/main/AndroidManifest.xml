@@ -8,7 +8,7 @@
         <activity
             android:name="com.byteplus.vodlive.recommend.RecommendActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
-            android:theme="@style/AppTheme.Immersion" />
+            android:theme="@style/AppTheme.Immersion.Black" />
 
         <activity
             android:name="com.byteplus.vodlive.live.LiveFeedActivity"

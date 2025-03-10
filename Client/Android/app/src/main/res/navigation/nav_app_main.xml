@@ -14,6 +14,10 @@
             android:id="@+id/profile"
             app:destination="@id/profile" />
 
+        <action
+            android:id="@+id/login"
+            app:destination="@id/graph_login" />
+
     </fragment>
 
     <fragment
@@ -29,4 +33,6 @@
         android:id="@+id/notices"
         android:name="com.vertcdemo.app.NoticesFragment"
         tools:layout="@layout/fragment_notices" />
+
+    <include app:graph="@navigation/login_graph" />
 </navigation>

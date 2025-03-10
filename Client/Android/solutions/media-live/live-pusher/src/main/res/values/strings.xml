@@ -77,4 +77,6 @@
     <string name="medialive_downloaded">Download complete</string>
     <string name="medialive_xxx_downloading">File %s downloading…</string>
     <string name="medialive_effect">Beauty</string>
+
+    <string name="not_support_beauty_error">The open source code does not support beauty-related functions, please download Demo to experience the effect.</string>
 </resources>

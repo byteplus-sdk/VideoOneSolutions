@@ -5,13 +5,14 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application android:requestLegacyExternalStorage="true">
         <activity
             android:name=".ui.activity.InputPullUrlActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/LiveTheme.Transparent">
+            android:theme="@style/LiveTheme.Immersion">
             <intent-filter>
                 <action android:name="com.byteplus.videoone.medialive.action.MEDIA_LIVE_PULL" />
                 <category android:name="android.intent.category.DEFAULT" />

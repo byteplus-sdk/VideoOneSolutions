@@ -25,7 +25,7 @@
             android:name=".ui.activities.LivePushActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:theme="@style/LiveTheme.Transparent">
+            android:theme="@style/LiveTheme.Immersion">
             <intent-filter>
                 <action android:name="com.byteplus.videoone.medialive.action.LIVE_PUSH" />
                 <category android:name="android.intent.category.DEFAULT" />

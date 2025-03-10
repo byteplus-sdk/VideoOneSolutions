@@ -2,7 +2,7 @@
 ext {
     minSdkVersion = 21
     targetSdkVersion = 34
-    compileSdkVersion = 34
+    compileSdkVersion = 35
     javaLanguageVersion = 17
 }
 

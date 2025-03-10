@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_beauty_cheek_reshape" android:state_selected="true" />
+    <item>
+        <bitmap android:src="@drawable/ic_beauty_cheek_reshape" android:tint="#8CFFFFFF" />
+    </item>
+</selector>

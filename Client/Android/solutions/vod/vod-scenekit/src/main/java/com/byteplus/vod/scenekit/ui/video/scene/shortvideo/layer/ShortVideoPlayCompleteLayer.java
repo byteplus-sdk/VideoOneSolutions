@@ -3,6 +3,7 @@
 package com.byteplus.vod.scenekit.ui.video.scene.shortvideo.layer;
 
 import com.byteplus.playerkit.utils.event.Event;
+import com.byteplus.vod.scenekit.annotation.CompleteAction;
 import com.byteplus.vod.scenekit.ui.config.ICompleteAction;
 import com.byteplus.vod.scenekit.ui.video.layer.FullScreenLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PlayCompleteLayer;
@@ -16,8 +17,8 @@ public class ShortVideoPlayCompleteLayer extends PlayCompleteLayer {
     @Override
     protected void onPlaybackEvent(Event event) {
         ICompleteAction config = getConfig();
-        int action = config != null ? config.completeAction() : ICompleteAction.LOOP;
-        if (action == ICompleteAction.LOOP) {
+        int action = config != null ? config.completeAction() : CompleteAction.LOOP;
+        if (action == CompleteAction.LOOP) {
             // Loop mode, no need show PlayCompleteLayer
             dismiss();
             return;

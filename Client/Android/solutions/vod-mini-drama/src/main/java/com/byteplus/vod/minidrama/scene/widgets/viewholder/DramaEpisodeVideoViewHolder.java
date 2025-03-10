@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.byteplus.playerkit.player.playback.DisplayModeHelper;
 import com.byteplus.playerkit.player.playback.DisplayView;
@@ -48,7 +47,7 @@ public class DramaEpisodeVideoViewHolder extends VideoViewHolder {
     public DramaEpisodeVideoViewHolder(@NonNull View itemView, DramaVideoLayer.Type type, DramaGestureLayer.DramaGestureContract gestureContract) {
         super(itemView);
         this.videoViewContainer = (FrameLayout) itemView;
-        this.videoViewContainer.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
+        this.videoViewContainer.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         this.videoView = createVideoView(videoViewContainer, type, gestureContract);
     }
 
@@ -85,7 +84,6 @@ public class DramaEpisodeVideoViewHolder extends VideoViewHolder {
             layerHost.addLayer(new LogLayer());
         }
         layerHost.attachToVideoView(videoView);
-        videoView.setBackgroundColor(parent.getResources().getColor(android.R.color.black));
         //videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT); // fit mode
         videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FILL); // immersive mode
         videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);

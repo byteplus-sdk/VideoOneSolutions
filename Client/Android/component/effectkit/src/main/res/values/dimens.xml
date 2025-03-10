@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="effect_content_height">322dp</dimen>
+
+    <dimen name="logo_size">45dp</dimen>
+    <dimen name="item_select_text_padding_top">1dp</dimen>
+    <dimen name="text_title_size">11sp</dimen>
+    <dimen name="select_padding">3dp</dimen>
+    <dimen name="select_line_width">1.4dp</dimen>
+    <dimen name="select_radius">5dp</dimen>
+</resources>

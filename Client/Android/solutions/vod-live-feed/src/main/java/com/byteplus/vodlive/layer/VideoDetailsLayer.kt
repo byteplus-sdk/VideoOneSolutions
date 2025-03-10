@@ -8,6 +8,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.Intent
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.Surface
@@ -16,6 +17,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.Insets
 import androidx.core.view.updateLayoutParams
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.byteplus.playerkit.player.PlayerEvent
@@ -27,7 +29,7 @@ import com.byteplus.playerkit.utils.event.Dispatcher
 import com.byteplus.playerkit.utils.event.Event
 import com.byteplus.vod.scenekit.R
 import com.byteplus.vod.scenekit.data.model.VideoItem
-import com.byteplus.vod.scenekit.ui.base.OuterActions
+import com.byteplus.vod.scenekit.ext.IComment
 import com.byteplus.vod.scenekit.ui.base.VideoViewExtras
 import com.byteplus.vod.scenekit.ui.config.IImageCoverConfig
 import com.byteplus.vod.scenekit.ui.video.layer.FullScreenLayer
@@ -155,7 +157,11 @@ class VideoDetailsLayer : BaseLayer() {
 
         binding.comment.setOnClickListener {
             activity()?.let {
-                OuterActions.showCommentDialog(it, videoItem.vid)
+                LocalBroadcastManager.getInstance(it).sendBroadcast(
+                    Intent(IComment.ACTION_SHOW_PORTRAIT).apply {
+                        putExtra(IComment.EXTRA_VID, videoItem.vid)
+                    }
+                )
             }
         }
 

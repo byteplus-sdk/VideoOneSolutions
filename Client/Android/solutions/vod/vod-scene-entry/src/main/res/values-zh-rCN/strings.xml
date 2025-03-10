@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_playback_edit_title">视频播放</string>
+    <string name="vevod_playback_edit_description">高清低码，画质增强</string>
+
+    <string name="vevod_settings_activity_title">设置</string>
+
+    <string name="vevod_tab_home">主页</string>
+    <string name="vevod_tab_feed">中视频</string>
+    <string name="vevod_tab_channel">长视频</string>
+    <string name="vevod_tab_setting">设置</string>
+
+    <string name="vevod_feed_video_title">中视频</string>
+
+    <string name="vevod_not_support_ck_error">开源代码暂不支持 VE SDK 相关功能，体验效果请下载Demo</string>
+
+</resources>

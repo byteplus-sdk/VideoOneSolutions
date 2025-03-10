@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="close">关闭</string>
+    <string name="beauty_face_whiten">美白</string>
+    <string name="beauty_face_smooth">磨皮</string>
+    <string name="beauty_reshape_face_group">瘦脸</string>
+    <string name="beauty_reshape_eye_group">眼睛</string>
+    <string name="beauty_face_sharpen">锐化</string>
+    <string name="beauty_face_clarity">清晰</string>
+    <string name="filter_normal">关闭</string>
+    <string name="filter_lianaichaotian">恋爱超甜</string>
+    <string name="filter_ziran">自然</string>
+    <string name="filter_hongzong">红棕</string>
+    <string name="filter_musi">浅暖</string>
+    <string name="filter_cream">奶油</string>
+    <string name="filter_lolita">洛丽塔</string>
+    <string name="filter_qianxia">浅夏</string>
+    <string name="filter_mitao"> 蜜桃</string>
+    <string name="sticker_heimaoyanjing">黑猫眼镜</string>
+    <string name="sticker_huahua">花花</string>
+    <string name="sticker_aixinpiaola">坠落之心</string>
+    <string name="style_makeup_aidou">爱豆</string>
+    <string name="style_makeup_qise">气色</string>
+    <string name="tab_face_beautification">美颜</string>
+    <string name="tab_filter">滤镜</string>
+    <string name="tab_sticker">贴纸</string>
+</resources>

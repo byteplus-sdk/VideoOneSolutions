@@ -6,6 +6,7 @@ package com.vertcdemo.solution.ktv.event;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
+import com.vertcdemo.core.annotation.Event;
 import com.vertcdemo.solution.ktv.bean.UserInfo;
 import com.vertcdemo.solution.ktv.core.rts.annotation.FinishInteractType;
 
@@ -44,14 +45,16 @@ public abstract class InteractChangedBroadcast {
                 '}';
     }
 
-    public static class Join extends InteractChangedBroadcast {
+    @Event
+    public static final class Join extends InteractChangedBroadcast {
         @Override
         public boolean isJoin() {
             return true;
         }
     }
 
-    public static class Finish extends InteractChangedBroadcast {
+    @Event
+    public static final class Finish extends InteractChangedBroadcast {
         @Override
         public boolean isJoin() {
             return false;

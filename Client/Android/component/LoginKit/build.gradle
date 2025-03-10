@@ -44,6 +44,9 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.material
 
+    implementation libs.bundles.navigation
+    implementation libs.bundles.viewmodel.ktx
+
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

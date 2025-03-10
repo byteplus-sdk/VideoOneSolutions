@@ -3,6 +3,7 @@
 
 package com.byteplus.vod.scenekit.ui.video.layer;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.PlayerEvent;
@@ -31,7 +33,7 @@ import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.playerkit.utils.event.Event;
 import com.byteplus.vod.scenekit.R;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
-import com.byteplus.vod.scenekit.ui.base.OuterActions;
+import com.byteplus.vod.scenekit.ext.IComment;
 import com.byteplus.vod.scenekit.ui.base.VideoViewExtras;
 import com.byteplus.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer;
@@ -188,7 +190,10 @@ public class TimeProgressBarLayer extends AnimateLayer implements GestureControl
         }
         String vid = VideoViewExtras.getVid(videoView());
         if (vid != null) {
-            OuterActions.showCommentDialogL(activity, vid);
+            Intent intent = new Intent(IComment.ACTION_SHOW_LANDSCAPE);
+            intent.putExtra(IComment.EXTRA_VID, vid);
+            LocalBroadcastManager.getInstance(activity)
+                    .sendBroadcast(intent);
             GestureLayer layer = findLayer(GestureLayer.class);
             if (layer != null) {
                 layer.dismissController();

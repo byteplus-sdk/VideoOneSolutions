@@ -38,6 +38,7 @@ import androidx.annotation.StringRes;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -74,6 +75,7 @@ import com.vertcdemo.solution.interactivelive.core.annotation.LivePermitType;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveRoleType;
 import com.vertcdemo.solution.interactivelive.core.annotation.MessageType;
 import com.vertcdemo.solution.interactivelive.databinding.FragmentLiveHostBinding;
+import com.vertcdemo.solution.interactivelive.effect.InteractiveLiveEffectFragment;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkFinishEvent;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkInviteEvent;
 import com.vertcdemo.solution.interactivelive.event.AnchorLinkReplyEvent;
@@ -517,9 +519,19 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
         dialog.show(getChildFragmentManager(), "message-input-dialog");
     }
 
+    // region Effect
     void openVideoEffectDialog() {
-        LiveRTCManager.ins().openEffectDialog(requireActivity(), getParentFragmentManager());
+        FragmentManager fragmentManager = getChildFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("effect-dialog");
+        if (fragment != null) {
+            return;
+        }
+
+        DialogFragment dialog = new InteractiveLiveEffectFragment();
+        dialog.showNow(fragmentManager, "effect-dialog");
     }
+
+    // endregion Effect
 
     private void openSettingDialog() {
         if (mViewModel.roomInfo == null || mSelfInfo == null) {

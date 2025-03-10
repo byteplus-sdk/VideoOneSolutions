@@ -43,7 +43,6 @@ dependencies {
     implementation libs.viewpager2
 
     implementation project(':component:solution-base')
-    implementation project(':component:avatars')
 
     implementation project(':solutions:vod:vod-scenekit')
     implementation project(':solutions:vod:vod-playerkit:vod-player')

@@ -23,8 +23,8 @@ import com.byteplus.playerkit.player.playback.PlaybackController;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.utils.L;
 import com.byteplus.vod.scenekit.R;
+import com.byteplus.vod.scenekit.annotation.CompleteAction;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
-import com.byteplus.vod.scenekit.ui.config.ICompleteAction;
 import com.byteplus.vod.scenekit.ui.video.scene.utils.ShortStrategySettingsConfig;
 import com.byteplus.vod.scenekit.ui.widgets.viewpager2.OnPageChangeCallbackCompat;
 
@@ -61,7 +61,7 @@ public class ShortVideoPageView {
             if (event.code() == PlayerEvent.State.COMPLETED) {
                 final Player player = event.owner(Player.class);
                 if (player != null && !player.isLooping() &&
-                        mStrategyConfig.completeAction() == ICompleteAction.NEXT) {
+                        mStrategyConfig.completeAction() == CompleteAction.NEXT) {
                     VideoView videoView = mController.videoView();
                     assert videoView != null;
                     if (isFullScreenMode(videoView.getPlayScene())) {
@@ -76,7 +76,7 @@ public class ShortVideoPageView {
         mShortVideoAdapter.setAfterExitFullScreenListener(() -> {
             final Player player = mController.player();
             if (player != null && !player.isLooping() &&
-                    mStrategyConfig.completeAction() == ICompleteAction.NEXT) {
+                    mStrategyConfig.completeAction() == CompleteAction.NEXT) {
                 if (player.isCompleted()) {
                     VideoView videoView = mController.videoView();
                     if (videoView != null) {

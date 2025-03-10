@@ -63,7 +63,7 @@
         android:layout_marginTop="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/subtitle"
-        tools:src="@drawable/vevod_ic_avatar_bg" />
+        tools:src="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/username"

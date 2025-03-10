@@ -4,6 +4,7 @@
 package com.vertcdemo.solution.interactivelive.event;
 
 import com.google.gson.annotations.SerializedName;
+import com.vertcdemo.core.annotation.Event;
 
 
 /**
@@ -28,13 +29,15 @@ public abstract class LiveRTSUserEvent {
                 '}';
     }
 
-    public static class Join extends LiveRTSUserEvent {
+    @Event
+    public static final class Join extends LiveRTSUserEvent {
         public boolean isJoin() {
             return true;
         }
     }
 
-    public static class Leave extends LiveRTSUserEvent {
+    @Event
+    public static final class Leave extends LiveRTSUserEvent {
         public boolean isJoin() {
             return false;
         }

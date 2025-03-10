@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
 
+import com.ss.avframework.live.VeLiveVideoEffectManager;
+
 import java.nio.ByteBuffer;
 
 public interface LivePusher {
@@ -40,7 +42,7 @@ public interface LivePusher {
         void onProgress(int progress);
     }
 
-    default Object getEffectHandler() {
+    default VeLiveVideoEffectManager getEffectHandler() {
         return null;
     }
 

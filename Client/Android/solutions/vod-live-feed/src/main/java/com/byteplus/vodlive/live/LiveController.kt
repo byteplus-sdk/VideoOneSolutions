@@ -24,15 +24,19 @@ internal class LiveController(
     private var lastPreviewHolder: ILiveViewHolder? = null
     private var lastPlayHolder: ILiveViewHolder? = null
 
-    private var preloadPlayer: LivePlayer? = null
-
     fun preload(holder: ILiveViewHolder?, item: LiveFeedItem) {
         if (!ENABLE_PRELOAD_LIVE) return
-        val player = holder?.player ?: createLivePlayer(context, item.roomId).also {
-            preloadPlayer = it
-            holder?.bindPlayer(it)
+        if (holder == null) return
+
+        val player = holder.player
+        if (player == null) {
+            createLivePlayer(context, item.roomId).also {
+                holder.bindPlayer(it)
+                it.startWithUrl(item, preload = true)
+            }
+        } else {
+            player.startWithUrl(item, preload = true)
         }
-        player.startWithUrl(item, preload = true)
     }
 
     fun preview(holder: ILiveViewHolder, item: LiveFeedItem) {
@@ -55,10 +59,6 @@ internal class LiveController(
         lastPlayHolder?.let {
             it.stop(scene)
             it.unselect()
-
-            if (it.player?.isShared == true) {
-                it.unbindPlayer()
-            }
         }
         lastPlayHolder = holder
 
@@ -86,27 +86,32 @@ internal class LiveController(
             preCreatedPlayer = null
             if (it.roomId == roomId) {
                 playerLog(TAG, "reuse preCreate player: $roomId")
-                return it
             } else {
-                playerLog(TAG, "discard preCreate player[$roomId]: not match $roomId")
+                playerLog(
+                    TAG,
+                    "reuse preCreate player: even if [${it.roomId}] not match required [$roomId]"
+                )
             }
+            players.add(it) // pre-created player is orphaned, so we manage it
+            return it
         }
 
-        preloadPlayer?.let {
-            if (it.roomId == roomId) {
-                playerLog(TAG, "reuse preload player: $roomId")
-                preloadPlayer = null
-                return it
+        return if (playerCache.isNotEmpty()) {
+            playerLog(TAG, "[Factory] using cache: roomId=$roomId")
+            playerCache.removeFirst()
+        } else {
+            playerLog(TAG, "[Factory] create player: roomId=$roomId")
+            LivePlayer(context, scene = this.scene).also {
+                players.add(it)
             }
-        }
-
-        playerLog(TAG, "create player: roomId=$roomId")
-        return LivePlayer(context, scene = this.scene).also {
-            players.add(it)
         }
     }
 
+    /**
+     * Record all players should managed by [LiveController]
+     */
     private val players = ArrayList<LivePlayer>()
+    private val playerCache = ArrayDeque<LivePlayer>()
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
@@ -124,12 +129,22 @@ internal class LiveController(
                     it.release()
                 }
                 players.clear()
+                playerCache.clear()
             }
 
             else -> {
 
             }
         }
+    }
+
+    fun recycle(player: LivePlayer) {
+        if (player.isShared) {
+            playerLog(TAG, "[Factory] recycle player, is shared, skip")
+            return
+        }
+        playerLog(TAG, "[Factory] recycle player")
+        playerCache.addLast(player)
     }
 
     private var finishing = false

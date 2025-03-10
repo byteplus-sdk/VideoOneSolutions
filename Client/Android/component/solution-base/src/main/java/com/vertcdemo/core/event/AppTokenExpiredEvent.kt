@@ -3,3 +3,5 @@
 package com.vertcdemo.core.event
 
 class AppTokenExpiredEvent
+
+class AppLoginEvent

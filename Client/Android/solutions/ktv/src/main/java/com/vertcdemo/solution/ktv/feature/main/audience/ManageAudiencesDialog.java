@@ -3,7 +3,7 @@
 
 package com.vertcdemo.solution.ktv.feature.main.audience;
 
-import static com.vertcdemo.solution.ktv.utils.ViewModelProviderHelper.navGraphViewModelProvider;
+import static com.vertcdemo.core.utils.ViewModelProviderHelper.navGraphViewModelProvider;
 
 import android.graphics.Typeface;
 import android.os.Bundle;

@@ -17,11 +17,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="VEVodAppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="VEVodAppTheme.Dark">
         <item name="android:navigationBarColor">@color/black</item>
     </style>
 
-    <style name="VEVodAppTheme.Transparent" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="VEVodAppTheme.Transparent" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>

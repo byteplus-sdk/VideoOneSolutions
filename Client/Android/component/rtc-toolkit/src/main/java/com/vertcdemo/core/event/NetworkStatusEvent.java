@@ -1,6 +1,5 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
-// SPDX-License-Identifier: MIT
-
+// SPDX-License-Identifier: Apache-2.0
 package com.vertcdemo.core.event;
 
 import androidx.annotation.NonNull;

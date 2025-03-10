@@ -25,6 +25,7 @@ public class OnNext<T> implements Callback<T> {
         consumer.run();
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Callback<T> of(@Nullable Runnable consumer) {
         return consumer == null ? (Callback<T>) EMPTY : new OnNext<>(consumer);
     }
@@ -32,6 +33,7 @@ public class OnNext<T> implements Callback<T> {
     private static final Callback<?> EMPTY = of(() -> {
     });
 
+    @SuppressWarnings("unchecked")
     public static <T> Callback<T> empty() {
         return (Callback<T>) EMPTY;
     }

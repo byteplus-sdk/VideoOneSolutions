@@ -43,17 +43,18 @@ import android.view.ScaleGestureDetector;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
@@ -65,9 +66,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.viewmodel.MutableCreationExtras;
 
+import com.byteplus.live.HyperOS;
 import com.byteplus.live.common.DensityUtils;
 import com.byteplus.live.common.KeepLiveService;
 import com.byteplus.live.common.panel.MultiInfoPanel;
@@ -82,12 +88,16 @@ import com.byteplus.live.pusher.MediaResourceMgr;
 import com.byteplus.live.pusher.R;
 import com.byteplus.live.pusher.TextureMgr;
 import com.byteplus.live.pusher.YuvHelper;
+import com.byteplus.live.pusher.effect.LiveEffectFragment;
+import com.byteplus.live.pusher.effect.LiveVideoEffect;
 import com.byteplus.live.pusher.ui.widget.LiveSettingDialog;
 import com.byteplus.live.pusher.ui.widget.PreviewSettingsDialog;
 import com.byteplus.live.pusher.ui.widget.PusherInfoDialog;
 import com.byteplus.live.pusher.utils.RawFile;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.vertcdemo.effect.ui.EffectViewModelProvider;
+import com.vertcdemo.effect.ui.EffectViewModel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,7 +109,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class LivePushActivity extends AppCompatActivity
-        implements ILivePusherActivity {
+        implements ILivePusherActivity, EffectViewModelProvider {
 
     public static final String EXTRA_CAPTURE_TYPE = "extra_live_capture_type";
 
@@ -107,6 +117,7 @@ public class LivePushActivity extends AppCompatActivity
     private boolean mIsLive = false;
     private boolean mIsClosing = false;
     private LivePusher mLivePusher;
+    private LiveVideoEffect mEffectHandler;
     private Intent mScreenIntent = null;
 
     Bitmap mPushPic;
@@ -192,28 +203,34 @@ public class LivePushActivity extends AppCompatActivity
         public void onRebuildLivePusher() {
             mScreenIntent = null;
             destroyPreview();
-            initEffect();
+
+            mEffectHandler.setEffectManager(mLivePusher.getEffectHandler());
+
             preparePreview();
         }
     };
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        EdgeToEdge.enable(this);
+        HyperOS.fixNavigationBar(this);
+
         if (LivePusherSettingsHelper.isLandscape()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+
         Intent intent = getIntent();
         mCaptureMode = intent.getIntExtra(EXTRA_CAPTURE_TYPE, LiveCaptureType.CAMERA);
         setContentView(R.layout.activity_live_push);
         initUI();
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mLivePusher = LivePusherImpl.createLivePusher(this, mObserver);
-        initEffect();
+        mEffectHandler = new LiveVideoEffect(mLivePusher.getEffectHandler());
         preparePreview();
 
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
@@ -222,10 +239,6 @@ public class LivePushActivity extends AppCompatActivity
                 // Intentional do nothing
             }
         });
-    }
-
-
-    private void initEffect() {
     }
 
     private void destroyPreview() {
@@ -424,7 +437,7 @@ public class LivePushActivity extends AppCompatActivity
         mStartLive.setOnClickListener(v -> startPublish());
 
         mPushingMic.setOnClickListener(this::switchMic);
-        mPushingMic.setSelected(true); // Default to Microphone ON
+        mPushingMic.setSelected(/* mute= */false); // Default to Microphone ON
 
         mPushingSetting.setOnClickListener(v -> showLiveSettingsDialog());
 
@@ -436,8 +449,30 @@ public class LivePushActivity extends AppCompatActivity
     }
 
     private void showEffectDialog() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("effect-dialog");
+        if (fragment != null) {
+            return;
+        }
+
+        DialogFragment dialog = new LiveEffectFragment();
+        dialog.showNow(fragmentManager, "effect-dialog");
     }
 
+    @MainThread
+    @Override
+    @NonNull
+    public EffectViewModel getEffectViewModel() {
+        MutableCreationExtras extras = new MutableCreationExtras();
+        extras.set(EffectViewModel.KEY_EFFECT, mEffectHandler);
+        return new ViewModelProvider(
+                getViewModelStore(),
+                ViewModelProvider.Factory.from(EffectViewModel.getInitializer()),
+                extras
+        ).get(EffectViewModel.class);
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
     private void switchOrientation() {
         if (LivePusherSettingsHelper.isLandscape()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -776,7 +811,7 @@ public class LivePushActivity extends AppCompatActivity
         private MediaFileReader mAudioReader;
         private MediaFileReader mVideoReader;
         private TextureMgr mTextureMgr;
-        private ByteBuffer mByteBuffer = ByteBuffer.allocateDirect(1920 * 1080 * 3 / 2); // 1080P 4:2:0 One Frame Size
+        private final ByteBuffer mByteBuffer = ByteBuffer.allocateDirect(1920 * 1080 * 3 / 2); // 1080P 4:2:0 One Frame Size
 
         void updateVideoFrameType() {
             int fmt = LivePusherSettingsHelper.getExternalVideoFrameFmtType();

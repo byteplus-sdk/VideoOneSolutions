@@ -12,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
-import androidx.navigation.NavGraph;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +26,6 @@ import com.videoone.avatars.Avatars;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class LiveRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutLiveRoomItemBinding>> {
     @NonNull
@@ -67,12 +64,8 @@ public class LiveRoomListAdapter extends RecyclerView.Adapter<BVH<LayoutLiveRoom
             args.putString(EXTRA_ROOM_ID, info.roomId);
             args.putString(EXTRA_HOST_ID, info.anchorUserId);
 
-            NavController navController = Navigation.findNavController(v);
-            NavGraph graph = navController.getGraph();
-            NavGraph roomGraph = Objects.requireNonNull((NavGraph) graph.findNode(R.id.room));
-            roomGraph.setStartDestination(R.id.audience_view);
-
-            navController.navigate(R.id.audience_view, args);
+            Navigation.findNavController(v)
+                    .navigate(R.id.audience_view, args);
         }));
     }
 

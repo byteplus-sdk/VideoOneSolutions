@@ -5,11 +5,11 @@ package com.vertcdemo.solution.chorus.feature.room;
 
 import static com.vertcdemo.core.chat.ChatConfig.SEND_MESSAGE_COUNT_LIMIT;
 import static com.vertcdemo.core.chat.input.MessageInputDialog.REQUEST_KEY_MESSAGE_INPUT;
+import static com.vertcdemo.core.utils.ViewModelProviderHelper.navGraphViewModelProvider;
 import static com.vertcdemo.solution.chorus.feature.ChorusActivity.EXTRA_REFERRER;
 import static com.vertcdemo.solution.chorus.feature.ChorusActivity.EXTRA_ROOM_INFO;
 import static com.vertcdemo.solution.chorus.feature.ChorusActivity.EXTRA_RTC_TOKEN;
 import static com.vertcdemo.solution.chorus.feature.ChorusActivity.EXTRA_USER_INFO;
-import static com.vertcdemo.solution.chorus.utils.ViewModelProviderHelper.navGraphViewModelProvider;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -45,6 +45,7 @@ import com.vertcdemo.core.event.ClearUserEvent;
 import com.vertcdemo.core.event.JoinRTSRoomErrorEvent;
 import com.vertcdemo.core.event.RTCReconnectToRoomEvent;
 import com.vertcdemo.core.eventbus.SolutionEventBus;
+import com.vertcdemo.core.http.bean.RTCAppInfo;
 import com.vertcdemo.solution.chorus.bean.FinishLiveInform;
 import com.vertcdemo.solution.chorus.bean.FinishSingInform;
 import com.vertcdemo.solution.chorus.bean.MessageInform;
@@ -63,6 +64,7 @@ import com.vertcdemo.solution.chorus.feature.room.state.CaptureControl;
 import com.vertcdemo.solution.chorus.feature.room.state.SingState;
 import com.vertcdemo.solution.chorus.feature.room.state.UserRoleState;
 import com.vertcdemo.solution.chorus.http.ChorusService;
+import com.vertcdemo.solution.chorus.utils.RTCEngineViewModel;
 import com.vertcdemo.ui.CenteredToast;
 import com.vertcdemo.ui.dialog.SolutionCommonDialog;
 
@@ -88,6 +90,11 @@ public class ChorusRoomFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        RTCEngineViewModel.inject(this,
+                R.id.chorus_room_graph,
+                RTCAppInfo.require(requireActivity()));
+
         mViewModel = navGraphViewModelProvider(this, R.id.chorus_room_graph).get(ChorusRoomViewModel.class);
 
         Bundle arguments = requireArguments();

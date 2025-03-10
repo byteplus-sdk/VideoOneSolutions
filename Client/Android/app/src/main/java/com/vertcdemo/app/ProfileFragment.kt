@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -21,20 +22,14 @@ import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
 import com.vertcdemo.app.databinding.FragmentProfileBinding
 import com.vertcdemo.app.databinding.LayoutCommonKeyValueBinding
-import com.vertcdemo.core.SolutionDataManager
-import com.vertcdemo.core.event.AppTokenExpiredEvent
-import com.vertcdemo.core.event.RefreshUserNameEvent
-import com.vertcdemo.core.eventbus.SolutionEventBus
-import com.vertcdemo.login.ILoginImpl
+import com.vertcdemo.login.UserViewModel
 import com.videoone.avatars.Avatars.byUserId
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 private const val TAG = "ProfileFragment"
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
-    private var mBinding: FragmentProfileBinding? = null
+    private val userViewModel by activityViewModels<UserViewModel>()
 
     private val versionModel: VersionViewModel
             by navGraphViewModels(R.id.nav_app_main)
@@ -44,7 +39,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             requireActivity().window, requireView()
         ).isAppearanceLightStatusBars = true
 
-        val binding = FragmentProfileBinding.bind(view).also { mBinding = it }
+        val binding = FragmentProfileBinding.bind(view)
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets: WindowInsetsCompat ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -75,26 +70,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         binding.profileExitLogin.setOnClickListener { showLogoutConfirm() }
 
-        updateUserInfo(binding)
-        SolutionEventBus.register(this)
-    }
+        userViewModel.user.observe(viewLifecycleOwner) { user ->
+            Glide.with(binding.profileUserAvatar)
+                .load(byUserId(user.userId))
+                .into(binding.profileUserAvatar)
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        SolutionEventBus.unregister(this)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onRefreshUserNameEvent(event: RefreshUserNameEvent) {
-        mBinding?.let { updateUserInfo(it) }
-    }
-
-    private fun updateUserInfo(binding: FragmentProfileBinding) {
-        Glide.with(binding.profileUserAvatar)
-            .load(byUserId(SolutionDataManager.ins().userId))
-            .into(binding.profileUserAvatar)
-
-        binding.profileUserName.text = SolutionDataManager.ins().userName
+            binding.profileUserName.text = user.userName
+        }
     }
 
     private val settings by lazy {
@@ -129,8 +111,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         dialog.findViewById<TextView>(R.id.confirm)?.setOnClickListener {
             dialog.dismiss()
             findNavController().popBackStack()
-            SolutionDataManager.ins().logout()
-            SolutionEventBus.post(AppTokenExpiredEvent())
+            userViewModel.logout()
         }
 
         dialog.show()
@@ -146,7 +127,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         dialog.findViewById<TextView>(R.id.confirm)?.setOnClickListener {
             dialog.dismiss()
             findNavController().popBackStack()
-            ILoginImpl().closeAccount()
+            userViewModel.closeAccount()
         }
 
         dialog.show()

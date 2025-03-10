@@ -3,7 +3,7 @@
 
 package com.vertcdemo.solution.chorus.feature.room;
 
-import static com.vertcdemo.solution.chorus.utils.ViewModelProviderHelper.navGraphViewModelProvider;
+import static com.vertcdemo.core.utils.ViewModelProviderHelper.navGraphViewModelProvider;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

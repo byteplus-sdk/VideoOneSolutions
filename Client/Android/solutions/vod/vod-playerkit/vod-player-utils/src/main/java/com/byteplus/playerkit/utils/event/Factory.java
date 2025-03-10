@@ -4,12 +4,16 @@
 
 package com.byteplus.playerkit.utils.event;
 
+import java.lang.reflect.InvocationTargetException;
+
 class Factory {
     static <T extends Event> T create(Class<T> clazz) {
         try {
-            return clazz.newInstance();
-        } catch (IllegalAccessException | InstantiationException |
-                 NullPointerException e ) {
+            return clazz.getConstructor().newInstance();
+        } catch (IllegalAccessException |
+                 InstantiationException |
+                 NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

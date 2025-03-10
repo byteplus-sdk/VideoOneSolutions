@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+        <activity
+            android:name="com.byteplus.vod.scene.entry.MainTabActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/AppTheme.Immersion"
+            tools:targetApi="n" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion" />
+    </application>
+</manifest>

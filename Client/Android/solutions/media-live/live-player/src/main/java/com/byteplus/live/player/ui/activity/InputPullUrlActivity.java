@@ -10,13 +10,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -25,10 +25,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 
+import com.byteplus.live.HyperOS;
 import com.byteplus.live.player.LivePlayer;
 import com.byteplus.live.player.R;
 import com.byteplus.live.player.ui.widget.AbrSettingsDialog;
@@ -156,11 +155,8 @@ public class InputPullUrlActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Window window = getWindow();
-        WindowCompat.setDecorFitsSystemWindows(window, false);
-        WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(window, findViewById(android.R.id.content));
-        insetsController.setAppearanceLightStatusBars(true);
-        insetsController.setAppearanceLightNavigationBars(true);
+        EdgeToEdge.enable(this);
+        HyperOS.fixNavigationBar(this);
 
         setContentView(R.layout.live_activity_url_input);
 
@@ -236,9 +232,8 @@ public class InputPullUrlActivity extends AppCompatActivity {
     }
 
     void scanUrl() {
-        IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setOrientationLocked(false);
-        integrator.createScanIntent();
+        IntentIntegrator integrator = new IntentIntegrator(this)
+                .setOrientationLocked(false);
         scanLauncher.launch(integrator.createScanIntent());
     }
 

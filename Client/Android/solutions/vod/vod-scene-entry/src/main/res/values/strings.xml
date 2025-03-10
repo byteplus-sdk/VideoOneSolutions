@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vevod_playback_edit_title">Video Playback</string>
+    <string name="vevod_playback_edit_description">Smooth and Stable Playback</string>
+
+    <string name="vevod_settings_activity_title">Settings</string>
+
+    <string name="vevod_tab_home">Home</string>
+    <string name="vevod_tab_feed">Feed</string>
+    <string name="vevod_tab_channel">Channel</string>
+    <string name="vevod_tab_setting">Settings</string>
+
+    <string name="vevod_feed_video_title">Feed</string>
+
+    <string name="vevod_not_support_ck_error">The open source code does not support VE SDK functions, please download Demo to experience it.</string>
+
+</resources>
