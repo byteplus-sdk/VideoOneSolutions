@@ -1,10 +1,5 @@
-//
-//  MDVideoPlayerController+Tips.m
-//  VOLCDemo
-//
-//  Created by wangzhiyong on 2021/12/8.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDVideoPlayerController+Tips.h"
 #import <MBProgressHUD/MBProgressHUD.h>
 

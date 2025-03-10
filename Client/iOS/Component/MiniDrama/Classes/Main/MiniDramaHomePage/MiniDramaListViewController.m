@@ -1,8 +1,5 @@
-//
-//  MiniDramaListViewController.m
-//  VOLCDemo
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaListViewController.h"
 #import "MiniDramaVideoViewNormalCell.h"
 #import "MDDramaInfoModel.h"

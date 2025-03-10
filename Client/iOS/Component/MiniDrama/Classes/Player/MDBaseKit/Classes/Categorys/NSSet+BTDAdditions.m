@@ -1,8 +1,5 @@
-//
-//  NSSet+BTDAdditions.m
-//  Pods
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "NSSet+BTDAdditions.h"
 #import "BTDMacros.h"
 

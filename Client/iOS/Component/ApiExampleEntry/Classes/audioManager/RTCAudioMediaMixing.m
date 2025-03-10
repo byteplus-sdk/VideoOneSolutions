@@ -1,10 +1,5 @@
-//
-//  RTCAudioMediaMixing.m
-//  App
-//
-//  Created by ByteDance on 2024/6/3.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "RTCAudioMediaMixing.h"
 #import "RTCJoinRTS.h"
 

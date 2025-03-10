@@ -1,10 +1,5 @@
-//
-//  MDProgressView+Private.h
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/11/18.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDProgressView.h"
 @protocol MDInterfaceFactoryProduction;
 

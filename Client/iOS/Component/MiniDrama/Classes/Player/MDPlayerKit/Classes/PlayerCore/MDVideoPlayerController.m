@@ -1,11 +1,5 @@
-//
-//  MDVideoPlayerController.m
-//  VOLCDemo
-//
-//  Created by wangzhiyong on 2021/11/11.
-//  Copyright © 2021 ByteDance. All rights reserved.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDVideoPlayerController.h"
 #import "MDVideoPlayerController+Observer.h"
 #import "MDVideoPlayerController+Resolution.h"
@@ -166,7 +160,7 @@ AVPictureInPictureSampleBufferPlaybackDelegate>
     if (self.interaction) {
         self.interaction.playerVCView = self.view;
         self.interaction.playerContainerView = self.playerContainerView;
-        [self.interaction viewDidLoad]; //分发生命周期
+        [self.interaction viewDidLoad];
     }
 	
 	if (self.playerConfig.enablePip) {
@@ -432,7 +426,6 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
 
 - (CMTimeRange)pictureInPictureControllerTimeRangeForPlayback:(AVPictureInPictureController *)pictureInPictureController {
 	NSLog(@"volc--pictureInPictureControllerTimeRangeForPlayback");
-	// 需要在初始化时预设视频时长(从播放器读取有延迟)，此处以10min为例
 	return CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(10 * 60, NSEC_PER_SEC));
 }
 
@@ -796,7 +789,6 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
 
 - (void)videoEngineCloseAysncFinish:(TTVideoEngine *)videoEngine {
     if (![self.videoEngine isEqual:videoEngine]) {
-        /// 异步销毁后如果换了ve就不要继续往下走了
         return;
     }
     [self __handlePlayFinishStateChange:MDVideoPlayFinishStatusType_CloseAnsync error:nil];

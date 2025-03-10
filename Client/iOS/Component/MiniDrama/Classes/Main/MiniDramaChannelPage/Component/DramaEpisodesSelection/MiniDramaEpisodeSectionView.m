@@ -1,10 +1,5 @@
-//
-//  MiniDramaEpisodeSectionView.m
-//  MiniDrama
-//
-//  Created by ByteDance on 2024/11/22.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaEpisodeSectionView.h"
 #import <Masonry/Masonry.h>
 #import <ToolKit/UIColor+String.h>

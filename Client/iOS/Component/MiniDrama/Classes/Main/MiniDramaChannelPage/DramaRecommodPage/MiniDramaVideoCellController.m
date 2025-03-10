@@ -1,8 +1,5 @@
-//
-//  MiniDramaVideoCellController.m
-//  VOLCDemo
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaVideoCellController.h"
 #import "MDDramaFeedInfo.h"
 #import "MDDramaEpisodeInfoModel.h"

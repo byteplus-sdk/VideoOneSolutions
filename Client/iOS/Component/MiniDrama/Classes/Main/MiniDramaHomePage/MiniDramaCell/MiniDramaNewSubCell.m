@@ -1,9 +1,5 @@
-//
-//  MiniDramaNewSubCell.m
-//
-//  Created by ByteDance on 2024/11/20.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaNewSubCell.h"
 
 @interface MiniDramaNewSubCell ()

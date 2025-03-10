@@ -1,7 +1,5 @@
-//
-//  NSArray+BTDAdditions.m
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "NSArray+BTDAdditions.h"
 #import "NSObject+BTDAdditions.h"
 #import "BTDMacros.h"

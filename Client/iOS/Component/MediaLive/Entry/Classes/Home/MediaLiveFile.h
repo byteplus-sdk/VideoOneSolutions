@@ -1,10 +1,5 @@
-//
-//  MediaLiveFile.h
-//  MediaLive
-//
-//  Created by ByteDance on 2024/5/31.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <ToolKit/BaseEntrance.h>
 
 NS_ASSUME_NONNULL_BEGIN

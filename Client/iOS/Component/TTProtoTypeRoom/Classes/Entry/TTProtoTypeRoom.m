@@ -12,7 +12,6 @@
 #import <ToolKit/ToolKit.h>
 #import <ToolKit/JoinRTSParams.h>
 
-
 @implementation TTProtoTypeRoom
 
 - (instancetype)init {
@@ -36,7 +35,6 @@
 
 - (void)enterWithCallback:(void (^)(BOOL))block {
     [super enterWithCallback:block];
-    
     NSDictionary *inputInfo = @{
             @"scenes_name": @"livefeed"
     };

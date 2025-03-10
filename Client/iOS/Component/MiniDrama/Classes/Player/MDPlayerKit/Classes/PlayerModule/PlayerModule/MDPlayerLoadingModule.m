@@ -1,8 +1,5 @@
-//
-//  MDPlayerLoadingModule.m
-//  MDPlayerKit
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPlayerLoadingModule.h"
 #import "MDPlayerActionViewInterface.h"
 #import "MDPlayerContext.h"
@@ -30,7 +27,7 @@
 
 @property (nonatomic, assign) BOOL userSeeking;
 
-@property (nonatomic, assign) BOOL isLoading; // 播放器是否处于loading状态
+@property (nonatomic, assign) BOOL isLoading;
 
 @property (nonatomic, strong) Class<MDPlayerLoadingViewProtocol> noNetworTipClass;
 
@@ -107,11 +104,10 @@ MDPlayerContextDILink(gestureService, MDPlayerGestureServiceInterface, self.cont
     if (self.userSeeking) {
         [self showLoading:NO];
     } else {
-        //如果播放器复用 && 使用closeAycn context中的loadstate没有被重置，直接从播放器取更准确
         MDVideoLoadState loadState = self.playerInterface.loadState;
         MDVideoPlaybackState playbackState = (MDVideoPlaybackState)[self.context integerForHandlerKey:MDPlayerContextKeyPlaybackState];
         BOOL isPlaying = (playbackState == TTVideoEnginePlaybackStatePlaying);
-        BOOL isStartPlaying = (playbackState == TTVideoEnginePlaybackStateStopped && self.userPlayAction); // 正在启动播放
+        BOOL isStartPlaying = (playbackState == TTVideoEnginePlaybackStateStopped && self.userPlayAction);
         BOOL showLoading = (isPlaying || isStartPlaying) && (loadState != MDVideoLoadStatePlayable);
         [self showLoading:showLoading];
     }
@@ -125,11 +121,9 @@ MDPlayerContextDILink(gestureService, MDPlayerGestureServiceInterface, self.cont
     self.isLoading = show;
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(performShowLoadingView) object:nil];
     if (show) {
-        // 对齐原逻辑：延迟1s显示loading视图，避免启播时闪一下loading视图
         [self performSelector:@selector(performShowLoadingView) withObject:nil afterDelay:1];
         
     } else {
-        // 将播放器停止loading状态分发出去
         [self.context post:nil forKey:MDPlayerContextKeyFinishLoading];
         
         if (!self.isViewLoaded) {
@@ -140,7 +134,6 @@ MDPlayerContextDILink(gestureService, MDPlayerGestureServiceInterface, self.cont
 }
 
 - (void)performShowLoadingView {
-    // 将播放器开始loading状态分发出去
     [self.context post:nil forKey:MDPlayerContextKeyStartLoading];
     
     if (!self.isViewLoaded) {

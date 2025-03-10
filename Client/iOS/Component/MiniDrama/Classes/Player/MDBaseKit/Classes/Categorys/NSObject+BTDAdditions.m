@@ -1,7 +1,5 @@
-//
-//  NSObject+BTDAdditions.m
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "NSObject+BTDAdditions.h"
 #import "BTDMacros.h"
 #import <QuartzCore/CoreAnimation.h>
@@ -29,8 +27,6 @@ if (!inv) { [self doesNotRecognizeSelector:sel]; return _return_; } \
 [inv setTarget:self]; \
 [inv setSelector:_sel_]; \
 [NSObject btd_setInv:inv withSig:sig andArgs:args];
-
-// Block的结构表示，来自官方Clang文档 https://clang.llvm.org/docs/Block-ABI-Apple.html
 struct Block_literal_1 {
     void *isa;
     int flags;
@@ -580,7 +576,7 @@ struct dummy arg = va_arg(args, struct dummy); \
         NSLog(@"Executed block is Empty!");
         return;
     }
-    const void *funPtr = ((__bridge struct Block_literal_1 *)block) -> invoke; // 取得执行block的函数指针，并检查是否已经执行过这个block
+    const void *funPtr = ((__bridge struct Block_literal_1 *)block) -> invoke;
     if (funPtr == NULL) {
         NSLog(@"FunPtr of block is NULL!");
         return;

@@ -1,10 +1,5 @@
-//
-//  MiniDramaLandscapeUI.h
-//  AFNetworking
-//
-//  Created by ByteDance on 2024/11/29.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDViewController.h"
 #import "MDVideoPlayerController.h"
 #import "MiniDramaBaseVideoModel.h"

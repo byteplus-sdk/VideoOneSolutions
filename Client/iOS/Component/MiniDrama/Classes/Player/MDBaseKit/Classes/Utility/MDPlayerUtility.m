@@ -1,8 +1,5 @@
-//
-//  MDPlayerUtility.m
-//  Article
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPlayerUtility.h"
 #import "BTDResponder.h"
 #import <Reachability/Reachability.h>
@@ -155,8 +152,6 @@
     }
     return netSpeedText;
 }
-
-// Base64解码方法，根据长度补全 『=』
 + (NSString *)base64DecodingStringWithInputText:(NSString *)inputText {
     NSInteger remainder = inputText.length % 4;
     NSMutableString *tmpMstring = [[NSMutableString alloc] initWithString:inputText];

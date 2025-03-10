@@ -1,10 +1,5 @@
-//
-//  MiniDramaHotVideoCord.m
-//  MiniDrama
-//
-//  Created by ByteDance on 2024/11/21.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaHotVideoCard.h"
 #import "MDDramaFeedInfo.h"
 #import <Masonry/Masonry.h>

@@ -1,8 +1,5 @@
-//
-//  MiniDramaIntroduceView.m
-//  JSONModel
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaIntroduceView.h"
 #import <Masonry/Masonry.h>
 #import "MDDramaFeedInfo.h"

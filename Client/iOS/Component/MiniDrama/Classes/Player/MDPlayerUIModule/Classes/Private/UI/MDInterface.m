@@ -1,10 +1,5 @@
-//
-//  MDInterface.m
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/9/18.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDInterface.h"
 #import <Masonry/Masonry.h>
 #import "MDEventConst.h"
@@ -67,7 +62,7 @@ extern NSString *const MDPlayProgressSliderGestureEnable;
 
 - (void)reloadCore:(id<MDPlayCoreAbilityProtocol>)core {
     if ([core conformsToProtocol:@protocol(MDPlayCoreAbilityProtocol)]) {
-        [[MDEventMessageBus universalBus] postEvent:MDTaskPlayCoreTransfer withObject:core rightNow:YES]; // 外部需要保证core在播放周期内不被释放
+        [[MDEventMessageBus universalBus] postEvent:MDTaskPlayCoreTransfer withObject:core rightNow:YES];
     }
 }
 
@@ -80,7 +75,6 @@ extern NSString *const MDPlayProgressSliderGestureEnable;
 }
 
 - (void)screenRotationAction:(id)param {
-    // 让外部旋转屏幕
     if ([self.delegate respondsToSelector:@selector(interfaceCallScreenRotation:)]) {
         [self.delegate interfaceCallScreenRotation:self];
     }

@@ -1,10 +1,5 @@
-//
-//  MiniDramaRecordStartTimeModule.m
-//  MDPlayModule
-//
-//  Created by zyw on 2024/7/15.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaRecordStartTimeModule.h"
 #import "MDPlayerContextKeyDefine.h"
 #import <Masonry/Masonry.h>
@@ -66,8 +61,6 @@ MDPlayerContextDILink(playerInterface, MDVideoPlayback, self.context);
     if (curTime && duration && (duration - curTime > 5)) {
         startTime = curTime;
     }
-    
-    // 内存级缓存，业务可以根据实际情况修改源码，例如做云端缓存等
 //    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", self.dramaVideoInfo.dramaEpisodeInfo.dramaInfo.dramaId, @(self.dramaVideoInfo.dramaEpisodeInfo.episodeNumber)];
 //    [[MDLRUCache shareInstance] setValue:@(startTime) forKey:cacheKey];
 }

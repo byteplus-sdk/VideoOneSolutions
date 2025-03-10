@@ -335,6 +335,9 @@ VeLiveSnapshotListener
     if (!self.hasInitEffect) {
         self.hasInitEffect = YES;
         _beautyComponent = [[BytedEffectProtocol alloc] initWithEngine:self.pusher withType:EffectTypeMediaLive useCache:YES];
+        if (_beautyComponent == nil) {
+            self.hasInitEffect = NO;
+        }
     }
 }
 - (void)startRecord:(int)width height:(int)height {

@@ -19,7 +19,7 @@
         }];
         self.currentPopObj = self.effectViewModel;
     } else {
-        [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"not_support_beauty_error", @"ToolKit")];
+        [[ToastComponent shareToastComponent] showWithMessage:[NSString stringWithFormat:LocalizedStringFromBundle(@"effect_sdk_init_failed_tip", @"ToolKit"),  @"please check!"]];
     }
 }
 

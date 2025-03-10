@@ -1,4 +1,5 @@
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #else
@@ -64,26 +65,6 @@ typedef NS_ENUM(SInt32, BTDURLParameterEncodeStrategy) {
      */
     BTDURLParameterEncodeStrategyNoEncode,
     
-    /**
-     If the parameter is not encoded, this strategy is recommended.
-     The appending parameters will be encoded by btd_stringByURLEncode and then append to the original URL string.
-     
-     ✅
-     NSString *original = @"sslocal://bytedance.com/?param1=value1";
-     NSDictionary *appending = @{@"字节":@"字节:Byte"};
-     NSString *result = [original btd_urlStringByAddingParameters:appending];
-        result: @"sslocal://bytedance.com/?param1=value1&%E5%AD%97%E8%8A%82=%E5%AD%97%E8%8A%82%3AByte"
-     
-     NSString *remove = [result btd_urlStringByRemovingParameters:@[@"字节"]];
-        remove:@"sslocal://bytedance.com/?param1=value1"
-     
-     ❌
-     If parameters are encoded, they will encode again.
-     NSString *original = @"sslocal://bytedance.com/?param1=value1";
-     NSDictionary *appending = @{@"%E5%AD%97%E8%8A%82%3":@"字节"};
-     NSString *result = [original btd_urlStringByAddingParameters:appending];
-        result: @"sslocal://bytedance.com/?param1=value1&%25E5%25AD%2597%25E8%258A%2582%253=Byte"
-     */
     BTDURLParameterEncodeStrategyEncode,
     
     /**

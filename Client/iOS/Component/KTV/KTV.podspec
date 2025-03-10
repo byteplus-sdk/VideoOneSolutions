@@ -23,7 +23,9 @@ Pod::Spec.new do |spec|
                                 '#import "KTVSeatModel.h"',
                                 '#import "KTVRoomModel.h"',
                                 '#import "KTVSongModel.h"'
-                           
+  unless defined?($RTC_SDK)
+    raise "Error: Variable $RTC_SDK is not defined in the podspec file."
+  end
   spec.dependency 'ToolKit/RTC'
   spec.dependency 'ToolKit'
   spec.dependency 'YYModel'

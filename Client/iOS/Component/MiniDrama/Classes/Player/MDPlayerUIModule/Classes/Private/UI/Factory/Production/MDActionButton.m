@@ -1,10 +1,5 @@
-//
-//  MDActionButton.m
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/11/9.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDActionButton.h"
 #import "MDInterfaceElementDescription.h"
 #import "UIView+MDElementDescripition.h"

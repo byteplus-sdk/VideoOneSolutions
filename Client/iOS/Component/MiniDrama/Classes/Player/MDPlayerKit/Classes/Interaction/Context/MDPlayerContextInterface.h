@@ -1,8 +1,5 @@
-//
-//  MDPlayerContextInterface.h
-//  MDPlayerKit
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #ifndef MDPlayerContextInterface_h
 #define MDPlayerContextInterface_h
 

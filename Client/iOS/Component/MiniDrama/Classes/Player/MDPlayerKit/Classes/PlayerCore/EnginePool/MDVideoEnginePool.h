@@ -1,10 +1,5 @@
-//
-//  MDVideoEnginePool.h
-//  Pods
-//
-//  Created by zyw on 2024/7/16.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 #import <TTSDK/TTVideoEngine.h>
 #import <TTSDK/TTVideoEngineMediaSource.h>

@@ -1,9 +1,5 @@
-//
-//  SubSceneTableCell.h
-//  AFNetworking
-//
-//  Created by bytedance on 2024/5/21.
-//
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <ToolKit/BaseEntrance.h>
 #import <UIKit/UIKit.h>
 

@@ -1,10 +1,5 @@
-//
-//  MDInterfaceProgressElement.h
-//  MDPlayerUIModule
-//
-//  Created by real on 2022/1/7.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDInterfaceElementDescriptionImp.h"
 #import "MDInterfaceElementProtocol.h"
 

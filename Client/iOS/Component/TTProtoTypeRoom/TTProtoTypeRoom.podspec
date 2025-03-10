@@ -20,7 +20,11 @@ Pod::Spec.new do |s|
   if $XCODE_VERSION >= '15.0.0'
     s.user_target_xcconfig = {"OTHER_LDFLAGS"=> "-ld64", }
   end
-
+  
+  unless defined?($RTC_SDK)
+    raise "Error: Variable $RTC_SDK is not defined in the podspec file."
+  end
+  
   s.subspec 'LivePlayer' do |subspec|
     subspec.public_header_files = [
       'Classes/LivePlayer/**/*.{h}'

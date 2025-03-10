@@ -1,10 +1,5 @@
-//
-//  MDLRUCache.h
-//  MDBaseKit
-//
-//  Created by zyw on 2024/10/10.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN

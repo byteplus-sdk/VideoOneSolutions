@@ -1,7 +1,5 @@
-//
-//  NSData+BTDAdditions.m
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "NSData+BTDAdditions.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <CommonCrypto/CommonCryptor.h>

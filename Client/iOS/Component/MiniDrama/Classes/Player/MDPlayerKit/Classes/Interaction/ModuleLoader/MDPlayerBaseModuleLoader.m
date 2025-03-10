@@ -1,8 +1,5 @@
-//
-//  MDPlayerBaseModuleLoader.m
-//  MDPlayerKit
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPlayerBaseModuleLoader.h"
 #import "MDPlayerModuleManagerInterface.h"
 #import "MDFrameScatterPerform.h"
@@ -111,7 +108,7 @@ MDPlayerContextDILink(moduleManager, MDPlayerModuleManagerInterface, self.contex
     if (module) {
         [self.moduleManager removeModule:module];
         if (self.removeModuleFix) {
-            [self.scatterPerform removeLoadObjects:@[module]]; // 延迟队列也应该同步移除
+            [self.scatterPerform removeLoadObjects:@[module]];
         } else {
             [self.scatterPerform unloadObjects:@[module]];
         }
@@ -121,7 +118,7 @@ MDPlayerContextDILink(moduleManager, MDPlayerModuleManagerInterface, self.contex
 - (void)removeModules:(NSArray<id<MDPlayerBaseModuleProtocol>> *)modules {
     [self.moduleManager removeModules:modules];
     if (self.removeModuleFix) {
-        [self.scatterPerform removeLoadObjects:modules]; // 延迟队列也应该同步移除
+        [self.scatterPerform removeLoadObjects:modules];
     } else {
         [self.scatterPerform unloadObjects:modules];
     }

@@ -1,20 +1,11 @@
-//
-//  MDEventPoster.m
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/9/7.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDEventPoster.h"
 #import "MDEventPoster+Private.h"
 #import "MDInterfaceBridge.h"
 
 @interface MDEventPoster ()
 
-/**
- * 这些比较特殊，暂时提供setter & getter，寄存状态,
- * 命名/含义 与BOOL默认值相同
- */
 @property (nonatomic, assign) BOOL screenIsLocking;
 
 @property (nonatomic, assign) BOOL screenIsClear;

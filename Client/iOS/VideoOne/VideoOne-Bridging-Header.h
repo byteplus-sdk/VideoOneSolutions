@@ -1,4 +1,2 @@
-//
-//  Use this file to import your target's public headers that you would like to expose to Swift.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0

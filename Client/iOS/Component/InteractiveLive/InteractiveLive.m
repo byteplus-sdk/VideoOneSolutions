@@ -47,6 +47,7 @@
 - (void)joinRTS:(JoinRTSParamsModel *_Nonnull)model
           block:(void (^)(BOOL result))block {
     if (!model) {
+        [[ToastComponent shareToastComponent] dismiss];
         [[ToastComponent shareToastComponent] showWithMessage:LocalizedString(@"connection_failed")];
         if (block) {
             block(NO);

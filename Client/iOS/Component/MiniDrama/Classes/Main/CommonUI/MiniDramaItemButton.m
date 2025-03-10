@@ -1,10 +1,5 @@
-//
-//  miniDramaItemButtom.m
-//  MiniDrama
-//
-//  Created by ByteDance on 2024/11/14.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaItemButton.h"
 #import "ToolKit.h"
 

@@ -1,10 +1,5 @@
-//
-//  MiniDramaPlayerSpeedModule.m
-//  MDPlayModule
-//
-//  Created by zyw on 2024/7/16.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaPlayerSpeedModule.h"
 #import "MDPlayerContextKeyDefine.h"
 #import "MDPlayerActionViewInterface.h"

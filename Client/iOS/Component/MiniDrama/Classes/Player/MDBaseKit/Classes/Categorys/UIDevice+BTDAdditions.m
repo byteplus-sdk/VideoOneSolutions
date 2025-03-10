@@ -1,8 +1,5 @@
-//
-//  UIDevice+BTDAdditions.m
-//  Article
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "UIDevice+BTDAdditions.h"
 #import "UIWindow+BTDAdditions.h"
 #import <sys/utsname.h>

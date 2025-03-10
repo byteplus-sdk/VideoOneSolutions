@@ -1,0 +1,122 @@
+[
+    {
+        "ID" : -1,
+        "name"        : "关闭",
+        "title"       : "close",
+        "selectImg"   : "iconCloseButtonSelected",
+        "unselectImg" : "iconCloseButtonNormal",
+        "resourcePath"  : ""
+    },
+    {
+        "ID" : 100663296,
+        "name"        : "人像",
+        "title"       : "tab_portrait",
+        "selectImg"   : "FilterGroupPortrait_selected",
+        "unselectImg" : "FilterGroupPortrait_selected",
+        "children": [
+            {
+                "ID" : -1,
+                "name"      : "正常",
+                "title"     : "filter_normal",
+                "selectImg"   : "iconCloseButtonSelected",
+                "unselectImg" : "iconCloseButtonNormal",
+                "resourcePath": ""
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "自然",
+                "title"     : "filter_F1",
+                "selectImg" : "自然",
+                "resourcePath": "Filter_38_F1"
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "清透",
+                "title"     : "filter_L5",
+                "selectImg" : "清透",
+                "resourcePath": "Filter_37_L5"
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "恋爱超甜",
+                "title"     : "filter_Po2",
+                "selectImg" : "恋爱超甜",
+                "resourcePath": "Filter_24_Po2"
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "冷氧",
+                "title"     : "filter_Po8",
+                "selectImg" : "冷氧",
+                "resourcePath": "Filter_30_Po8"
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "红棕",
+                "title"     : "filter_L4",
+                "selectImg" : "红棕",
+                "resourcePath": "Filter_36_L4"
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "浅暖",
+                "title"     : "filter_musi",
+                "selectImg" : "浅暖",
+                "resourcePath": "Filter_10_11"
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "奶油",
+                "title"     : "filter_cream",
+                "selectImg" : "奶油",
+                "resourcePath": "Filter_02_14"
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "洛丽塔",
+                "title"     : "filter_lolita",
+                "selectImg" : "洛丽塔",
+                "resourcePath": "Filter_05_10"
+            }
+        ]
+    },
+    {
+        "ID" : 100663296,
+        "name"        : "风景",
+        "title"       : "tab_landscape",
+        "selectImg"   : "FilterGroupScenery_selected",
+        "unselectImg" : "FilterGroupScenery_selected",
+        "children": [
+            {
+                "ID" : -1,
+                "name"      : "正常",
+                "title"     : "filter_normal",
+                "selectImg"   : "iconCloseButtonSelected",
+                "unselectImg" : "iconCloseButtonNormal",
+                "resourcePath": ""
+            },
+            
+            {
+                "ID" : 100663296,
+                "name"      : "蜜桃",
+                "title"     : "filter_mitao",
+                "selectImg" : "蜜桃",
+                "resourcePath": "Filter_06_03"
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "浅夏",
+                "title"     : "filter_L2",
+                "selectImg" : "浅夏",
+                "resourcePath": "Filter_34_L2"
+            },
+            {
+                "ID" : 100663296,
+                "name"      : "夜色",
+                "title"     : "filter_L3",
+                "selectImg" : "夜色",
+                "resourcePath": "Filter_35_L3"
+            }
+        ]
+    }
+]

@@ -1,11 +1,5 @@
-//
-//  VEViewController.m
-//  VOLCDemo
-//
-//  Created by real on 2021/5/21.
-//  Copyright © 2021 ByteDance. All rights reserved.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDViewController.h"
 
 @implementation MDViewController

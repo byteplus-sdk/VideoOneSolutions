@@ -1,8 +1,5 @@
-//
-//  MiniDramaDetailFeedViewController.m
-//  MDPlayModule
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MiniDramaDetailFeedViewController.h"
 #import "MiniDramaDetailVideoCellController.h"
 #import "MiniDramaSelectionViewController.h"
@@ -208,7 +205,6 @@ UIGestureRecognizerDelegate
 - (void)updateParentPlayDramaVideoInfo {
 //    if (self.delegate && [self.delegate respondsToSelector:@selector(miniDramaDetailFeedViewWillback:)]) {
 //        MDDramaEpisodeInfoModel *curDramaVideoInfo = [self.dramaVideoModels objectAtIndex:self.pageContainer.currentIndex];
-//        // 当前剧集未解锁，找到上一个最近解锁的视频
 //        if (curDramaVideoInfo.vip) {
 //            for (NSInteger i = (self.dramaVideoModels.count - 1); i >= 0; i--) {
 //                MDDramaEpisodeInfoModel *retDramaVideoInfo = [self.dramaVideoModels objectAtIndex:i];

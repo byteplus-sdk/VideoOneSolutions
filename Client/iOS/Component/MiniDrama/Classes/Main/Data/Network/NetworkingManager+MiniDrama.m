@@ -1,10 +1,5 @@
-//
-//  NetworkingManager+MiniDrama.m
-//  MiniDrama
-//
-//  Created by ByteDance on 2024/11/15.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "NetworkingManager+MiniDrama.h"
 #import "NetworkingManager+VodPlayer.h"
 #import <ToolKit/LocalUserComponent.h>

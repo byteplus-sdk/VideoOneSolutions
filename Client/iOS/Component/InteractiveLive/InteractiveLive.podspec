@@ -19,7 +19,9 @@ Pod::Spec.new do |spec|
                                 '#import "ToolKit.h"',
                                 '#import "LiveRTSManager.h"',
                                 '#import "InteractiveLiveConstants.h"'
-    
+  unless defined?($RTC_SDK)
+    raise "Error: Variable $RTC_SDK is not defined in the podspec file."
+  end
   spec.dependency 'ToolKit/RTC'
   spec.dependency 'ToolKit/LiveRoomUI'
   spec.dependency 'ToolKit/LivePlayer'

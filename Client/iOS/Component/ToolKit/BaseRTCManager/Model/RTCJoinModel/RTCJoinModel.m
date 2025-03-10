@@ -15,10 +15,12 @@
     NSInteger joinType = -1;
     NSInteger elapsed = 0;
     if ([dic isKindOfClass:[NSDictionary class]]) {
-        NSString *joinTypeStr = [NSString stringWithFormat:@"%@", dic[@"join_type"]];
-        joinType = joinTypeStr.integerValue;
+        if ([dic valueForKey:@"join_type"]) {
+            joinType = [dic[@"join_type"] integerValue];
+        }
+
         if ([dic valueForKey:@"elapsed"]) {
-            elapsed = [dic[@"elapse"] integerValue];
+            elapsed = [dic[@"elapsed"] integerValue];
         }
     }
 

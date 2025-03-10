@@ -1,16 +1,5 @@
-//
-//  MDInterfaceElementDescription.h
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/9/24.
-//
-
-/**
- * This file helps you to create a element which is a brick in whole scene.
- * The protocol 'MDInterfaceElementDescription' describes the characteristics of element.
- * If you want to create a custom view, the view should implement the protocol 'MDInterfaceCustomView'.
- **/
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDPlayProtocol.h"
 
 typedef enum : NSUInteger {

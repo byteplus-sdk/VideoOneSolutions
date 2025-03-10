@@ -1,10 +1,5 @@
-//
-//  UIView+MDElementDescripition.m
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/09/30.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "UIView+MDElementDescripition.h"
 #import "MDInterfaceElementDescription.h"
 #import <objc/message.h>

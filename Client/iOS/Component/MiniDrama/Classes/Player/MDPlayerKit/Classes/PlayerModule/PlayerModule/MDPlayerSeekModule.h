@@ -1,10 +1,5 @@
-//
-//  MDPlayerSeekModule.h
-//  MDPlayModule
-//
-//  Created by zyw on 2024/7/8.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 #import "MDPlayerBaseModule.h"
 

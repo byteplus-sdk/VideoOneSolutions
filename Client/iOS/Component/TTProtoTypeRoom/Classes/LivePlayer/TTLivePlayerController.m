@@ -1,10 +1,5 @@
-//
-//  LivePlayerController.m
-//  TTProtoTypeRoom
-//
-//  Created by ByteDance on 2024/9/11.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "TTLivePlayerController.h"
 #import "TVLManager.h"
 #import <TTSDK/VeLivePlayerError.h>

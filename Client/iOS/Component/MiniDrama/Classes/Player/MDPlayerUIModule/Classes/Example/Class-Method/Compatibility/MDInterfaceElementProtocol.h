@@ -1,10 +1,5 @@
-//
-//  MDInterfaceElementProtocol.h
-//  Pods
-//
-//  Created by real on 2022/1/6.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDInterfaceElementDescription.h"
 #import "NSObject+ToElementDescription.h"
 

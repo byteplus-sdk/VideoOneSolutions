@@ -1,10 +1,5 @@
-//
-//  TTLiveCellController.h
-//  TTProtoTypeRoom
-//
-//  Created by ByteDance on 2024/9/9.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 #import "TTPageViewController.h"
 #import "TTLivePlayerManager.h"

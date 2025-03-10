@@ -1,3 +1,5 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 
 // This helps deal with NSPointerArray that stores pointers to objects that inherit from NSObject.

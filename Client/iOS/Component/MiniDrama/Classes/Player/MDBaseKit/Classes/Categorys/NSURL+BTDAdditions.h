@@ -1,7 +1,5 @@
-//
-//  NSURL+BTDAdditions.h
-//  Pods
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -26,24 +24,6 @@ FOUNDATION_EXTERN NSURL* BTDCreateUrl(NSString *urlString);
  */
 @property(nonatomic, assign, class) BOOL btd_invalidSchemeCompatible;
 
-/**
- This value was added to address the inconsistent behavior of `[NSURL URLWithString:]` before and
- after iOS17. Default is `YES`, if the value is `YES`, function `BTDCreateUrl(NSString*)` will use
- new API `+[NSURL URLWithString:encodingInvalidCharacters:]` after iOS17, otherwise it will use
- `+[NSURL URLWithString:]`.
- 
- The change of `+[NSURL URLWithString:]` after iOS17 will bring unexpected exception, new API
- `+[NSURL URLWithString:encodingInvalidCharacters:]` was created to avoid this risk.
- 
- API change in iOS17: when we input strings contain invalid characters, like uncoded string,
- `+[NSURL URLWithString:]` will encode these characters again after iOS17. For example,
- `a=中国&b=%E7%`, you will get `nil` before IOS17, but get `a=%E4%B8%AD%E5%9B%BD&b=%25E7%25` after,
- the `%` will be re-encode into `%25`.
- 
- In order to fix this problem, ByteDanceKit provides new API `BTDCreateUrl(NSString*)`, when
- `btd_isURLWithStringIOS17Compatible` set to `YES`, `BTDCreateUrl(NSString*)` will return same
- result before and after iOS17.
- */
 @property(nonatomic, assign, class) BOOL btd_isURLWithStringIOS17Compatible;
 
 /// A compatible URL construction method.

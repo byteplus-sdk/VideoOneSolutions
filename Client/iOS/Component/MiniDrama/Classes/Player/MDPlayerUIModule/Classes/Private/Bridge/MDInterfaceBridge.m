@@ -1,10 +1,5 @@
-//
-//  MDInterfaceBridge.m
-//  MDPlayerUIModule
-//
-//  Created by real on 2021/9/15.
-//
-
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
 #import "MDInterfaceBridge.h"
 #import "MDEventConst.h"
 #import "MDPlayProtocol.h"
