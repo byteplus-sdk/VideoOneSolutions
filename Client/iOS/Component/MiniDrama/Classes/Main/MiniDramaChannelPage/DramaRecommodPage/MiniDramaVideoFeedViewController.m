@@ -11,7 +11,7 @@
 #import "BTDMacros.h"
 #import "MDDramaEpisodeInfoModel.h"
 #import <NetworkingManager+MiniDrama.h>
-#import <TTSDK/TTVideoEngine+Strategy.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <ToolKit/ToolKit.h>
 
 static NSInteger MiniDramaVideoFeedPageCount = 10;

@@ -7,7 +7,7 @@
 
 @interface SampleHandler()<VeLiveReplayKitExtensionDelegate, ByteRtcScreenCapturerExtDelegate>
 
-@property (nonatomic, strong) NSString* stopMessage;
+@property (nonatomic, copy) NSString* stopMessage;
 
 @property (nonatomic, copy) NSString* shareType;
 

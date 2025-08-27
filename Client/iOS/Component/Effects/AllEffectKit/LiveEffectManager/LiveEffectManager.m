@@ -4,9 +4,7 @@
 //
 #import "LiveEffectManager.h"
 #import <ToolKit/ToolKit.h>
-#import <TTSDK/VeLivePusher.h>
-#import <TTSDK/VeLiveVideoEffectManager.h>
-#import <VeLivePusher.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 
 @interface LiveEffectManager ()
 @property (nonatomic, weak) VeLiveVideoEffectManager *videoEffect;

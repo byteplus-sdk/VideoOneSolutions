@@ -20,6 +20,8 @@ FOUNDATION_EXPORT NSString * const VOToolKit;
 FOUNDATION_EXPORT NSString * const VOTTProto;
 FOUNDATION_EXPORT NSString * const VOVodPlayer;
 FOUNDATION_EXPORT NSString * const VOMiniDrama;
+FOUNDATION_EXPORT NSString * const VOAIChat;
+
 
 
 #define VOLogD(tag, format, ...) BPVOLog(NO, BPVOLogPriorityDebug, tag, __FILE__, __LINE__, __FUNCTION__, format, ##__VA_ARGS__)

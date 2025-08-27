@@ -5,7 +5,7 @@
 #import "MDPlayerUIModule.h"
 #import "MDPlayerBaseModule.h"
 #import "MDVideoPlayerConfiguration.h"
-#import <TTSDK/TTVideoEngine+Strategy.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

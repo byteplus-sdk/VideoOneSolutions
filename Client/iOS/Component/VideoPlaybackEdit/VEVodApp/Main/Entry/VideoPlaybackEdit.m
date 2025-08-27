@@ -5,10 +5,9 @@
 #import "VideoPlaybackEdit.h"
 #import "VEMainViewController.h"
 #import <AppConfig/BuildConfig.h>
-#import <TTSDK/TTSDKManager.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
-#import <TTSDK/TTVideoEngine.h>
 
 @implementation VideoPlaybackEdit
 

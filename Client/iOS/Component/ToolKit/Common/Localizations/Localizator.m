@@ -75,6 +75,10 @@ static NSString *const LocalizedFalse = @"Localized_Parsing_Failed_Key";
     return curLanguage;
 }
 
++ (BOOL)isChinese {
+    return [Localizator getCurrentLanguage] == Chinese_Simple;
+}
+
 + (NSString *)getSystemLanguage {
     NSArray *preferredLanguages = [NSLocale preferredLanguages];
     NSString *currLanguage = @"";

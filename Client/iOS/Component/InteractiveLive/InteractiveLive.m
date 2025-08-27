@@ -6,7 +6,7 @@
 #import "LiveJoinRTSInputModel.h"
 #import "LiveRoomListsViewController.h"
 #import <AppConfig/BuildConfig.h>
-#import <TTSDK/TTSDKManager.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <ToolKit/BaseRTCManager.h>
 #import <ToolKit/JoinRTSParams.h>
 #import <ToolKit/ToolKit.h>

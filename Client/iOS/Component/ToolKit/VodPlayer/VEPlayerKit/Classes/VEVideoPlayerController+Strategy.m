@@ -1,7 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "VEVideoPlayerController+Strategy.h"
-#import <TTSDK/TTVideoEngine+Strategy.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <objc/message.h>
 #import "VEVideoCache.h"
 #import <ToolKit/ToolKit.h>

@@ -11,9 +11,9 @@ install! 'cocoapods',
 # TTSDK version
 $TT_SDK_VERSION = '1.43.300.2-premium'
 
-$RTC_SDK = 'TTSDK/RTCSDK'
+$RTC_SDK = 'TTSDKFramework/RTCSDK'
 def rtc_pods
-  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['RTCSDK'], :modular_headers => true
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['RTCSDK'], :modular_headers => true
 end
 
 def common_pods
@@ -30,7 +30,7 @@ end
 
 def scene_InteractiveLive_pods
   # Interactive Live
-  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTCSDK']
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTCSDK']
   pod 'InteractiveLive', :path => './Component/InteractiveLive'
   # Effect
   pod 'EffectResources', :path => './Component/Effects/EffectResources'
@@ -42,13 +42,13 @@ end
 def scene_VideoPlaybackEdit_pods
   # One-Stop Video
   pod 'VideoPlaybackEdit', :path => './Component/VideoPlaybackEdit'
-  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['Player']
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['Player']
 end
 
 def scene_Vod_SingleFunction_pods
   # One-Stop Video
   pod 'VodSingleFunction', :path => './Component/VodSingleFunction'
-  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['Player']
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['Player']
 end
 
 def scene_KTV_pods
@@ -60,7 +60,7 @@ end
 
 def scene_MediaLive_pods
   # LiveDemo SingleFunction
-  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'Quic/Pull', 'Quic/Push', 'ScreenCapture']
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'Quic/Pull', 'Quic/Push', 'ScreenCapture']
   pod 'MediaLive', :path => './Component/MediaLive'
   # Effect
   pod 'EffectResources', :path => './Component/Effects/EffectResources'
@@ -86,13 +86,18 @@ end
 
 
 def scene_TTProtoTypeRoom_pods
-    pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'Player', 'RTCSDK']
+    pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'Player', 'RTCSDK']
     pod 'TTProtoTypeRoom', :path => './Component/TTProtoTypeRoom'
 end
 
 def scene_MiniDrama_pods
-  pod 'TTSDK', $TT_SDK_VERSION, :subspecs => ['Player']
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['Player']
   pod 'MiniDrama', :path => './Component/MiniDrama'
+end
+
+def scene_AIChat_pods
+  rtc_pods
+  pod 'AIChat', :path => './Component/AIChat'
 end
 
 target 'VideoOne' do
@@ -105,12 +110,13 @@ target 'VideoOne' do
   develop_rtc_pods
   scene_TTProtoTypeRoom_pods
   scene_MiniDrama_pods
+  scene_AIChat_pods
   
 end
 
 target 'ScreenShareExtension' do
   pod 'AppConfig', :path => './Component/AppConfig'
-  pod 'TTSDK',$TT_SDK_VERSION, :subspecs => ['ScreenCaptureExtension']
+  pod 'TTSDKFramework',$TT_SDK_VERSION, :subspecs => ['ScreenCaptureExtension']
   pod 'RTCDependency', :path => 'component/RTCDependency', :subspecs=> ['audioeffect', 'ScreenCapture']
 end
 

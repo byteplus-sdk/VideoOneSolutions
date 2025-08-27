@@ -91,7 +91,7 @@
 - (void)sceneCellAction:(BaseSceneEntrance *)model {
     // Open the corresponding scene home page
     self.tableView.userInteractionEnabled = NO;
-
+    [[model class] prepareEnvironment];
     __weak __typeof__(self) weakSelf = self;
     [model enterWithCallback:^(BOOL result) {
         __strong __typeof__(weakSelf) self = weakSelf;
@@ -132,7 +132,6 @@
         for (NSDictionary *scene in [ScenesViewController scenesList]) {
             BaseSceneEntrance *entrance = [[NSClassFromString(scene[@"className"]) alloc] init];
             if (entrance) {
-                [[entrance class] prepareEnvironment];
                 [_dataArray addObject:entrance];
             }
         }
@@ -187,6 +186,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _scenes = @[
+            @{@"className": @"AIChat"},
             @{@"className": @"MiniDrama"},
             @{@"className": @"TTProtoTypeRoom"},
             @{@"className": @"OnlineKTV"},

@@ -5,9 +5,7 @@
 #import "TTProtoTypeRoom.h"
 #import "MixFeedViewController.h"
 #import <AppConfig/BuildConfig.h>
-#import <TTSDK/TTSDKManager.h>
-#import <TTSDK/TTVideoEngine.h>
-#import <TTSDK/TVLManager.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
 #import <ToolKit/JoinRTSParams.h>

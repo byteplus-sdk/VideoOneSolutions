@@ -7,7 +7,7 @@
 #import "LiveRTCManager.h"
 #import "LiveSettingData.h"
 #import "LiveStreamConfiguration.h"
-#import <TTSDK/VeLivePusher.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 
 @interface LiveNormalPushStreamingImpl () <ByteRTCVideoSinkDelegate,
                                            ByteRTCAudioFrameObserver,

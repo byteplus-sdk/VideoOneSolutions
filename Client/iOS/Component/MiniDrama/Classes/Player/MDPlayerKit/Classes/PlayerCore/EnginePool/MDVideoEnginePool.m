@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "MDVideoEnginePool.h"
 #import "BTDMacros.h"
-#import <TTSDK/TTVideoEngine+Strategy.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 
 @interface MDVideoEnginePool ()
 
