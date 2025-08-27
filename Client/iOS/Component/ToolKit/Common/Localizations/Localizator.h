@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getLanguageKey;
 
 + (NSString *)getCurrentLanguage;
+
++ (BOOL)isChinese;
+
 @end
 
 NS_ASSUME_NONNULL_END

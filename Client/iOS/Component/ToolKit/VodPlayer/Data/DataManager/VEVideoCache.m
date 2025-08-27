@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "VEVideoCache.h"
 #import <YYCache/YYCache.h>
-#import <TTSDK/TTVideoEngineModel.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 
 @interface VEVideoCache ()
 

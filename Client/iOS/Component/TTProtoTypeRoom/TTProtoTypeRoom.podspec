@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
       'Classes/LivePlayer/**/*'
     ]
     subspec.dependency 'ToolKit/Common'
-    subspec.dependency 'TTSDK/LivePull-RTS'
+    subspec.dependency 'TTSDKFramework/LivePull-RTS'
   end
 
   s.subspec 'RTCManager' do |subspec|
@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
     ]
     subspec.dependency 'ToolKit/Common'
     subspec.dependency 'ToolKit/RTC'
-    subspec.dependency 'TTSDK/LivePull-RTS'
+    subspec.dependency 'TTSDKFramework/LivePull-RTS'
   end
 
 

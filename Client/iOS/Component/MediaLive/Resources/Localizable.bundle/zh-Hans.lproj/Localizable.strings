@@ -221,7 +221,7 @@
 "medialive_loading"="正在加载...";
 "medialive_image_picker_error"="获取图片失败";
 "medialive_camera_privilege_ask"="请授权相机权限";
-"medialive_microphone_privilege_ask"="请授权相机权限";
+"medialive_microphone_privilege_ask"="请授权麦克风权限";
 "medialive_tap_shine"="轻触照亮";
 "medialive_tap_close"="轻触关闭";
 "medialive_camera_init_error"="相机初始化失败";

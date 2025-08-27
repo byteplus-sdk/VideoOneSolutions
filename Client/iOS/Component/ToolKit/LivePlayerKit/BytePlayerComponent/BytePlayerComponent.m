@@ -6,8 +6,7 @@
 #import "BytePlayerComponent.h"
 #import "LiveSettingData.h"
 #import <Masonry/Masonry.h>
-#import <TTSDK/TTSDKManager.h>
-#import <TTSDK/TTVideoLive.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import "BPVOLog.h"
 
 

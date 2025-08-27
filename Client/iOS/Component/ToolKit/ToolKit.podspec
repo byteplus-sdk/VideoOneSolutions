@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
     subspec.public_header_files = 'LivePlayerKit/**/*.h'
     subspec.source_files = 'LivePlayerKit/**/*.{h,m}'
     subspec.dependency 'ToolKit/Common'
-    subspec.dependency 'TTSDK/LivePull'
+    subspec.dependency 'TTSDKFramework/LivePull'
   end
   
   s.subspec 'VodPlayer' do |subspec|

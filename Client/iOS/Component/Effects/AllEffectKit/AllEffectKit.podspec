@@ -90,6 +90,6 @@ Pod::Spec.new do |spec|
     subspec.source_files = 'LiveEffectManager/*'
     subspec.public_header_files = 'LiveEffectManager/*.h'
     subspec.dependency 'AllEffectKit/Common'
-    subspec.dependency 'TTSDK/LivePush-RTS'
+    subspec.dependency 'TTSDKFramework/LivePush-RTS'
   end
 end

@@ -5,6 +5,11 @@
 #import <Foundation/Foundation.h>
 #import <ToolKit/ToolKit.h>
 
+typedef NS_ENUM(NSInteger, EntranceFontStyle) {
+    EntranceFontStyleLight = 1, //Default
+    EntranceFontStyleDark,
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol EntranceProtocol <NSObject>
@@ -21,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *des;
 @property (nonatomic, copy) NSArray<NSString *> *desList;
+@property (nonatomic, assign) EntranceFontStyle fontStyle;
 
 - (void)enterWithCallback:(void (^)(BOOL result))block;
 

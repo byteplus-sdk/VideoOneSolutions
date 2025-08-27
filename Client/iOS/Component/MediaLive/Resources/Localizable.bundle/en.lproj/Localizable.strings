@@ -221,7 +221,7 @@
 "medialive_loading" = "Loading...";
 "medialive_image_picker_error" = "Failed to get picture";
 "medialive_camera_privilege_ask" = "Please grant permission to use the camera.";
-"medialive_microphone_privilege_ask" = "Please grant permission to use the camera.";
+"medialive_microphone_privilege_ask" = "Please grant permission to use the microphone.";
 "medialive_tap_shine" = "Tap to illuminate";
 "medialive_tap_close" = "Tap to close";
 "medialive_camera_init_error" = "Camera initialization failed";

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "TTLivePlayerController.h"
 #import "TVLManager.h"
-#import <TTSDK/VeLivePlayerError.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
 #import <Masonry/Masonry.h>

@@ -1,8 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 @import Foundation;
-#import <TTSDK/TTVideoEngineVidSource.h>
-#import <TTSDK/TTVideoEngineUrlSource.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 
 @interface TTVideoEngineVidSource (MDVidSource)
 

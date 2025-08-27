@@ -28,6 +28,6 @@ Pod::Spec.new do |spec|
   spec.dependency 'YYModel'
   spec.dependency 'Masonry'
   spec.dependency 'MJRefresh'
-  spec.dependency 'TTSDK/LivePush-RTS'
-  spec.dependency 'TTSDK/LivePull-RTS'
+  spec.dependency 'TTSDKFramework/LivePush-RTS'
+  spec.dependency 'TTSDKFramework/LivePull-RTS'
 end

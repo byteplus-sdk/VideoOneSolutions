@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "MiniDrama.h"
 #import <AppConfig/BuildConfig.h>
-#import <TTSDK/TTSDKManager.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
-#import <TTSDK/TTVideoEngine.h>
 #import "MiniDramaMainViewController.h"
 
 

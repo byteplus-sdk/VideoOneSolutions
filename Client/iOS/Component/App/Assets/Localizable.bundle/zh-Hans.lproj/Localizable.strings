@@ -1,5 +1,5 @@
 "menu_scene"="场景";
-"menu_function"="产品";
+"menu_function"="功能";
 "user_name"="用户名";
 "language_info" = "语言";
 "language_name" = "简体中文";
@@ -22,8 +22,8 @@
 "cancel_account"="注销账户";
 "show_notice"="开源组件声明";
 
-"home_title" = "VOS 中心";
-"home_des" = "欢迎来到VOS中心，请选择感兴趣的场景进入体验";
+"home_title" = "VideoOne 中心";
+"home_des" = "欢迎来到VideoOne中心，请选择感兴趣的场景进入体验";
 "function_title" = "单功能";
 "function_rtc_title" = "实时音视频";
 "function_vod_title" = "视频播放";

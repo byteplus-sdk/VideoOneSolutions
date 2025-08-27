@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UIImageView *arrowImgV;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UILabel *desLabel;
+@property (nonatomic, assign) EntranceFontStyle fontStyle;
 
 @end
 
@@ -20,6 +21,7 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        self.fontStyle = EntranceFontStyleLight;
         [self setupUI];
     }
     return self;
@@ -53,8 +55,6 @@
     self.arrowImgV.contentMode = UIViewContentModeCenter;
     self.arrowImgV.layer.cornerRadius = 16;
     self.arrowImgV.clipsToBounds = YES;
-    self.arrowImgV.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2];
-    self.arrowImgV.image = [UIImage imageNamed:@"guide_arrow" bundleName:@"App"];
     [contentView addSubview:self.arrowImgV];
     [self.arrowImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.offset(-16);
@@ -63,7 +63,6 @@
     }];
 
     self.desLabel = [[UILabel alloc] init];
-    self.desLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.7];
     self.desLabel.font = [UIFont systemFontOfSize:12];
     self.desLabel.numberOfLines = 0;
     [contentView addSubview:self.desLabel];
@@ -74,7 +73,6 @@
     }];
 
     self.nameLabel = [[UILabel alloc] init];
-    self.nameLabel.textColor = [UIColor whiteColor];
     self.nameLabel.font = [UIFont boldSystemFontOfSize:18];
     [contentView addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -84,11 +82,27 @@
     }];
 }
 
+- (void)setFontStyle:(EntranceFontStyle)fontStyle {
+    _fontStyle = fontStyle;
+    if (fontStyle == EntranceFontStyleDark) {
+        self.nameLabel.textColor = [UIColor blackColor];
+        self.desLabel.textColor = [UIColor colorFromRGBHexString:@"#0C0D0E"];
+        self.arrowImgV.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+        self.arrowImgV.image = [UIImage imageNamed:@"ai_arrow" bundleName:@"App"];
+    } else {
+        self.nameLabel.textColor = [UIColor whiteColor];
+        self.desLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.7];
+        self.arrowImgV.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2];
+        self.arrowImgV.image = [UIImage imageNamed:@"guide_arrow" bundleName:@"App"];
+    }
+}
+
 - (void)setModel:(BaseSceneEntrance *)model {
     _model = model;
     self.bgImgV.image = [UIImage imageNamed:model.iconName bundleName:model.bundleName];
     self.nameLabel.text = model.title;
     self.desLabel.text = model.des;
+    self.fontStyle = model.fontStyle;
 }
 
 @end

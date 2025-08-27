@@ -1,7 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "MDVideoPlayerController+Strategy.h"
-#import <TTSDK/TTVideoEngine+Strategy.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <objc/message.h>
 
 @implementation MDVideoPlayerController (Strategy)

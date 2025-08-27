@@ -20,9 +20,7 @@
 #import "BTDMacros.h"
 #import "DramaDisrecordManager.h"
 #import <AVKit/AVKit.h>
-#import <TTSDK/TTVideoEngine.h>
-#import <TTSDK/TTVideoEngine+Video.h>
-#import <TTSDK/TTVideoEngine+Options.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <ToolKit/ToolKit.h>
 
 @interface MDVideoPlayerDisplayView : UIView

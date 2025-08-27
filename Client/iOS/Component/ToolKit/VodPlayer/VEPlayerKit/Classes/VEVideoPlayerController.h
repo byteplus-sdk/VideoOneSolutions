@@ -3,7 +3,7 @@
 @import UIKit;
 #import "VEPlayerUIModule.h"
 #import "VEVideoPlayback.h"
-#import <TTSDK/TTVideoEngineHeader.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 @import Foundation;
 
-#import <TTSDK/TTVideoEngineModelDef.h>
-#import <TTSDK/TTVideoEngineHeader.h>
-#import <TTSDK/TTVideoEngineMediaSource.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 #import "MDPlayFinishStatus.h"
 #import "MDVideoPlaybackDefine.h"
 

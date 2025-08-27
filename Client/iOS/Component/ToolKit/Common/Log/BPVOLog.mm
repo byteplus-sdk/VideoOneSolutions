@@ -18,6 +18,7 @@ NSString * const VOToolKit = @"VOToolKit";
 NSString * const VOTTProto = @"VOTTProto";
 NSString *const VOVodPlayer = @"VOVodPlayer";
 NSString *const VOMiniDrama = @"VOMiniDrama";
+NSString * const VOAIChat = @"VOAIChat";
 
 
 void __ios_log_print(int prio, const char * __restrict tag, const char * __restrict log) {
