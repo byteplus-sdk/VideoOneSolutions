@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "video-one-rn",
+    "slug": "video-one-rn",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "newArchEnabled": false,
+    "icon": "./assets/images/icon.png",
+    "scheme": "videoonern",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/images/icon.png",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.byteplus.videoone.rn"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.byteplus.videoone.rn"
+    },
+    "update": {
+      "assetPatternsToBeBundled": ["**/*"]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://artifact.byteplus.com/repository/public/",
+              "https://artifact.bytedance.com/repository/Volcengine/"
+            ]
+          }
+        }
+      ],
+      "./plugins/withATSConfig",
+      "./plugins/withPodfileSources",
+      "./plugins/withLicense"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
