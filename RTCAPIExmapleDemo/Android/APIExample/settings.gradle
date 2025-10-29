@@ -1,0 +1,20 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url 'https://maven.faceunity.com/repository/maven-public/' }
+        maven { url "https://artifact.byteplus.com/repository/public/" }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://maven.faceunity.com/repository/maven-public/' }
+        maven { url "https://artifact.byteplus.com/repository/public/" }
+    }
+}
+rootProject.name = "APIExample"
+include ':app', ':faceunity'

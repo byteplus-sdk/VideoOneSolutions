@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".examples.SEIMessageActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/local_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="20dp">
+
+            <LinearLayout
+                android:id="@+id/main_room_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                >
+
+                <EditText
+                    android:id="@+id/room_id_input"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="36dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:hint="@string/hint_room_id"
+                    android:paddingLeft="5dp"
+                    />
+                <Button
+                    android:id="@+id/btn_join_room"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_join_room"
+                    android:layout_gravity="right"/>
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="5dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/layout_background">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:text="SEI"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    >
+
+                    <EditText
+                        android:id="@+id/sei_msg_input"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:layout_height="36dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        android:hint="@string/example_sei_messaging"
+                        android:paddingLeft="5dp"
+                        />
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_send_sei_msg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/button_send"
+                        android:layout_gravity="right"/>
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="5dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/layout_background">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:text="@string/label_transcoding_messaging_title"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    >
+
+                    <EditText
+                        android:id="@+id/layout_msg_input"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:layout_height="36dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        android:hint="@string/example_sei_messaging"
+                        android:paddingLeft="5dp"
+                        />
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_send_layout_msg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/button_send"
+                        android:layout_gravity="right"/>
+
+                </LinearLayout>
+
+                <EditText
+                    android:layout_marginTop="20dp"
+                    android:id="@+id/push_url_input"
+                    android:layout_width="match_parent"
+                    android:hint="@string/hint_cdn_url"
+                    android:paddingLeft="10dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="4"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_start_push"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="0dp"
+                        android:text="@string/button_start_transcoding"/>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_stop_push"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="0dp"
+                        android:text="@string/button_stop_transcoding"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="5dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/layout_background">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:text="@string/title_external_video_frame"
+                    android:textStyle="bold"/>
+
+                <EditText
+                    android:id="@+id/video_frame_msg_input"
+                    android:layout_width="match_parent"
+                    android:hint="@string/example_sei_messaging"
+                    android:paddingLeft="10dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="4"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_start_push_frame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="0dp"
+                        android:text="@string/button_start_transcoding"/>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_stop_push_frame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="0dp"
+                        android:text="@string/button_stop_transcoding"/>
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
+</ScrollView>

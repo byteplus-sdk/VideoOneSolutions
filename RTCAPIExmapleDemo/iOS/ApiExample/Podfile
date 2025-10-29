@@ -1,0 +1,34 @@
+source 'https://cdn.cocoapods.org/'
+source 'https://github.com/byteplus-sdk/byteplus-specs.git'
+
+platform :ios, '11.0'
+  pod 'BytePlusRTC', :podspec => '../script/BytePlusRTC.podspec'
+  pod 'BytePlusRTC/ScreenCapture', :podspec => '../script/BytePlusRTC.podspec'
+
+target 'ApiExample' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # CV
+  pod 'BytedEffectSDK', :path => '../script/Depends/BytedEffectSDK'
+  
+  # 布局
+  pod 'SnapKit'
+  
+  # 请求token需要依赖
+  pod 'OpenSSL-Universal'
+  
+  # 键盘遮挡
+  pod 'IQKeyboardManagerSwift'
+  
+  # 相芯美颜SDK
+  pod 'FURenderKit', '8.7.0'
+  
+  ## TT rtmp拉流sdk
+  pod 'TTSDKFramework', '1.40.3.6-premium', :subspecs => ['LivePull']
+
+end
+
+target 'ApiExampleScreenShare' do
+  use_frameworks!
+end
