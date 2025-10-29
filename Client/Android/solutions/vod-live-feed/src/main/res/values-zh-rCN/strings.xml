@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="vod_live_entry_title">直播和视频混排Feed</string>
-    <string name="vod_live_entry_desc">直播和视频内容混排的上下滑Feed播放与互动</string>
-
-    <string name="vod_live_tap_to_watch_live">点击进入直播间</string>
-</resources>

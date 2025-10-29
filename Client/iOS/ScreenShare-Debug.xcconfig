@@ -1,4 +1,0 @@
-#include "Pods/Target Support Files/Pods-ScreenShareExtension/Pods-ScreenShareExtension.debug.xcconfig"
-
-#include? "ScreenShare-Debug-Private.xcconfig"
-

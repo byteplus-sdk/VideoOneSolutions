@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <declare-styleable name="LiveCircleView">
-        <attr name="live_strokeWidth" format="dimension" />
-        <attr name="live_radius" format="dimension" />
-        <attr name="live_waveWidth" format="dimension" />
-    </declare-styleable>
-</resources>
