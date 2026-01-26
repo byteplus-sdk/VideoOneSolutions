@@ -10,6 +10,7 @@
 "shortVideo_strategy" = "Short video strategy";
 "Preload_strategy" = "Preload strategy";
 "Prerender_strategy" = "Pre-rendering strategy";
+"ABR_strategy" = "ABR strategy";
 "common_settings" = "General strategy";
 "hardware_decoding" = "Hardware decoding";
 "device_id" = "Device ID";
@@ -25,6 +26,7 @@
 "views"="views";
 "copy_did_success"="Copied";
 "video_strategy_changed"="Please return to the homepage and re-enter the playback so that you can check the effect.";
+"video_strategy_changed_need_restart" = "Please restart the app for the changes to take effect.";
 "vod_report" = "Report";
 "vod_pip" = "Minplayer";
 "vod_pip_toast" = "Enabling picture-in-picture";

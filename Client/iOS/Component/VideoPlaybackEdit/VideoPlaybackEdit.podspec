@@ -31,12 +31,10 @@ Pod::Spec.new do |s|
   s.subspec 'Setting' do |subspec|
     subspec.public_header_files = [
       'VEVodApp/VEPlayModule/Classes/Data/**/*.{h}',
-      'VEVodApp/VEPlayModule/Classes/Setting/**/*.{h}',
       'VEVodApp/VEPlayModule/Classes/Util/**/*.{h}'
     ]
     subspec.source_files = [
       'VEVodApp/VEPlayModule/Classes/Data/**/*',
-      'VEVodApp/VEPlayModule/Classes/Setting/**/*',
       'VEVodApp/VEPlayModule/Classes/Util/**/*',
     ]
     subspec.resources = [

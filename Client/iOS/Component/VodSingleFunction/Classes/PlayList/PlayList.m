@@ -28,6 +28,10 @@
         vc.videoModel = videoModel;
         vc.playList = playList;
         vc.playMode = playMode;
+        vc.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
+            [playerController stop];
+            [playerController close];
+        };
         UIViewController *topVC = [DeviceInforTool topViewController];
         [topVC.navigationController pushViewController:vc animated:NO];
         if (block) {

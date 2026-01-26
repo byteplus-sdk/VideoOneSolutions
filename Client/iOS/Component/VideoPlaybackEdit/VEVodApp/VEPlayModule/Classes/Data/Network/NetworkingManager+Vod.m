@@ -6,6 +6,7 @@
 #import "NetworkingManager+Vod.h"
 #import "VECommentModel.h"
 #import "VEVideoModel.h"
+#import "VESettingManager.h"
 
 @implementation NetworkingManager (Vod)
 
@@ -13,12 +14,21 @@
                range:(NSRange)range
              success:(void (^)(NSArray<VEVideoModel *> *_Nonnull))success
              failure:(void (^)(NSString *_Nonnull))failure {
-    NSDictionary *param;
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    [param setObject:@(type) forKey:@"videoType"];
+    
     if (range.length) {
-        param = @{@"videoType": @(type), @"offset": @(range.location), @"pageSize": @(range.length)};
-    } else {
-        param = @{@"videoType": @(type)};
+        [param setObject:@(range.location) forKey:@"offset"];
+        [param setObject:@(range.length) forKey:@"pageSize"];
     }
+    
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    if (abr.open) {
+        [param setObject:@"evideo" forKey:@"fileType"];
+        [param setObject:@(0) forKey:@"codec"];
+        [param setObject:@(9) forKey:@"format"];
+    }
+    
     [NetworkingManager postWithPath:@"vod/v1/getFeedStreamWithPlayAuthToken"
                          parameters:param
                               block:^(NetworkingResponse *_Nonnull response) {

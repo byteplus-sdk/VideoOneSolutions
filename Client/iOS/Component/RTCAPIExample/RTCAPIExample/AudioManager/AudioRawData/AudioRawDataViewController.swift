@@ -72,7 +72,8 @@ class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, Byte
                 userInfo.userId = userId
                 
                 let roomCfg = ByteRTCRoomConfig.init()
-                roomCfg.isAutoPublish = true
+                roomCfg.isPublishAudio = true
+                roomCfg.isPublishVideo = true
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
@@ -367,6 +368,14 @@ class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, Byte
         
         if checkLogTimeVaild() {
             ToastComponents.shared.show(withMessage: "onRemoteUserAudioFrame")
+        }
+    }
+    
+    func onCaptureMixedAudioFrame(_ audioFrame: ByteRTCAudioFrame) {
+        print("onCaptureMixedAudioFrame")
+        
+        if checkLogTimeVaild() {
+            ToastComponents.shared.show(withMessage: "onCaptureMixedAudioFrame")
         }
     }
     

@@ -181,6 +181,18 @@
         model11.desTitle = LocalizedStringFromBundle(@"language_name", @"App");
         model11.isMore = NO;
         [lists addObject:model11];
+        
+        Class VESettingViewController = NSClassFromString(@"VESettingViewController");
+        if (VESettingViewController) {
+            MenuCellModel *vodSettingsModel = [[MenuCellModel alloc] init];
+            vodSettingsModel.title = LocalizedStringFromBundle(@"vod_settings", @"App");
+            vodSettingsModel.isMore = YES;
+            vodSettingsModel.block = ^{
+                UIViewController *vc = [[VESettingViewController alloc] init];
+                [self.navigationController pushViewController:vc animated:YES];
+            };
+            [lists addObject:vodSettingsModel];
+        }
 
         MenuCellModel *model2 = [[MenuCellModel alloc] init];
         model2.title = LocalizedStringFromBundle(@"privacy_policy", @"App");

@@ -289,6 +289,9 @@ typedef NS_ENUM(NSInteger, MaskViewType) {
 
     VESettingModel *h265 = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalH265];
     self.playerController.h265Open = h265.open;
+    
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    self.playerController.abrOpen = abr.open;
 
     VESettingModel *hardwareDecode = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalHardwareDecode];
     self.playerController.hardwareDecodeOpen = hardwareDecode.open;

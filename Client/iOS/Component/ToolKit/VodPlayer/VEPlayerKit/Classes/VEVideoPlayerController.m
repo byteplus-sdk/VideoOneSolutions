@@ -15,7 +15,9 @@
 @interface VEVideoPlayerController () <
     TTVideoEngineDelegate,
     TTVideoEngineDataSource,
-    TTVideoEngineResolutionDelegate>
+    TTVideoEngineResolutionDelegate,
+    TTVideoEngineABRDelegate
+>
 
 @property (nonatomic, strong) TTVideoEngine *videoEngine;
 
@@ -63,10 +65,16 @@
 }
 
 - (void)configVideoEngine {
-    if (_videoEngine == nil) {
-        TTVideoEngine *engine = [[TTVideoEngine alloc] initWithOwnPlayer:YES];
-        self.videoEngine = engine;
+    if (self.videoEngine != NULL) {
+        self.isReused = YES;
+        [self.videoEngine stop];
+        [self.videoEngine closeAysnc];
+        if (self.videoEngine.playerView.superview != NULL) {
+            [self.videoEngine.playerView removeFromSuperview];
+        }
     }
+    TTVideoEngine *engine = [[TTVideoEngine alloc] initWithOwnPlayer:YES];
+    self.videoEngine = engine;
     /*
      We need to change audioSession category to playBack before using video Engine, or the video will be silent.
      */
@@ -85,7 +93,13 @@
     } else {
         self.videoEngine.looping = [VEDataPersistance boolValueFor:VEDataCacheKeyPlayLoop defaultValue:YES];
     }
-    [self.videoEngine configResolution:[VEVideoPlayerController getPlayerCurrentResolution]];
+    if (self.abrOpen) {
+        // enable smooth switching
+        [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
+        self.videoEngine.abrDelegate = self;
+    }else {
+        [self.videoEngine configResolution:[VEVideoPlayerController getPlayerCurrentResolution]];
+    }
     if (@available(iOS 14.0, *)) {
         [self.videoEngine setSupportPictureInPictureMode:YES];
     }
@@ -309,6 +323,10 @@
 }
 
 - (void)videoEnginePrepared:(TTVideoEngine *)videoEngine {
+    if (self.abrOpen) {
+        // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
+        [videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
+    }
     if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayerPrepared:)]) {
         [self.delegate videoPlayerPrepared:self];
     }
@@ -397,6 +415,34 @@
 - (void)videoSizeDidChange:(TTVideoEngine *)videoEngine videoWidth:(NSInteger)videoWidth videoHeight:(NSInteger)videoHeight {
     if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayerViewSizeDidChange:videoWidth:videoHeight:)]) {
         [self.delegate videoPlayerViewSizeDidChange:self videoWidth:videoWidth videoHeight:videoHeight];
+    }
+}
+
+#pragma mark - TTVideoEngineABRDelegate
+
+- (TTVideoEngineStrategyABRConfig *)videoEngineAbrConfig:(TTVideoEngine *)videoEngine {
+    // The default resolution here is 1080P, but you can set a different maximum resolution depending on your specific needs.
+    TTVideoEngineStrategyABRConfig *abrConfig = [TTVideoEngineStrategyABRConfig abrConfigWithWifiMaxResolution:TTVideoEngineResolutionType1080P mobileMaxResolution:TTVideoEngineResolutionType1080P];
+    return abrConfig;
+}
+
+- (void)videoEngineAbrSelectResolution:(TTVideoEngine *)videoEngine resolution:(TTVideoEngineResolutionType)resolution error:(NSError *)error {
+    if (error) {
+        VOLogI(VOVodPlayer, @"videoEngineAbrSelectResolution:%@ with error : %@", @(resolution), [error description]);
+    }else {
+        VOLogI(VOVodPlayer, @"videoEngineAbrSelectResolution:%@ success", @(resolution));
+    }
+}
+
+- (void)videoEngineAbrWillSelectResolution:(TTVideoEngine *)videoEngine resolution:(TTVideoEngineResolutionType)resolution {
+    VOLogI(VOVodPlayer, @"videoEngineAbrWillSelectResolution:%@", @(resolution));
+}
+
+- (void)videoEngineAbrEndSelectResolution:(TTVideoEngine *)videoEngine resolution:(TTVideoEngineResolutionType)resolution error:(NSError *)error {
+    if (error) {
+        VOLogI(VOVodPlayer, @"videoEngineAbrEndSelectResolution:%@ with error : %@", @(resolution), [error description]);
+    }else {
+        VOLogI(VOVodPlayer, @"videoEngineAbrEndSelectResolution:%@ success", @(resolution));
     }
 }
 

@@ -5,6 +5,7 @@
 
 #import "NetworkingManager+SingleFunction.h"
 #import "BaseVideoModel.h"
+#import "VESettingManager.h"
 
 @implementation NetworkingManager (SingleFunction)
 
@@ -17,6 +18,12 @@
         param[@"antiScreenshotAndRecord"] = @(YES);
     } else if (functionType == VESingleFunctionTypeSmartSubtitles) {
         param[@"supportSmartSubtitle"] = @(YES);
+    }
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    if (abr.open) {
+        [param setObject:@"evideo" forKey:@"fileType"];
+        [param setObject:@(0) forKey:@"codec"];
+        [param setObject:@(9) forKey:@"format"];
     }
     [NetworkingManager postWithPath:@"vod/v1/getFeedStreamWithPlayAuthToken"
                          parameters:param

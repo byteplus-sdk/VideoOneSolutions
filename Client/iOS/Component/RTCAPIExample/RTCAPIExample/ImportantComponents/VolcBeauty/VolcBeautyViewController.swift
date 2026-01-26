@@ -145,7 +145,8 @@ class VolcBeautyViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
             userInfo.userId = self?.userId ?? ""
             
             let roomCfg = ByteRTCRoomConfig.init()
-            roomCfg.isAutoPublish = true
+            roomCfg.isPublishAudio = true
+            roomCfg.isPublishVideo = true
             roomCfg.isAutoSubscribeAudio = true
             roomCfg.isAutoSubscribeVideo = true
             

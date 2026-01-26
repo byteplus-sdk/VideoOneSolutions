@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "MDVideoPlayerController+MDPlayCoreAbility.h"
 #import "MDPlayerUIModule.h"
+#import "MDPlayerUtility.h"
 #import <ToolKit/ToolKit.h>
 
 @implementation MDVideoPlayerController (MDPlayCoreAbility)
@@ -103,83 +104,10 @@
 - (NSArray *)resolutionSet {
     NSMutableArray *resolutionSet = [NSMutableArray array];
     for (NSNumber *originTypeNum in self.videoEngine.supportedResolutionTypes) {
-        NSString *resolutionTitle = [self _transferResolutionTitleByType:originTypeNum.integerValue];
+        NSString *resolutionTitle = [MDPlayerUtility transferResolutionTitleByType:originTypeNum.integerValue];
         [resolutionSet addObject:@{resolutionTitle : originTypeNum}];
     }
     return resolutionSet;
-}
-
-- (NSString *)_transferResolutionTitleByType:(NSInteger)type {
-    NSString *resolutionTitle;
-    switch (type) {
-        case TTVideoEngineResolutionTypeSD:
-            resolutionTitle = @"360";
-            break;
-        case TTVideoEngineResolutionTypeHD:
-            resolutionTitle = @"480";
-            break;
-        case TTVideoEngineResolutionTypeFullHD:
-            resolutionTitle = @"720";
-            break;
-        case TTVideoEngineResolutionType1080P:
-            resolutionTitle = @"1080";
-            break;
-        case TTVideoEngineResolutionType4K:
-            resolutionTitle = @"4K";
-            break;
-        case TTVideoEngineResolutionTypeABRAuto:
-            resolutionTitle = @"ABR自动";
-            break;
-        case TTVideoEngineResolutionTypeAuto:
-            resolutionTitle = @"自动";
-            break;
-        case TTVideoEngineResolutionTypeUnknown:
-            resolutionTitle = @"未知";
-            break;
-        case TTVideoEngineResolutionTypeHDR:
-            resolutionTitle = @"HDR";
-            break;
-        case TTVideoEngineResolutionTypeHDR_240P:
-            resolutionTitle = @"240p HDR";
-            break;
-        case TTVideoEngineResolutionTypeHDR_360P:
-            resolutionTitle = @"360p HDR";
-            break;
-        case TTVideoEngineResolutionTypeHDR_480P:
-            resolutionTitle = @"480p HDR";
-            break;
-        case TTVideoEngineResolutionTypeHDR_540P:
-            resolutionTitle = @"540p HDR";
-            break;
-        case TTVideoEngineResolutionTypeHDR_720P:
-            resolutionTitle = @"720p HDR";
-            break;
-        case TTVideoEngineResolutionTypeHDR_1080P:
-            resolutionTitle = @"1080p HDR";
-            break;
-        case TTVideoEngineResolutionTypeHDR_2K:
-            resolutionTitle = @"2k HDR";
-            break;
-        case TTVideoEngineResolutionTypeHDR_4K:
-            resolutionTitle = @"4k HDR";
-            break;
-        case TTVideoEngineResolutionType2K:
-            resolutionTitle = @"2k";
-            break;
-        case TTVideoEngineResolutionType1080P_120F:
-            resolutionTitle = @"1080P_120F";
-            break;
-        case TTVideoEngineResolutionType2K_120F:
-            resolutionTitle = @"2K_120F";
-            break;
-        case TTVideoEngineResolutionType4K_120F:
-            resolutionTitle = @"4K_120F";
-            break;
-        default:
-            resolutionTitle = @"默认";
-            break;
-    }
-    return resolutionTitle;
 }
 
 @end

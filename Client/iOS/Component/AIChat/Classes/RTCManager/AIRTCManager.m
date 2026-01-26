@@ -37,7 +37,8 @@ static inline void DispatchSafeAsyncRunOnMainThread(void (^ _Nullable block)(voi
     
     ByteRTCRoomConfig *config = [[ByteRTCRoomConfig alloc] init];
     config.profile = ByteRTCRoomProfileChat;
-    config.isAutoPublish = YES;
+    config.isPublishAudio = YES;
+    config.isPublishVideo = YES;
     config.isAutoSubscribeAudio = YES;
     config.isAutoSubscribeVideo = NO;
     int res = [self.chatRoom joinRoom:token userInfo:info roomConfig:config];
@@ -61,13 +62,13 @@ static inline void DispatchSafeAsyncRunOnMainThread(void (^ _Nullable block)(voi
 
 - (void)startPublishAudio {
     if (self.chatRoom) {
-        [self.chatRoom publishStream:ByteRTCMediaStreamTypeAudio];
+        [self.chatRoom publishStreamAudio:YES];
     }
 }
 
 - (void)stopPublishAudio {
     if (self.chatRoom) {
-        [self.chatRoom unpublishStream:ByteRTCMediaStreamTypeAudio];
+        [self.chatRoom publishStreamAudio:NO];
     }
 }
 

@@ -483,6 +483,10 @@ static NSString *MiniDramaPageViewControllerExceptionKey = @"MiniDramaPageViewCo
     UIViewController *changeToViewController = nil;
     CGFloat progress = fabs(offsetABS) / itemWidth;
     if (offsetABS > 0 && self.currentDirection != MiniDramaPageItemMoveDirectionNext) {
+        if (_delegateHas.hasDidScrollChangeDirection && fabs(offsetABS) > 1.0) {
+            self.currentDirection = MiniDramaPageItemMoveDirectionNext;
+            [self.delegate pageViewController:self didScrollChangeDirection:self.currentDirection offsetProgress:(progress > 1) ? 1 : progress];
+        }
         if (self.currentIndex == self.itemCount - 1) {
             return;
         }
@@ -506,6 +510,10 @@ static NSString *MiniDramaPageViewControllerExceptionKey = @"MiniDramaPageViewCo
             [self.delegate pageViewController:self willDisplayItem:nextViewController];
         }
     } else if (offsetABS < 0 && self.currentDirection != MiniDramaPageItemMoveDirectionPrevious) {
+        if (_delegateHas.hasDidScrollChangeDirection && fabs(offsetABS) > 1.0) {
+            self.currentDirection = MiniDramaPageItemMoveDirectionPrevious;
+            [self.delegate pageViewController:self didScrollChangeDirection:self.currentDirection offsetProgress:(progress > 1) ? 1 : progress];
+        }
         if (self.currentIndex == 0) return;
         self.currentDirection = MiniDramaPageItemMoveDirectionPrevious;
         if (!self.currentViewController.veTransitioning) {
@@ -526,9 +534,7 @@ static NSString *MiniDramaPageViewControllerExceptionKey = @"MiniDramaPageViewCo
             [self.delegate pageViewController:self willDisplayItem:preViewController];
         }
     }
-    if (_delegateHas.hasDidScrollChangeDirection) {
-        [self.delegate pageViewController:self didScrollChangeDirection:self.currentDirection offsetProgress:(progress > 1) ? 1 : progress];
-    }
+
     if (progress < 0.0) {
         VOLogI(VOMiniDrama, @"MiniDramaPageViewController progress < 0.0");
         if (self.currentViewController.veTransitioning) {

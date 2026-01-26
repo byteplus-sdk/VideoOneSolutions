@@ -92,6 +92,18 @@ static dispatch_once_t onceToken;
         };
         model;
     })];
+    [universalSection addObject:({
+        VESettingModel *model = [VESettingModel new];
+        model.displayText = LocalizedStringFromBundle(@"ABR_strategy", @"VodPlayer");
+        model.settingKey = VESettingKeyUniversalABRConfig;
+        BOOL enable = [[[NSUserDefaults standardUserDefaults] objectForKey:@"kABRConfigOpen"] boolValue];
+        model.open = enable;
+        model.settingType = VESettingTypeSwitcher;
+        model.allAreaAction = ^{
+            [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"video_strategy_changed_need_restart", @"VodPlayer")];
+        };
+        model;
+    })];
     [self.settings setValue:universalSection forKey:universalSectionKey];
     
     NSMutableArray *universalDidSection = [NSMutableArray array];

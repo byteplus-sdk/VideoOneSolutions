@@ -24,6 +24,8 @@
 
 + (NSString *)netWorkSpeedStringWithKBPerSeconds:(NSInteger)netWorkSpeed;
 
++ (NSString *)transferResolutionTitleByType:(NSInteger)type;
+
 @end
 
 

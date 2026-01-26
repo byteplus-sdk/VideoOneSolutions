@@ -19,6 +19,8 @@
 @property (nonatomic, strong) NSMutableArray<VEInterfaceDisplayItem *> *items;
 @property (nonatomic, copy) NSString *title;
 
+@property (nonatomic, assign) BOOL isAbrUsed;
+
 - (instancetype)initWithScene:(id<VEInterfaceElementDataSource>)scene;
 
 @end

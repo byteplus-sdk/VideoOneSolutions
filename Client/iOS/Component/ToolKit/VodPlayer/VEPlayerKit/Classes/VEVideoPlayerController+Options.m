@@ -21,6 +21,14 @@
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
+- (void)setAbrOpen:(BOOL)abrOpen {
+    objc_setAssociatedObject(self, @selector(abrOpen), @(abrOpen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)abrOpen {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
 - (void)openVideoEngineShortDefaultOptions {
     // system idle
     [self.videoEngine setOptionForKey:VEKKeyPlayerIdleTimerAuto_NSInteger value:@(1)];

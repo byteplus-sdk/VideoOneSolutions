@@ -67,6 +67,7 @@ TTVideoEngineDelegate,
 TTVideoEngineDataSource,
 TTVideoEngineResolutionDelegate,
 TTVideoEnginePreloadDelegate,
+TTVideoEngineABRDelegate,
 AVPictureInPictureControllerDelegate,
 AVPictureInPictureSampleBufferPlaybackDelegate>
 
@@ -462,6 +463,11 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
             [self.videoEngine setSupportPictureInPictureMode:YES];
         }
     }
+    if (self.abrOpen) {
+        // enable smooth switching
+        [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
+        self.videoEngine.abrDelegate = self;
+    }
     [self.videoEngine setOptionForKey:VEKKeyPlayerAudioDevice_ENUM value:@(TTVideoEngineDeviceAudioGraph)];
     [self.videoEngine setOptionForKey:VEKKeyPlayerHardwareDecode_BOOL value:@(self.playerConfig.isOpenHardware)];
     [self.videoEngine setOptionForKey:VEKKeyPlayerh265Enabled_BOOL value:@(self.playerConfig.isH265)];
@@ -479,7 +485,6 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
     self.videoEngine.delegate = self;
     self.videoEngine.resolutionDelegate = self;
     self.videoEngine.dataSource = self;
-    [self setCurrentResolution:[MDVideoPlayerController getPlayerCurrentResolution]];
     
     /// add observer
     [self addObserver];
@@ -723,6 +728,10 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
 #pragma mark - TTVideoEngineDelegate
 
 - (void)videoEnginePrepared:(TTVideoEngine *)videoEngine {
+    if (self.abrOpen) {
+        // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
+        [videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
+    }
     if (self.delegate &&[self.delegate respondsToSelector:@selector(videoPlayerPrepared:)]) {
         [self.delegate videoPlayerPrepared:self];
     }
@@ -817,6 +826,33 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
     }
 }
 
+#pragma mark - TTVideoEngineABRDelegate
+
+- (TTVideoEngineStrategyABRConfig *)videoEngineAbrConfig:(TTVideoEngine *)videoEngine {
+    // The default resolution here is 1080P, but you can set a different maximum resolution depending on your specific needs.
+    TTVideoEngineStrategyABRConfig *abrConfig = [TTVideoEngineStrategyABRConfig abrConfigWithWifiMaxResolution:TTVideoEngineResolutionType1080P mobileMaxResolution:TTVideoEngineResolutionType1080P];
+    return abrConfig;
+}
+
+- (void)videoEngineAbrSelectResolution:(TTVideoEngine *)videoEngine resolution:(TTVideoEngineResolutionType)resolution error:(NSError *)error {
+    if (error) {
+        VOLogI(VOMiniDrama, @"videoEngineAbrSelectResolution:%@ with error : %@", @(resolution), [error description]);
+    }else {
+        VOLogI(VOMiniDrama, @"videoEngineAbrSelectResolution:%@ success", @(resolution));
+    }
+}
+
+- (void)videoEngineAbrWillSelectResolution:(TTVideoEngine *)videoEngine resolution:(TTVideoEngineResolutionType)resolution {
+    VOLogI(VOMiniDrama, @"videoEngineAbrWillSelectResolution:%@", @(resolution));
+}
+
+- (void)videoEngineAbrEndSelectResolution:(TTVideoEngine *)videoEngine resolution:(TTVideoEngineResolutionType)resolution error:(NSError *)error {
+    if (error) {
+        VOLogI(VOMiniDrama, @"videoEngineAbrEndSelectResolution:%@ with error : %@", @(resolution), [error description]);
+    }else {
+        VOLogI(VOMiniDrama, @"videoEngineAbrEndSelectResolution:%@ success", @(resolution));
+    }
+}
 
 #pragma mark - Private
 

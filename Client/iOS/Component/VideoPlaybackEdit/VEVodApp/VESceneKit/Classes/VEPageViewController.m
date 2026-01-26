@@ -128,6 +128,9 @@ static NSString *VEPageViewControllerExceptionKey = @"VEPageViewControllerExcept
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    if (self.currentViewController) {
+        [self.currentViewController stop];
+    }
     if ([self.currentViewController respondsToSelector:@selector(setVisible:)]) {
         [self.currentViewController setVisible:NO];
     }

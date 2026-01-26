@@ -7,6 +7,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <MediaLive/VELSettings.h>
 #import <MediaLive/VELCommon.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wstrict-prototypes"
@@ -31,9 +32,10 @@
     cfg.bundleID = NSBundle.mainBundle.bundleIdentifier;
     cfg.appVersion = [NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleShortVersionString"];
     cfg.shouldInitAppLog = YES;
-    cfg.serviceVendor = TTSDKServiceVendorSG;
+    cfg.appRegion = TTSDKServiceVendorSG;
+    cfg.bizType = TTSDKServiceBizType_Live;
     [TTSDKManager setCurrentUserUniqueID:[LocalUserComponent userModel].uid ?: @""];
-    [TTSDKManager setShouldReportToAppLog:YES];
+    [VeLiveCommon enableReportApplog:YES];
     [TTSDKManager startWithConfiguration:cfg];
 }
 

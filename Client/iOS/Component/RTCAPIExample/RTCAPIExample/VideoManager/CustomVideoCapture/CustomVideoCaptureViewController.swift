@@ -68,7 +68,8 @@ class CustomVideoCaptureViewController: BaseViewController, ByteRTCVideoDelegate
                 userInfo.userId = userId
 
                 let roomCfg = ByteRTCRoomConfig.init()
-                roomCfg.isAutoPublish = true
+                roomCfg.isPublishAudio = true
+                roomCfg.isPublishVideo = true
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
 

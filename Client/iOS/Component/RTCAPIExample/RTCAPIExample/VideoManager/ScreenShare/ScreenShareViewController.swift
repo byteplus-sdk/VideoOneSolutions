@@ -60,7 +60,8 @@ class ScreenShareViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
                 userInfo.userId = userId
 
                 let roomCfg = ByteRTCRoomConfig.init()
-                roomCfg.isAutoPublish = true
+                roomCfg.isPublishAudio = true
+                roomCfg.isPublishVideo = true
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
 
@@ -356,22 +357,23 @@ class ScreenShareViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
         if deviceType == .screenCaptureDevice {
             if deviceState == .stateStarted {
                 // Screen sharing started.
-                self.rtcRoom?.publishScreen(ByteRTCMediaStreamType.video)
+                self.rtcRoom?.publishScreenVideo(true)
                 
                 
                 DispatchQueue.main.async {
                     self.shareButton.isSelected = true
                     self.shareButton .setTitle(LocalizedString("example_end_sharing"), for: .normal)
-                    self.rtcRoom?.unpublishStream(ByteRTCMediaStreamType.video)
+                    self.rtcRoom?.publishStreamVideo(false)
                 }
                 
             } else if deviceState == .stateStopped || deviceState == .stateRuntimeError {
-                self.rtcRoom?.unpublishScreen(ByteRTCMediaStreamType.both)
+                self.rtcRoom?.publishScreenAudio(false)
+                self.rtcRoom?.publishScreenVideo(false)
 
                 DispatchQueue.main.async {
                     self.shareButton.isSelected = false
                     self.shareButton .setTitle(LocalizedString("example_start_sharing"), for: .normal)
-                    self.rtcRoom?.publishStream(ByteRTCMediaStreamType.video)
+                    self.rtcRoom?.publishStreamVideo(true)
                 }
             }
         }

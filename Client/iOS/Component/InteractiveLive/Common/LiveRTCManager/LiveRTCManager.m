@@ -85,7 +85,8 @@
 
     ByteRTCRoomConfig *config = [[ByteRTCRoomConfig alloc] init];
     config.profile = ByteRTCRoomProfileInteractivePodcast;
-    config.isAutoPublish = NO;
+    config.isPublishAudio = NO;
+    config.isPublishVideo = NO;
     config.isAutoSubscribeAudio = NO;
     config.isAutoSubscribeVideo = NO;
     [self.businessRoom joinRoom:token
@@ -120,7 +121,8 @@
     userInfo.userId = userID;
     ByteRTCRoomConfig *config = [[ByteRTCRoomConfig alloc] init];
     config.profile = ByteRTCRoomProfileInteractivePodcast;
-    config.isAutoPublish = YES;
+    config.isPublishAudio = YES;
+    config.isPublishVideo = YES;
     config.isAutoSubscribeAudio = YES;
     config.isAutoSubscribeVideo = YES;
     self.rtcRoom = [self.rtcEngineKit createRTCRoom:rtcRoomID];

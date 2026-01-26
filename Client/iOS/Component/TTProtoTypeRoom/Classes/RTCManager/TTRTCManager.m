@@ -53,7 +53,8 @@
     userInfo.userId = userID;
 
     ByteRTCRoomConfig *config = [[ByteRTCRoomConfig alloc] init];
-    config.isAutoPublish = NO;
+    config.isPublishAudio = NO;
+    config.isPublishVideo = NO;
     config.isAutoSubscribeAudio = NO;
     config.isAutoSubscribeVideo = NO;
     [self.businessRoom joinRoom:token

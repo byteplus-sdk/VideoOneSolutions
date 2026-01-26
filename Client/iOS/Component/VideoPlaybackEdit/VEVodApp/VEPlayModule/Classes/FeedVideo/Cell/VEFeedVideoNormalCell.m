@@ -180,6 +180,9 @@
 
     VESettingModel *hardwareDecode = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalHardwareDecode];
     self.playerController.hardwareDecodeOpen = hardwareDecode.open;
+    
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    self.playerController.abrOpen = abr.open;
 }
 
 #pragma mark -VEInterfaceDelegate

@@ -296,9 +296,8 @@
         [self updatePrefixView];
     }
         
-    if (model.subTitle && ![model.subTitle isEqualToString:@""]) {
-        [self updateSubTitle];
-    }
+    [self updateSubTitle];
+
     self.isSelected = model.isSelected;
 }
 

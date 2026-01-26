@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "NetworkingManager+MiniDrama.h"
 #import "NetworkingManager+VodPlayer.h"
+#import "VESettingManager.h"
 #import <ToolKit/LocalUserComponent.h>
 
 @implementation NetworkingManager (MiniDrama)
@@ -30,7 +31,16 @@
 + (void)getDramaDataForChannelPage:(NSRange)range 
                            success:(void (^)(NSArray<MDDramaFeedInfo *> * _Nonnull))success
                            failure:(void (^)(NSString * _Nonnull))failure {
-    NSDictionary *param = @{ @"offset": @(range.location), @"page_size": @(range.length)};
+//    NSDictionary *param = @{ @"offset": @(range.location), @"page_size": @(range.length)};
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    [param setObject:@(range.location) forKey:@"offset"];
+    [param setObject:@(range.length) forKey:@"page_size"];
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    if (abr.open) {
+        [param setObject:@"evideo" forKey:@"fileType"];
+        [param setObject:@(0) forKey:@"codec"];
+        [param setObject:@(9) forKey:@"format"];
+    }
     [NetworkingManager postWithPath:@"drama/v1/getDramaFeed"
                          parameters:param
                               block:^(NetworkingResponse * _Nonnull response) {
@@ -55,7 +65,16 @@
 + (void)getDramaDataForDetailPage:(NSString *)dramaId 
                           success:(void (^)(NSArray<MDDramaEpisodeInfoModel *> * _Nonnull))success
                           failure:(void (^)(NSString * _Nonnull))failure {
-    NSDictionary *param = @{ @"drama_id": dramaId, @"user_id": [LocalUserComponent userModel].uid};
+//    NSDictionary *param = @{ @"drama_id": dramaId, @"user_id": [LocalUserComponent userModel].uid};
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    [param setObject:dramaId forKey:@"drama_id"];
+    [param setObject:[LocalUserComponent userModel].uid forKey:@"user_id"];
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    if (abr.open) {
+        [param setObject:@"evideo" forKey:@"fileType"];
+        [param setObject:@(0) forKey:@"codec"];
+        [param setObject:@(9) forKey:@"format"];
+    }
     [NetworkingManager postWithPath:@"drama/v1/getDramaList"
                          parameters:param
                               block:^(NetworkingResponse * _Nonnull response) {
@@ -82,7 +101,18 @@
                                   vidList:(NSArray<NSString *> *)videoIdList
                                   success:(void (^)(NSArray<MDSimpleEpisodeInfoModel *> * _Nonnull))success
                                   failure:(void (^)(NSString * _Nonnull))failure {
-    NSDictionary *param = @{ @"user_id": userId, @"drama_id": dramaId ,@"vid_list": videoIdList, @"play_info_type": @(0) };
+//    NSDictionary *param = @{ @"user_id": userId, @"drama_id": dramaId ,@"vid_list": videoIdList, @"play_info_type": @(0) };
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    [param setObject:dramaId forKey:@"drama_id"];
+    [param setObject:userId forKey:@"user_id"];
+    [param setObject:videoIdList forKey:@"vid_list"];
+    [param setObject:@(0) forKey:@"play_info_type"];
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    if (abr.open) {
+        [param setObject:@"evideo" forKey:@"fileType"];
+        [param setObject:@(0) forKey:@"codec"];
+        [param setObject:@(9) forKey:@"format"];
+    }
     [NetworkingManager postWithPath:@"drama/v1/getDramaDetail"
                          parameters:param
                               block:^(NetworkingResponse * _Nonnull response) {

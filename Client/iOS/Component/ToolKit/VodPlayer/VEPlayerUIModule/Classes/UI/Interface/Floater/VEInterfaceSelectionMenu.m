@@ -5,6 +5,10 @@
 #import "UIColor+String.h"
 #import "VEEventConst.h"
 #import "VEInterfaceProtocol.h"
+#import "VESettingModel.h"
+#import "VESettingManager.h"
+#import "VEPlayerUtility.h"
+#import <TTSDKFramework/TTSDKFramework.h>
 #import <Foundation/Foundation.h>
 
 static NSString *VESelectionMenuCellIdentifier = @"VESelectionMenuCellIdentifier";
@@ -95,6 +99,10 @@ API_AVAILABLE(ios(8.0))
 
 @property (nonatomic, strong) UIVisualEffectView *backView;
 
+@property (nonatomic, assign) BOOL isAbrEnable;
+
+@property (nonatomic, strong) VEInterfaceDisplayItem *abrItem;
+
 @end
 
 @implementation VEInterfaceSelectionMenu
@@ -107,6 +115,9 @@ API_AVAILABLE(ios(8.0))
         [[scene eventMessageBus] registEvent:VEPlayEventChangePlaySpeed withAction:@selector(shouldReload:) ofTarget:self];
         [[scene eventMessageBus] registEvent:VEPlayEventChangeResolution withAction:@selector(shouldReload:) ofTarget:self];
         [[scene eventMessageBus] registEvent:VEPlayEventChangeSubtitle withAction:@selector(shouldReload:) ofTarget:self];
+        VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+        _isAbrEnable = abr.open;
+        _isAbrUsed = abr.open;
     }
     return self;
 }
@@ -141,21 +152,37 @@ API_AVAILABLE(ios(8.0))
 #pragma mark----- UITableView Delegate & DataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.items.count;
+    return self.isAbrEnable ? self.items.count + 1 : self.items.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSInteger index = indexPath.row;
     VEInterfaceSelectionCell *cell = [tableView dequeueReusableCellWithIdentifier:VESelectionMenuCellIdentifier];
-    VEInterfaceDisplayItem *item = [self.items objectAtIndex:indexPath.row];
-    [cell setItem:item];
-    if ([item.itemAction isEqualToString:VEPlayEventChangeResolution]) {
-        NSInteger currentResolution = [self.scene.eventPoster currentResolution];
-        cell.highlightBackgroundView.hidden = !([item.actionParam integerValue] == currentResolution);
-    } else if ([item.itemAction isEqualToString:VEPlayEventChangePlaySpeed]) {
+    VEInterfaceDisplayItem *tempItem = NULL;
+    NSInteger currentResolution = [self.scene.eventPoster currentResolution];
+    if (index < self.items.count) {
+        tempItem = [self.items objectAtIndex:indexPath.row];
+        [cell setItem:tempItem];
+    }else if (index == self.items.count) {
+        self.abrItem = [[VEInterfaceDisplayItem alloc] init];
+        self.abrItem.title = [NSString stringWithFormat:@"ABR(%@)", [VEPlayerUtility transferResolutionTitleByType:currentResolution]];
+        self.abrItem.itemAction = VEPlayEventChangeResolution;
+        self.abrItem.actionParam = @(TTVideoEngineResolutionTypeABRAuto);
+        cell.item = self.abrItem;
+        tempItem = self.abrItem;
+    }
+    
+    if ([tempItem.itemAction isEqualToString:VEPlayEventChangeResolution]) {
+        if (self.isAbrUsed) {
+            cell.highlightBackgroundView.hidden = !([tempItem.actionParam integerValue] == TTVideoEngineResolutionTypeABRAuto);
+        }else {
+            cell.highlightBackgroundView.hidden = !([tempItem.actionParam integerValue] == currentResolution);
+        }
+    } else if ([tempItem.itemAction isEqualToString:VEPlayEventChangePlaySpeed]) {
         CGFloat currentSpeed = [self.scene.eventPoster currentPlaySpeed];
-        cell.highlightBackgroundView.hidden = !([item.actionParam floatValue] == currentSpeed);
-    } else if ([item.itemAction isEqualToString:VEPlayEventChangeSubtitle]) {
-        id subtitle = item.actionParam;
+        cell.highlightBackgroundView.hidden = !([tempItem.actionParam floatValue] == currentSpeed);
+    } else if ([tempItem.itemAction isEqualToString:VEPlayEventChangeSubtitle]) {
+        id subtitle = tempItem.actionParam;
         id sutitleScene = self.scene;
         NSInteger currentLanguangeId = [[sutitleScene valueForKeyPath:@"manager.currentSubtitleId"] integerValue];
         cell.highlightBackgroundView.hidden = !([[subtitle valueForKey:@"subtitleId"] integerValue] == currentLanguangeId);
@@ -168,8 +195,16 @@ API_AVAILABLE(ios(8.0))
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    VEInterfaceDisplayItem *item = [self.items objectAtIndex:indexPath.row];
-    [[self.scene eventMessageBus] postEvent:item.itemAction withObject:item.actionParam rightNow:YES];
+    NSInteger index = indexPath.row;
+    if (index < self.items.count) {
+        VEInterfaceDisplayItem *item = [self.items objectAtIndex:indexPath.row];
+        [[self.scene eventMessageBus] postEvent:item.itemAction withObject:item.actionParam rightNow:YES];
+        self.isAbrUsed = NO;
+    }else if (index == self.items.count) {
+        [[self.scene eventMessageBus] postEvent:self.abrItem.itemAction withObject:self.abrItem.actionParam rightNow:YES];
+        self.isAbrUsed = YES;
+    }
+
     [self show:NO];
 }
 
