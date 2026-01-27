@@ -8,6 +8,8 @@
 
 @property (nonatomic, assign) BOOL preloadOpen;
 
+@property (nonatomic, assign) BOOL abrOpen;
+
 + (BOOL)enableEngineStrategy:(TTVideoEngineStrategyType)strategyType scene:(NSString *)scene;
 
 + (void)setStrategyVideoSources:(NSArray<id<TTVideoEngineMediaSource>> *)videoSources;

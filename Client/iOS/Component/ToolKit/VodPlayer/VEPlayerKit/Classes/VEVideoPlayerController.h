@@ -26,6 +26,8 @@ typedef NS_OPTIONS(NSUInteger, VEVideoPlayerType) {
 // VEPlayCoreAbilityProtocol
 @property (nonatomic, weak) id<VEPlayCoreCallBackAbilityProtocol> _Nullable receiver;
 
+@property (atomic, assign) BOOL isReused;
+
 - (instancetype)initWithType:(VEVideoPlayerType)videoPlayerType;
 
 - (void)loadBackgourdImageWithMediaSource:(id<TTVideoEngineMediaSource> _Nonnull)mediaSource;

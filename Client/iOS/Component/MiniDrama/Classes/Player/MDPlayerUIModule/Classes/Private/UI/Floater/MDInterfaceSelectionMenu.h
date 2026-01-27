@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSMutableArray<MDInterfaceDisplayItem *> *items;
 
+@property (nonatomic, assign) BOOL isAbrUsed;
+
 @end
 
 

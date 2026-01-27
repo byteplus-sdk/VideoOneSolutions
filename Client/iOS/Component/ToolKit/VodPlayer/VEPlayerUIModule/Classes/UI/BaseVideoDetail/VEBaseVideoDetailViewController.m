@@ -7,6 +7,8 @@
 #import "VEBaseVideoDetailViewController+Private.h"
 #import "VEEventMessageBus.h"
 #import "VEVideoCache.h"
+#import "VESettingModel.h"
+#import "VESettingManager.h"
 #import <ToolKit/ToolKit.h>
 
 @implementation VEBaseVideoDetailViewController
@@ -143,6 +145,8 @@
 }
 
 - (void)playerOptionsBeforeSetMediaSource {
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    self.playerController.abrOpen = abr.open;
 }
 
 - (void)playerOptionsAfterSetMediaSource {

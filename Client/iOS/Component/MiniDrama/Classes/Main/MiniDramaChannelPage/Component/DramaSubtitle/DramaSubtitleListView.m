@@ -81,7 +81,7 @@ NSString * const DramaSubtitleListViewCellIdentify = @"DramaSubtitleListViewCell
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UITableView *menuView;
 @property (nonatomic, strong) UIVisualEffectView *backView;
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *mCustomMaskView;
 
 @end
 
@@ -97,8 +97,8 @@ NSString * const DramaSubtitleListViewCellIdentify = @"DramaSubtitleListViewCell
 }
 
 - (void)setupView {
-    [self addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self addSubview:self.mCustomMaskView];
+    [self.mCustomMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self);
     }];
     
@@ -143,7 +143,7 @@ NSString * const DramaSubtitleListViewCellIdentify = @"DramaSubtitleListViewCell
     }];
 }
 
-- (void)maskViewAction {
+- (void)mCustomMaskViewAction {
     if (self.superview) {
         [self removeFromSuperview];
     }
@@ -175,19 +175,19 @@ NSString * const DramaSubtitleListViewCellIdentify = @"DramaSubtitleListViewCell
     if (self.delegate && [self.delegate respondsToSelector:@selector(onChangeSubtitle:)]) {
         [self.delegate onChangeSubtitle:[self.subtitleList[indexPath.row] subtitleId]];
     }
-    [self maskViewAction];
+    [self mCustomMaskViewAction];
 }
  
 #pragma mark - Getter
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor clearColor];
-        _maskView.userInteractionEnabled = YES;
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(maskViewAction)];
-        [_maskView addGestureRecognizer:tap];
+- (UIView *)mCustomMaskView {
+    if (!_mCustomMaskView) {
+        _mCustomMaskView = [[UIView alloc] init];
+        _mCustomMaskView.backgroundColor = [UIColor clearColor];
+        _mCustomMaskView.userInteractionEnabled = YES;
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mCustomMaskViewAction)];
+        [_mCustomMaskView addGestureRecognizer:tap];
     }
-    return _maskView;
+    return _mCustomMaskView;
 }
 
 - (UIVisualEffectView *)backView {

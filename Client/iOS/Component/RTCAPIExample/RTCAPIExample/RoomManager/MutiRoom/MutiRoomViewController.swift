@@ -74,7 +74,8 @@ class MutiRoomViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
                 
                 // Automatic publish and subscribe streams
                 let roomCfg = ByteRTCRoomConfig.init()
-                roomCfg.isAutoPublish = true
+                roomCfg.isPublishAudio = true
+                roomCfg.isPublishVideo = true
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
@@ -119,7 +120,8 @@ class MutiRoomViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
                 
                 // Room 2 does not automatically publish, it can only be published in one room
                 let roomCfg = ByteRTCRoomConfig.init()
-                roomCfg.isAutoPublish = false
+                roomCfg.isPublishAudio = false
+                roomCfg.isPublishVideo = false
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 

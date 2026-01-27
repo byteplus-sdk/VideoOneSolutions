@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "MDInterfaceSelectionMenu.h"
 #import "MDEventConst.h"
+#import "VESettingModel.h"
+#import "VESettingManager.h"
+#import "MDPlayerUtility.h"
 #import <Masonry/Masonry.h>
+#import <TTSDKFramework/TTSDKFramework.h>
 
 static NSString *MDSelectionMenuCellIdentifier = @"MDSelectionMenuCellIdentifier";
 
@@ -13,6 +17,8 @@ static NSString *MDSelectionMenuCellIdentifier = @"MDSelectionMenuCellIdentifier
 @property (nonatomic, strong) UILabel *titleLabel;
 
 @property (nonatomic, strong) UIView *highlightBackgroundView;
+
+@property (nonatomic, weak) MDInterfaceSelectionMenu *superMenu;
 
 @end
 
@@ -50,8 +56,12 @@ static NSString *MDSelectionMenuCellIdentifier = @"MDSelectionMenuCellIdentifier
     _item = item;
     self.titleLabel.text = item.title;
     if ([item.itemAction isEqualToString:MDPlayEventChangeResolution]) {
-        NSInteger currentResolution = [[MDEventPoster currentPoster] currentResolution];
-        self.highlightBackgroundView.hidden = !([item.actionParam integerValue] == currentResolution);
+        if (self.superMenu.isAbrUsed) {
+            self.highlightBackgroundView.hidden = !([item.actionParam integerValue] == TTVideoEngineResolutionTypeABRAuto);
+        }else {
+            NSInteger currentResolution = [[MDEventPoster currentPoster] currentResolution];
+            self.highlightBackgroundView.hidden = !([item.actionParam integerValue] == currentResolution);
+        }
     } else if ([item.itemAction isEqualToString:MDPlayEventChangePlaySpeed]) {
         CGFloat currentSpeed = [[MDEventPoster currentPoster] currentPlaySpeed];
         self.highlightBackgroundView.hidden = !([item.actionParam floatValue] == currentSpeed);
@@ -98,6 +108,10 @@ API_AVAILABLE(ios(8.0))
 
 @property (nonatomic, strong) UIVisualEffectView *backView;
 
+@property (nonatomic, assign) BOOL isAbrEnable;
+
+@property (nonatomic, strong) MDInterfaceDisplayItem *abrItem;
+
 @end
 
 @implementation MDInterfaceSelectionMenu
@@ -108,6 +122,9 @@ API_AVAILABLE(ios(8.0))
         [self initializeElements];
         [[MDEventMessageBus universalBus] registEvent:MDPlayEventChangePlaySpeed withAction:@selector(shouldReload:) ofTarget:self];
         [[MDEventMessageBus universalBus] registEvent:MDPlayEventChangeResolution withAction:@selector(shouldReload:) ofTarget:self];
+        VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+        _isAbrEnable = abr.open;
+        _isAbrUsed = abr.open;
     }
     return self;
 }
@@ -131,12 +148,23 @@ API_AVAILABLE(ios(8.0))
 #pragma mark ----- UITableView Delegate & DataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.items.count;
+    return self.isAbrEnable ? self.items.count + 1 : self.items.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSInteger index = indexPath.row;
     MDInterfaceSelectionCell *cell = [tableView dequeueReusableCellWithIdentifier:MDSelectionMenuCellIdentifier];
-    cell.item = [self.items objectAtIndex:indexPath.row];
+    cell.superMenu = self;
+    if (index < self.items.count) {
+        cell.item = [self.items objectAtIndex:indexPath.row];
+    }else if (index == self.items.count) {
+        self.abrItem = [[MDInterfaceDisplayItem alloc] init];
+        NSInteger currentResolution = [[MDEventPoster currentPoster] currentResolution];
+        self.abrItem.title = [NSString stringWithFormat:@"ABR(%@)", [MDPlayerUtility transferResolutionTitleByType:currentResolution]];
+        self.abrItem.itemAction = MDPlayEventChangeResolution;
+        self.abrItem.actionParam = @(TTVideoEngineResolutionTypeABRAuto);
+        cell.item = self.abrItem;
+    }
     return cell;
 }
 
@@ -145,8 +173,15 @@ API_AVAILABLE(ios(8.0))
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    MDInterfaceDisplayItem *item = [self.items objectAtIndex:indexPath.row];
-    [[MDEventMessageBus universalBus] postEvent:item.itemAction withObject:item.actionParam rightNow:YES];
+    NSInteger index = indexPath.row;
+    if (index < self.items.count) {
+        MDInterfaceDisplayItem *item = [self.items objectAtIndex:indexPath.row];
+        [[MDEventMessageBus universalBus] postEvent:item.itemAction withObject:item.actionParam rightNow:YES];
+        self.isAbrUsed = NO;
+    }else if (index == self.items.count) {
+        [[MDEventMessageBus universalBus] postEvent:self.abrItem.itemAction withObject:self.abrItem.actionParam rightNow:YES];
+        self.isAbrUsed = YES;
+    }
     [self show:NO];
 }
 
@@ -156,7 +191,7 @@ API_AVAILABLE(ios(8.0))
     if (!_backView) {
         if (@available(iOS 8.0, *)) {
             UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            _backView = [[UIVisualEffectView alloc] initWithEffect:blur];
+            _backView = [[UIVisualEffectView alloc] initWithEffect:blur];
         }
     }
     return _backView;

@@ -48,6 +48,7 @@ Pod::Spec.new do |s|
       'VodPlayer/VEPlayerKit/Classes/**/*.h',
       'VodPlayer/Model/Classes/**/*.h',
       'VodPlayer/VideoDetail/Classes/**/*.h',
+      'VodPlayer/Setting/**/*.h',
       'VodPlayer/Data/**/*.h',
       'VodPlayer/VideoDetail/**/*.h',
     ]
@@ -56,6 +57,7 @@ Pod::Spec.new do |s|
       'VodPlayer/VEPlayerKit/Classes/**/*',
       'VodPlayer/Model/Classes/**/*',
       'VodPlayer/VideoDetail/Classes/**/*',
+      'VodPlayer/Setting/**/*',
       'VodPlayer/Data/**/*',
       'VodPlayer/VideoDetail/**/*',
     ]
@@ -73,6 +75,7 @@ Pod::Spec.new do |s|
     subspec.dependency 'YYModel'
     subspec.dependency 'YYCache'
     subspec.dependency 'lottie-ios', '~> 2.0'
+    subspec.dependency 'TTSDKFramework/Player'
   end
   
   s.subspec 'LiveRoomUI' do |subspec|

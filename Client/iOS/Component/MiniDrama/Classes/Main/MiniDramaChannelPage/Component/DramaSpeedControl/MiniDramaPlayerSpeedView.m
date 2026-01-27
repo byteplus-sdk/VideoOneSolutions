@@ -55,7 +55,7 @@ static NSInteger MiniDramaSpeedViewHeight = 360;
 
 @interface MiniDramaPlayerSpeedView ()<UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *customMaskView;
 
 @property (nonatomic, strong) UIView *contentView;
 
@@ -77,14 +77,14 @@ static NSInteger MiniDramaSpeedViewHeight = 360;
         [self setupUI];
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onClose:)];
         tap.numberOfTapsRequired = 1;
-        [self.maskView addGestureRecognizer:tap];
+        [self.customMaskView addGestureRecognizer:tap];
     }
     return self;
 }
 
 - (void)setupUI {
-    [self addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self addSubview:self.customMaskView];
+    [self.customMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self);
     }];
     
@@ -156,12 +156,12 @@ static NSInteger MiniDramaSpeedViewHeight = 360;
 
 #pragma mark - Getter
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _contentView.backgroundColor = [UIColor clearColor];
+- (UIView *)customMaskView {
+    if (!_customMaskView) {
+        _customMaskView = [[UIView alloc] init];
+        _customMaskView.backgroundColor = [UIColor clearColor];
     }
-    return _maskView;
+    return _customMaskView;
 }
 
 - (UIView *)contentView {

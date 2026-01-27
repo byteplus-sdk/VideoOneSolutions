@@ -21,6 +21,8 @@
 #import "MDVideoPlayerController+Observer.h"
 #import <AVKit/AVKit.h>
 #import "MDVideoPlayerController+DisRecordScreen.h"
+#import "VESettingManager.h"
+#import "VESettingModel.h"
 
 @interface MiniDramaLandscapeViewController ()<MDVideoPlaybackDelegate,
 MDInterfaceDelegate,
@@ -281,6 +283,8 @@ static inline BOOL normalScreenBehaivor () {
     _playerController.playerTitle = self.videoModel.videoTitle;
     _playerController.isPipOpen = self.isOpenPip;
     _playerController.pipStatusDelegate = self;
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    _playerController.abrOpen = abr.open;
     [self.playContainerView addSubview:self.playerController.view];
     [self.playerController.view mas_remakeConstraints:^(MASConstraintMaker *make) { // need remake
         make.edges.equalTo(self.playContainerView);

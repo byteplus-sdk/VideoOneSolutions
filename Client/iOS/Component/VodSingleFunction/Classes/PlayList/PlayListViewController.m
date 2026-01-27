@@ -29,6 +29,9 @@
 
 #pragma mark - VEVideoPlaybackDelegate
 - (void)videoPlayer:(id<VEVideoPlayback>)player playbackStateDidChange:(VEPlaybackState)state uniqueId:(NSString *)uniqueId {
+    if (self.playerController.isReused) {
+        return;
+    }
     if (state == VEPlaybackStateFinished) {
         if (self.playMode == PlayListModeLoop) {
             if (self.manager.currentPlayViewIndex != self.manager.playList.count - 1) {

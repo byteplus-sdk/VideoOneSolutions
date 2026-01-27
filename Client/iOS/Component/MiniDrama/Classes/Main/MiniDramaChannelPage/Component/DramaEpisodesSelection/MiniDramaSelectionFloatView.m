@@ -13,7 +13,7 @@
 
 @interface MiniDramaSelectionFloatView ()<UICollectionViewDelegate, UICollectionViewDataSource, UIGestureRecognizerDelegate, MiniDramaEpisodeSectionViewDelegate>
 
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *mCustomMaskView;
 
 @property (nonatomic, strong) UIView *contentView;
 
@@ -46,8 +46,8 @@
 }
 
 - (void)configuratoinCustomView {
-    [self addSubview:self.maskView];
-    [self.maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self addSubview:self.mCustomMaskView];
+    [self.mCustomMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self);
     }];
     
@@ -115,7 +115,7 @@
      }
 }
 
-- (void)maskViewAction {
+- (void)mCustomMaskViewAction {
     if (self.superview) {
         [self removeFromSuperview];
     }
@@ -141,7 +141,7 @@
 }
 
 - (void)onClickUnlockAllBtn {
-    [self maskViewAction];
+    [self mCustomMaskViewAction];
     if (self.delegate && [self.delegate respondsToSelector:@selector(onClickUnlockAllEpisode)]) {
         [self.delegate onClickUnlockAllEpisode];
     }
@@ -183,21 +183,21 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(onDramaSelectionCallback:)]) {
         self.curPlayDramaVideoInfo = dramaVideoInfo;
         [self.delegate onDramaSelectionCallback:dramaVideoInfo];
-        [self maskViewAction];
+        [self mCustomMaskViewAction];
     }
 }
 
 #pragma mark -Getter
 
-- (UIView *)maskView {
-    if (!_maskView) {
-        _maskView = [[UIView alloc] init];
-        _maskView.backgroundColor = [UIColor clearColor];
-        _maskView.userInteractionEnabled = YES;
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(maskViewAction)];
-        [_maskView addGestureRecognizer:tap];
+- (UIView *)mCustomMaskView {
+    if (!_mCustomMaskView) {
+        _mCustomMaskView = [[UIView alloc] init];
+        _mCustomMaskView.backgroundColor = [UIColor clearColor];
+        _mCustomMaskView.userInteractionEnabled = YES;
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mCustomMaskViewAction)];
+        [_mCustomMaskView addGestureRecognizer:tap];
     }
-    return _maskView;
+    return _mCustomMaskView;
 }
 
 - (UIView *)contentView {

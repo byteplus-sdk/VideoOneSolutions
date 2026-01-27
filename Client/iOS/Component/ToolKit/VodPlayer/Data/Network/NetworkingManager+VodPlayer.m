@@ -6,6 +6,7 @@
 #import "NetworkingManager+VodPlayer.h"
 #import "VECommentModel.h"
 #import "BaseVideoModel.h"
+#import "VESettingManager.h"
 
 @implementation NetworkingManager (VodPlayer)
 
@@ -14,16 +15,21 @@
                       range:(NSRange)range
                     success:(void (^)(NSArray<BaseVideoModel *> *_Nonnull))success
                     failure:(void (^)(NSString *_Nonnull))failure {
-    NSDictionary *param;
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    [param setObject:@(type) forKey:@"videoType"];
+    [param setObject:vid ?: @"" forKey:@"vid"];
     if (range.length) {
-        param = @{@"videoType": @(type),
-                  @"vid": vid ?: @"",
-                  @"offset": @(range.location),
-                  @"pageSize": @(range.length)};
-    } else {
-        param = @{@"videoType": @(type),
-                  @"vid": vid ?: @""};
+        [param setObject:@(range.location) forKey:@"offset"];
+        [param setObject:@(range.length) forKey:@"pageSize"];
     }
+
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    if (abr.open) {
+        [param setObject:@"evideo" forKey:@"fileType"];
+        [param setObject:@(0) forKey:@"codec"];
+        [param setObject:@(9) forKey:@"format"];
+    }
+    
     [NetworkingManager postWithPath:@"vod/v1/getFeedSimilarVideos"
                          parameters:param
                               block:^(NetworkingResponse *_Nonnull response) {

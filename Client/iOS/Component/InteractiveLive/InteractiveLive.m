@@ -79,9 +79,10 @@
     cfg.bundleID = NSBundle.mainBundle.bundleIdentifier;
     cfg.appVersion = [NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleShortVersionString"];
     cfg.shouldInitAppLog = YES;
-    cfg.serviceVendor = TTSDKServiceVendorSG;
+    cfg.appRegion = TTSDKServiceVendorSG;
+    cfg.bizType = TTSDKServiceBizType_Live;
     [TTSDKManager setCurrentUserUniqueID:[LocalUserComponent userModel].uid ?: @""];
-    [TTSDKManager setShouldReportToAppLog:YES];
+    [VeLiveCommon enableReportApplog:YES];
     [TTSDKManager startWithConfiguration:cfg];
 }
 

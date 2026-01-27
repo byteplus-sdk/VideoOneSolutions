@@ -22,6 +22,14 @@
     return [objc_getAssociatedObject(self, _cmd) unsignedIntegerValue];
 }
 
+- (void)setAbrOpen:(BOOL)abrOpen {
+    objc_setAssociatedObject(self, @selector(abrOpen), @(abrOpen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)abrOpen {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
 + (BOOL)enableEngineStrategy:(TTVideoEngineStrategyType)strategyType scene:(NSString *)scene {
     return [TTVideoEngine enableEngineStrategy:strategyType scene:scene];
 }

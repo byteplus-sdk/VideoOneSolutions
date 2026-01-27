@@ -10,6 +10,7 @@
 "shortVideo_strategy" = "短视频策略";
 "Preload_strategy" = "预加载策略";
 "Prerender_strategy" = "预渲染策略";
+"ABR_strategy" = "ABR 策略";
 "common_settings" = "通用";
 "hardware_decoding" = "硬件解码";
 "device_id" = "设备ID";
@@ -25,6 +26,7 @@
 "views"="观看";
 "copy_did_success"="已复制";
 "video_strategy_changed"="请返回首页并重新进入播放，以便您查看效果";
+"video_strategy_changed_need_restart" = "请重新启动，以便配置生效";
 "vod_report" = "举报";
 "vod_pip" = "画中画";
 "vod_pip_toast" = "开启画中画";

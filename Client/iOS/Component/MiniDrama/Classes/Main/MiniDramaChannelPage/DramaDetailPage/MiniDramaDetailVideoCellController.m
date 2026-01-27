@@ -13,7 +13,8 @@
 #import "MiniDramaSocialView.h"
 #import "MiniDramaLandscapeViewController.h"
 #import "MDVideoPlayerController+DisRecordScreen.h"
-
+#import "VESettingModel.h"
+#import "VESettingManager.h"
 
 static NSInteger MiniDramaDetailVideoCellBottomOffset = 0;
 
@@ -81,6 +82,7 @@ static NSInteger MiniDramaDetailVideoCellBottomOffset = 0;
 
 - (void)reloadData:(MDDramaEpisodeInfoModel *)dramaVideoInfo {
     self.dramaVideoInfo = dramaVideoInfo;
+    [self loadPlayerCover];
     [self.socialView setVideoModel:dramaVideoInfo];
 }
 
@@ -175,6 +177,8 @@ static NSInteger MiniDramaDetailVideoCellBottomOffset = 0;
 - (void)playerOptions {
     self.playerController.preRenderOpen = YES;
     self.playerController.preloadOpen = YES;
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    self.playerController.abrOpen = abr.open;
 }
 
 - (BOOL)willPlayCurrentSource:(MiniDramaBaseVideoModel *)videoModel {

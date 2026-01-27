@@ -153,6 +153,10 @@ static NSString *VELongSectionRecommendForUHeaderKey = @"为你推荐";
     VEVideoModel *videoModel = [sectionItems objectAtIndex:indexPath.row];
     VEVideoDetailViewController *detailViewController = [[VEVideoDetailViewController alloc] initWithType:VEVideoPlayerTypeLong];
     detailViewController.videoModel = videoModel;
+    detailViewController.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
+        [playerController stop];
+        [playerController close];
+    };
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 

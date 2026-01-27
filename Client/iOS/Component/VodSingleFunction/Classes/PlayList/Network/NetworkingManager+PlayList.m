@@ -2,12 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "NetworkingManager+PlayList.h"
 #import "BaseVideoModel.h"
+#import "VESettingModel.h"
+#import "VESettingManager.h"
 #import <ToolKit/ToolKit.h>
 
 @implementation NetworkingManager (PlayList)
 
 + (void)getPlayListDetail:(void (^)(NSArray<VEVideoModel *> *_Nonnull, PlayListMode))success failure:(void (^)(NSString *_Nonnull))failure {
-    NSDictionary *param = @{};
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    if (abr.open) {
+        [param setObject:@"evideo" forKey:@"fileType"];
+        [param setObject:@(0) forKey:@"codec"];
+        [param setObject:@(9) forKey:@"format"];
+    }
+    
     [NetworkingManager postWithPath:@"vod/v1/getPlayListDetail"
                          parameters:param
                               block:^(NetworkingResponse *_Nonnull response) {

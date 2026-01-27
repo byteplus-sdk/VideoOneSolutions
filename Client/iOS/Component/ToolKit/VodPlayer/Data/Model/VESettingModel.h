@@ -20,6 +20,7 @@ typedef enum : NSUInteger {
     VESettingKeyUniversalH265 = 0000,
     VESettingKeyUniversalHardwareDecode,
     VESettingKeyUniversalDeviceID,
+    VESettingKeyUniversalABRConfig,
     
     VESettingKeyUniversalActionCleanCache = 1000,
     VESettingKeyUniversalActionPlayVidoeUrl = 1001,

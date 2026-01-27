@@ -9,6 +9,8 @@
 
 @property (nonatomic, assign) BOOL hardwareDecodeOpen;
 
+@property (nonatomic, assign) BOOL abrOpen;
+
 - (void)openVideoEngineFeedDefaultOptions;
 
 - (void)openVideoEngineShortDefaultOptions;

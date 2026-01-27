@@ -57,6 +57,9 @@
 
     VESettingModel *hardwareDecode = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalHardwareDecode];
     self.playerController.hardwareDecodeOpen = hardwareDecode.open;
+    
+    VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
+    self.playerController.abrOpen = abr.open;
 }
 
 
@@ -111,9 +114,15 @@
 #pragma mark----- VEVideoDetailTableViewDelegate
 
 - (void)tableView:(VEVideoDetailTableView *)tableView didSelectRowAtModel:(BaseVideoModel *)model {
+    [self.playerController stop];
+    [self.playerController close];
     self.closeCallback = nil;
     VEVideoDetailViewController *detailViewController = [[VEVideoDetailViewController alloc] initWithType:self.videoPlayerType];
     detailViewController.videoModel = model;
+    detailViewController.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
+        [playerController stop];
+        [playerController close];
+    };
     UINavigationController *navigationController = self.navigationController;
     NSMutableArray *viewControllers = navigationController.viewControllers.mutableCopy;
     [viewControllers removeObject:self];

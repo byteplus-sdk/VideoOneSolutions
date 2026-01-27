@@ -29,6 +29,10 @@
         [[ToastComponent shareToastComponent] dismiss];
         SmartSubtitleViewController *vc = [[SmartSubtitleViewController alloc] initWithType:VEVideoPlayerTypeFeed];
         vc.videoModel = videoModel;
+        vc.closeCallback = ^(BOOL landscapeMode, VEVideoPlayerController *playerController) {
+            [playerController stop];
+            [playerController close];
+        };
         UIViewController *topVC = [DeviceInforTool topViewController];
         [topVC.navigationController pushViewController:vc animated:YES];
         if (block) {

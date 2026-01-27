@@ -3,7 +3,7 @@
 #import "MDPlayerUtility.h"
 #import "BTDResponder.h"
 #import <Reachability/Reachability.h>
-
+#import <TTSDKFramework/TTSDKFramework.h>
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
@@ -163,6 +163,79 @@
     NSData *data = [[NSData alloc]initWithBase64EncodedString:tmpMstring options:0];
     
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
++ (NSString *)transferResolutionTitleByType:(NSInteger)type {
+    NSString *resolutionTitle;
+    switch (type) {
+        case TTVideoEngineResolutionTypeSD:
+            resolutionTitle = @"360";
+            break;
+        case TTVideoEngineResolutionTypeHD:
+            resolutionTitle = @"480";
+            break;
+        case TTVideoEngineResolutionTypeFullHD:
+            resolutionTitle = @"720";
+            break;
+        case TTVideoEngineResolutionType1080P:
+            resolutionTitle = @"1080";
+            break;
+        case TTVideoEngineResolutionType4K:
+            resolutionTitle = @"4K";
+            break;
+        case TTVideoEngineResolutionTypeABRAuto:
+            resolutionTitle = @"ABR自动";
+            break;
+        case TTVideoEngineResolutionTypeAuto:
+            resolutionTitle = @"自动";
+            break;
+        case TTVideoEngineResolutionTypeUnknown:
+            resolutionTitle = @"未知";
+            break;
+        case TTVideoEngineResolutionTypeHDR:
+            resolutionTitle = @"HDR";
+            break;
+        case TTVideoEngineResolutionTypeHDR_240P:
+            resolutionTitle = @"240p HDR";
+            break;
+        case TTVideoEngineResolutionTypeHDR_360P:
+            resolutionTitle = @"360p HDR";
+            break;
+        case TTVideoEngineResolutionTypeHDR_480P:
+            resolutionTitle = @"480p HDR";
+            break;
+        case TTVideoEngineResolutionTypeHDR_540P:
+            resolutionTitle = @"540p HDR";
+            break;
+        case TTVideoEngineResolutionTypeHDR_720P:
+            resolutionTitle = @"720p HDR";
+            break;
+        case TTVideoEngineResolutionTypeHDR_1080P:
+            resolutionTitle = @"1080p HDR";
+            break;
+        case TTVideoEngineResolutionTypeHDR_2K:
+            resolutionTitle = @"2k HDR";
+            break;
+        case TTVideoEngineResolutionTypeHDR_4K:
+            resolutionTitle = @"4k HDR";
+            break;
+        case TTVideoEngineResolutionType2K:
+            resolutionTitle = @"2k";
+            break;
+        case TTVideoEngineResolutionType1080P_120F:
+            resolutionTitle = @"1080P_120F";
+            break;
+        case TTVideoEngineResolutionType2K_120F:
+            resolutionTitle = @"2K_120F";
+            break;
+        case TTVideoEngineResolutionType4K_120F:
+            resolutionTitle = @"4K_120F";
+            break;
+        default:
+            resolutionTitle = @"默认";
+            break;
+    }
+    return resolutionTitle;
 }
 
 @end
