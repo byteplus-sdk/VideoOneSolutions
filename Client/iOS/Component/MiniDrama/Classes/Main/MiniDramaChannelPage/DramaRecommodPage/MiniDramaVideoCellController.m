@@ -18,6 +18,8 @@
 #import "MiniDramaSocialView.h"
 #import "MiniDramaLandscapeViewController.h"
 #import "MDVideoPlayerController+DisRecordScreen.h"
+#import "MDVideoWithAdsPlayerController.h"
+#import "MDAdGlobalSettings.h"
 
 @interface MiniDramaVideoCellController () <MDVideoPlaybackDelegate,
 MiniDramaSeriesViewDelegate,
@@ -227,7 +229,15 @@ MiniDramaLandscapeViewProtocol
         MiniDramaRecommodPlayerModuleLoader *_tempModule = [[MiniDramaRecommodPlayerModuleLoader alloc] init];
         
         MDVideoPlayerConfiguration *playerConfig = [MDVideoPlayerConfiguration defaultPlayerConfiguration];
-        self.playerController = [[MDVideoPlayerController alloc] initWithConfiguration:playerConfig moduleLoader:_tempModule playerContainerView:self.view];
+
+        if (MDAdGlobalSettings.adsEnabled) {
+            self.playerController = [[MDVideoWithAdsPlayerController alloc] initWithConfiguration:playerConfig moduleLoader:_tempModule playerContainerView:self.view];
+            [self addChildViewController:self.playerController];
+            [self.playerController didMoveToParentViewController:self];
+        } else {
+            self.playerController = [[MDVideoPlayerController alloc] initWithConfiguration:playerConfig moduleLoader:_tempModule playerContainerView:self.view];
+        }
+
         self.playerController.delegate = self;
         self.playerController.videoViewMode = MDVideoViewModeAspectFill;
         [self.view insertSubview:self.playerController.view atIndex:0];

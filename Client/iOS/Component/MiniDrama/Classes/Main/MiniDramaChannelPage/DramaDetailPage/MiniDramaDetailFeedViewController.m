@@ -22,6 +22,7 @@
 #import "NetworkingManager+MiniDrama.h"
 #import "MiniDramaPlayerSpeedView.h"
 #import "MiniDramaLandscapeViewController.h"
+#import "MDAdGlobalSettings.h"
 
 static NSString *const MiniDramaDetailVideoFeedCellReuseID = @"MiniDramaDetailVideoFeedCellReuseID";
 
@@ -121,6 +122,7 @@ UIGestureRecognizerDelegate
         make.right.mas_equalTo(self.view).offset(-12);
         make.size.mas_equalTo(CGSizeMake(38, 36));
     }];
+    tabbarView.tag = MDAdGlobalSettings.hideDuringAdTag;
     
     [self addChildViewController:self.pageContainer];
     [self.view addSubview:self.pageContainer.view];
@@ -130,7 +132,9 @@ UIGestureRecognizerDelegate
     }];
     
     [self.view addSubview:self.backButton];
+    self.backButton.tag = MDAdGlobalSettings.hideDuringAdTag;
     [self.view addSubview:self.dramaEpisodeLabel];
+    self.dramaEpisodeLabel.tag = MDAdGlobalSettings.hideDuringAdTag;
     [self.backButton mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {
             make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
@@ -162,10 +166,16 @@ UIGestureRecognizerDelegate
         dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
             [self.dramaVideoModels removeAllObjects];
             [self.dramaVideoModels addObjectsFromArray:list];
-            self.fromDramInfo.dramaLength = list.count;
+            
+            NSUInteger count = list.count;
+            if (MDAdGlobalSettings.adsEnabled) {
+                count = [[list filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"vip == NO"]] count];
+            }
+
+            self.fromDramInfo.dramaLength = count;
             [self.pageContainer reloadData];
             [self onHandleFromDramaVideoInfo];
-            self.episodeSelectionTab.episodeCount = list.count;
+            self.episodeSelectionTab.episodeCount = count;
             self.isLoadingData = NO;
         });
         // set video strategy source
@@ -455,6 +465,7 @@ UIGestureRecognizerDelegate
     }
     cell.delegate = self;
     cell.dramaVideoModels = self.dramaVideoModels;
+    cell.customView = self.view;
     if (index < self.dramaVideoModels.count) {
         [cell reloadData:[self.dramaVideoModels objectAtIndex:index]];
     }

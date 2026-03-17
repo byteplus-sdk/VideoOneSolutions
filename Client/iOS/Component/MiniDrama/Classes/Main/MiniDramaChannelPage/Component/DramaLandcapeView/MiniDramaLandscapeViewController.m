@@ -23,6 +23,8 @@
 #import "MDVideoPlayerController+DisRecordScreen.h"
 #import "VESettingManager.h"
 #import "VESettingModel.h"
+#import "MDVideoWithAdsPlayerController.h"
+#import "MDAdGlobalSettings.h"
 
 @interface MiniDramaLandscapeViewController ()<MDVideoPlaybackDelegate,
 MDInterfaceDelegate,
@@ -276,7 +278,15 @@ static inline BOOL normalScreenBehaivor () {
     MDVideoPlayerConfiguration *configration = [MDVideoPlayerConfiguration defaultPlayerConfiguration];
     configration.enablePip = [AVPictureInPictureController isPictureInPictureSupported];
     configration.videoViewMode = MDVideoViewModeAspectFit;
-    _playerController = [[MDVideoPlayerController alloc] initWithConfiguration:configration];
+
+    if (MDAdGlobalSettings.adsEnabled) {
+        _playerController = [[MDVideoWithAdsPlayerController alloc] initWithConfiguration:configration];
+        [self addChildViewController:self.playerController];
+        [self.playerController didMoveToParentViewController:self];
+    } else {
+        _playerController = [[MDVideoPlayerController alloc] initWithConfiguration:configration];
+    }
+
     _playerController.preloadOpen = YES;
     _playerController.preRenderOpen = YES;
     _playerController.delegate = self;
@@ -292,7 +302,11 @@ static inline BOOL normalScreenBehaivor () {
     
     MiniDramaLandscapeSceneConf *scene = [MiniDramaLandscapeSceneConf new];
     scene.videoModel = self.videoModel;
+    
     scene.videoCount = self.dramaVideoModels.count;
+    if (MDAdGlobalSettings.adsEnabled) {
+        scene.videoCount = [[self.dramaVideoModels filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"vip == NO"]] count];
+    }
     
     _scene = scene;
     self.playerControlView = [[MDInterface alloc] initWithPlayerCore:self.playerController scene:scene];
@@ -310,6 +324,11 @@ static inline BOOL normalScreenBehaivor () {
         make.bottom.equalTo(self.playContainerView.mas_safeAreaLayoutGuideBottom).offset(-25);
     }];
     [self registMessage];
+    
+    if (MDAdGlobalSettings.adsEnabled) {
+        [(MDVideoWithAdsPlayerController *)_playerController setCustomPlayerContainerView:self.playerControlView];
+    }
+   
 }
 
 - (void)playerStop {

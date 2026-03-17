@@ -8,6 +8,7 @@
 #import <ToolKit/UIColor+String.h>
 #import <ToolKit/Localizator.h>
 #import "MiniDramaEpisodeSectionView.h"
+#import "MDAdGlobalSettings.h"
 
 NSString *MiniDramaSelectionCellReuseID = @"MiniDramaSelectionCellReuseID";
 
@@ -64,7 +65,9 @@ NSInteger EpisodeSectionSegmentCount = 5;
     [self.headerView addSubview:self.coverImageView];
     [self.headerView addSubview:self.titleLabel];
     [self.headerView addSubview:self.desLabel];
-    [self.headerView addSubview:self.unlockButton];
+    if (!MDAdGlobalSettings.adsEnabled) {
+        [self.headerView addSubview:self.unlockButton];
+    }
     
     [self.headerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.containerView).offset(16);
@@ -84,11 +87,13 @@ NSInteger EpisodeSectionSegmentCount = 5;
         make.top.equalTo(self.titleLabel.mas_bottom).with.offset(4);
         make.left.right.equalTo(self.titleLabel);
     }];
-    [self.unlockButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(90, 32));
-        make.right.equalTo(self.headerView).offset(-16);
-        make.centerY.equalTo(self.headerView);
-    }];
+    if (!MDAdGlobalSettings.adsEnabled) {
+        [self.unlockButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(90, 32));
+            make.right.equalTo(self.headerView).offset(-16);
+            make.centerY.equalTo(self.headerView);
+        }];
+    }
 
     [self.episodeSectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.headerView.mas_bottom);
@@ -120,9 +125,14 @@ NSInteger EpisodeSectionSegmentCount = 5;
 }
 
 - (void)setDramaVideoModels:(NSArray<MDDramaEpisodeInfoModel *> *)dramaVideoModels {
-    _dramaVideoModels = dramaVideoModels;
+    if (MDAdGlobalSettings.adsEnabled) {
+        _dramaVideoModels = [dramaVideoModels filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"vip == NO"]];
+    } else {
+        _dramaVideoModels = dramaVideoModels;
+    }
+    
     [self updateCurrentDramaVideoInfo:self.curPlayDramaVideoInfo];
-    self.desLabel.text = [NSString stringWithFormat:LocalizedStringFromBundle(@"mini_drama_selectView_title", @"MiniDrama"), dramaVideoModels.count];
+    self.desLabel.text = [NSString stringWithFormat:LocalizedStringFromBundle(@"mini_drama_selectView_title", @"MiniDrama"), _dramaVideoModels.count];
 }
 
 - (void)updateCurrentDramaVideoInfo:(MDDramaEpisodeInfoModel *)dramaVideoInfo {

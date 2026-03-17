@@ -12,3 +12,4 @@ NSMicrophoneUsageDescription = "用于拍摄、直播、视频或语音通话等
 NSPhotoLibraryAddUsageDescription = "如果不允许，您将无法使用视频剪辑。";
 NSPhotoLibraryUsageDescription = "如果不允许，您将无法使用视频剪辑。";
 NSAppleMusicUsageDescription = "如果不允许，您将无法使用视频剪辑。";
+NSUserTrackingUsageDescription = "此标识符将用于向您投放个性化广告。";
