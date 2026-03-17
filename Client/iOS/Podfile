@@ -1,8 +1,9 @@
 source 'https://cdn.cocoapods.org/'
 source 'https://github.com/byteplus-sdk/byteplus-specs.git'
 source 'https://github.com/volcengine/volcengine-specs.git'
+source 'https://github.com/CocoaPods/Specs.git'
 
-platform :ios, '13.0'
+platform :ios, '14.0'
 install! 'cocoapods',
 :deterministic_uuids => false,
 :disable_input_output_paths => true
@@ -88,6 +89,12 @@ def scene_MiniDrama_pods
   pod 'MiniDrama', :path => './Component/MiniDrama'
 end
 
+def scene_MiniDramaWithInStreamAds_pods
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['Player']
+  pod 'MediaAdsToB', '2.0.1'
+  pod 'MiniDramaWithInStreamAds', :path => './Component/MiniDramaWithInStreamAds'
+end
+
 def scene_AIChat_pods
   rtc_pods
   pod 'AIChat', :path => './Component/AIChat'
@@ -102,6 +109,7 @@ target 'VideoOne' do
   develop_rtc_pods
   scene_TTProtoTypeRoom_pods
   scene_MiniDrama_pods
+  scene_MiniDramaWithInStreamAds_pods
   scene_AIChat_pods
   
 end

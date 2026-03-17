@@ -10,6 +10,7 @@
 #import <Masonry/Masonry.h>
 #import "MDVideoPlayerController+Strategy.h"
 #import "DramaDisrecordManager.h"
+#import "MDAdGlobalSettings.h"
 
 static NSInteger HomePageIndex = 0;
 static NSInteger ChannelPageIndex = 1;
@@ -32,6 +33,7 @@ static NSInteger ChannelPageIndex = 1;
     self.view.backgroundColor = [UIColor colorFromHexString:@"#F6F8FA"];
     [self addSubviewAndmakeConstraints];
     self.currentIndex = HomePageIndex;
+    MDAdGlobalSettings.adsEnabled = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

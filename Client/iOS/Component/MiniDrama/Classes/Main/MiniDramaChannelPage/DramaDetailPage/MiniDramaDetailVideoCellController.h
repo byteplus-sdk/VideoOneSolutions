@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSMutableArray<MDDramaEpisodeInfoModel *> *dramaVideoModels;
 
+@property (nonatomic, weak) UIView *customView;
+
 - (void)updatePlaybackSeed:(CGFloat)speed;
 
 - (void)reloadData:(MDDramaEpisodeInfoModel *)dramaVideoInfo;

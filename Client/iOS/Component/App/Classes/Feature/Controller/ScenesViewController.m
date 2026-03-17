@@ -188,6 +188,7 @@
         _scenes = @[
             @{@"className": @"AIChat"},
             @{@"className": @"MiniDrama"},
+            @{@"className": @"MiniDramaWithInStreamAds"},
             @{@"className": @"TTProtoTypeRoom"},
             @{@"className": @"OnlineKTV"},
             @{@"className": @"VideoPlaybackEdit"},

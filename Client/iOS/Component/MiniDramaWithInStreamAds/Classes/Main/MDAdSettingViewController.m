@@ -1,0 +1,178 @@
+// Copyright (c) 2023 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+#import "MDAdSettingViewController.h"
+#import "VESettingDisplayCell.h"
+#import "VESettingDisplayDetailCell.h"
+#import "VESettingEntranceCell.h"
+#import "MDAdSettingManager.h"
+#import "VESettingSwitcherCell.h"
+#import "VESettingTypeMutilSelectorCell.h"
+#import <Masonry/Masonry.h>
+#import <ToolKit/Localizator.h>
+#import <ToolKit/ToolKit.h>
+#import <ToolKit/UIColor+String.h>
+
+extern NSString *universalActionSectionKey;
+extern NSString *universalDidSectionKey;
+extern NSString *universalVideoUrlSectionKey;
+
+@interface MDAdSettingViewController () <UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UIView *navView;
+
+@end
+
+@implementation MDAdSettingViewController
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES];
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    [self initialUI];
+}
+
+- (void)close {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)initialUI {
+    self.view.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.navView];
+    [self.navView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.equalTo(self.view);
+        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideTop).offset(44);
+    }];
+    [self.view addSubview:self.tableView];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.tableView registerClass:[VESettingDisplayCell class] forCellReuseIdentifier:VESettingDisplayCellReuseID];
+    [self.tableView registerClass:[VESettingSwitcherCell class] forCellReuseIdentifier:VESettingSwitcherCellReuseID];
+    [self.tableView registerClass:[VESettingDisplayDetailCell class] forCellReuseIdentifier:VESettingDisplayDetailCellReuseID];
+    [self.tableView registerClass:[VESettingTypeMutilSelectorCell class] forCellReuseIdentifier:VESettingTypeMutilSelectorCellReuseID];
+    [self.tableView registerClass:[VESettingEntranceCell class] forCellReuseIdentifier:VESettingEntranceCellCellReuseID];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.navView.mas_bottom);
+        make.left.bottom.right.equalTo(self.view);
+    }];
+}
+
+- (UIView *)navView {
+    if (!_navView) {
+        _navView = [[UIView alloc] init];
+        _navView.backgroundColor = [UIColor colorFromRGBHexString:@"#F7F8FA"];
+
+        BaseButton *button = [[BaseButton alloc] init];
+        button.backgroundColor = [UIColor clearColor];
+        UIImage *image = [UIImage imageNamed:@"black_back" bundleName:@"VodPlayer"];
+        button.tintColor = [UIColor whiteColor];
+        [button setImage:image forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+        [_navView addSubview:button];
+        [button mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(16, 16));
+            make.left.mas_equalTo(15);
+            make.bottom.mas_equalTo(-14);
+        }];
+
+        UILabel *label = [[UILabel alloc] init];
+        label.text = LocalizedStringFromBundle(@"mini_drama_ads_setting_title", @"MiniDramaWithInStreamAds");
+        label.textColor = [UIColor blackColor];
+        label.font = [UIFont systemFontOfSize:16 weight:UIFontWeightMedium];
+        [_navView addSubview:label];
+        [label mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(button);
+            make.centerX.equalTo(_navView);
+        }];
+    }
+    return _navView;
+}
+
+#pragma mark----- UITableViewDelegate & DataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return [[[MDAdSettingManager universalManager] settingSections] count];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSString *sectionKey = [[[MDAdSettingManager universalManager] settingSections] objectAtIndex:section];
+    NSArray *settings = [[[MDAdSettingManager universalManager] settings] valueForKey:sectionKey];
+    return settings.count;
+}
+
+- (VESettingCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *sectionKey = [[[MDAdSettingManager universalManager] settingSections] objectAtIndex:indexPath.section];
+    NSArray *settings = [[[MDAdSettingManager universalManager] settings] valueForKey:sectionKey];
+    VESettingModel *model = [settings objectAtIndex:indexPath.row];
+    VESettingCell *cell = [tableView dequeueReusableCellWithIdentifier:model.cellInfo.allKeys.firstObject];
+    SettingCellCornerStyle style = SettingCellCornerStyleFull;
+    if (settings.count == 1) {
+        style = SettingCellCornerStyleFull;
+    } else {
+        if (indexPath.row == 0) {
+            style = SettingCellCornerStyleUp;
+        } else if (indexPath.row == settings.count - 1) {
+            style = SettingCellCornerStyleBottom;
+        } else {
+            style = SettingCellCornerStyleMiddle;
+        }
+    }
+    cell.cornerStyle = style;
+    [cell performSelector:@selector(setSettingModel:) withObject:model];
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *sectionKey = [[[MDAdSettingManager universalManager] settingSections] objectAtIndex:indexPath.section];
+    NSArray *settings = [[[MDAdSettingManager universalManager] settings] valueForKey:sectionKey];
+    VESettingModel *model = [settings objectAtIndex:indexPath.row];
+    return model.cellHeight;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    NSString *sectionKey = [[[MDAdSettingManager universalManager] settingSections] objectAtIndex:section];
+    if ([sectionKey isEqualToString:universalActionSectionKey]) {
+        return [UIView new];
+    } else {
+        return ({
+            UILabel *headerLabel = [UILabel new];
+            headerLabel.text = [NSString stringWithFormat:@"    %@", [[MDAdSettingManager universalManager] sectionKeyLocalized:sectionKey]];
+            headerLabel.font = [UIFont systemFontOfSize:14.0];
+            headerLabel.textColor = [UIColor colorFromRGBHexString:@"#86909C"];
+            headerLabel;
+        });
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    NSString *sectionKey = [[[MDAdSettingManager universalManager] settingSections] objectAtIndex:section];
+    if ([sectionKey isEqualToString:universalActionSectionKey] || [sectionKey isEqualToString:universalDidSectionKey] || [sectionKey isEqualToString:universalVideoUrlSectionKey]) {
+        return 0;
+    } else {
+        return 50;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    return CGFLOAT_MIN;
+}
+
+#pragma mark----- Lazy Load
+
+- (UITableView *)tableView {
+    if (!_tableView) {
+        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+        _tableView.backgroundColor = [UIColor colorFromRGBHexString:@"#F7F8FA"];
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        _tableView.estimatedRowHeight = 0.0;
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    }
+    return _tableView;
+}
+
+@end

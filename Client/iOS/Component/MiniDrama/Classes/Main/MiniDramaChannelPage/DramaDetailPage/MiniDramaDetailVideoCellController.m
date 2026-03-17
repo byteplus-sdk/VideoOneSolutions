@@ -15,6 +15,9 @@
 #import "MDVideoPlayerController+DisRecordScreen.h"
 #import "VESettingModel.h"
 #import "VESettingManager.h"
+#import "MDVideoWithAdsPlayerController.h"
+#import "MDAdGlobalSettings.h"
+
 
 static NSInteger MiniDramaDetailVideoCellBottomOffset = 0;
 
@@ -118,7 +121,15 @@ static NSInteger MiniDramaDetailVideoCellBottomOffset = 0;
     if (self.playerController == nil) {
         MiniDramaDetailPlayerModuleLoader *_tempModule = [[MiniDramaDetailPlayerModuleLoader alloc] init];
         MDVideoPlayerConfiguration *playerConfig = [MDVideoPlayerConfiguration defaultPlayerConfiguration];
-        self.playerController = [[MDVideoPlayerController alloc] initWithConfiguration:playerConfig moduleLoader:_tempModule playerContainerView:self.view];
+ 
+        if (MDAdGlobalSettings.adsEnabled) {
+            self.playerController = [[MDVideoWithAdsPlayerController alloc] initWithConfiguration:playerConfig moduleLoader:_tempModule playerContainerView:self.view socialView:self.socialView customView:self.customView];
+            [self addChildViewController:self.playerController];
+            [self.playerController didMoveToParentViewController:self];
+        } else {
+            self.playerController = [[MDVideoPlayerController alloc] initWithConfiguration:playerConfig moduleLoader:_tempModule playerContainerView:self.view];
+        }
+
         self.playerController.delegate = self;
         [self.view insertSubview:self.playerController.view atIndex:0];
         [self.playerController.view mas_makeConstraints:^(MASConstraintMaker *make) {

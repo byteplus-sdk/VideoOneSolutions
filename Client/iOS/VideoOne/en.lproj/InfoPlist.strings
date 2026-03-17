@@ -12,3 +12,4 @@ NSMicrophoneUsageDescription = "Used for recording or communication scenarios su
 NSPhotoLibraryAddUsageDescription = "If not allowed, you will not be able to use video editing.";
 NSPhotoLibraryUsageDescription = "If not allowed, you will not be able to use video editing.";
 NSAppleMusicUsageDescription = "If not allowed, you will not be able to use video editing.";
+NSUserTrackingUsageDescription = "This identifier will be used to deliver personalized ads to you.";
