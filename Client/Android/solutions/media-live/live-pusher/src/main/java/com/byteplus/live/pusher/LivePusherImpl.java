@@ -35,7 +35,6 @@ import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeL
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeLiveAudioCaptureMicrophone;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeLiveAudioCaptureMuteFrame;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeLiveAudioCaptureVoiceCommunication;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeLiveAudioCaptureVoiceRecognition;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioChannel.VeLiveAudioChannelStereo;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioFrameSource.VeLiveAudioFrameSourceCapture;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioFrameSource.VeLiveAudioFrameSourcePreEncode;
@@ -58,7 +57,6 @@ import static com.ss.avframework.live.VeLivePusherDef.VeLivePusherRenderMode.VeL
 import static com.ss.avframework.live.VeLivePusherDef.VeLivePusherRenderMode.VeLivePusherRenderModeHidden;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureBackCamera;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureCustomImage;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureDualCamera;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureDummyFrame;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureExternal;
 import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureFrontCamera;
@@ -82,7 +80,6 @@ import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoRotation.VeLive
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -127,7 +124,7 @@ public class LivePusherImpl implements LivePusher,
     private final String TAG = "LivePusherImpl";
     private LivePusherObserver mPusherObserver;
     private LivePusherCycleInfo mCycleInfo = new LivePusherCycleInfo();
-    private final File mParentPath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "VideoOne/TTSDK");
+    private final File mParentPath;
     private WriterPCMFile mCaptureAudioWriter;
     private WriterPCMFile mPreEncodeAudioWriter;
     private WriterPCMFile mBgmAudioWriter;
@@ -147,6 +144,7 @@ public class LivePusherImpl implements LivePusher,
     private LivePusherImpl(Context context, LivePusherObserver appObserver) {
         Log.d(TAG, "create LivePusherImpl");
         mContext = context;
+        mParentPath = FileUtils.getAppPicturesDir(mContext, "VideoOne/TTSDK");
         mPusherObserver = appObserver;
         initInternal();
         configLivePusher();
@@ -225,29 +223,6 @@ public class LivePusherImpl implements LivePusher,
             return;
         }
         mLivePusher.stopAudioCapture();
-    }
-
-    @Override
-    public void startScreenRecording(Intent screenIntent) {
-        Log.d(TAG, "startScreenRecording");
-        if (mLivePusher == null) {
-            Log.e(TAG, "startScreenRecording, mLivePusher is null.");
-            return;
-        }
-        // https://docs.byteplus.com/en/docs/byteplus-media-live/docs-broadcast-sdk-for-android-api#VeLivePusher-startscreenrecording
-        // enableAppAudio
-        // Whether to record in-app audio data. Currently, you can only set it to true, which is the default value.
-        mLivePusher.startScreenRecording(true, screenIntent);
-    }
-
-    @Override
-    public void stopScreenRecording() {
-        Log.d(TAG, "stopScreenRecording");
-        if (mLivePusher == null) {
-            Log.e(TAG, "stopScreenRecording, mLivePusher is null.");
-            return;
-        }
-        mLivePusher.stopScreenRecording();
     }
 
     @Override
@@ -407,7 +382,7 @@ public class LivePusherImpl implements LivePusher,
                             if (listener != null) {
                                 listener.onFileRecordingStopped();
                             }
-                            FileUtils.updateToAlbum(mContext, mp4Path);
+                            FileUtils.exportVideoToGallery(mContext, mp4Path, mp4Path.getName());
                         }
 
                         @Override
@@ -447,7 +422,7 @@ public class LivePusherImpl implements LivePusher,
                     Log.d(TAG, "saveBitmap to " + file);
                     boolean retValue = FileUtils.saveBitmap(image, file);
                     if (retValue) {
-                        FileUtils.updateToAlbum(mContext, file);
+                        FileUtils.exportImageToGallery(mContext, file, file.getName());
                     } else {
                         Log.i(TAG, "saveBitmap: save failed");
                     }
@@ -1097,6 +1072,11 @@ public class LivePusherImpl implements LivePusher,
                 if (mPusherObserver != null) {
                     mPusherObserver.onCallbackRecordUpdate(info);
                 }
+                if (open) {
+                    mLivePusher.startMixSystemAudio();
+                } else {
+                    mLivePusher.stopMixSystemAudio();
+                }
             }
 
             @Override
@@ -1209,8 +1189,6 @@ public class LivePusherImpl implements LivePusher,
         switch (type) {
             case PUSH_VIDEO_CAPTURE_BACK:
                 return VeLiveVideoCaptureBackCamera;
-            case PUSH_VIDEO_CAPTURE_DUAL:
-                return VeLiveVideoCaptureDualCamera;
             case PUSH_VIDEO_CAPTURE_SCREEN:
                 return VeLiveVideoCaptureScreen;
             case PUSH_VIDEO_CAPTURE_EXTERNAL:
@@ -1232,8 +1210,6 @@ public class LivePusherImpl implements LivePusher,
         switch (type) {
             case PUSH_AUDIO_CAPTURE_VOICE_COMMUNICATION:
                 return VeLiveAudioCaptureVoiceCommunication;
-            case PUSH_AUDIO_CAPTURE_VOICE_RECOGNITION:
-                return VeLiveAudioCaptureVoiceRecognition;
             case PUSH_AUDIO_CAPTURE_EXTERNAL:
                 return VeLiveAudioCaptureExternal;
             case PUSH_AUDIO_CAPTURE_MUTE_FRAME:

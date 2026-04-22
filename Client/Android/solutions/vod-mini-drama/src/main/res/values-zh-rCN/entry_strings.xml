@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="vevod_mini_drama_entry_title">短剧</string>
+    <string name="vevod_mini_drama_with_ads_entry_title">短剧，含插播广告</string>
     <string name="vevod_mini_drama_entry_description">精彩短剧剧集，视频播放和商业变现。</string>
+    <string name="vevod_mini_drama_with_ads_entry_description">短剧集，采用视频内广告盈利模式。</string>
 </resources>

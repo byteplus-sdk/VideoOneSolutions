@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="avatar_top_normal">164dp</dimen>
+    <dimen name="avatar_top_tips">78dp</dimen>
+    <dimen name="item_question_spacing">6dp</dimen>
+    <dimen name="item_choice_spacing">3dp</dimen>
+</resources>

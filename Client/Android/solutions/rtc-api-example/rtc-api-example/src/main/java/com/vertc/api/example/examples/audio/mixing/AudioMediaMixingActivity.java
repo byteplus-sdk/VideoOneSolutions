@@ -333,6 +333,7 @@ public class AudioMediaMixingActivity extends ExampleBaseActivity {
             RTCRoomConfig roomConfig = new RTCRoomConfig(
                     ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
                     isAutoPublish,
+                    isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
             rtcRoom.joinRoom(token, userInfo, roomConfig);

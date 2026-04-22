@@ -25,6 +25,7 @@ import com.byteplus.playerkit.utils.L;
 import com.byteplus.vod.scenekit.R;
 import com.byteplus.vod.scenekit.annotation.CompleteAction;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
+import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.ui.video.scene.utils.ShortStrategySettingsConfig;
 import com.byteplus.vod.scenekit.ui.widgets.viewpager2.OnPageChangeCallbackCompat;
 
@@ -111,6 +112,7 @@ public class ShortVideoPageView {
     }
 
     public void setItems(List<VideoItem> videoItems) {
+        VideoItem.playScene(videoItems, PlayScene.SCENE_SHORT);
         mShortVideoAdapter.setItems(videoItems);
         if (mLifeCycle != null && mLifeCycle.getCurrentState() == Lifecycle.State.RESUMED) {
             ShortVideoStrategy.setItems(videoItems);
@@ -119,11 +121,13 @@ public class ShortVideoPageView {
     }
 
     public void prependItems(List<VideoItem> videoItems) {
+        VideoItem.playScene(videoItems, PlayScene.SCENE_SHORT);
         mShortVideoAdapter.prependItems(videoItems);
         ShortVideoStrategy.setItems(mShortVideoAdapter.getItems());
     }
 
     public void appendItems(List<VideoItem> videoItems) {
+        VideoItem.playScene(videoItems, PlayScene.SCENE_SHORT);
         mShortVideoAdapter.appendItems(videoItems);
         ShortVideoStrategy.appendItems(videoItems);
     }

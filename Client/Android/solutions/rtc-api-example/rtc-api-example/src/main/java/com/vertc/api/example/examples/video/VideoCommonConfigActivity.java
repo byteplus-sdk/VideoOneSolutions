@@ -158,6 +158,7 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
             RTCRoomConfig roomConfig = new RTCRoomConfig(
                     ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
                     isAutoPublish,
+                    isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
             rtcRoom.joinRoom(token, userInfo, roomConfig);
@@ -270,20 +271,29 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStream(String uid, MediaStreamType type) {
-            super.onUserPublishStream(uid, type);
-            curRemoteUid = uid;
-            runOnUiThread(() -> {
-                setRemoteRenderView(uid, VideoCanvas.RENDER_MODE_HIDDEN);
-            });
+        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    setRemoteRenderView(uid, VideoCanvas.RENDER_MODE_HIDDEN);
+                });
+            } else {
+                runOnUiThread(() -> {
+                    removeRemoteView(uid);
+                });
+            }
         }
 
         @Override
-        public void onUserUnpublishStream(String uid, MediaStreamType type, StreamRemoveReason reason) {
-            super.onUserUnpublishStream(uid, type, reason);
-            runOnUiThread(() -> {
-                removeRemoteView(uid);
-            });
+        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    setRemoteRenderView(uid, VideoCanvas.RENDER_MODE_HIDDEN);
+                });
+            } else {
+                runOnUiThread(() -> {
+                    removeRemoteView(uid);
+                });
+            }
         }
 
         @Override

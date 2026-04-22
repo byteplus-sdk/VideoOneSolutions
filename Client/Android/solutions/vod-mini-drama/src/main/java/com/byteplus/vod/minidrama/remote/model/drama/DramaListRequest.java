@@ -11,8 +11,19 @@ public class DramaListRequest {
     @SerializedName("drama_id")
     public final String dramaId;
 
-    public DramaListRequest(String dramaId, String userId) {
+    @SerializedName("format")
+    private final Integer format;
+    @SerializedName("codec")
+    private final Integer codec;
+    @SerializedName("fileType")
+    private final String fileType;
+
+
+    public DramaListRequest(String dramaId, String userId, Integer format, Integer codec, String fileType) {
         this.dramaId = dramaId;
         this.userId = userId;
+        this.format = format;
+        this.codec = codec;
+        this.fileType = fileType;
     }
 }

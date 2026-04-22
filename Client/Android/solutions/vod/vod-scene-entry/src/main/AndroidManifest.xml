@@ -20,6 +20,12 @@
             android:name=".SettingsActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Immersion" />
+            android:exported="true"
+            android:theme="@style/AppTheme.Immersion">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="com.byteplus.vod.scene.entry.SettingsActivity" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

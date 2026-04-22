@@ -95,7 +95,9 @@ public class CustomVideoRenderActivity extends ExampleBaseActivity {
             boolean isAutoPublish = true;
             boolean isAutoSubscribeAudio = true;
             boolean isAutoSubscribeVideo = true;
-            RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM, isAutoPublish, isAutoSubscribeAudio, isAutoSubscribeVideo);
+            RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
+                    isAutoPublish, isAutoPublish,
+                    isAutoSubscribeAudio, isAutoSubscribeVideo);
             rtcRoom.joinRoom(token, userInfo, roomConfig);
         });
     }

@@ -13,10 +13,12 @@ import androidx.annotation.NonNull;
 
 import com.byteplus.playerkit.player.playback.DisplayModeHelper;
 import com.byteplus.playerkit.player.playback.DisplayView;
+import com.byteplus.playerkit.player.playback.AdsPlaybackController;
 import com.byteplus.playerkit.player.playback.PlaybackController;
 import com.byteplus.playerkit.player.playback.VideoLayerHost;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.player.source.MediaSource;
+import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
 import com.byteplus.vod.minidrama.scene.widgets.MDMediaSeekBar;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaBottomProgressBarLayer;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaGestureLayer;
@@ -24,7 +26,6 @@ import com.byteplus.vod.minidrama.scene.widgets.layer.DramaTimeProgressDialogLay
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaVideoBottomShadowLayer;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaVideoCoverLayer;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaVideoLayer;
-import com.byteplus.vod.minidrama.scene.widgets.layer.DramaVideoPlayerConfigLayer;
 import com.byteplus.vod.minidrama.utils.L;
 import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
@@ -34,6 +35,7 @@ import com.byteplus.vod.scenekit.ui.video.layer.LoadingLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.LogLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PauseLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PlayErrorLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.PlayerConfigLayer;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.utils.ViewUtils;
 
@@ -70,11 +72,11 @@ public class DramaEpisodeVideoViewHolder extends VideoViewHolder {
         }
 
         VideoLayerHost layerHost = new VideoLayerHost(parent.getContext());
+        layerHost.addLayer(new PlayerConfigLayer());
         layerHost.addLayer(new DramaGestureLayer(gestureContract));
         layerHost.addLayer(new DramaVideoCoverLayer());
         layerHost.addLayer(new DramaVideoBottomShadowLayer());
         layerHost.addLayer(DramaVideoLayer.create(type));
-        layerHost.addLayer(DramaVideoPlayerConfigLayer.loop());
         layerHost.addLayer(new LoadingLayer());
         layerHost.addLayer(new PauseLayer());
         layerHost.addLayer(new DramaBottomProgressBarLayer(seekBar));
@@ -88,7 +90,11 @@ public class DramaEpisodeVideoViewHolder extends VideoViewHolder {
         videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FILL); // immersive mode
         videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);
         videoView.setPlayScene(PlayScene.SCENE_SHORT);
-        new PlaybackController().bind(videoView);
+        if (DramaSettings.isAdsEnabled()) {
+            new AdsPlaybackController().bind(videoView);
+        } else {
+            new PlaybackController().bind(videoView);
+        }
         return videoView;
     }
 

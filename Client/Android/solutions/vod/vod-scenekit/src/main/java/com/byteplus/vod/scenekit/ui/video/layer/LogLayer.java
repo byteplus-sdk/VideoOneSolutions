@@ -30,7 +30,9 @@ import com.byteplus.playerkit.player.source.Track;
 import com.byteplus.playerkit.utils.Asserts;
 import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.playerkit.utils.event.Event;
+import com.byteplus.vod.scenekit.strategy.VideoQuality;
 import com.byteplus.vod.scenekit.ui.video.layer.base.BaseLayer;
+import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.utils.TimeUtils;
 
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ public class LogLayer extends BaseLayer {
 
     private static class LogInfo {
         private final List<Long> cacheHintBytes = new ArrayList<>();
+        private MediaSource mediaSource;
         private long startPlaybackFT;
         private long prepareFT;
         private long videoRenderStartFT;
@@ -97,16 +100,10 @@ public class LogLayer extends BaseLayer {
 
     @Override
     public void requestDismiss(@NonNull String reason) {
-        if (!TextUtils.equals(reason, Layers.VisibilityRequestReason.REQUEST_DISMISS_REASON_DIALOG_SHOW)) {
-            super.requestDismiss(reason);
-        }
     }
 
     @Override
     public void requestHide(@NonNull String reason) {
-        if (!TextUtils.equals(reason, Layers.VisibilityRequestReason.REQUEST_DISMISS_REASON_DIALOG_SHOW)) {
-            super.requestHide(reason);
-        }
     }
 
     @Override
@@ -157,12 +154,15 @@ public class LogLayer extends BaseLayer {
             Track track = player.getCurrentTrack(Track.TRACK_TYPE_VIDEO);
             Quality quality = track != null ? track.getQuality() : null;
             info.append("Quality: ")
+                    .append(player.isABRAutoMode() ? "AUTO[" : "")
                     .append(quality == null ? null : quality.getQualityDesc())
+                    .append(player.isABRAutoMode() ? "]" : "")
                     .append("(")
                     .append(player.getVideoWidth())
                     .append("x")
                     .append(player.getVideoHeight())
                     .append(")")
+                    .append(VideoQuality.isEnableStartupABR(dataSource()) ? "Startup ABR " : "")
                     .append(player.isSuperResolutionEnabled() ? "SR" : "")
                     .append("\n");
             info.append("Volume: ")
@@ -227,7 +227,7 @@ public class LogLayer extends BaseLayer {
     private String videoViewState() {
         VideoView videoView = videoView();
         if (videoView == null) return "unbind videoView";
-        return videoView.dump();
+        return videoView.dump() + " " + PlayScene.map(videoView.getPlayScene());
     }
 
     @Override
@@ -256,9 +256,13 @@ public class LogLayer extends BaseLayer {
         public void onEvent(Event event) {
             switch (event.code()) {
                 case PlaybackEvent.Action.START_PLAYBACK:
+                    if (mLogInfo != null && !MediaSource.mediaEquals(mLogInfo.mediaSource, dataSource())) {
+                        mLogInfo = null;
+                    }
                     if (mLogInfo == null) {
                         mLogInfo = new LogInfo();
                         mLogInfo.startPlaybackFT = event.dispatchTime();
+                        mLogInfo.mediaSource = dataSource();
                     }
                     break;
                 case PlaybackEvent.Action.STOP_PLAYBACK:

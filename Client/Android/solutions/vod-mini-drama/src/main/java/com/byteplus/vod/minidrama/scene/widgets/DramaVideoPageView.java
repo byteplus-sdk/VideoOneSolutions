@@ -37,9 +37,10 @@ import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.EventListener {
+    public static final int ADAPTER_BINDING_DATA_DELAY_RETRY_MAX_COUNT = 3;
+
     private final ViewPager2 mViewPager;
     private final MultiTypeAdapter mShortVideoAdapter;
     private Lifecycle mLifeCycle;
@@ -67,7 +68,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
             @Override
             public void onPageSelected(ViewPager2 pager, int position) {
                 super.onPageSelected(pager, position);
-                togglePlayback(position);
+                togglePlayback(position, ADAPTER_BINDING_DATA_DELAY_RETRY_MAX_COUNT);
             }
 
             @Override
@@ -270,32 +271,54 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         return mShortVideoAdapter.getItems().get(currentPosition);
     }
 
-    private void togglePlayback(int position) {
+    private Runnable mPlayRetryRunnable;
+
+    private void togglePlayback(int position, int retryCountDown) {
         if (mLifeCycle != null && !mLifeCycle.getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
             L.d(this, "togglePlayback", position, "returned",
                     L.string(mLifeCycle.getCurrentState()));
             return;
         }
-        L.d(this, "togglePlayback", position, mShortVideoAdapter.getItem(position));
         final ViewHolder viewHolder = findItemViewHolderByPosition(mViewPager, position);
-        final ViewHolder lastHolder = mCurrentHolder;
-        mCurrentHolder = viewHolder;
-        // stop last
-        if (lastHolder != null && lastHolder != viewHolder) {
-            lastHolder.executeAction(ViewHolderAction.ACTION_STOP);
-        }
-        // start current
-        if (viewHolder != null) {
-            if (viewHolder instanceof DramaEpisodeVideoViewHolder videoViewHolder) {
-                VideoView videoView = videoViewHolder.videoView();
-                Player player = videoView == null ? null : videoView.player();
-                if (player != null && player.isReleased()) {
-                    L.d(this, "togglePlayback, player is released, unbind player");
-                    PlaybackController controller = Objects.requireNonNull(videoView.controller());
-                    controller.unbindPlayer();
+        final ViewItem bindingItem = viewHolder == null ? null : viewHolder.getBindingItem();
+        final ViewItem adapterItem = mShortVideoAdapter.getItem(position);
+
+        if (bindingItem != adapterItem) {
+            mViewPager.removeCallbacks(mPlayRetryRunnable);
+            if (retryCountDown > 0) {
+                L.d(this, "togglePlayback", position,
+                        "retry post and waiting", "retryCountDown", retryCountDown,
+                        "newest data not bind yet!", viewHolder,
+                        "bindingItem", bindingItem,
+                        "adapterItem", adapterItem);
+                mPlayRetryRunnable = () -> togglePlayback(position, retryCountDown - 1);
+                // Quick retry once, then retry with vsync
+                if (retryCountDown == ADAPTER_BINDING_DATA_DELAY_RETRY_MAX_COUNT) {
+                    mViewPager.post(mPlayRetryRunnable);
+                } else {
+                    mViewPager.postOnAnimation(mPlayRetryRunnable);
                 }
+            } else {
+                L.e(this, "togglePlayback", position,
+                        "retry end", "retryCountDown", retryCountDown,
+                        "newest data not bind yet!", viewHolder,
+                        "bindingItem", bindingItem,
+                        "adapterItem", adapterItem);
             }
-            viewHolder.executeAction(ViewHolderAction.ACTION_PLAY);
+        } else {
+            L.d(this, "togglePlayback", position, adapterItem);
+            mViewPager.removeCallbacks(mPlayRetryRunnable);
+            mPlayRetryRunnable = null;
+            final ViewHolder lastHolder = mCurrentHolder;
+            mCurrentHolder = viewHolder;
+            // stop last
+            if (lastHolder != null && lastHolder != viewHolder) {
+                lastHolder.executeAction(ViewHolderAction.ACTION_STOP);
+            }
+            // start current
+            if (viewHolder != null) {
+                viewHolder.executeAction(ViewHolderAction.ACTION_PLAY);
+            }
         }
     }
 
@@ -304,7 +327,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
 
         final int currentPosition = mViewPager.getCurrentItem();
         if (currentPosition >= 0) {
-            togglePlayback(currentPosition);
+            togglePlayback(currentPosition, ADAPTER_BINDING_DATA_DELAY_RETRY_MAX_COUNT);
         }
     }
 
@@ -314,7 +337,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         if (viewHolder != null) {
             if (viewHolder instanceof DramaEpisodeVideoViewLandscapeHolder videoViewHolder) {
                 VideoView videoView = videoViewHolder.videoView();
-                Player player = videoView == null ? null: videoView.player();
+                Player player = videoView == null ? null : videoView.player();
                 if (!MiniPlayerHelper.get().isMiniPlayerOff() && player != null && player.isPlaying()) {
                     return;
                 }

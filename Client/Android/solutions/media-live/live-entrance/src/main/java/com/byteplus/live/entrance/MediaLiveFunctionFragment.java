@@ -19,10 +19,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.byteplus.live.player.ui.activity.InputPullUrlActivity;
 import com.byteplus.live.pusher.ui.activities.LiveCaptureType;
 import com.byteplus.live.pusher.ui.activities.LivePushActivity;
-import com.pandora.common.globalsettings.GlobalSdkParams;
 
-import org.json.JSONObject;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MediaLiveFunctionFragment extends PermissionFragment {
@@ -68,7 +66,7 @@ public class MediaLiveFunctionFragment extends PermissionFragment {
         // Pull stream
         view.findViewById(R.id.live_pull).setOnClickListener(v -> {
             askForPermission(
-                    Arrays.asList(Manifest.permission.CAMERA, Manifest.permission.CAMERA),
+                    new ArrayList<String>(),
                     () -> startActivity(new Intent(requireContext(), InputPullUrlActivity.class)),
                     () -> Toast.makeText(requireContext(), "Missing required permission(s)", Toast.LENGTH_LONG).show()
             );
@@ -103,13 +101,5 @@ public class MediaLiveFunctionFragment extends PermissionFragment {
         Intent intent = new Intent(context, LivePushActivity.class);
         intent.putExtra(LivePushActivity.EXTRA_CAPTURE_TYPE, liveCaptureType);
         context.startActivity(intent);
-    }
-
-    static {
-        GlobalSdkParams.getInstance().addListener(msg -> {
-            JSONObject settings = GlobalSdkParams.getInstance().getSettings();
-            Log.d(TAG, "[GlobalSdkParams] Notify msg: " + msg);
-            Log.d(TAG, "[GlobalSdkParams] Settings update: " + settings);
-        });
     }
 }

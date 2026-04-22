@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f6f8fa"
+        android:scaleType="fitStart"
+        android:src="@drawable/bg_ai_settings"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp"
+        tools:layout_constraintGuide_begin="44dp" />
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="6dp"
+        android:contentDescription="@string/back"
+        android:scaleType="center"
+        android:src="@drawable/ic_arrow_left24_b"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top" />
+
+    <TextView
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_marginEnd="6dp"
+        android:gravity="center"
+        android:paddingHorizontal="10dp"
+        android:text="@string/ai_save"
+        android:textColor="#1664FF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:textColor="#42464E"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top"
+        tools:text="Welcome to AI Chat" />
+
+    <EditText
+        android:id="@+id/input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_ai_card_r8"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="11dp"
+        android:paddingBottom="36dp"
+        android:textColor="#161823"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:text="Hello, how can I help you?" />
+
+    <TextView
+        android:id="@+id/count_tips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="11dp"
+        android:textColor="#737A87"
+        app:layout_constraintBottom_toBottomOf="@id/input"
+        app:layout_constraintEnd_toEndOf="@id/input"
+        tools:text="50/100" />
+</androidx.constraintlayout.widget.ConstraintLayout>

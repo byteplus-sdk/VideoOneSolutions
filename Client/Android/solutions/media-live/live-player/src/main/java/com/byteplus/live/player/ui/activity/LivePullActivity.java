@@ -44,6 +44,7 @@ import com.byteplus.live.player.R;
 import com.byteplus.live.player.ui.widget.BasicSettingsDialog;
 import com.byteplus.live.player.ui.widget.MediaSettingsDialog;
 import com.byteplus.live.common.FileUtils;
+import com.byteplus.live.player.utils.EnvContextUtil;
 import com.byteplus.live.player.utils.ProgramTexture2d;
 import com.byteplus.live.settings.PreferenceUtil;
 import com.pandora.common.env.Env;
@@ -211,7 +212,7 @@ public class LivePullActivity extends AppCompatActivity implements LivePlayerLis
             buf.rewind();
             bmp.copyPixelsFromBuffer(buf);
 
-            Context context = Env.getApplicationContext();
+            Context context = EnvContextUtil.getApplicationContext();
             File parent = new File(context.getExternalFilesDir("TTSDK"), "TextureCallback");
             File file = new File(parent, "frame_" + System.currentTimeMillis() + ".jpg");
             FileUtils.saveBitmap(bmp, file);

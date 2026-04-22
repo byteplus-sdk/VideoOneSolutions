@@ -19,7 +19,6 @@
 
     <application
         android:allowAudioPlaybackCapture="true"
-        android:requestLegacyExternalStorage="true"
         tools:targetApi="n">
         <activity
             android:name=".ui.activities.LivePushActivity"
@@ -37,5 +36,11 @@
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="mediaProjection|camera|microphone|mediaPlayback" />
+
+        <service
+            android:name="com.ss.avframework.live.capture.video.VeLiveScreenRecorder$ForegroundService"
+            android:foregroundServiceType="mediaProjection"
+            android:exported="false" />
+
     </application>
 </manifest>

@@ -55,7 +55,7 @@ public class EffectResourceManager {
     }
 
     public String getReshapePath() {
-        return getExternalResourcePath("resource/cvlab/ComposeMakeup.bundle/ComposeMakeup/reshape_lite").getAbsolutePath();
+        return getExternalResourcePath("resource/cvlab/ComposeMakeup.bundle/ComposeMakeup/reshape_v8_lite").getAbsolutePath();
     }
 
     @NonNull

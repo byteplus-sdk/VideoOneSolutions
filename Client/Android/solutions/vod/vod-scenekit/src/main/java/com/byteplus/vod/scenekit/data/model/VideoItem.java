@@ -406,7 +406,7 @@ public class VideoItem extends ExtraObject implements ViewItem, Serializable {
         volcConfig.playerDecoderType = VideoSettings.intValue(VideoSettings.COMMON_HARDWARE_DECODE);
         volcConfig.sourceEncodeType = VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265) ? Track.ENCODER_TYPE_H265 : Track.ENCODER_TYPE_H264;
         volcConfig.enableSubtitle = true;
-        volcConfig.qualityConfig = VideoQuality.sceneGearConfig(videoItem.playScene);
+        volcConfig.qualityConfig = VideoQuality.sceneQualityConfig(videoItem.playScene);
 
         volcConfig.tag = videoItem.tag;
         volcConfig.subTag = videoItem.subTag;
@@ -479,6 +479,7 @@ public class VideoItem extends ExtraObject implements ViewItem, Serializable {
     }
 
     public static void playScene(List<VideoItem> videoItems, int playScene) {
+        if (videoItems == null) return;
         for (VideoItem videoItem : videoItems) {
             playScene(videoItem, playScene);
         }

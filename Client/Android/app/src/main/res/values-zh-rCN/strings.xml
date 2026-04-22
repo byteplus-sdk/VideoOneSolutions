@@ -10,6 +10,7 @@
     <string name="terms_of_service">服务条款</string>
     <string name="notices">开源组件声明</string>
     <string name="app_version">App 版本</string>
+    <string name="vod_settings">点播设置</string>
     <string name="log_out">退出登录</string>
     <string name="log_out_alert_message">点击确认按钮立即退出登录</string>
     <string name="cancel_account_alert_message">注销后，当前账号的相关数据将会被删除且无法找回。</string>

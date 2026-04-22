@@ -52,5 +52,6 @@ dependencies {
     implementation project(':solutions:vod:vod-playerkit:vod-player-utils')
 
     implementation libs.ttsdk.player.premium
+    implementation libs.ttsdk.ttabr
     implementation libs.ttsdk.ttvideoengine.debugtool
 }

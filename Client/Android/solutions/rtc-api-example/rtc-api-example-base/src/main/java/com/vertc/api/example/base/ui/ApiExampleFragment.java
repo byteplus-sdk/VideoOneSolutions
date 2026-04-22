@@ -9,12 +9,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -29,12 +29,14 @@ import com.vertc.api.example.base.R;
 import com.vertc.api.example.base.annotation.ApiExample;
 import com.vertc.api.example.base.bean.ExampleInfo;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 
 public class ApiExampleFragment extends Fragment {
@@ -49,6 +51,8 @@ public class ApiExampleFragment extends Fragment {
     public ApiExampleFragment(@LayoutRes int contentLayoutId) {
         super(contentLayoutId);
     }
+
+    final Queue<PendingAction> mActions = new ArrayDeque<>();
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -91,23 +95,21 @@ public class ApiExampleFragment extends Fragment {
 
             categoryItems.addView(itemView);
         }
-        requestPermission();
     }
 
     protected void openExample(Context context, Class<?> targetClazz) {
-        context.startActivity(new Intent(context, targetClazz));
+        askForPermission(
+                Arrays.asList(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
+                () ->  context.startActivity(new Intent(context, targetClazz)),
+                () -> Toast.makeText(context, "Missing required permission(s)", Toast.LENGTH_LONG).show()
+        );
     }
 
-
-    private void requestPermission() {
-        List<String> requiredPermission = new ArrayList<>(Arrays.asList(
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.CAMERA
-        ));
-
+    protected void askForPermission(List<String> permissions, @Nullable Runnable onGranted, @Nullable Runnable onDenied) {
+        List<String> pendingPermissions = new ArrayList<>(permissions);
+        Iterator<String> iterator = pendingPermissions.iterator();
         Context context = requireContext();
 
-        Iterator<String> iterator = requiredPermission.iterator();
         while (iterator.hasNext()) {
             String permission = iterator.next();
             if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
@@ -115,26 +117,41 @@ public class ApiExampleFragment extends Fragment {
             }
         }
 
-        if (requiredPermission.isEmpty()) {
-            // All required permissions granted
-            Log.d(TAG, "All required permissions are granted");
+        if (pendingPermissions.isEmpty()) { // All permission Granted
+            if (onGranted != null) {
+                onGranted.run();
+            }
         } else {
-            launcher.launch(requiredPermission.toArray(new String[0]));
+            if (onGranted != null || onDenied != null) {
+                mActions.add(PendingAction.create(onGranted, onDenied));
+            }
+
+            requestPermissionsLauncher.launch(pendingPermissions.toArray(new String[0]));
         }
     }
 
-    private final ActivityResultLauncher<String[]> launcher =
-            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), results -> {
-                boolean allPermissionsGranted = true;
-                for (Map.Entry<String, Boolean> entry : results.entrySet()) {
-                    if (entry.getValue() != Boolean.TRUE) {
-                        allPermissionsGranted = false;
-                        Log.d(TAG, String.format("Permission: '%1$s' is not granted!", entry.getKey()));
+    final ActivityResultLauncher<String[]> requestPermissionsLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            results -> {
+                PendingAction action = mActions.poll();
+                if (action != null) {
+                    boolean granted = true;
+                    for (Map.Entry<String, Boolean> entry : results.entrySet()) {
+                        if (entry.getValue() != Boolean.TRUE) {
+                            granted = false;
+                            break;
+                        }
                     }
-                }
 
-                if (allPermissionsGranted) {
-                    Log.d(TAG, "All required permissions are granted");
+                    if (granted) {
+                        if (action.onGranted != null) {
+                            action.onGranted.run();
+                        }
+                    } else {
+                        if (action.onDenied != null) {
+                            action.onDenied.run();
+                        }
+                    }
                 }
             });
 
@@ -167,5 +184,21 @@ public class ApiExampleFragment extends Fragment {
 
         Collections.sort(examples);
         return examples;
+    }
+
+    static class PendingAction {
+        @Nullable
+        final Runnable onDenied;
+        @Nullable
+        final Runnable onGranted;
+
+        private PendingAction(@Nullable Runnable onGranted, @Nullable Runnable onDenied) {
+            this.onGranted = onGranted;
+            this.onDenied = onDenied;
+        }
+
+        static PendingAction create(@Nullable Runnable onGranted, @Nullable Runnable onDenied) {
+            return new PendingAction(onGranted, onDenied);
+        }
     }
 }

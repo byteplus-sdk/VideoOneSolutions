@@ -11,6 +11,7 @@
     <string name="notices">Notices</string>
     <string name="app_version">App version</string>
     <string name="github" translatable="false">Github</string>
+    <string name="vod_settings">VOD Settings</string>
     <string name="log_out">Log out</string>
     <string name="log_out_alert_message">Click Confirm to log out immediately.</string>
     <string name="cancel_account_alert_message">The account information will not be\nrecoverable, please operate with caution</string>

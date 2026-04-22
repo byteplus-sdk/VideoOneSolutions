@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class com.byteplus.playerkit.utils.**{*;}
+-keepclassmembers,allowobfuscation class * extends com.byteplus.playerkit.utils.event.Event {
+   <init>();
+}

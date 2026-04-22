@@ -7,9 +7,9 @@ import android.graphics.Bitmap
 import android.view.Surface
 import com.byteplus.vodlive.utils.playerLog
 import com.ss.videoarch.liveplayer.VeLivePayerAudioLoudnessInfo
-import com.ss.videoarch.liveplayer.VeLivePayerAudioVolume
 import com.ss.videoarch.liveplayer.VeLivePlayer
 import com.ss.videoarch.liveplayer.VeLivePlayerAudioFrame
+import com.ss.videoarch.liveplayer.VeLivePlayerAudioVolume
 import com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolution
 import com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerResolutionSwitchReason
 import com.ss.videoarch.liveplayer.VeLivePlayerDef.VeLivePlayerStatus
@@ -194,7 +194,7 @@ open class VeLivePlayerObserverAdapter(private val tag: String) : VeLivePlayerOb
         playerLog(TAG, "[$tag] onNetworkQualityChanged")
     }
 
-    override fun onAudioVolume(player: VeLivePlayer, volumeInfo: VeLivePayerAudioVolume) {
+    override fun onAudioVolume(player: VeLivePlayer?, volumeInfo: VeLivePlayerAudioVolume?) {
         playerLog(TAG, "[$tag] onAudioVolume")
     }
 

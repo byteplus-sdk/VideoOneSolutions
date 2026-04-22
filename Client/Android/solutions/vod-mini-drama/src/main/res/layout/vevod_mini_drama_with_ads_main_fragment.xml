@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/action_bar" />
+
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom"
+        android:paddingVertical="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/tab_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/vevod_mini_drama_tab_home"
+            android:textColor="@color/vevod_mini_drama_main_tab_text_color_light"
+            android:textSize="12sp"
+            app:drawableTopCompat="@drawable/vevod_ic_mini_drama_tab_home_light"
+            tools:drawableTop="@drawable/vevod_ic_mini_drama_tab_home_light" />
+
+        <TextView
+            android:id="@+id/tab_settings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/vevod_mini_drama_tab_settings"
+            android:textColor="@color/vevod_mini_drama_main_tab_text_color_light"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:drawableTopCompat="@drawable/vevod_ic_tab_settings_light"
+            tools:drawableTop="@drawable/vevod_ic_tab_settings_light" />
+    </LinearLayout>
+
+    <include
+        android:id="@+id/action_bar"
+        layout="@layout/vevod_mini_drama_title_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp"
+        tools:layout_constraintGuide_begin="42dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp"
+        tools:layout_constraintGuide_end="24dp" />
+
+    <TextView
+        android:id="@+id/license_tips"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#CC000000"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="LicenseCheck result"
+        tools:visibility="gone" />
+</androidx.constraintlayout.widget.ConstraintLayout>

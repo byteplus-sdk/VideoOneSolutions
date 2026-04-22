@@ -120,7 +120,8 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
             boolean isAutoSubscribeVideo = true;
             RTCRoomConfig roomConfig = new RTCRoomConfig(
                     ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
-                    isAutoPublish, isAutoSubscribeAudio,
+                    isAutoPublish, isAutoPublish,
+                    isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
             rtcRoom.joinRoom(token, userInfo, roomConfig);
         });
@@ -210,19 +211,29 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStream(String uid, MediaStreamType type) {
-            super.onUserPublishStream(uid, type);
-            runOnUiThread(() -> {
-                setRemoteRenderView(uid);
-            });
+        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    setRemoteRenderView(uid);
+                });
+            } else {
+                runOnUiThread(() -> {
+                    removeRemoteView(uid);
+                });
+            }
         }
 
         @Override
-        public void onUserUnpublishStream(String uid, MediaStreamType type, StreamRemoveReason reason) {
-            super.onUserUnpublishStream(uid, type, reason);
-            runOnUiThread(() -> {
-                removeRemoteView(uid);
-            });
+        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    setRemoteRenderView(uid);
+                });
+            } else {
+                runOnUiThread(() -> {
+                    removeRemoteView(uid);
+                });
+            }
         }
 
         @Override

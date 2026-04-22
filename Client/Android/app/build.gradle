@@ -70,9 +70,14 @@ android {
     buildFeatures {
         buildConfig true
     }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+    }
 }
 
 dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.5"
     implementation(platform(libs.kotlin.bom))
 
     implementation libs.appcompat
@@ -101,12 +106,13 @@ dependencies {
     // region Solutions
     implementation project(':solutions:vod-mini-drama')
     implementation project(':solutions:vod-live-feed')
-    implementation project(':solutions:ktv')
     implementation project(':solutions:vod:vod-scene-entry')
     implementation project(':solutions:interactivelive')
 
     implementation project(':solutions:media-live:live-entrance')
     implementation project(':solutions:vod:vod-function')
     implementation project(':solutions:rtc-api-example:rtc-api-example-entry')
+
+    implementation project(':solutions:ai-chat')
     // endregion
 }

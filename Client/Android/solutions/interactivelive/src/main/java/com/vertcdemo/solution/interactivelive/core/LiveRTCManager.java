@@ -107,13 +107,15 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         }
 
         @Override
-        public void onUserPublishStream(String uid, MediaStreamType type) {
-            super.onUserPublishStream(uid, type);
+        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                SolutionEventBus.post(new PublishVideoStreamEvent(uid, mRTCRoomId));
+            }
+        }
 
-            handleUserPublishStream(uid, type);
-
-            if (type == MediaStreamType.RTC_MEDIA_STREAM_TYPE_VIDEO
-                    || type == MediaStreamType.RTC_MEDIA_STREAM_TYPE_BOTH) {
+        @Override
+        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
                 SolutionEventBus.post(new PublishVideoStreamEvent(uid, mRTCRoomId));
             }
         }
@@ -235,6 +237,7 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         mRTCRoom.setRTCRoomEventHandler(mRTCRoomEventHandler);
         UserInfo userInfo = new UserInfo(userId, null);
         RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_INTERACTIVE_PODCAST,
+                true,
                 true,
                 true,
                 true);
@@ -431,11 +434,7 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
     public void muteRemoteAudio(String uid, boolean mute) {
         Log.d(TAG, "muteRemoteAudio uid:" + uid + ",mute:" + mute);
         if (mRTCRoom != null) {
-            if (mute) {
-                mRTCRoom.unsubscribeStream(uid, MediaStreamType.RTC_MEDIA_STREAM_TYPE_AUDIO);
-            } else {
-                mRTCRoom.subscribeStream(uid, MediaStreamType.RTC_MEDIA_STREAM_TYPE_AUDIO);
-            }
+            mRTCRoom.subscribeStreamAudio(uid, !mute);
         }
         updateLiveTranscodingWhenMuteCoHost(uid, mute);
     }
@@ -528,7 +527,8 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         mRTSRoom = mRTCVideo.createRTCRoom(rtsRoomId);
         mRTSRoom.setRTCRoomEventHandler(mRTSRoomEventHandler);
         UserInfo userInfo = new UserInfo(userId, null);
-        RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_INTERACTIVE_PODCAST, false, false, false);
+        RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_INTERACTIVE_PODCAST,
+                false, false, false, false);
         mRTSRoom.joinRoom(token, userInfo, roomConfig);
     }
 

@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.AudioFormat;
 import android.media.AudioManager;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -32,6 +31,7 @@ import com.byteplus.live.common.FileUtils;
 import com.byteplus.live.common.WriterPCMFile;
 import com.byteplus.live.common.WriterRGBAFile;
 import com.byteplus.live.player.utils.AudioPlayer;
+import com.byteplus.live.player.utils.EnvContextUtil;
 import com.byteplus.live.player.utils.PullerSettings;
 import com.byteplus.live.settings.AbrInfo;
 import com.byteplus.live.settings.PreferenceUtil;
@@ -58,7 +58,7 @@ import java.util.Locale;
 public class LivePlayerImpl implements LivePlayer {
     private static final String TAG = "LivePlayerImpl";
 
-    private final File mParentPath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "VideoOne/TTSDK");
+    private final File mParentPath;
     private VeLivePlayer mLivePlayer;
     private AudioPlayer mAudioPlayer;
     private final LivePlayerCycleInfo mCycleInfo = new LivePlayerCycleInfo();
@@ -222,12 +222,13 @@ public class LivePlayerImpl implements LivePlayer {
         @Override
         public void onSnapshotComplete(VeLivePlayer player, Bitmap bitmap) {
             Log.i(TAG, "onSnapshotComplete: ");
-            Context context = Env.getApplicationContext();
+            Context context = EnvContextUtil.getApplicationContext();
             File file = new File(mParentPath, "Snapshot_" + System.currentTimeMillis() + ".jpg");
             Log.i(TAG, "onSnapshotComplete: " + file);
             boolean retValue = FileUtils.saveBitmap(bitmap, file);
             if (retValue) {
-                FileUtils.updateToAlbum(context, file);
+                assert context != null;
+                FileUtils.exportImageToGallery(context, file, file.getName());
                 Toast.makeText(context, "onSnapshotComplete:" + file, Toast.LENGTH_SHORT).show();
             } else {
                 Log.i(TAG, "onSnapshotComplete: save failed");
@@ -298,7 +299,9 @@ public class LivePlayerImpl implements LivePlayer {
     }
 
     private LivePlayerImpl(LivePlayerObserver appObserver) {
-        mLivePlayer = new VideoLiveManager(Env.getApplicationContext());
+        Context context = EnvContextUtil.getApplicationContext();
+        mLivePlayer = new VideoLiveManager(context);
+        mParentPath = FileUtils.getAppPicturesDir(context, "VideoOne/TTSDK");
         mAppObserver = appObserver;
         VeLivePlayerConfiguration config = new VeLivePlayerConfiguration();
         config.enableSei = PreferenceUtil.getInstance().getPullSei(false);
@@ -517,7 +520,7 @@ public class LivePlayerImpl implements LivePlayer {
     @Override
     public void pause() {
         if (mCurrentFormat == VeLivePlayerFormatRTM) {
-            Toast.makeText(Env.getApplicationContext(), R.string.medialive_rtm_not_support_pause_resume, Toast.LENGTH_SHORT).show();
+            Toast.makeText(EnvContextUtil.getApplicationContext(), R.string.medialive_rtm_not_support_pause_resume, Toast.LENGTH_SHORT).show();
             return;
         }
         mLivePlayer.pause();
@@ -526,7 +529,7 @@ public class LivePlayerImpl implements LivePlayer {
     @Override
     public void resume() {
         if (mCurrentFormat == VeLivePlayerFormatRTM) {
-            Toast.makeText(Env.getApplicationContext(), R.string.medialive_rtm_not_support_pause_resume, Toast.LENGTH_SHORT).show();
+            Toast.makeText(EnvContextUtil.getApplicationContext(), R.string.medialive_rtm_not_support_pause_resume, Toast.LENGTH_SHORT).show();
             return;
         }
         mLivePlayer.play();

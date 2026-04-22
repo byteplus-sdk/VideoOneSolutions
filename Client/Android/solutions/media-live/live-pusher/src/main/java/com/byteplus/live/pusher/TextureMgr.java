@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.byteplus.live.pusher;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
 import com.pandora.common.env.Env;
+import com.pandora.common.env.config.Config;
 import com.ss.avframework.opengl.GLThreadManager;
 import com.ss.avframework.opengl.GlUtil;
 
@@ -41,7 +43,9 @@ public class TextureMgr {
             @Override
             public void run() {
                 if (texture > 0) {
-                    YuvHelper.NV21ToBitmap bm = new YuvHelper.NV21ToBitmap(Env.getApplicationContext());
+                    Config config = Env.getConfig();
+                    Context context = config != null ? config.getApplicationContext() : null;
+                    YuvHelper.NV21ToBitmap bm = new YuvHelper.NV21ToBitmap(context);
                     Bitmap bmp = bm.nv21ToBitmap(byteBuffer.array(), width, height);
                     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture);
                     GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0,

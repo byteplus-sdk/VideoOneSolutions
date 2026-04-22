@@ -17,6 +17,14 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        def VOD_APP_ID = project(':solutions:vod:vod-common').VOD_APP_ID
+        def VOD_APP_NAME = project.APP_NAME
+        def VOD_APP_CHANNEL = project(':solutions:vod:vod-common').VOD_APP_CHANNEL
+
+        buildConfigField('String', 'VOD_APP_ID', "\"$VOD_APP_ID\"")
+        buildConfigField('String', 'VOD_APP_NAME', "\"$VOD_APP_NAME\"")
+        buildConfigField('String', 'VOD_APP_CHANNEL', "\"$VOD_APP_CHANNEL\"")
     }
 
     buildTypes {
@@ -31,6 +39,10 @@ android {
             languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
         }
     }
+
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 dependencies {
@@ -43,4 +55,6 @@ dependencies {
     implementation libs.gson
 
     implementation project(':solutions:vod:vod-playerkit:vod-player-utils')
+    implementation libs.byteplus.mediaads
+    implementation libs.google.interactivemedia
 }

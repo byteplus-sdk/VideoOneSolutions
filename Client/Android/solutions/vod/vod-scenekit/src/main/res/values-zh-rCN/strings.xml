@@ -60,4 +60,12 @@
     <string name="vevod_miniplayer_pause">暂停</string>
     <string name="vevod_miniplayer_forward">前进</string>
     <string name="vevod_miniplayer_rewind">后退</string>
+    <string name="vevod_option_category_quality">Video Quality</string>
+    <string name="vevod_option_enable_abr">开启 ABR</string>
+    <string name="vevod_option_video_quality_user_selected">用户选择的清晰度</string>
+    <string name="vevod_abr_startup">ABR 起播选档</string>
+    <string name="vevod_abr_startup_and_sr_downgrade">ABR 起播选档 + 超分降档</string>
+    <string name="vevod_abr">ABR</string>
+    <string name="vevod_abr_disable">关闭</string>
+    <string name="vevod_enable_private_encrypt">开启视频自研加密</string>
 </resources>

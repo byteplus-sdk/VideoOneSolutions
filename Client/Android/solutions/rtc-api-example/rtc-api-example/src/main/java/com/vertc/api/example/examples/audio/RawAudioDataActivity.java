@@ -166,6 +166,11 @@ public class RawAudioDataActivity extends ExampleBaseActivity {
                 isShowMixDataLog = true;
             }
         }
+
+        @Override
+        public void onCaptureMixedAudioFrame(IAudioFrame audioFrame) {
+            Log.i(TAG, "onCaptureMixedAudioFrame:");
+        }
     };
 
     private void setLocalRenderView() {
@@ -190,6 +195,7 @@ public class RawAudioDataActivity extends ExampleBaseActivity {
             boolean isAutoSubscribeVideo = true;
             RTCRoomConfig roomConfig = new RTCRoomConfig(
                     ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
+                    isAutoPublish,
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);

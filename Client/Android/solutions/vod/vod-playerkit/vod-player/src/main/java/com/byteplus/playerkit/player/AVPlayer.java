@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.byteplus.playerkit.player.adapter.PlayerAdapter;
+import com.byteplus.playerkit.player.config.ABRQualityConfig;
 import com.byteplus.playerkit.player.event.ActionPause;
 import com.byteplus.playerkit.player.event.ActionPrepare;
 import com.byteplus.playerkit.player.event.ActionRelease;
@@ -57,7 +58,6 @@ import com.byteplus.playerkit.player.event.StatePrepared;
 import com.byteplus.playerkit.player.event.StatePreparing;
 import com.byteplus.playerkit.player.event.StateReleased;
 import com.byteplus.playerkit.player.event.StateStarted;
-import com.byteplus.playerkit.player.legacy.PlayerLegacy;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.source.Subtitle;
 import com.byteplus.playerkit.player.source.SubtitleText;
@@ -86,7 +86,6 @@ import java.util.Objects;
 public class AVPlayer extends ExtraObject implements Player {
     private final Dispatcher mDispatcher;
 
-    private final Context mContext;
     private PlayerAdapter mPlayer;
     private Surface mSurface;
     private MediaSource mMediaSource;
@@ -112,7 +111,6 @@ public class AVPlayer extends ExtraObject implements Player {
                     Looper eventLooper) {
         L.d(this, "constructor");
         final Listener listener = new Listener(this);
-        this.mContext = context.getApplicationContext();
         this.mDispatcher = new Dispatcher(eventLooper);
         this.mPlayer = playerFactory.create(eventLooper);
         this.mPlayer.setListener(listener);
@@ -448,11 +446,6 @@ public class AVPlayer extends ExtraObject implements Player {
     }
 
     @Override
-    public PlayerLegacy legacy() {
-        return null;
-    }
-
-    @Override
     public void addPlayerListener(@NonNull Dispatcher.EventListener listener) {
         mDispatcher.addEventListener(listener);
     }
@@ -612,15 +605,6 @@ public class AVPlayer extends ExtraObject implements Player {
 
     @Nullable
     @Override
-    public Track getPendingTrack(@TrackType int trackType) {
-        if (checkIsRelease("getPendingTrack")) return null;
-
-        Asserts.checkOneOf(trackType, TRACK_TYPE_VIDEO, TRACK_TYPE_AUDIO);
-        return mPlayer.getPendingTrack(trackType);
-    }
-
-    @Nullable
-    @Override
     public Track getSelectedTrack(@TrackType int trackType) {
         if (checkIsRelease("getSelectedTrack")) return null;
 
@@ -639,8 +623,10 @@ public class AVPlayer extends ExtraObject implements Player {
 
     @Override
     public void selectTrack(@Nullable Track track) {
-        if (track == null) return; // TODO AUTO
-        selectTrack(track.getTrackType(), track);
+        final MediaSource mediaSource = getDataSource();
+        if (mediaSource == null) return;
+
+        selectTrack(MediaSource.mediaType2TrackType(mediaSource), track);
     }
 
     @Override
@@ -650,11 +636,10 @@ public class AVPlayer extends ExtraObject implements Player {
 
         Asserts.checkOneOf(trackType, TRACK_TYPE_VIDEO, TRACK_TYPE_AUDIO);
         final Track selected = getSelectedTrack(trackType);
-        final Track target = track;
-        L.d(this, "selectTrack", mapTrackType(trackType), "selected: " +
-                Track.dump(selected), "target: " + Track.dump(target));
-        if (target == null || Objects.equals(target, selected)) return;
-        mPlayer.selectTrack(trackType, target);
+        L.d(this, "selectTrack", mapTrackType(trackType),
+                "selected: " + Track.dump(selected),
+                "target: " + Track.dump(track));
+        mPlayer.selectTrack(trackType, track);
     }
 
     @Nullable
@@ -680,14 +665,30 @@ public class AVPlayer extends ExtraObject implements Player {
 
     @Nullable
     @Override
-    public Subtitle getPendingSubtitle() {
-        return mPlayer.getPendingSubtitle();
+    public Subtitle getCurrentSubtitle() {
+        return mPlayer.getCurrentSubtitle();
+    }
+
+    @Override
+    public void setABRQualityConfig(@NonNull ABRQualityConfig abrQualityConfig) {
+        L.d(this,"setABRQualityConfig", ABRQualityConfig.dump(abrQualityConfig));
+        mPlayer.setABRQualityConfig(abrQualityConfig);
     }
 
     @Nullable
     @Override
-    public Subtitle getCurrentSubtitle() {
-        return mPlayer.getCurrentSubtitle();
+    public ABRQualityConfig getABRQualityConfig() {
+        return mPlayer.getABRQualityConfig();
+    }
+
+    @Override
+    public void selectTrackAuto() {
+        selectTrack(null);
+    }
+
+    @Override
+    public boolean isABRAutoMode() {
+        return mPlayer.isABRAutoMode();
     }
 
     @Override
@@ -989,7 +990,7 @@ public class AVPlayer extends ExtraObject implements Player {
     @Override
     public void setSubtitleEnabled(boolean enabled) {
         if (checkIsRelease("setSubtitleEnabled")) return;
-
+        L.d(this, "setSubtitleEnabled", enabled);
         mPlayer.setSubtitleEnabled(enabled);
     }
 

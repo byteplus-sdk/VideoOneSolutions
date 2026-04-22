@@ -156,8 +156,8 @@ public class PlaybackController {
     private final PlayerPool mPlayerPool;
     private final Player.Factory mPlayerFactory;
     private final SurfaceListener mSurfaceListener;
-    private final PlayerListener mPlayerListener;
-    private final Dispatcher mDispatcher;
+    protected final PlayerListener mPlayerListener;
+    protected final Dispatcher mDispatcher;
 
     private Runnable mStartOnReadyCommand;
 
@@ -263,7 +263,7 @@ public class PlaybackController {
         unbindPlayer(false);
     }
 
-    private void bindPlayer(Player newPlayer) {
+    protected void bindPlayer(Player newPlayer) {
         if (mPlayer == null && newPlayer != null && !newPlayer.isReleased()) {
             L.d(this, "bindPlayer", mPlayer, newPlayer);
             mPlayer = newPlayer;
@@ -272,7 +272,7 @@ public class PlaybackController {
         }
     }
 
-    private void unbindPlayer(boolean recycle) {
+    protected void unbindPlayer(boolean recycle) {
         if (mPlayer != null) {
             L.d(this, "unbindPlayer", mPlayer, recycle);
             if (recycle) {
@@ -445,6 +445,11 @@ public class PlaybackController {
         if (videoView.getSurface() != player.getSurface()) {
             player.setSurface(surface);
         }
+        
+        startPlayer(startWhenPrepared, player, viewSource);
+    }
+
+    protected void startPlayer(boolean startWhenPrepared, @NonNull Player player, @NonNull MediaSource viewSource) {
         @Player.PlayerState final int playerState = player.getState();
 
         // 2. start play
@@ -497,11 +502,16 @@ public class PlaybackController {
             L.d(this, "pausePlayback");
 
             if (player.isInPlaybackState()) {
-                player.pause();
+                pausePlayer();
             } else if (player.isPreparing()) {
                 player.setStartWhenPrepared(false);
             }
         }
+    }
+
+    @MainThread 
+    protected void pausePlayer() {
+        mPlayer.pause();
     }
 
     /**
@@ -530,11 +540,17 @@ public class PlaybackController {
 
             mDispatcher.obtain(ActionStopPlayback.class, this).dispatch();
 
+            stopPlayer();
             mStartOnReadyCommand = null;
             unbindPlayer(true);
 
             L.d(this, "stopPlayback", "end");
         }
+    }
+
+    @MainThread 
+    protected void stopPlayer() {
+
     }
 
     @Nullable

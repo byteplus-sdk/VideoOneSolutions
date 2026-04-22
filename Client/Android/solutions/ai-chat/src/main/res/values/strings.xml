@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">Back</string>
+    <string name="settings">Settings</string>
+
+    <string name="ai_dialer_tips">Welcome to the Conversational AI Real-time Interaction Experience Hall</string>
+    <string name="ai_call_now">Call Now</string>
+
+    <string name="ai_time_remaining">Time Remaining 00:%1$02d:%2$02d</string>
+
+    <string name="ai_tips_preparing">AI preparing…</string>
+    <string name="ai_tips_listening">Listening…</string>
+    <string name="ai_tips_thinking">Thinking…</string>
+    <string name="ai_tips_speaking">Speaking…</string>
+    <string name="ai_tips_muted">Muted</string>
+    <string name="ai_tips_ready">You can speak to me directly, for example, try asking the following questions:</string>
+
+    <string name="ai_settings">Settings</string>
+    <string name="ai_save">Save</string>
+
+    <string name="ai_setting_label_integration_mode">Integration Mode</string>
+    <string name="ai_setting_label_integration_mode_realtime">"OpenAl's Realtime API"</string>
+    <string name="ai_setting_label_integration_mode_flexible">"Flexible combination"</string>
+
+    <string name="ai_setting_label_character_settings">Character setting</string>
+    <string name="ai_setting_label_character_setting_welcome_speech">Welcome speech</string>
+    <string name="ai_setting_label_character_setting_prompt">Prompt</string>
+
+    <string name="ai_setting_label_core_functions">Core functions</string>
+    <string name="ai_setting_label_core_voice_type">Voice type</string>
+    <string name="ai_setting_label_core_llm">LLM</string>
+    <string name="ai_setting_label_core_asr">ASR</string>
+
+    <string name="ai_setting_choose">Choose</string>
+    <string name="ai_setting_chosen">Chosen</string>
+
+    <string name="ai_dialog_confirm_tips">Going to Settings will terminate the current conversation. Do you confirm to continue?</string>
+    <string name="ai_dialog_confirm_go">Go to Settings</string>
+    <string name="ai_dialog_confirm_cancel">Cancel</string>
+
+    <string name="toast_ai_input_is_empty">Input is empty</string>
+    <string name="toast_ai_need_permission">Need permission to Call AI</string>
+    <string name="toast_ai_call_failed">Call failed</string>
+
+</resources>

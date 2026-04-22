@@ -339,21 +339,27 @@ public class TimeProgressBarLayer extends AnimateLayer implements GestureControl
 
     private void syncQuality() {
         if (mQuality == null) return;
+
         final Player player = player();
         if (player != null) {
-            Track selected = player.getSelectedTrack(Track.TRACK_TYPE_VIDEO);
-            if (selected != null) {
-                Quality quality = selected.getQuality();
-                if (quality != null) {
-                    mQuality.setText(quality.getQualityDesc());
-                }
-            }
-
-            List<Track> tracks = player.getTracks(Track.TRACK_TYPE_VIDEO);
-            if (tracks == null) {
-                mQualityContainer.setVisibility(View.GONE);
-            } else {
+            if (player.isABRAutoMode()) {
+                final String autoQualityDesc = QualitySelectDialogLayer.createAutoQualityDesc(QualitySelectDialogLayer.getAutoModeCurrentQuality(player()));
+                mQuality.setText(autoQualityDesc);
                 mQualityContainer.setVisibility(View.VISIBLE);
+            } else {
+                Track selected = player.getSelectedTrack(Track.TRACK_TYPE_VIDEO);
+                if (selected != null) {
+                    Quality quality = selected.getQuality();
+                    if (quality != null) {
+                        mQuality.setText(quality.getQualityDesc());
+                    }
+                }
+                List<Track> tracks = player.getTracks(Track.TRACK_TYPE_VIDEO);
+                if (tracks == null || tracks.size() <= 1) {
+                    mQualityContainer.setVisibility(View.GONE);
+                } else {
+                    mQualityContainer.setVisibility(View.VISIBLE);
+                }
             }
         } else {
             mQualityContainer.setVisibility(View.GONE);
@@ -479,33 +485,9 @@ public class TimeProgressBarLayer extends AnimateLayer implements GestureControl
                     setProgress(-1, -1, e.percent);
                     break;
                 }
-                case PlayerEvent.Info.TRACK_WILL_CHANGE: {
-                    InfoTrackWillChange e = event.cast(InfoTrackWillChange.class);
-                    if (e.trackType == Track.TRACK_TYPE_VIDEO) {
-                        if (mQuality != null) {
-                            final Quality quality;
-                            if (e.current != null) {
-                                quality = e.current.getQuality();
-                            } else {
-                                quality = e.target.getQuality();
-                            }
-                            if (quality != null) {
-                                mQuality.setText(quality.getQualityDesc());
-                            }
-                        }
-                    }
-                    break;
-                }
+                case PlayerEvent.Info.TRACK_WILL_CHANGE:
                 case PlayerEvent.Info.TRACK_CHANGED: {
-                    InfoTrackChanged e = event.cast(InfoTrackChanged.class);
-                    if (e.trackType == Track.TRACK_TYPE_VIDEO) {
-                        if (mQuality != null) {
-                            Quality quality = e.current.getQuality();
-                            if (quality != null) {
-                                mQuality.setText(quality.getQualityDesc());
-                            }
-                        }
-                    }
+                    syncQuality();
                     break;
                 }
                 case PlayerEvent.Info.SUBTITLE_CHANGED: {

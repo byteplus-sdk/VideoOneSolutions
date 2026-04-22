@@ -242,11 +242,9 @@ public class FullScreenLayer extends BaseLayer implements VideoLayerHost.BackPre
         public void onEvent(Event event) {
             switch (event.code()) {
                 case PlaybackEvent.Action.START_PLAYBACK:
-                    enableOrientation();
                     break;
 
                 case PlaybackEvent.Action.STOP_PLAYBACK:
-                    disableOrientation();
                     break;
             }
         }

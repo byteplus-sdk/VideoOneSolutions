@@ -10,20 +10,29 @@ public class PlayerException extends Exception {
     public static final int CODE_SOURCE_LOAD_ERROR = 4;
     public static final int CODE_SUBTITLE_PARSE_ERROR = 5;
     public static final int CODE_BUFFERING_TIME_OUT = 6;
+    public static final int CODE_ON_PREPARED_ERROR = 7;
 
     private final int code;
 
+    private final String message;
+
     public PlayerException(int code, String message) {
         super("code:" + code + "; msg:" + message);
+        this.message = message;
         this.code = code;
     }
 
     public PlayerException(int code, String message, Throwable cause) {
         super("code:" + code + "; msg:" + message, cause);
+        this.message = message;
         this.code = code;
     }
 
     public int getCode() {
         return code;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

@@ -17,9 +17,19 @@ public class UnlockEpisodesRequest {
     @SerializedName("vid_list")
     public final List<String> episodeIds;
 
-    public UnlockEpisodesRequest(String dramaId, List<String> episodes, @Nullable String userId) {
+    @SerializedName("format")
+    private final Integer format;
+    @SerializedName("codec")
+    private final Integer codec;
+    @SerializedName("fileType")
+    private final String fileType;
+
+    public UnlockEpisodesRequest(String dramaId, List<String> episodes, @Nullable String userId, Integer format, Integer codec, String fileType) {
         this.dramaId = dramaId;
         this.episodeIds = episodes;
         this.userId = userId;
+        this.format = format;
+        this.codec = codec;
+        this.fileType = fileType;
     }
 }

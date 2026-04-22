@@ -3,4 +3,9 @@
     <color name="white">#FFF</color>
     <color name="black">#000</color>
     <color name="blue">#346CF9</color>
+
+    <color name="scene_title_text_color">#FFFFFF</color>
+    <color name="scene_description_text_color">#B3FFFFFF</color>
+    <color name="scene_title_text_color_dark">#000000</color>
+    <color name="scene_description_text_color_dark">#B3000000</color>
 </resources>
