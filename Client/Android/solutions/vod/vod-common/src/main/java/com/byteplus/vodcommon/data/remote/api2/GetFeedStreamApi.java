@@ -12,6 +12,7 @@ import com.byteplus.vodcommon.data.remote.RemoteApi;
 import com.byteplus.vodcommon.data.remote.RemoteApi.Callback;
 import com.byteplus.vodcommon.data.remote.api2.model.GetFeedStreamRequest;
 import com.byteplus.vodcommon.data.remote.api2.model.GetFeedStreamResponse;
+import com.byteplus.vodcommon.data.remote.api2.model.GetPlayListRequest;
 import com.byteplus.vodcommon.data.remote.api2.model.GetPlaylistResponse;
 import com.byteplus.vodcommon.data.remote.api2.model.GetSimilarVideoRequest;
 import com.byteplus.vodcommon.data.remote.api2.model.VideoDetail;
@@ -47,7 +48,10 @@ public class GetFeedStreamApi extends CallManager implements RemoteApi.GetFeedSt
 
     public void getPlaylistStream(@NonNull Callback<Page<VideoItem>> callback) {
 
-        Call<GetPlaylistResponse> call = remember(ApiManager.api2().getPlaylistDetail());
+        Call<GetPlaylistResponse> call = remember(ApiManager.api2().getPlaylistDetail(new GetPlayListRequest(
+                Params.Value.format(),
+                Params.Value.codec(),
+                Params.Value.fileType())));
         call.enqueue(new retrofit2.Callback<GetPlaylistResponse>() {
             @Override
             public void onResponse(@NonNull Call<GetPlaylistResponse> call, @NonNull Response<GetPlaylistResponse> response) {
@@ -214,7 +218,8 @@ public class GetFeedStreamApi extends CallManager implements RemoteApi.GetFeedSt
                 pageIndex * pageSize,
                 pageSize,
                 Params.Value.format(),
-                Params.Value.codec()
+                Params.Value.codec(),
+                Params.Value.fileType()
         );
     }
 
@@ -226,7 +231,10 @@ public class GetFeedStreamApi extends CallManager implements RemoteApi.GetFeedSt
                 vid,
                 videoType,
                 pageIndex * pageSize,
-                pageSize
+                pageSize,
+                Params.Value.format(),
+                Params.Value.codec(),
+                Params.Value.fileType()
         );
     }
 }

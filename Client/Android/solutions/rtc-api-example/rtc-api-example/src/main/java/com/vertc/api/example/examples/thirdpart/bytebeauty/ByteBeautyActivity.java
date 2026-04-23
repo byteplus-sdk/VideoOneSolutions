@@ -197,6 +197,7 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
             RTCRoomConfig roomConfig = new RTCRoomConfig(
                     ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
                     isAutoPublish,
+                    isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
             rtcRoom.joinRoom(token, userInfo, roomConfig);
@@ -220,19 +221,19 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStream(String uid, MediaStreamType type) {
-            super.onUserPublishStream(uid, type);
-            if (type == MediaStreamType.RTC_MEDIA_STREAM_TYPE_VIDEO
-                    || type == MediaStreamType.RTC_MEDIA_STREAM_TYPE_BOTH) {
+        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
                 runOnUiThread(() -> setRemoteRenderView(uid));
+            } else {
+                runOnUiThread(() -> removeRemoteView(uid));
             }
         }
 
         @Override
-        public void onUserUnpublishStream(String uid, MediaStreamType type, StreamRemoveReason reason) {
-            super.onUserUnpublishStream(uid, type, reason);
-            if (type == MediaStreamType.RTC_MEDIA_STREAM_TYPE_VIDEO
-                    || type == MediaStreamType.RTC_MEDIA_STREAM_TYPE_BOTH) {
+        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> setRemoteRenderView(uid));
+            } else {
                 runOnUiThread(() -> removeRemoteView(uid));
             }
         }

@@ -172,6 +172,7 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
                     ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
                     /*isAutoPublish*/true,
                     /*isAutoSubscribeAudio*/true,
+                    /*isAutoSubscribeVideo*/true,
                     /*isAutoSubscribeVideo*/true
             );
             rtcRoom.joinRoom(token, userInfo, roomConfig);
@@ -364,10 +365,20 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStream(String uid, MediaStreamType type) {
-            super.onUserPublishStream(uid, type);
+        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
             runOnUiThread(() -> {
-                setRemoteRenderView(uid);
+                if (isPublish) {
+                    setRemoteRenderView(uid);
+                }
+            });
+        }
+
+        @Override
+        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+            runOnUiThread(() -> {
+                if (isPublish) {
+                    setRemoteRenderView(uid);
+                }
             });
         }
     };

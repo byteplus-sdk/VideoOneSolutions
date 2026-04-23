@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">返回</string>
+    <string name="settings">设置</string>
+
+    <string name="ai_dialer_tips">欢迎体验实时互动会话式AI</string>
+    <string name="ai_call_now">马上通话</string>
+
+    <string name="ai_time_remaining">倒计时 00:%1$02d:%2$02d</string>
+
+    <string name="ai_tips_preparing">AI准备中…</string>
+    <string name="ai_tips_listening">聆听中…</string>
+    <string name="ai_tips_thinking">思考中…</string>
+    <string name="ai_tips_speaking">说话中…</string>
+    <string name="ai_tips_muted">静音中</string>
+    <string name="ai_tips_ready">你可以直接跟我说话，例如尝试问以下问题:</string>
+
+    <string name="ai_settings">设置</string>
+    <string name="ai_save">保存</string>
+
+    <string name="ai_setting_label_integration_mode">AI模式</string>
+    <string name="ai_setting_label_integration_mode_realtime">OpenAI的实时API</string>
+    <string name="ai_setting_label_integration_mode_flexible">灵活组合</string>
+
+    <string name="ai_setting_label_character_settings">角色设置</string>
+    <string name="ai_setting_label_character_setting_welcome_speech">欢迎语</string>
+    <string name="ai_setting_label_character_setting_prompt">Prompt</string>
+
+    <string name="ai_setting_label_core_functions">功能</string>
+    <string name="ai_setting_label_core_voice_type">音色选择</string>
+    <string name="ai_setting_label_core_llm">LLM</string>
+    <string name="ai_setting_label_core_asr">ASR</string>
+
+    <string name="ai_setting_choose">选择</string>
+    <string name="ai_setting_chosen">选中</string>
+
+    <string name="ai_dialog_confirm_tips">前往设置会终止当前对话，确认继续前往吗？</string>
+    <string name="ai_dialog_confirm_go">去设置</string>
+    <string name="ai_dialog_confirm_cancel">取消</string>
+
+    <string name="toast_ai_input_is_empty">输入不能为空</string>
+    <string name="toast_ai_need_permission">没有麦克风权限</string>
+    <string name="toast_ai_call_failed">通话失败</string>
+
+</resources>

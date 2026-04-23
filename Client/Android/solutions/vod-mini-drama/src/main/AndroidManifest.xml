@@ -7,6 +7,12 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Immersion.Black" />
+            
+        <activity
+            android:name="com.byteplus.vod.minidrama.scene.main.DramaWithAdsMainActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion.Black" />
 
         <activity
             android:name="com.byteplus.vod.minidrama.scene.detail.DramaDetailVideoActivity"

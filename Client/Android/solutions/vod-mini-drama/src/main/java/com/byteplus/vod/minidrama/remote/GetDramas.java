@@ -17,6 +17,7 @@ import com.byteplus.vod.minidrama.remote.model.drama.GetDramaChannelRequest;
 import com.byteplus.vod.minidrama.remote.model.drama.GetDramaRecommendRequest;
 import com.byteplus.vod.minidrama.remote.model.drama.ServerReturnResponse;
 import com.byteplus.vod.minidrama.remote.model.drama.UnlockEpisodesRequest;
+import com.byteplus.vodcommon.data.remote.api2.Params;
 import com.byteplus.vodcommon.data.remote.api2.model.CommentDetail;
 import com.vertcdemo.core.SolutionDataManager;
 
@@ -66,7 +67,10 @@ public class GetDramas extends CallMemories {
 
     public void getDramaRecommend(int pageIndex, int pageSize, HttpCallback<List<DramaRecommend>> callback) {
         int offset = pageIndex * pageSize;
-        GetDramaRecommendRequest request = new GetDramaRecommendRequest(offset, pageSize);
+        GetDramaRecommendRequest request = new GetDramaRecommendRequest(offset, pageSize,
+                Params.Value.format(),
+                Params.Value.codec(),
+                Params.Value.fileType());
         Call<ServerReturnResponse<List<DramaRecommend>>> call = remember(MiniDramaServer.dramaApi().getDramaRecommend(request));
         call.enqueue(new Callback<>() {
             @Override
@@ -106,7 +110,10 @@ public class GetDramas extends CallMemories {
 
     public void getDramaList(@NonNull String dramaId, @NonNull HttpCallback<List<DramaFeed>> callback) {
         SolutionDataManager dataManager = SolutionDataManager.ins();
-        DramaListRequest request = new DramaListRequest(dramaId, dataManager.getUserId());
+        DramaListRequest request = new DramaListRequest(dramaId, dataManager.getUserId(),
+                Params.Value.format(),
+                Params.Value.codec(),
+                Params.Value.fileType());
         Call<ServerReturnResponse<List<DramaFeed>>> call = remember(MiniDramaServer.dramaApi().getDramaList(dataManager.getToken(), request));
         call.enqueue(new Callback<>() {
             @Override
@@ -155,7 +162,11 @@ public class GetDramas extends CallMemories {
 
     public void unlockEpisodes(@NonNull String dramaId, List<String> episodes, @NonNull HttpCallback<List<DramaUnlockMeta>> callback) {
         SolutionDataManager dataManager = SolutionDataManager.ins();
-        UnlockEpisodesRequest request = new UnlockEpisodesRequest(dramaId, episodes, dataManager.getUserId());
+        UnlockEpisodesRequest request = new UnlockEpisodesRequest(dramaId, episodes, dataManager.getUserId(),
+                Params.Value.format(),
+                Params.Value.codec(),
+                Params.Value.fileType()
+        );
         Call<ServerReturnResponse<List<DramaUnlockMeta>>> call = remember(MiniDramaServer.dramaApi().unlockEpisodes(dataManager.getToken(), request));
         call.enqueue(new Callback<>() {
             @Override

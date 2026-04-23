@@ -7,13 +7,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.ui.base.BaseActivity;
@@ -44,6 +48,36 @@ public class SettingsActivity extends BaseActivity {
         );
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, windowInsets) -> {
+            int statusBarHeight = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            int actionBarHeight = 0;
+            TypedValue tv = new TypedValue();
+            if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            }
+            if (actionBarHeight <= 0) {
+                actionBarHeight = v.getLayoutParams().height;
+            }
+            if (actionBarHeight <= 0) {
+                actionBarHeight = (int) TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        56,
+                        getResources().getDisplayMetrics()
+                );
+            }
+
+            ViewGroup.LayoutParams lp = v.getLayoutParams();
+            lp.height = actionBarHeight + statusBarHeight;
+            v.setLayoutParams(lp);
+            v.setPadding(
+                    v.getPaddingLeft(),
+                    statusBarHeight,
+                    v.getPaddingRight(),
+                    v.getPaddingBottom()
+            );
+            return windowInsets;
+        });
+
         toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.vevod_actionbar_back));
         int color = ContextCompat.getColor(this, android.R.color.black);
         toolbar.setTitleTextColor(color);

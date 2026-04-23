@@ -24,9 +24,14 @@ import com.pandora.common.env.config.VodConfig;
 import com.pandora.vod.VodSDK;
 import com.ss.ttvideoengine.DataLoaderHelper;
 import com.ss.ttvideoengine.TTVideoEngine;
+import com.ss.ttvideoengine.VodSettings;
+import com.ss.ttvideoengine.VodSettingsKey;
 import com.ss.ttvideoengine.strategy.StrategyManager;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -96,6 +101,10 @@ public class VolcPlayerInit {
         }
 
         sUrlRefreshFetcherFactory = urlRefreshFetcherFactory;
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(VodSettingsKey.KEY_MDL_V2_ENABLE, 0);
+        VodSettings.setCustomVodSettings(map);
 
         initVOD(context, appInfo);
 

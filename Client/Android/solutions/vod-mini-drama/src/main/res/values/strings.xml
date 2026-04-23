@@ -4,7 +4,13 @@
 
     <string name="vevod_mini_drama_tab_home">Home</string>
     <string name="vevod_mini_drama_tab_channel">For you</string>
-
+    <string name="vevod_mini_drama_tab_settings">Settings</string>
+    <string name="vevod_mini_drama_tab_settings_ads">Ads</string>
+    <string name="vevod_mini_drama_tab_settings_title">Settings</string>
+    <string name="vevod_mini_drama_preroll_ads">Pre-roll Ads</string>
+    <string name="vevod_mini_drama_midroll_ads">Mid-roll Ads</string>
+    <string name="vevod_mini_drama_postroll_ads">Post-roll Ads</string>
+    
     <string name="vevod_mini_drama_main_tab_title_trending">Most trending 🔥</string>
     <string name="vevod_mini_drama_main_tab_title_new">New release</string>
     <string name="vevod_mini_drama_main_tab_title_recommend">Recommends</string>

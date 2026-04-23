@@ -16,12 +16,14 @@ import androidx.fragment.app.Fragment;
 import com.byteplus.minidrama.R;
 import com.byteplus.playerkit.player.playback.DisplayModeHelper;
 import com.byteplus.playerkit.player.playback.DisplayView;
+import com.byteplus.playerkit.player.playback.AdsPlaybackController;
 import com.byteplus.playerkit.player.playback.PlaybackController;
 import com.byteplus.playerkit.player.playback.VideoLayerHost;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.vod.minidrama.remote.model.drama.DramaFeed;
 import com.byteplus.vod.minidrama.scene.data.DramaItem;
 import com.byteplus.vod.minidrama.scene.detail.DramaDetailVideoLandscapeFragment;
+import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaEpisodeListLayer;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaGestureLayer;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaTimeProgressBarLayer;
@@ -38,6 +40,7 @@ import com.byteplus.vod.scenekit.ui.video.layer.MiniPlayerLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PlayCompleteLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PlayErrorLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PlayPauseLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.PlayerConfigLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.SubtitleLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.SyncStartTimeLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.TipsLayer;
@@ -72,6 +75,7 @@ public class DramaEpisodeVideoViewLandscapeHolder extends DramaEpisodeVideoViewH
         parent.addView(videoView, lp);
 
         VideoLayerHost layerHost = new VideoLayerHost(parent.getContext());
+        layerHost.addLayer(new PlayerConfigLayer());
         layerHost.addLayer(new GestureLayer());
         layerHost.addLayer(new CoverLayer());
         layerHost.addLayer(new DramaTimeProgressBarLayer());
@@ -128,7 +132,11 @@ public class DramaEpisodeVideoViewLandscapeHolder extends DramaEpisodeVideoViewH
         layerHost.attachToVideoView(videoView);
         videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT);
         videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);
-        new PlaybackController().bind(videoView);
+        if (DramaSettings.isAdsEnabled()) {
+            new AdsPlaybackController().bind(videoView);
+        } else {
+            new PlaybackController().bind(videoView);
+        }
         return videoView;
     }
 }

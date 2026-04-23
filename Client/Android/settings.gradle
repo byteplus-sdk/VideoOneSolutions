@@ -11,8 +11,6 @@ include ':component:loginkit'
 
 include ':solutions:interactivelive'
 
-// KTV
-include ':solutions:ktv'
 // Chorus
 include ':solutions:chorus'
 
@@ -45,3 +43,4 @@ include ':solutions:rtc-api-example:rtc-api-example'
 
 include ':solutions:vod-live-feed'
 include ':solutions:vod-mini-drama'
+include ':solutions:ai-chat'

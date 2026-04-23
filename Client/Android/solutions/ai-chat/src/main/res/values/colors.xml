@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ai_color_tips_start">#3B91FF</color>
+    <color name="ai_color_tips_center">#0D5EFF</color>
+    <color name="ai_color_tips_end">#C069FF</color>
+
+    <color name="ai_stop_confirm_text">#4E5969</color>
+    <color name="ai_stop_confirm_go">#FFFFFF</color>
+    <color name="ai_stop_confirm_cancel">#020814</color>
+</resources>

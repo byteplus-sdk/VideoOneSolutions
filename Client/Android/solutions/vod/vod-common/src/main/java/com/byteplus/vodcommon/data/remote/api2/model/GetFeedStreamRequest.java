@@ -21,6 +21,8 @@ public class GetFeedStreamRequest {
     private final Integer format;
     @SerializedName("codec")
     private final Integer codec;
+    @SerializedName("fileType")
+    private final String fileType;
 
     @SerializedName("supportSmartSubtitle")
     public Boolean supportSmartSubtitle = null;
@@ -33,12 +35,14 @@ public class GetFeedStreamRequest {
                                 final Integer offset,
                                 final Integer pageSize,
                                 final Integer format,
-                                final Integer codec) {
+                                final Integer codec,
+                                final String fileType) {
         this.videoType = videoType;
         this.userID = userID;
         this.offset = offset;
         this.pageSize = pageSize;
         this.format = format;
         this.codec = codec;
+        this.fileType = fileType;
     }
 }

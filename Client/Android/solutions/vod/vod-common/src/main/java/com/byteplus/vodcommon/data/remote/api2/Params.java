@@ -29,6 +29,13 @@ public class Params {
             boolean h265 = VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265);
             return h265 ? Codec.MH265Codec : Codec.H264Codec;
         }
+
+        public static String fileType() {
+            if (VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_VIDEO_ENABLE_PRIVATE_DRM)) {
+                return FileType.EVIDEO;
+            }
+            return null;
+        }
     }
 
     public static class Format {
@@ -53,5 +60,13 @@ public class Params {
         public static final int MP3Codec = 6;
         public static final int H265Codec = 7;
         public static final int AllWithH265Codec = 8; // h264、H265
+    }
+
+
+    public static class FileType {
+        public static final String VIDEO = "video";
+        public static final String AUDIO = "audio";
+        public static final String EVIDEO = "evideo";
+        public static final String EAUDIO = "eaudio";
     }
 }

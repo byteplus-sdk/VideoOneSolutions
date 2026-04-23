@@ -17,11 +17,22 @@ public class GetSimilarVideoRequest {
     public int offset;
     @SerializedName("pageSize")
     public int pageSize;
+    @SerializedName("format")
+    public Integer format;
+    @SerializedName("codec")
+    public Integer codec;
+    @SerializedName("fileType")
+    public String fileType;
 
-    public GetSimilarVideoRequest(String vid, @RemoteApi.VideoType int videoType, int offset, int pageSize) {
+
+
+    public GetSimilarVideoRequest(String vid, @RemoteApi.VideoType int videoType, int offset, int pageSize, Integer format, Integer codec, String fileType) {
         this.vid = vid;
         this.videoType = videoType;
         this.offset = offset;
         this.pageSize = pageSize;
+        this.format = format;
+        this.codec = codec;
+        this.fileType = fileType;
     }
 }

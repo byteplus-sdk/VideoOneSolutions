@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.PlayerException;
+import com.byteplus.playerkit.player.config.ABRQualityConfig;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.source.Subtitle;
 import com.byteplus.playerkit.player.source.SubtitleText;
@@ -127,8 +128,6 @@ public interface PlayerAdapter {
 
     Track getSelectedTrack(@Track.TrackType int trackType) throws IllegalStateException;
 
-    Track getPendingTrack(@Track.TrackType int trackType) throws IllegalStateException;
-
     Track getCurrentTrack(@Track.TrackType int trackType) throws IllegalStateException;
 
     List<Track> getTracks(@Track.TrackType int trackType) throws IllegalStateException;
@@ -139,9 +138,13 @@ public interface PlayerAdapter {
 
     Subtitle getSelectedSubtitle();
 
-    Subtitle getPendingSubtitle();
-
     Subtitle getCurrentSubtitle();
+
+    void setABRQualityConfig(@NonNull ABRQualityConfig abrQualityConfig);
+    @Nullable
+    ABRQualityConfig getABRQualityConfig();
+
+    boolean isABRAutoMode();
 
     void setStartTime(long startTime);
 
@@ -259,7 +262,6 @@ public interface PlayerAdapter {
     }
 
     interface TrackListener {
-
         void onTrackInfoReady(@NonNull PlayerAdapter mp, @Track.TrackType int trackType, @NonNull List<Track> tracks);
 
         void onTrackWillChange(@NonNull PlayerAdapter mp, @Track.TrackType int trackType, @Nullable Track current, @NonNull Track target);

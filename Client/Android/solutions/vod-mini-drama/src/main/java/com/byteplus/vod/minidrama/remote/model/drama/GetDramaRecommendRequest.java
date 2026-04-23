@@ -10,9 +10,18 @@ public class GetDramaRecommendRequest {
     public final int offset;
     @SerializedName("page_size")
     public final int pageSize;
+    @SerializedName("format")
+    public final Integer format;
+    @SerializedName("codec")
+    public final Integer codec;
+    @SerializedName("file_type")
+    public final String fileType;
 
-    public GetDramaRecommendRequest(int offset, int pageSize) {
+    public GetDramaRecommendRequest(int offset, int pageSize, Integer format, Integer codec, String fileType) {
         this.offset = offset;
         this.pageSize = pageSize;
+        this.format = format;
+        this.codec = codec;
+        this.fileType = fileType;
     }
 }

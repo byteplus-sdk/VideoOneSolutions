@@ -6,9 +6,10 @@ import android.graphics.Bitmap;
 import android.view.Surface;
 
 import com.ss.videoarch.liveplayer.VeLivePayerAudioLoudnessInfo;
-import com.ss.videoarch.liveplayer.VeLivePayerAudioVolume;
+
 import com.ss.videoarch.liveplayer.VeLivePlayer;
 import com.ss.videoarch.liveplayer.VeLivePlayerAudioFrame;
+import com.ss.videoarch.liveplayer.VeLivePlayerAudioVolume;
 import com.ss.videoarch.liveplayer.VeLivePlayerDef;
 import com.ss.videoarch.liveplayer.VeLivePlayerError;
 import com.ss.videoarch.liveplayer.VeLivePlayerObserver;
@@ -161,13 +162,12 @@ public class VeLivePlayerObserverAdapter implements VeLivePlayerObserver {
     }
 
     @Override
-    public void onAudioVolume(VeLivePlayer veLivePlayer, VeLivePayerAudioVolume veLivePayerAudioVolume) {
+    public void onAudioVolume(VeLivePlayer player, VeLivePlayerAudioVolume volumeInfo) {
 
     }
 
     @Override
     public void onLoudness(VeLivePlayer veLivePlayer, VeLivePayerAudioLoudnessInfo veLivePayerAudioLoudnessInfo) {
-
     }
 
     @Override

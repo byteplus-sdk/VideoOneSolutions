@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ai_chat_entry_title">智能音视频</string>
+    <string name="ai_chat_entry_description">AI对话、智能翻译，与更多AI解决方案。</string>
+</resources>

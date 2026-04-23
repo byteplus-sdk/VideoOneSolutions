@@ -35,4 +35,9 @@ public class AudioSink implements IAudioFrameObserver {
     public void onMixedAudioFrame(IAudioFrame audioFrame) {
 
     }
+
+    @Override
+    public void onCaptureMixedAudioFrame(IAudioFrame audioFrame) {
+
+    }
 }

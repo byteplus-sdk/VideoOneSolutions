@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ai_chat_graph"
+    app:startDestination="@id/dialer">
+
+    <fragment
+        android:id="@+id/dialer"
+        android:name="com.byteplus.aichat.AiDialerFragment"
+        tools:layout="@layout/fragment_ai_dialer">
+        <action
+            android:id="@+id/action_conversation"
+            app:destination="@id/ai_conversation" />
+
+        <action
+            android:id="@+id/action_settings"
+            app:destination="@id/ai_settings" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ai_conversation"
+        android:name="com.byteplus.aichat.AiConversationFragment"
+        tools:layout="@layout/fragment_ai_conversation">
+
+        <action
+            android:id="@+id/action_settings"
+            app:destination="@id/ai_settings" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ai_settings"
+        android:name="com.byteplus.aichat.settings.AiSettingsFragment"
+        tools:layout="@layout/fragment_ai_settings">
+        <action
+            android:id="@+id/action_voice_type"
+            app:destination="@id/ai_setting_voice_type" />
+        <action
+            android:id="@+id/action_llm"
+            app:destination="@id/ai_setting_llm" />
+        <action
+            android:id="@+id/action_asr"
+            app:destination="@id/ai_setting_asr" />
+        <action
+            android:id="@+id/action_edit_text"
+            app:destination="@id/ai_setting_edit_text" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ai_setting_asr"
+        android:name="com.byteplus.aichat.settings.ASRChoiceFragment"
+        tools:layout="@layout/fragment_ai_setting_recycler" />
+
+    <fragment
+        android:id="@+id/ai_setting_llm"
+        android:name="com.byteplus.aichat.settings.LLMChoiceFragment"
+        tools:layout="@layout/fragment_ai_setting_recycler" />
+
+    <fragment
+        android:id="@+id/ai_setting_voice_type"
+        android:name="com.byteplus.aichat.settings.VoiceTypeChoiceFragment"
+        tools:layout="@layout/fragment_ai_setting_recycler" />
+
+    <fragment
+        android:id="@+id/ai_setting_edit_text"
+        android:name="com.byteplus.aichat.settings.AiEditTextFragment"
+        tools:layout="@layout/fragment_ai_setting_edit_text" />
+</navigation>

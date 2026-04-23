@@ -20,11 +20,13 @@ import com.bumptech.glide.Glide;
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.cache.CacheLoader;
 import com.byteplus.playerkit.player.source.MediaSource;
+import com.byteplus.playerkit.player.source.Quality;
 import com.byteplus.playerkit.player.source.Track;
 import com.byteplus.playerkit.player.volcengine.VolcConfig;
 import com.byteplus.playerkit.player.volcengine.VolcPlayerInit;
 import com.byteplus.playerkit.utils.FileUtils;
 import com.byteplus.vod.scenekit.annotation.CompleteAction;
+import com.byteplus.vod.scenekit.strategy.VideoQuality;
 import com.byteplus.vod.settingskit.CenteredToast;
 import com.byteplus.vod.settingskit.Option;
 import com.byteplus.vod.settingskit.Options;
@@ -47,6 +49,8 @@ public class VideoSettings {
 
     public static final String CATEGORY_DETAIL_VIDEO = "category-video-details";
 
+    public static final String CATEGORY_QUALITY = "category-quality";
+
     public static final String CATEGORY_COMMON_VIDEO = "category-video-commons";
     public static final String CATEGORY_DEBUG = "category-debug";
 
@@ -67,6 +71,9 @@ public class VideoSettings {
     public static final String DEBUG_ENABLE_LOG_LAYER = "debug_enable_log_layer";
     public static final String DEBUG_ENABLE_DEBUG_TOOL = "debug_enable_debug_tool";
 
+    public static final String QUALITY_ENABLE_ABR = "quality_enable_abr";
+    public static final String QUALITY_VIDEO_QUALITY_USER_SELECTED = "quality_video_quality_user_selected";
+
     public static final String COMMON_CODEC_STRATEGY = "common_codec_strategy";
     public static final String COMMON_HARDWARE_DECODE = "common_hardware_decode";
     public static final String COMMON_SUPER_RESOLUTION = "common_super_resolution";
@@ -74,6 +81,8 @@ public class VideoSettings {
     public static final String COMMON_SOURCE_ENCODE_TYPE_H265 = "common_source_encode_type_h265";
     public static final String COMMON_SOURCE_VIDEO_FORMAT_TYPE = "common_source_video_format_type";
     public static final String COMMON_IS_MINIPLAYER_ON = "common_is_miniplayer_on";
+    public static final String COMMON_SOURCE_VIDEO_ENABLE_PRIVATE_DRM = "common_source_video_enable_private_drm";
+
 
     public static final String COMMON_SHOW_FULL_SCREEN_TIPS = "show_full_screen_tips";
 
@@ -107,6 +116,13 @@ public class VideoSettings {
         public static final int SOURCE_TYPE_URL = MediaSource.SOURCE_TYPE_URL;
         public static final int SOURCE_TYPE_VID = MediaSource.SOURCE_TYPE_ID;
         public static final int SOURCE_TYPE_MODEL = MediaSource.SOURCE_TYPE_MODEL;
+    }
+
+    public static class ABRType {
+        public static final int ABR_TYPE_DISABLED = 0;
+        public static final int ABR_TYPE_STARTUP_ABR = 1;
+        public static final int ABR_TYPE_STARTUP_ABR_AND_SR_DOWNGRADE = 2;
+        public static final int ABR_TYPE_ABR = 3;
     }
 
     /**
@@ -198,6 +214,7 @@ public class VideoSettings {
         createFeedVideoSettings(settings);
         createLongVideoSettings(settings);
         createDetailVideoSettings(settings);
+        createQualitySettings(settings);
         createCommonSettings(settings);
         return settings;
     }
@@ -273,7 +290,7 @@ public class VideoSettings {
                         SHORT_VIDEO_PLAYBACK_COMPLETE_ACTION,
                         R.string.vevod_option_short_video_playback_complete_action,
                         Integer.class,
-                        CompleteAction.LOOP,
+                        CompleteAction.NEXT,
                         Arrays.asList(CompleteAction.LOOP, CompleteAction.NEXT)), new SettingItem.ValueMapper() {
                     @Override
                     public String toString(Object value) {
@@ -332,6 +349,54 @@ public class VideoSettings {
                         String.class,
                         "Fragment",
                         Arrays.asList("Fragment", "Activity"))));
+    }
+
+    private static void createQualitySettings(List<SettingItem> settings) {
+        settings.add(SettingItem.createCategoryItem(CATEGORY_QUALITY, R.string.vevod_option_category_quality));
+        settings.add(SettingItem.createOptionItem(CATEGORY_QUALITY,
+                new Option(
+                        Option.TYPE_SELECTABLE_ITEMS,
+                        CATEGORY_QUALITY,
+                        QUALITY_ENABLE_ABR,
+                        R.string.vevod_option_enable_abr,
+                        Integer.class,
+                        ABRType.ABR_TYPE_DISABLED,
+                        Arrays.asList(ABRType.ABR_TYPE_DISABLED,
+                                ABRType.ABR_TYPE_STARTUP_ABR,
+                                ABRType.ABR_TYPE_STARTUP_ABR_AND_SR_DOWNGRADE,
+                                ABRType.ABR_TYPE_ABR)), new SettingItem.ValueMapper() {
+                    @Override
+                    public String toString(Object value) {
+                        final int type = (int) value;
+                        switch (type) {
+                            case ABRType.ABR_TYPE_STARTUP_ABR:
+                                return getString(R.string.vevod_abr_startup);
+                            case ABRType.ABR_TYPE_STARTUP_ABR_AND_SR_DOWNGRADE:
+                                return getString(R.string.vevod_abr_startup_and_sr_downgrade);
+                            case ABRType.ABR_TYPE_ABR:
+                                return getString(R.string.vevod_abr);
+                            case ABRType.ABR_TYPE_DISABLED:
+                            default:
+                                return getString(R.string.vevod_abr_disable);
+                        }
+                    }
+                }));
+
+        settings.add(SettingItem.createOptionItem(CATEGORY_QUALITY,
+                new Option(
+                        Option.TYPE_SELECTABLE_ITEMS,
+                        CATEGORY_QUALITY,
+                        QUALITY_VIDEO_QUALITY_USER_SELECTED,
+                        R.string.vevod_option_video_quality_user_selected,
+                        Integer.class,
+                        Quality.QUALITY_RES_DEFAULT,
+                        new ArrayList<>(VideoQuality.QUALITY_RES_ARRAY_USER_SELECTED)), new SettingItem.ValueMapper() {
+                    @Override
+                    public String toString(Object value) {
+                        final int qualityRes = (int) value;
+                        return VideoQuality.qualityDesc(qualityRes);
+                    }
+                }));
     }
 
     private static void createCommonSettings(List<SettingItem> settings) {
@@ -405,7 +470,6 @@ public class VideoSettings {
                         Boolean.class,
                         Boolean.TRUE)));
 
-
         settings.add(SettingItem.createOptionItem(CATEGORY_COMMON_VIDEO,
                 new Option(
                         Option.TYPE_SELECTABLE_ITEMS,
@@ -430,7 +494,6 @@ public class VideoSettings {
                     }
                 }));
 
-
         settings.add(SettingItem.createOptionItem(CATEGORY_COMMON_VIDEO,
                 new Option(
                         Option.TYPE_SELECTABLE_ITEMS,
@@ -454,6 +517,16 @@ public class VideoSettings {
                         return null;
                     }
                 }));
+
+        settings.add(SettingItem.createOptionItem(CATEGORY_COMMON_VIDEO,
+                new Option(
+                        Option.TYPE_RATIO_BUTTON,
+                        CATEGORY_COMMON_VIDEO,
+                        COMMON_SOURCE_VIDEO_ENABLE_PRIVATE_DRM,
+                        R.string.vevod_enable_private_encrypt,
+                        Boolean.class,
+                        Boolean.FALSE,
+                        null)));
 
         settings.add(SettingItem.createCopyableTextItem(CATEGORY_COMMON_VIDEO,
                 R.string.vevod_option_common_device_id,

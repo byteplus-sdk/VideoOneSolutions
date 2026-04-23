@@ -42,6 +42,7 @@ import com.byteplus.vod.scenekit.ui.video.layer.MiniPlayerLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PlayCompleteLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PlayErrorLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.PlayPauseLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.PlayerConfigLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.SyncStartTimeLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.TimeProgressBarLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.TipsLayer;
@@ -198,6 +199,7 @@ public class VodFunctionFragment extends BaseFragment {
         VideoView videoView = new VideoView(context);
         videoView.setPlayScene(PlayScene.SCENE_SINGLE_FUNCTION);
         VideoLayerHost layerHost = new VideoLayerHost(context);
+        layerHost.addLayer(new PlayerConfigLayer());
         layerHost.addLayer(new GestureLayer());
         layerHost.addLayer(new CoverLayer());
         layerHost.addLayer(new TimeProgressBarLayer(TimeProgressBarLayer.CompletedPolicy.KEEP));

@@ -29,6 +29,7 @@ import com.byteplus.vod.minidrama.scene.detail.selector.model.Range;
 import com.byteplus.vod.minidrama.utils.MiniEventBus;
 import com.byteplus.minidrama.R;
 import com.byteplus.minidrama.databinding.VevodMiniDramaEpisodeSelectDialogFragmentBinding;
+import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -81,7 +82,7 @@ public class DramaEpisodeSelectDialogFragment extends BottomSheetDialogFragment 
 
         binding = VevodMiniDramaEpisodeSelectDialogFragmentBinding.bind(view);
 
-        binding.unlockAll.setVisibility(View.VISIBLE);
+        binding.unlockAll.setVisibility(DramaSettings.isAdsEnabled() ? View.INVISIBLE : View.VISIBLE);
         binding.unlockAll.setOnClickListener(v -> {
             MiniEventBus.post(new EpisodeUserClickUnlockAllEvent());
             dismiss();

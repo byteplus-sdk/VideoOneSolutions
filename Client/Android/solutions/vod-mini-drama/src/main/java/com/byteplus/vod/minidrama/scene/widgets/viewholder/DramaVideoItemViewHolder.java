@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.byteplus.playerkit.player.playback.DisplayModeHelper;
 import com.byteplus.playerkit.player.playback.DisplayView;
+import com.byteplus.playerkit.player.playback.AdsPlaybackController;
 import com.byteplus.playerkit.player.playback.PlaybackController;
 import com.byteplus.playerkit.player.playback.VideoLayerHost;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.player.source.MediaSource;
+import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaVideoBottomShadowLayer;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaVideoCoverLayer;
 import com.byteplus.vod.scenekit.VideoSettings;
@@ -101,7 +103,11 @@ public class DramaVideoItemViewHolder extends VideoViewHolder {
         videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FILL); // immersive mode
         videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);
         videoView.setPlayScene(PlayScene.SCENE_SHORT);
-        new PlaybackController().bind(videoView);
+        if (DramaSettings.isAdsEnabled()) {
+            new AdsPlaybackController().bind(videoView);
+        } else {
+            new PlaybackController().bind(videoView);
+        }
         parent.addView(videoView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return videoView;
     }

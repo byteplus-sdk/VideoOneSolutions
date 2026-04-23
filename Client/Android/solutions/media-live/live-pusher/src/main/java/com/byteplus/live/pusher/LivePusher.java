@@ -58,10 +58,6 @@ public interface LivePusher {
 
     void stopAudioCapture();
 
-    void startScreenRecording(Intent screenIntent);
-
-    void stopScreenRecording();
-
     void updateCustomImage(Bitmap bm);
 
     int pushExternalVideoFrame(VideoFrame frame);

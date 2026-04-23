@@ -116,7 +116,9 @@ public class CustomVideoEncodeActivity extends ExampleBaseActivity {
             boolean isAutoPublish = true;
             boolean isAutoSubscribeAudio = true;
             boolean isAutoSubscribeVideo = true;
-            RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM, isAutoPublish, isAutoSubscribeAudio, isAutoSubscribeVideo);
+            RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
+                    isAutoPublish, isAutoPublish,
+                    isAutoSubscribeAudio, isAutoSubscribeVideo);
             rtcRoom.joinRoom(token, userInfo, roomConfig);
         });
     }
@@ -144,15 +146,26 @@ public class CustomVideoEncodeActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStream(String uid, MediaStreamType type) {
-            super.onUserPublishStream(uid, type);
-            runOnUiThread(() -> {
-                setRemoteRenderView(uid);
-            });
+        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    setRemoteRenderView(uid);
+                });
+            }
+        }
+
+        @Override
+        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    setRemoteRenderView(uid);
+                });
+            }
         }
     };
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {};
+    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    };
 
     @Override
     protected void onDestroy() {

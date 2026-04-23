@@ -126,6 +126,7 @@ public class MultiRoomActivity extends ExampleBaseActivity {
             RTCRoomConfig roomConfig = new RTCRoomConfig(
                     ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
                     isAutoPublish,
+                    isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
             rtcRoom1.joinRoom(token, userInfo, roomConfig);
@@ -149,7 +150,9 @@ public class MultiRoomActivity extends ExampleBaseActivity {
             boolean isAutoSubscribeVideo = true;
             RTCRoomConfig roomConfig = new RTCRoomConfig(
                     ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
-                    isAutoPublish, isAutoSubscribeAudio,
+                    isAutoPublish,
+                    isAutoPublish,
+                    isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
             rtcRoom2.joinRoom(token, userInfo, roomConfig);
         });
@@ -186,28 +189,47 @@ public class MultiRoomActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStream(String uid, MediaStreamType type) {
-            super.onUserPublishStream(uid, type);
-            runOnUiThread(() -> {
-                RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
-                VideoCanvas videoCanvas = new VideoCanvas();
-                videoCanvas.renderView = binding.remoteView1;
-                videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-                rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    VideoCanvas videoCanvas = new VideoCanvas();
+                    videoCanvas.renderView = binding.remoteView1;
+                    videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
+                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
 
-                binding.remoteUserName1.setText(uid);
-            });
+                    binding.remoteUserName1.setText(uid);
+                });
+            } else {
+                runOnUiThread(() -> {
+                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+
+                    binding.remoteUserName1.setText("");
+                });
+            }
         }
 
         @Override
-        public void onUserUnpublishStream(String uid, MediaStreamType type, StreamRemoveReason reason) {
-            super.onUserUnpublishStream(uid, type, reason);
-            runOnUiThread(() -> {
-                RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
-                rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    VideoCanvas videoCanvas = new VideoCanvas();
+                    videoCanvas.renderView = binding.remoteView1;
+                    videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
+                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
 
-                binding.remoteUserName1.setText("");
-            });
+                    binding.remoteUserName1.setText(uid);
+                });
+            } else {
+                runOnUiThread(() -> {
+                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+
+                    binding.remoteUserName1.setText("");
+                });
+            }
         }
 
         @Override
@@ -230,28 +252,47 @@ public class MultiRoomActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStream(String uid, MediaStreamType type) {
-            super.onUserPublishStream(uid, type);
-            runOnUiThread(() -> {
-                RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
-                VideoCanvas videoCanvas = new VideoCanvas();
-                videoCanvas.renderView = binding.remoteView2;
-                videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-                rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    VideoCanvas videoCanvas = new VideoCanvas();
+                    videoCanvas.renderView = binding.remoteView2;
+                    videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
+                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
 
-                binding.remoteUserName2.setText(uid);
-            });
+                    binding.remoteUserName2.setText(uid);
+                });
+            } else {
+                runOnUiThread(() -> {
+                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+
+                    binding.remoteUserName2.setText("");
+                });
+            }
         }
 
         @Override
-        public void onUserUnpublishStream(String uid, MediaStreamType type, StreamRemoveReason reason) {
-            super.onUserUnpublishStream(uid, type, reason);
-            runOnUiThread(() -> {
-                RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
-                rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                runOnUiThread(() -> {
+                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    VideoCanvas videoCanvas = new VideoCanvas();
+                    videoCanvas.renderView = binding.remoteView2;
+                    videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
+                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
 
-                binding.remoteUserName2.setText("");
-            });
+                    binding.remoteUserName2.setText(uid);
+                });
+            } else {
+                runOnUiThread(() -> {
+                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+
+                    binding.remoteUserName2.setText("");
+                });
+            }
         }
 
         @Override

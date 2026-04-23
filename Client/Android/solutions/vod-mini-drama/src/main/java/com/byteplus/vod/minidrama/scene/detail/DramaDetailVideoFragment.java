@@ -68,13 +68,13 @@ import com.byteplus.vod.minidrama.scene.detail.pay.UnlockDataHelper;
 import com.byteplus.vod.minidrama.scene.detail.pay.UnlockState;
 import com.byteplus.vod.minidrama.scene.detail.pay.UnlockStateViewModel;
 import com.byteplus.vod.minidrama.scene.detail.selector.DramaEpisodeSelectDialogFragment;
+import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
 import com.byteplus.vod.minidrama.scene.widgets.DramaVideoPageView;
 import com.byteplus.vod.minidrama.scene.widgets.DramaVideoSceneView;
 import com.byteplus.vod.minidrama.scene.widgets.adatper.ViewHolder;
 import com.byteplus.vod.minidrama.scene.widgets.bottom.EpisodeSelectorViewHolder;
 import com.byteplus.vod.minidrama.scene.widgets.bottom.SpeedIndicatorViewHolder;
 import com.byteplus.vod.minidrama.scene.widgets.layer.DramaVideoLayer;
-import com.byteplus.vod.minidrama.scene.widgets.layer.DramaVideoPlayerConfigLayer;
 import com.byteplus.vod.minidrama.scene.widgets.viewholder.DramaEpisodeVideoViewHolder;
 import com.byteplus.vod.minidrama.utils.L;
 import com.byteplus.vod.minidrama.utils.MiniEventBus;
@@ -437,7 +437,7 @@ public class DramaDetailVideoFragment extends BaseFragment {
     }
 
     /**
-     * @see DramaVideoPlayerConfigLayer
+     * @see com.byteplus.vod.scenekit.ui.video.layer.PlayerConfigLayer
      */
     protected void onPlayerStateCompleted(Event event) {
         final Player player = event.owner(Player.class);
@@ -686,7 +686,7 @@ public class DramaDetailVideoFragment extends BaseFragment {
         }
         load(toBeLoad);
     }
-
+    
     private void load(@NonNull DramaItem dramaItem) {
         mSceneView.showLoadingMore();
         L.d(this, "load", "start", DramaItem.dump(dramaItem));
@@ -697,18 +697,24 @@ public class DramaDetailVideoFragment extends BaseFragment {
                 if (getActivity() == null) return;
                 mSceneView.dismissLoadingMore();
 
-                List<ViewItem> videoItems = new ArrayList<>(DramaFeed.toVideoItems(items));
+                List<VideoItem> videoItems = new ArrayList<>(DramaFeed.toVideoItems(items));
+                if (DramaSettings.isAdsEnabled()) {
+                    videoItems.removeIf(it -> DramaFeed.of(it).isLocked());
+                    dramaItem.dramaInfo.totalEpisodeNumber = videoItems.size();
+                }
 
-                dramaItem.episodeVideoItems = videoItems;
+                List<ViewItem> viewItems = new ArrayList<>(videoItems);
+                
+                dramaItem.episodeVideoItems = viewItems;
                 dramaItem.episodesAllLoaded = true;
                 final DramaItem initDrama = mDramaItems.get(mInitDramaIndex);
                 if (dramaItem == initDrama) {
-                    setItems(videoItems);
+                    setItems(viewItems);
                     if (dramaItem.currentEpisodeNumber >= 1) {
                         setCurrentItemByEpisodeNumber(dramaItem.currentEpisodeNumber);
                     }
                 } else {
-                    appendItems(videoItems);
+                    appendItems(viewItems);
                 }
             }
 

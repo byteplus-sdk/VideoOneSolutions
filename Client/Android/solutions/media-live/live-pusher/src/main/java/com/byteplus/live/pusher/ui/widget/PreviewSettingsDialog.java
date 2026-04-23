@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,12 +34,14 @@ import com.byteplus.live.pusher.R;
 import com.byteplus.live.pusher.ui.activities.LiveCaptureType;
 import com.byteplus.live.settings.PreferenceUtil;
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.pandora.ttsdk.MonitorLog;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class PreviewSettingsDialog extends Dialog {
+
+    private static final String TAG = "PreviewSettingsDialog";
+
     private EditText mPushUrlEt;
     private Spinner mVideoCaptureResolution;
     private Spinner mVideoEncodeResolution;
@@ -286,12 +289,12 @@ public class PreviewSettingsDialog extends Dialog {
 
         Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(() -> {
-            MonitorLog.i("Scanning input url ...");
+            Log.i(TAG, "Scanning input url ...");
             new IntentIntegrator((Activity) mContext)
                     .setOrientationLocked(false)
                     .setRequestCode(REQUEST_CODE_SCAN_URL)
                     .initiateScan();
-            MonitorLog.i("Scanning input url done.");
+            Log.i(TAG, "Scanning input url done.");
         }, 500);
     }
 

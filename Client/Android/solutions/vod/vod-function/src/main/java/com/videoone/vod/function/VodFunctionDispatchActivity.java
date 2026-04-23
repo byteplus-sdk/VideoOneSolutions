@@ -163,7 +163,8 @@ public class VodFunctionDispatchActivity extends AppCompatActivity {
         return new GetFeedStreamRequest(RemoteApi.VideoType.FEED, accountId,
                 0, 1,
                 Params.Value.format(),
-                Params.Value.codec()
+                Params.Value.codec(),
+                Params.Value.fileType()
         );
     }
 }

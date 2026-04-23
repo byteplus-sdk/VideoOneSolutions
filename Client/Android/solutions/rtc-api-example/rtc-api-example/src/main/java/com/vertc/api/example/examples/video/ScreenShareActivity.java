@@ -120,7 +120,8 @@ public class ScreenShareActivity extends ExampleBaseActivity {
                     startScreenCapture(result.getData());
 
                     if (rtcRoom != null) {
-                        rtcRoom.publishScreen(MediaStreamType.RTC_MEDIA_STREAM_TYPE_BOTH);
+                        rtcRoom.publishScreenVideo(true);
+                        rtcRoom.publishScreenAudio(true);
                     }
                 }
 
@@ -137,7 +138,9 @@ public class ScreenShareActivity extends ExampleBaseActivity {
         binding.btnStartScreenShare.setText(R.string.button_start_screen_sharing);
 
         if (rtcRoom != null) {
-            rtcRoom.unpublishScreen(MediaStreamType.RTC_MEDIA_STREAM_TYPE_BOTH);
+            rtcRoom.publishScreenVideo(false);
+            rtcRoom.publishScreenAudio(false);
+
         }
         rtcVideo.stopScreenCapture();
     }
@@ -175,12 +178,13 @@ public class ScreenShareActivity extends ExampleBaseActivity {
             boolean isAutoPublish = false;
             boolean isAutoSubscribeAudio = true;
             boolean isAutoSubscribeVideo = true;
-            RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM, isAutoPublish, isAutoSubscribeAudio, isAutoSubscribeVideo);
+            RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM, isAutoPublish, isAutoPublish, isAutoSubscribeAudio, isAutoSubscribeVideo);
             rtcRoom.joinRoom(token, userInfo, roomConfig);
-            rtcRoom.publishStream(MediaStreamType.RTC_MEDIA_STREAM_TYPE_AUDIO);
+            rtcRoom.publishStreamAudio(true);
 
             if (isSharing) {
-                rtcRoom.publishScreen(MediaStreamType.RTC_MEDIA_STREAM_TYPE_BOTH);
+                rtcRoom.publishScreenAudio(true);
+                rtcRoom.publishScreenVideo(true);
             }
         });
     }
@@ -220,7 +224,8 @@ public class ScreenShareActivity extends ExampleBaseActivity {
     private void leaveRoom() {
         if (rtcRoom != null) {
             if (isSharing) {
-                rtcRoom.unpublishScreen(MediaStreamType.RTC_MEDIA_STREAM_TYPE_BOTH);
+                rtcRoom.publishScreenAudio(false);
+                rtcRoom.publishScreenVideo(false);
             }
             rtcRoom.leaveRoom();
             rtcRoom.destroy();
@@ -245,23 +250,37 @@ public class ScreenShareActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishScreen(String uid, MediaStreamType type) {
-            super.onUserPublishScreen(uid, type);
-            Log.i(TAG, "onUserPublishScreen, uid: " + uid + " type:" + type);
-            ToastUtil.showToast(ScreenShareActivity.this, "onUserPublishScreen, uid: " + uid + " type:" + type);
-            runOnUiThread(() -> {
-                setRemoteRenderView(uid);
-            });
+        public void onUserPublishScreenVideo(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                Log.i(TAG, "onUserPublishScreen, uid: " + uid + " type:" + "ScreenVideo");
+                ToastUtil.showToast(ScreenShareActivity.this, "onUserPublishScreen, uid: " + uid + " type:" + "ScreenVideo");
+                runOnUiThread(() -> {
+                    setRemoteRenderView(uid);
+                });
+            } else {
+                Log.i(TAG, "onUserUnpublishScreen, uid: " + uid + " type:" + "ScreenVideo");
+                ToastUtil.showToast(ScreenShareActivity.this, "onUserUnpublishScreen, uid: " + uid + " type:" + "ScreenVideo");
+                runOnUiThread(() -> {
+                    removeRemoteView(uid);
+                });
+            }
         }
 
         @Override
-        public void onUserUnpublishScreen(String uid, MediaStreamType type, StreamRemoveReason reason) {
-            super.onUserUnpublishScreen(uid, type, reason);
-            Log.i(TAG, "onUserUnpublishScreen, uid: " + uid + " type:" + type);
-            ToastUtil.showToast(ScreenShareActivity.this, "onUserUnpublishScreen, uid: " + uid + " type:" + type);
-            runOnUiThread(() -> {
-                removeRemoteView(uid);
-            });
+        public void onUserPublishScreenAudio(String roomId, String uid, boolean isPublish) {
+            if (isPublish) {
+                Log.i(TAG, "onUserPublishScreen, uid: " + uid + " type:" + "ScreenAudio");
+                ToastUtil.showToast(ScreenShareActivity.this, "onUserPublishScreen, uid: " + uid + " type:" + "ScreenAudio");
+                runOnUiThread(() -> {
+                    setRemoteRenderView(uid);
+                });
+            } else {
+                Log.i(TAG, "onUserUnpublishScreen, uid: " + uid + " type:" + "ScreenAudio");
+                ToastUtil.showToast(ScreenShareActivity.this, "onUserUnpublishScreen, uid: " + uid + " type:" + "ScreenAudio");
+                runOnUiThread(() -> {
+                    removeRemoteView(uid);
+                });
+            }
         }
 
         @Override

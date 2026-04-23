@@ -60,4 +60,12 @@
     <string name="vevod_miniplayer_pause">Pause</string>
     <string name="vevod_miniplayer_forward">Fast forward</string>
     <string name="vevod_miniplayer_rewind">Fast rewind</string>
+    <string name="vevod_option_category_quality">Video Quality</string>
+    <string name="vevod_option_enable_abr">Enable ABR</string>
+    <string name="vevod_option_video_quality_user_selected">User Selected Video Quality</string>
+    <string name="vevod_abr">ABR</string>
+    <string name="vevod_abr_startup">ABR Startup</string>
+    <string name="vevod_abr_startup_and_sr_downgrade">ABR Startup + Super Resolution Downgrade</string>
+    <string name="vevod_abr_disable">Disable</string>
+    <string name="vevod_enable_private_encrypt">Enable Private Encrypt</string>
 </resources>

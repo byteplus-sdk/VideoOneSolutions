@@ -3,6 +3,9 @@
 
 package com.byteplus.playerkit.player.volcengine;
 
+import static com.byteplus.playerkit.player.volcengine.VolcQualityStrategy.isEnableABR;
+import static com.byteplus.playerkit.player.volcengine.VolcQualityStrategy.isEnableStartupABR;
+import static com.byteplus.playerkit.player.volcengine.VolcQualityStrategy.selectStartupABR;
 import static com.ss.ttvideoengine.strategy.StrategyManager.STRATEGY_SCENE_SHORT_VIDEO;
 import static com.ss.ttvideoengine.strategy.StrategyManager.STRATEGY_SCENE_SMALL_VIDEO;
 import static com.ss.ttvideoengine.strategy.StrategyManager.STRATEGY_TYPE_PRELOAD;
@@ -14,6 +17,7 @@ import android.view.Surface;
 
 import androidx.annotation.Nullable;
 
+import com.byteplus.playerkit.player.config.ABRQualityConfig;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.source.Track;
 import com.byteplus.playerkit.player.source.TrackSelector;
@@ -24,6 +28,9 @@ import com.ss.ttvideoengine.PreloaderVidItem;
 import com.ss.ttvideoengine.PreloaderVideoModelItem;
 import com.ss.ttvideoengine.Resolution;
 import com.ss.ttvideoengine.TTVideoEngine;
+import com.ss.ttvideoengine.abr.TTVideoABRConfig;
+import com.ss.ttvideoengine.abr.TTVideoABRStrategy;
+import com.ss.ttvideoengine.model.IVideoModel;
 import com.ss.ttvideoengine.selector.strategy.GearStrategy;
 import com.ss.ttvideoengine.source.DirectUrlSource;
 import com.ss.ttvideoengine.source.VidPlayAuthTokenSource;
@@ -39,8 +46,6 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class VolcEngineStrategy {
-
-
     private static int sCurrentScene = VolcScene.SCENE_UNKNOWN;
     private static boolean sSceneStrategyEnabled = false;
 
@@ -72,19 +77,9 @@ public class VolcEngineStrategy {
                 if (mediaSource == null) return item; // error
                 VolcPlayerInit.getConfigUpdater().updateVolcConfig(mediaSource);
                 item.setFetchEndListener((videoModel, error) -> {
+                    if (videoModel == null) return;
                     Mapper.updateMediaSource(mediaSource, videoModel);
-                    final VolcConfig volcConfig = VolcConfig.get(mediaSource);
-                    Track playTrack = null;
-                    if (VolcQualityStrategy.isEnableStartupABR(volcConfig)) {
-                        VolcQualityStrategy.StartupTrackResult result = VolcQualityStrategy.select(
-                                GearStrategy.GEAR_STRATEGY_SELECT_TYPE_PRELOAD,
-                                mediaSource,
-                                videoModel);
-                        playTrack = result.track;
-                    }
-                    if (playTrack == null) {
-                        playTrack = selectPlayTrack(TrackSelector.TYPE_PRELOAD, mediaSource);
-                    }
+                    final Track playTrack = selectTrack(mediaSource, videoModel);
                     final Resolution resolution = playTrack != null ? Mapper.track2Resolution(playTrack) : null;
                     if (resolution != null) {
                         item.mResolution = resolution;
@@ -99,18 +94,8 @@ public class VolcEngineStrategy {
                 final MediaSource mediaSource = (MediaSource) source.tag();
                 if (mediaSource == null) return item; // error
                 VolcPlayerInit.getConfigUpdater().updateVolcConfig(mediaSource);
-                final VolcConfig volcConfig = VolcConfig.get(mediaSource);
-                Track playTrack = null;
-                if (VolcQualityStrategy.isEnableStartupABR(volcConfig)) {
-                    VolcQualityStrategy.StartupTrackResult result = VolcQualityStrategy.select(
-                            GearStrategy.GEAR_STRATEGY_SELECT_TYPE_PRELOAD,
-                            mediaSource,
-                            source.videoModel());
-                    playTrack = result.track;
-                }
-                if (playTrack == null) {
-                    playTrack = selectPlayTrack(TrackSelector.TYPE_PRELOAD, mediaSource);
-                }
+                final IVideoModel videoModel = source.videoModel();
+                final Track playTrack = selectTrack(mediaSource, videoModel);
                 final Resolution resolution = playTrack != null ? Mapper.track2Resolution(playTrack) : null;
                 if (resolution != null) {
                     item.mResolution = resolution;
@@ -129,16 +114,44 @@ public class VolcEngineStrategy {
         });
     }
 
-    /**
-     * For vid only
-     */
-    private static Track selectPlayTrack(@TrackSelector.Type int type, MediaSource mediaSource) {
-        @Track.TrackType final int trackType = MediaSource.mediaType2TrackType(mediaSource);
-        List<Track> tracks = mediaSource.getTracks(trackType);
-        if (tracks != null) {
-            return VolcPlayerInit.getTrackSelector().selectTrack(type, trackType, tracks, mediaSource);
+    @Nullable
+    private static Track selectTrack(MediaSource mediaSource, IVideoModel videoModel) {
+        final VolcConfig volcConfig = VolcConfig.get(mediaSource);
+        Track playTrack = null;
+        if (isEnableABR(volcConfig) && Mapper.isSupportSmoothTrackSwitching(mediaSource, videoModel)) {
+            Track userSelectedTrack = Mapper.findTrackWithQuality(mediaSource, volcConfig.qualityConfig.userSelectedQuality);
+            if (userSelectedTrack != null) {
+                playTrack = userSelectedTrack;
+                L.d(VolcEngineStrategy.class, "selectTrack", "abr[user]", Track.dump(playTrack));
+            } else {
+                Resolution resolution = null;
+                TTVideoABRConfig abrConfig = Mapper.mapABRQualityConfig2TTVideoABRConfig(volcConfig.qualityConfig.abrQualityConfig);
+                if (abrConfig != null) {
+                    resolution = TTVideoABRStrategy.preloadSelect(videoModel, abrConfig);
+                }
+                List<Track> tracks = mediaSource.getTracks(MediaSource.mediaType2TrackType(mediaSource));
+                if (resolution != null) {
+                    playTrack = Mapper.findTrackWithResolution(tracks, resolution);
+                }
+                L.d(VolcEngineStrategy.class, "selectTrack", "abr[auto]", Track.dump(playTrack), ABRQualityConfig.dump(volcConfig.qualityConfig.abrQualityConfig));
+            }
+        } else if (isEnableStartupABR(volcConfig)) {
+            VolcQualityStrategy.StartupTrackResult result = selectStartupABR(
+                    GearStrategy.GEAR_STRATEGY_SELECT_TYPE_PRELOAD,
+                    mediaSource,
+                    videoModel);
+            playTrack = result.track;
+            L.d(VolcEngineStrategy.class, "selectTrack", "abr[startup]", Track.dump(playTrack));
         }
-        return null;
+        if (playTrack == null) {
+            @Track.TrackType final int trackType = MediaSource.mediaType2TrackType(mediaSource);
+            List<Track> tracks = mediaSource.getTracks(trackType);
+            if (tracks != null) {
+                playTrack = VolcPlayerInit.getTrackSelector().selectTrack(TrackSelector.TYPE_PRELOAD, trackType, tracks, mediaSource);
+            }
+            L.d(VolcEngineStrategy.class, "selectTrack", "default", Track.dump(playTrack));
+        }
+        return playTrack;
     }
 
     public synchronized static void setEnabled(int volcScene, boolean enabled) {

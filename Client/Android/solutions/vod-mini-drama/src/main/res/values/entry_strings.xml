@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="vevod_mini_drama_entry_title">Short Drama</string>
+    <string name="vevod_mini_drama_with_ads_entry_title">Short Drama With In-Stream Ads</string>
     <string name="vevod_mini_drama_entry_description">Exciting short drama episodes, Video playback, and Monetization.</string>
+    <string name="vevod_mini_drama_with_ads_entry_description">Short drama episodes with in-stream ad monetization.</string>
 </resources>

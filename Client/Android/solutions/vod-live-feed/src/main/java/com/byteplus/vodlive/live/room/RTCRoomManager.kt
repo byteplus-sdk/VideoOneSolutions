@@ -34,7 +34,10 @@ class RTCRoomManager(private val context: Context) {
     private var rtcVideo: RTCVideo? = null
 
     private val roomConfig: RTCRoomConfig =
-        RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM, false, false, false)
+        RTCRoomConfig(
+            ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
+            false, false, false, false
+        )
 
     private val userInfo = UserInfo(SolutionDataManager.userId!!, "")
 

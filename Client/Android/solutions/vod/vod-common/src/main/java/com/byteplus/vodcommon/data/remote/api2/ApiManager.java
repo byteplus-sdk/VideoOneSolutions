@@ -6,6 +6,7 @@ package com.byteplus.vodcommon.data.remote.api2;
 import com.byteplus.vodcommon.BuildConfig;
 import com.byteplus.vodcommon.data.remote.api2.model.GetFeedStreamRequest;
 import com.byteplus.vodcommon.data.remote.api2.model.GetFeedStreamResponse;
+import com.byteplus.vodcommon.data.remote.api2.model.GetPlayListRequest;
 import com.byteplus.vodcommon.data.remote.api2.model.GetPlaylistResponse;
 import com.byteplus.vodcommon.data.remote.api2.model.GetSimilarVideoRequest;
 import com.byteplus.vodcommon.data.remote.api2.model.GetVideoCommentResponse;
@@ -52,7 +53,7 @@ public class ApiManager {
         Call<GetFeedStreamResponse> getSimilarVideoWithPlayAuthToken(@Body GetSimilarVideoRequest request);
 
         @POST("getPlayListDetail")
-        Call<GetPlaylistResponse> getPlaylistDetail();
+        Call<GetPlaylistResponse> getPlaylistDetail(@Body GetPlayListRequest request);
 
         @GET("getVideoComments")
         Call<GetVideoCommentResponse> getVideoComments(@Query("vid") String vid);

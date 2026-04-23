@@ -1,3 +1,4 @@
+# VideoOne In Android
 The BytePlus VideoOne demo project utilizes multiple BytePlus media SDKs along with BytePlus video cloud services to provide a set of demos for industry-specific scenarios.
 
 Directory Structure
@@ -15,7 +16,6 @@ Android
 └── solutions
     ├── chorus
     ├── interactivelive
-    ├── ktv
     ├── media-live
     │   ├── live-common
     │   ├── live-entrance
@@ -34,7 +34,52 @@ Android
     │   ├── vod-settingskit
     │   └── vod-upload
     ├── vod-live-feed
-    └── vod-mini-drama
+    └── vod-mini-drama   // https://docs.byteplus.com/en/docs/byteplus-vos/short-drama-videos-android-integration
 ```
 
 For detailed instructions on how to run the demo project, refer to [Running the demo (Android)](https://docs.byteplus.com/en/byteplus-vos/docs/running-the-demo-android-).
+
+
+##  VoD In Android
+
+Directory Structure
+```plain
+.
+├── app                    # Entry point of the app 
+├── build.gradle 
+├── component              # Public components 
+│   ├── avatars            # Avatar resources 
+│   ├── loginkit           # Login 
+│   └── solution-base      # Base library 
+│   └── ...
+└── solutions              # Solutions 
+    ├── vod                # The video playback scene 
+    │   ├── vod-playerkit  # VOD player kit
+    │   ├── vod-scenekit   # VOD scene kit
+    │   └── ...
+    └── ...
+```
+
+###  VOD Short Drama In Android
+```plain
+.
+├── app                    # Entry point of the app 
+├── build.gradle 
+├── component              # Public components 
+│   ├── avatars            # Avatar resources 
+│   ├── loginkit           # Login 
+│   └── solution-base      # Base library 
+│   └── ...
+└── solutions              # Solutions 
+    ├── vod                # The video playback scene 
+    │   ├── vod-playerkit  # VOD player kit
+    │   ├── vod-scenekit   # VOD scene kit
+    │   └── ...
+    ├── vod-mini-drama     # The mini drama scene 
+    └── ...
+```
+
+For the detailed instructions about the short drama scene, refer to [Running the short drama demo](https://docs.byteplus.com/en/docs/byteplus-vos/overview-of-short-drama-videos).
+
+
+Android short drama scene, please refer to [Refer to the short drama doc(Android)](https://docs.byteplus.com/en/docs/byteplus-vos/short-drama-videos-android-integration).

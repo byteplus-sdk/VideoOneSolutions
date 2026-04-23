@@ -106,7 +106,7 @@ public class SubtitleSelectDialogLayer extends DialogListLayer<Subtitle> {
 
         Player player = player();
         if (player != null) {
-            adapter().setList(createItems(context()));
+            adapter().setItems(createItems(context()));
             if (player.isSubtitleEnabled()) {
                 adapter().setSelected(adapter().findItem(player.getSelectedSubtitle()));
             } else {
