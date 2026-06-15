@@ -1,3 +1,7 @@
 The BytePlus Video One solution (VideoOne) is an all-in-one audio and video solution providing everything you need for a top-notch audio and video experience. It integrates a full range of media capabilities, including live streaming, playback of live streams and Video on Demand (VOD), real-time communication (RTC), video shooting and editing, and beauty AR and special effects. 
 
 For details about VideoOne, refer to [BytePlus Video One solution overview](https://docs.byteplus.com/byteplus-vos/docs/byteplus-video-one-solution-overview).
+
+## Security and privacy
+This project takes security seriously. 
+For vulnerability reporting and supported versions, see [SECURITY.md](SECURITY.md)
