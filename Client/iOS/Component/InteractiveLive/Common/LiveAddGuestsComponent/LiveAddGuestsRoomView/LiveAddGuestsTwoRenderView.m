@@ -18,6 +18,19 @@
 
 @implementation LiveAddGuestsTwoRenderView
 
+- (void)syncBigRenderCameraState {
+    NSString *uid = self.bigRenderView.uid;
+    if (uid.length <= 0) {
+        return;
+    }
+    for (LiveUserModel *model in self.userList) {
+        if ([model.uid isEqualToString:uid]) {
+            self.bigRenderView.isCamera = model.camera;
+            return;
+        }
+    }
+}
+
 - (instancetype)initWithRoomInfoModel:(LiveRoomInfoModel *)roomInfoModel {
     self = [super init];
     if (self) {
@@ -56,6 +69,7 @@
     }
     self.userList = userList;
     self.bigRenderView.uid = userList[0].uid;
+    self.bigRenderView.isCamera = userList[0].camera;
     self.smallRenderView.userModel = userList.lastObject;
     for (LiveUserModel *userModel in userList) {
         [self updateGuestsMic:userModel.mic uid:userModel.uid];
@@ -91,7 +105,9 @@
         curModel) {
         self.smallRenderView.userModel = curModel;
     } else {
-        self.bigRenderView.isCamera = curModel.camera;
+        if (curModel) {
+            self.bigRenderView.isCamera = curModel.camera;
+        }
     }
 }
 
@@ -105,6 +121,8 @@
         self.bigRenderView.uid = self.userList[0].uid;
         self.smallRenderView.userModel = self.userList.lastObject;
     }
+    // Keep big window placeholder state in sync with the displayed user's camera state.
+    [self syncBigRenderCameraState];
 
     self.isSwitch = !self.isSwitch;
 }

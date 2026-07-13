@@ -193,8 +193,24 @@ AVPictureInPictureSampleBufferPlaybackDelegate>
             if (engineFrom == MDCreateEngineFrom_Init) {
                 VOLogI(VOMiniDrama, @"createVideoEngine Init");
                 [self.videoEngine setVideoEngineVideoSource:mediaSource];
+                if (self.abrOpen) {
+                    // enable smooth switching
+                    [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
+                    self.videoEngine.abrDelegate = self;
+                    // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
+                    // or you can set your TTVideoEngineVidSource's resolution to TTVideoEngineResolutionTypeABRAuto before calling setVideoEngineVideoSource, it also works.
+                    [self.videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
+                }
             } else {
                 VOLogI(VOMiniDrama, @"createVideoEngine Reuse");
+                if (self.abrOpen) {
+                    // enable smooth switching
+                    [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
+                    self.videoEngine.abrDelegate = self;
+                    // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
+                    // or you can set your TTVideoEngineVidSource's resolution to TTVideoEngineResolutionTypeABRAuto before calling setVideoEngineVideoSource, it also works.
+                    [self.videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
+                }
                 self.playbackState = [self __getPlaybackState:self.videoEngine.playbackState];
                 self.loadState = [self __getLoadState:self.videoEngine.loadState];
                 [self.context post:@(self.playbackState) forKey:MDPlayerContextKeyPlaybackState];
@@ -463,10 +479,8 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
             [self.videoEngine setSupportPictureInPictureMode:YES];
         }
     }
-    if (self.abrOpen) {
-        // enable smooth switching
-        [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
-        self.videoEngine.abrDelegate = self;
+    if (!self.abrOpen) {
+        [self setCurrentResolution:[MDVideoPlayerController getPlayerCurrentResolution]];
     }
     [self.videoEngine setOptionForKey:VEKKeyPlayerAudioDevice_ENUM value:@(TTVideoEngineDeviceAudioGraph)];
     [self.videoEngine setOptionForKey:VEKKeyPlayerHardwareDecode_BOOL value:@(self.playerConfig.isOpenHardware)];
@@ -728,10 +742,6 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
 #pragma mark - TTVideoEngineDelegate
 
 - (void)videoEnginePrepared:(TTVideoEngine *)videoEngine {
-    if (self.abrOpen) {
-        // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
-        [videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
-    }
     if (self.delegate &&[self.delegate respondsToSelector:@selector(videoPlayerPrepared:)]) {
         [self.delegate videoPlayerPrepared:self];
     }

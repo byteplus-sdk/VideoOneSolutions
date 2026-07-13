@@ -20,7 +20,8 @@
 @interface VELPullABRUrlConfig (VELHelper)
 @end
 
-@interface VELPullNewViewController () <VeLivePlayerObserver, TVLSettingsManagerDataSource>
+@interface VELPullNewViewController () <VeLivePlayerObserver>
+//@property (nonatomic, assign) VeLivePlayerResolution curResolution;
 @property (nonatomic, strong) VeLivePlayerStreamData *streamData;
 @property (nonatomic, strong) NSDate *startDate;
 @property (nonatomic, strong) NSDate *lastStallDate;
@@ -75,7 +76,7 @@
         [TVLManager startOpenGLESActivity];
     }
     if (self.playerManager == nil) {
-        self.playerManager = [[TVLManager alloc] initWithOwnPlayer:YES];
+        self.playerManager = [[TVLManager alloc] initWithType:(VeLivePlayerTypeOwn)];
     }
     if (self.playerManager == nil) {
         [VELUIToast showText:LocalizedStringFromBundle(@"medialive_licens_illegal", @"MediaLive") inView:self.playerContainer];
@@ -88,9 +89,7 @@
     config.enableSei = self.config.enableSEI;
     config.enableStatisticsCallback = YES;
     [self.playerManager setConfig:config];
-    [self.playerManager setPlayerViewRenderType:(TVLPlayerViewRenderTypeMetal)];
     [self.playerManager setObserver:self];
-    [self.playerManager setProjectKey:[NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleName"]];
     self.playerManager.playerView.frame = self.playerContainer.bounds;
     [self.playerContainer addSubview:self.playerManager.playerView];
     [self.playerManager.playerView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -166,6 +165,7 @@
         }
         
         streamData.mainStream = self.mainStreams;
+//        self.curResolution = streamData.defaultResolution;
         [self.playerManager setPlayStreamData:streamData];
         VELLogDebug(LOG_TAG, @"PlayConfig: %@", [self.config yy_modelToJSONString]);
     }
@@ -302,37 +302,8 @@
     if (self.config.urlConfig.enableABR && !self.isDisableAutoABR) {
         return self.abrResolution;
     }
-    
-    TVLMediaResolutionType resolution = self.playerManager.currentItem.preferences.resolutionType;
-    if ([resolution isEqualToString:TVLMediaResolutionTypeOrigin]) {
-        return VELPullResolutionTypeOrigin;
-    } else if ([resolution isEqualToString:TVLMediaResolutionTypeUHD]) {
-        return VELPullResolutionTypeUHD;
-    } else if ([resolution isEqualToString:TVLMediaResolutionTypeHD]) {
-        return VELPullResolutionTypeHD;
-    } else if ([resolution isEqualToString:TVLMediaResolutionTypeLD]) {
-        return VELPullResolutionTypeLD;
-    } else if ([resolution isEqualToString:TVLMediaResolutionTypeSD]) {
-        return VELPullResolutionTypeSD;
-    } else if ([resolution isEqualToString:TVLMediaResolutionTypeAuto]) {
-        return self.abrResolution;
-    }
+//    return self.curResolution;
     return VELPullResolutionTypeOrigin;
-}
-
-- (void)openHDR {
-    [self.playerManager setOptionValue:@(1) forIdentifier:@(TVLPlayerOptionEnableHDR10)];
-    [self.playerManager setOptionValue:@(1) forIdentifier:@(TVLPlayerOptionPreferSpdlForHDR)];
-}
-
-- (void)closeHDR {
-    [self.playerManager setOptionValue:@(0) forIdentifier:@(TVLPlayerOptionEnableHDR10)];
-    [self.playerManager setOptionValue:@(0) forIdentifier:@(TVLPlayerOptionPreferSpdlForHDR)];
-}
-
-- (BOOL)isSupportHDR {
-    TVLPlayerItemPreferences *preferences = self.playerManager.currentItem.preferences;
-    return [preferences.DRType isEqualToString:TVLMediaDRTypeHDR];
 }
 
 - (void)snapshot {
@@ -566,6 +537,9 @@
 
 - (void)onResolutionSwitch:(TVLManager *)player resolution:(VeLivePlayerResolution)resolution error:(VeLivePlayerError *)error reason:(VeLivePlayerResolutionSwitchReason)reason {
     vel_async_main_queue(^{
+//        if (!error) {
+//            self.curResolution = resolution;
+//        }
         [VELUIToast hideAllLoadingView];
         NSString *info = error.errorMsg?:@"";
         if (reason == VeLivePlayerResolutionSwitchByAuto) {

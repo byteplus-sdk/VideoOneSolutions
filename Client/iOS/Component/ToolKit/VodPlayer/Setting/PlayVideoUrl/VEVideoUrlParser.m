@@ -4,6 +4,7 @@
 //#import "VEPlayModel.h"
 #import "NSString+VE.h"
 #import "ToastComponent.h"
+#import "VEVideoModel.h"
 
 @implementation VEVideoUrlParser
 

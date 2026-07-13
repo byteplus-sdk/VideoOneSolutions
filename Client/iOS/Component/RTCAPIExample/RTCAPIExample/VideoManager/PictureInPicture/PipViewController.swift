@@ -12,28 +12,56 @@ import SnapKit
 import BytePlusRTC
 
 @objc(PipViewController)
-class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate, AVPictureInPictureControllerDelegate {
+class PipViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate, AVPictureInPictureControllerDelegate {
     
-    var rtcVideo: ByteRTCVideo?
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom: ByteRTCRoom?
-    var users : Array = Array<ByteRTCRemoteStreamKey>()
     var pipVC: AVPictureInPictureController?
+    var isManualPip: Bool = false
+    var userVideoStreamMap: Dictionary = Dictionary<String, ByteRTCStreamInfo>()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.createUI()
         self.buildRTCEngine()
-        self.setupPipController(with: self.customRenderView)
+        self.setupPipController(with: self.containerView)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleWillResignActive),
+                                               name: UIApplication.willResignActiveNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleDidBecomeActive),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
     }
     
     deinit {
-        self.rtcRoom?.leaveRoom()
+        NotificationCenter.default.removeObserver(self)
+        
+        self.rtcRoom?.leave()
         self.rtcRoom?.destroy()
         self.rtcRoom = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
+    }
+    
+    @objc func handleWillResignActive() {
+        // 应用即将进入非激活状态，如果不是用户手动开启的画中画，则销毁 pipVC 防止系统自动拉起
+        if !self.isManualPip {
+            self.pipVC?.delegate = nil
+            self.pipVC = nil
+        }
+    }
+    
+    @objc func handleDidBecomeActive() {
+        // 应用重新激活时重新初始化 pipVC，让用户可以再次手动开启画中画
+        if self.pipVC == nil {
+            self.setupPipController(with: self.containerView)
+        }
     }
     
     // MARK: Private method
@@ -72,22 +100,28 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
-                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         } else {
             self.joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom?.leaveRoom()
+            self.rtcRoom?.leave()
         }
     }
     
     @objc func startPip()  {
         if #available(iOS 16, *) {
-            if self.pipVC!.isPictureInPictureActive {
-                self.pipVC!.stopPictureInPicture()
-                pipButton.setTitle(LocalizedString("button_start_pip"), for: .normal)
+            guard let pipVC = self.pipVC else {
+                ToastComponents.shared.show(withMessage: LocalizedString("toast_pip_system_false"))
+                return
+            }
+            if pipVC.isPictureInPictureActive {
+                self.isManualPip = false
+                pipVC.stopPictureInPicture()
+                self.pipButton.setTitle(LocalizedString("button_start_pip"), for: .normal)
             } else {
-                self.pipVC!.startPictureInPicture()
-                pipButton.setTitle(LocalizedString("button_stop_pip"), for: .normal)
+                self.isManualPip = true
+                pipVC.startPictureInPicture()
+                self.pipButton.setTitle(LocalizedString("button_stop_pip"), for: .normal)
             }
         } else {
             ToastComponents.shared.show(withMessage: LocalizedString("toast_pip_system_false"))
@@ -96,8 +130,10 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("pip")
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -111,39 +147,45 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         canvas.view = self.localView.videoView
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     func updateRenderView() {
         // Get the first user of room1 and the first user of room2
-        var remoteUser:ByteRTCRemoteStreamKey?
+        var remoteStreamInfo:ByteRTCStreamInfo?
         
-        for streamKey in self.users {
-            if remoteUser == nil && streamKey.roomId == self.roomSettingItem.text {
-                remoteUser = streamKey
+        for (userId, info) in self.userVideoStreamMap {
+            if info.roomId == self.roomSettingItem.text {
+                remoteStreamInfo = info
             }
         }
         
-        if (remoteUser != nil) {
-            let roomId = remoteUser!.roomId!
-            let userId = remoteUser!.userId!
+        if (remoteStreamInfo != nil) {
+            let roomId = remoteStreamInfo!.roomId
+            let userId = remoteStreamInfo!.userId
             
-            self.bindRemoteRenderView(view: self.customRenderView, roomId: roomId, userId: userId)
+            self.bindRemoteRenderView(view: self.customRenderView,roomId: roomId,userId: userId)
             self.remoteUserIdLabel.text = "\(roomId):\(userId)"
-        } else {
+        }else {
             self.remoteUserIdLabel.text = ""
         }
     }
     
     func bindRemoteRenderView(view: CustomVideoRenderView, roomId: String, userId: String) {
-        let streamKey = ByteRTCRemoteStreamKey.init()
-        streamKey.userId = userId
-        streamKey.roomId = roomId;
-        streamKey.streamIndex = .indexMain
+        var streamInfo = self.userVideoStreamMap[userId]
+        if streamInfo == nil {
+            return
+        }
+        var streamId = streamInfo?.streamId
+        if streamId == nil {
+            return
+        }
         
-        // Use external rendering
-        // The picture-in-picture function relies on the external rendering function. Using internal rendering will cause a black screen.
-        self.rtcVideo?.setRemoteVideoSink(streamKey, withSink: self.customRenderView, withPixelFormat: .original)
+        var sinkConfig : ByteRTCRemoteVideoSinkConfig = ByteRTCRemoteVideoSinkConfig()
+        sinkConfig.requiredPixelFormat = .original
+        
+        self.rtcVideo?.setRemoteVideoSink(streamId!, withSink: self.customRenderView, withRemoteRenderConfig: sinkConfig)
     }
     
     func createUI() -> Void {
@@ -216,7 +258,7 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
             let source = AVPictureInPictureController.ContentSource(activeVideoCallSourceView: sourceView, contentViewController: callViewController)
             
             let pipVC = AVPictureInPictureController(contentSource: source)
-            pipVC.canStartPictureInPictureAutomaticallyFromInline = true
+            pipVC.canStartPictureInPictureAutomaticallyFromInline = false
             pipVC.delegate = self
             self.pipVC = pipVC
         } else {
@@ -280,18 +322,7 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
     }
     
     func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        var remoteUser:ByteRTCRemoteStreamKey?
-        for streamKey in self.users {
-            if remoteUser == nil && streamKey.roomId == self.roomSettingItem.text {
-                remoteUser = streamKey
-            }
-        }
-        
-        if ((remoteUser) != nil) {
-            ToastComponents.shared.show(withMessage: "pictureInPictureControllerDidStart")
-        } else {
-            ToastComponents.shared.show(withMessage: LocalizedString("toast_pip_no_user_fale"))
-        }
+        ToastComponents.shared.show(withMessage: "pictureInPictureControllerDidStart")
         
         // Picture-in-picture has started
         pipButton.setTitle(LocalizedString("button_stop_pip"), for: .normal)
@@ -317,6 +348,7 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
     }
     
     func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        self.isManualPip = false
         ToastComponents.shared.show(withMessage: "pictureInPictureControllerDidStop")
         
         // Picture-in-picture has stopped
@@ -330,51 +362,25 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
         }
     }
     
-    // MARK: ByteRTCVideoDelegate & ByteRTCRoomDelegate
+    // MARK: ByteRTCEngineDelegate & ByteRTCRoomDelegate
+    //进房状态
     func rtcRoom(_ rtcRoom: ByteRTCRoom, onRoomStateChanged roomId: String, withUid uid: String, state: Int, extraInfo: String) {
         ToastComponents.shared.show(withMessage: "onRoomStateChanged uid: \(uid) state:\(state)")
         
     }
     
     // Remote user publishing stream
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId)")
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStreamVideo streamId: String, info: ByteRTCStreamInfo, isPublish: Bool) {
+        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(info.userId), isPub: \(isPublish)")
         
-        if type == .video || type == .both {
-            
-            let streamKey = ByteRTCRemoteStreamKey.init()
-            streamKey.userId = userId
-            streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .indexMain
-            
-            self.users.append(streamKey)
+        if isPublish {
+            self.userVideoStreamMap.updateValue(info, forKey: info.userId)
             
             DispatchQueue.main.async {
                 self.updateRenderView()
             }
-        }
-    }
-    
-     // Remote user cancels publishing flow
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
-        
-        if type == .video || type == .both {
-            
-            // Remove from self.users
-            var itemsToRemove: [ByteRTCRemoteStreamKey] = []
-            
-            for streamKey in self.users {
-                if streamKey.userId == userId {
-                    itemsToRemove.append(streamKey)
-                }
-            }
-            
-            for item in itemsToRemove {
-                if let index = self.users.firstIndex(of: item) {
-                    self.users.remove(at: index)
-                }
-            }
+        } else {
+            self.userVideoStreamMap.removeValue(forKey: info.userId)
             
             DispatchQueue.main.async {
                 for videoView in self.containerView.subviews {
@@ -396,7 +402,7 @@ class PipViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDe
     
     
     // Remote users join the room
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo) {
         ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
         
     }

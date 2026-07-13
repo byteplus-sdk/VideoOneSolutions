@@ -14,9 +14,8 @@ import SnapKit
 import BytePlusRTC
 
 @objc(AudioMediaMixingViewController)
-class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate, ByteRTCMediaPlayerEventHandler {
-    
-    var rtcVideo: ByteRTCVideo?
+class AudioMediaMixingViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate, ByteRTCMediaPlayerEventHandler {
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom1: ByteRTCRoom?
     var mediaPlayerAudio: ByteRTCMediaPlayer?
     var mediaPlayerPCM: ByteRTCMediaPlayer?
@@ -45,11 +44,11 @@ class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, 
         self.timer?.cancel()
         self.timer = nil
         
-        self.rtcRoom1?.leaveRoom()
+        self.rtcRoom1?.leave()
         self.rtcRoom1?.destroy()
         self.rtcRoom1 = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -90,29 +89,31 @@ class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, 
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
-                self?.rtcRoom1?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom1?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         }
         else {
             self.joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom1?.leaveRoom()
+            self.rtcRoom1?.leave()
         }
         
     }
     
     func buildRTCEngine() {
-        // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("audio-media-mixing")
-        
-        // Enable local audio and video collection
+        // 创建引擎
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
+
+        // 开启本地音视频采集
         self.rtcVideo?.startVideoCapture()
         self.rtcVideo?.startAudioCapture()
         
         self.bindLocalRenderView()
     }
     
-    // Create a music remix player
+    // 创建音乐混音player
     func buildMediaPlayer() {
         self.mediaPlayerAudio = self.rtcVideo?.getMediaPlayer(audioPlayerId)
         self.mediaPlayerPCM = self.rtcVideo?.getMediaPlayer(pcmPlalerId)
@@ -305,7 +306,7 @@ class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, 
         canvas.renderMode = .hidden
         self.localView.userId = userTextField.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -754,20 +755,14 @@ class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, 
     func rtcRoom(_ rtcRoom: ByteRTCRoom, onRoomStateChanged roomId: String, withUid uid: String, state: Int, extraInfo: String) {
         ToastComponents.shared.show(withMessage: "onRoomStateChanged uid: \(uid) state:\(state)")
     }
-
     // Remote user publish stream.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId)")
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStreamVideo roomId: String, uid: String, isPublish: Bool) {
+        ToastComponents.shared.show(withMessage: "onUserPublishStreamVideo uid: \(uid), isPub: \(isPublish)")
     }
-
-     // Remote user cancel publishing stream.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
-    }
-
     // Remote user join the room.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo) {
         ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
+        
     }
 
     // Remote user leave the room.
@@ -801,4 +796,7 @@ class AudioMediaMixingViewController: BaseViewController, ByteRTCVideoDelegate, 
         }
     }
     
+    func onMediaPlayerEvent(_ playerId: Int32, event: ByteRTCPlayerEvent, message: String?) {
+        
+    }
 }

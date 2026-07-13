@@ -15,12 +15,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol BaseRTCManagerMixedStreamDelegate <NSObject>
+
+- (void)rtcEngine:(ByteRTCEngine *)engine onMixedStreamEvent:(ByteRTCMixedStreamTaskEvent)event withMixedStreamInfo:(ByteRTCMixedStreamTaskInfo *)info withErrorCode:(ByteRTCMixedStreamTaskErrorCode)errorCode;
+
+@end
+
 typedef void (^RTCRoomMessageBlock)(RTSNoticeModel *noticeModel);
 
-@interface BaseRTCManager : NSObject <ByteRTCVideoDelegate, ByteRTCRoomDelegate>
+@interface BaseRTCManager : NSObject <ByteRTCEngineDelegate, ByteRTCRoomDelegate>
 
 // Engine management
-@property (nonatomic, strong, nullable) ByteRTCVideo *rtcEngineKit;
+@property (nonatomic, strong, nullable) ByteRTCEngine *rtcEngineKit;
+@property (nonatomic, weak, nullable) id<BaseRTCManagerMixedStreamDelegate> mixedStreamDelegate;
 
 /**
  * @brief Open RTS connection

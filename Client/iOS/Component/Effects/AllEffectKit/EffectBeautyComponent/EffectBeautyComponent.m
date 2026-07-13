@@ -26,7 +26,7 @@ static CGFloat const kBeautyViewHeight = 200;
 - (instancetype)protocol:(BytedEffectProtocol *)protocol
           initWithEngine:(id)engine
                 useCache:(BOOL)useCache {
-    if ([engine isKindOfClass:ByteRTCVideo.class] && [engine respondsToSelector:@selector(getVideoEffectInterface)]) {
+    if ([engine isKindOfClass:ByteRTCEngine.class] && [engine respondsToSelector:@selector(getVideoEffectInterface)]) {
         self.effectType = EffectTypeRTC;
         self.videoEffect = [engine getVideoEffectInterface];
     } else if ([engine isKindOfClass:VeLivePusher.class] && [engine respondsToSelector:@selector(getVideoEffectManager)]) {

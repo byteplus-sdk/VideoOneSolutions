@@ -13,8 +13,8 @@ import SnapKit
 import BytePlusRTC
 
 @objc(CrossRoomPKViewController)
-class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
-    var rtcVideo: ByteRTCVideo?
+class CrossRoomPKViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate {
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom: ByteRTCRoom?
     
     override func viewDidLoad() {
@@ -26,11 +26,11 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
     
     
     deinit {
-        self.rtcRoom?.leaveRoom()
+        self.rtcRoom?.leave()
         self.rtcRoom?.destroy()
         self.rtcRoom = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -78,12 +78,12 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
-                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         }
         else {
             self.joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom?.leaveRoom()
+            self.rtcRoom?.leave()
         }
         
     }
@@ -140,10 +140,10 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("cross-room-pk")
-        
-        // Enable local audio and video collection
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         self.rtcVideo?.startVideoCapture()
         self.rtcVideo?.startAudioCapture()
         
@@ -157,7 +157,7 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
         canvas.renderMode = .hidden
         self.localView.userId = userTextField.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -370,19 +370,12 @@ class CrossRoomPKViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
     }
     
     // Remote user publishing stream
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId)")
-        
-    }
-    
-    // Remote user cancels publishing flow
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
-        
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStreamVideo streamId: String, info: ByteRTCStreamInfo, isPublish: Bool) {
+        ToastComponents.shared.show(withMessage: "onUserPublishStreamVideo uid: \(info.userId), isPub: \(isPublish)")
     }
     
     // Remote users join the room
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo) {
         ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
         
     }

@@ -12,9 +12,9 @@ import SnapKit
 import BytePlusRTC
 
 @objc(AudioSEIViewController)
-class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
+class AudioSEIViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate {
     
-    var rtcVideo: ByteRTCVideo?
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom: ByteRTCRoom?
     
     override func viewDidLoad() {
@@ -26,11 +26,11 @@ class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
     
     deinit {
         
-        self.rtcRoom?.leaveRoom()
+        self.rtcRoom?.leave()
         self.rtcRoom?.destroy()
         self.rtcRoom = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -71,18 +71,20 @@ class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
-                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         } else {
             self.joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom?.leaveRoom()
+            self.rtcRoom?.leave()
         }
     }
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("stream-sync-info")
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         
         // Enable local audio collection
         self.rtcVideo?.startAudioCapture()
@@ -93,8 +95,7 @@ class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
         let message = self.seiTextFieldView.text;
         
         if !message!.isEmpty, let data = message?.data(using: .utf8) {
-            let config = ByteRTCStreamSycnInfoConfig.init()
-            config.streamIndex = .indexMain
+            let config = ByteRTCStreamSyncInfoConfig.init()
             config.streamType = .audio
             config.repeatCount = 3
             self.rtcVideo?.sendStreamSyncInfo(data, config: config)
@@ -201,18 +202,7 @@ class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
     }
     
     // Remote user publishing stream
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId) type = \(type)")
-    }
-    
-    // Remote user cancels publishing flow
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
-        
-    }
-    
-    // Remote users join the room
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo) {
         ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
         
     }
@@ -224,10 +214,10 @@ class AudioSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCR
     }
     
     // Receive SEI information
-    func rtcEngine(_ engine: ByteRTCVideo, onStreamSyncInfoReceived remoteStreamKey: ByteRTCRemoteStreamKey, streamType: ByteRTCSyncInfoStreamType, data: Data) {
+    func rtcEngine(_ engine: ByteRTCEngine, onStreamSyncInfoReceived streamId: String, info: ByteRTCStreamInfo, streamType: ByteRTCSyncInfoStreamType, data: Data) {
         if let string = String(data: data, encoding: .utf8) {
-            ToastComponents.shared.show(withMessage: "onStreamSyncInfoReceived uid: \(remoteStreamKey.userId!) streamType = \(streamType.rawValue) data = \(string)")
-            self.receivedSEIItem.text = "uid = \(remoteStreamKey.userId ?? ""), data = \(string)"
+            ToastComponents.shared.show(withMessage: "onStreamSyncInfoReceived streamId: \(streamId), uid: \(info.userId), roomId: \(info.roomId), data: \(string)")
+            self.receivedSEIItem.text = "\(string)"
         }
     }
 }

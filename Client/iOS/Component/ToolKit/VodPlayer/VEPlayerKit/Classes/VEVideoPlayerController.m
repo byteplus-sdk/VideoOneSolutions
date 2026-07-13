@@ -65,16 +65,11 @@
 }
 
 - (void)configVideoEngine {
-    if (self.videoEngine != NULL) {
-        self.isReused = YES;
-        [self.videoEngine stop];
-        [self.videoEngine closeAysnc];
-        if (self.videoEngine.playerView.superview != NULL) {
-            [self.videoEngine.playerView removeFromSuperview];
-        }
+    if (_videoEngine == nil) {
+        TTVideoEngine *engine = [[TTVideoEngine alloc] initWithOwnPlayer:YES];
+        self.videoEngine = engine;
     }
-    TTVideoEngine *engine = [[TTVideoEngine alloc] initWithOwnPlayer:YES];
-    self.videoEngine = engine;
+
     /*
      We need to change audioSession category to playBack before using video Engine, or the video will be silent.
      */
@@ -93,11 +88,7 @@
     } else {
         self.videoEngine.looping = [VEDataPersistance boolValueFor:VEDataCacheKeyPlayLoop defaultValue:YES];
     }
-    if (self.abrOpen) {
-        // enable smooth switching
-        [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
-        self.videoEngine.abrDelegate = self;
-    }else {
+    if (!self.abrOpen) {
         [self.videoEngine configResolution:[VEVideoPlayerController getPlayerCurrentResolution]];
     }
     if (@available(iOS 14.0, *)) {
@@ -206,6 +197,14 @@
         TTVideoEngine *preRenderVideoEngine = [TTVideoEngine getPreRenderVideoEngineWithVideoSource:mediaSource];
         if (preRenderVideoEngine) {
             [self resetVideoEngine:preRenderVideoEngine mediaSource:mediaSource];
+            if (self.abrOpen) {
+                // enable smooth switching
+                [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
+                self.videoEngine.abrDelegate = self;
+                // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
+                // or you can set your TTVideoEngineVidSource's resolution to TTVideoEngineResolutionTypeABRAuto before calling setVideoEngineVideoSource, it also works.
+                [self.videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
+            }
             VOLogI(VOVodPlayer,@"use pre render video engine play");
             return;
         }
@@ -214,6 +213,14 @@
     [self configVideoEngine];
     [self.videoEngine setVideoEngineVideoSource:mediaSource];
     [self loadStrategyVideoModel];
+    if (self.abrOpen) {
+        // enable smooth switching
+        [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
+        self.videoEngine.abrDelegate = self;
+        // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
+        // or you can set your TTVideoEngineVidSource's resolution to TTVideoEngineResolutionTypeABRAuto before calling setVideoEngineVideoSource, it also works.
+        [self.videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
+    }
     [[BaseLoadingView sharedInstance] startLoadingIn:self.playerPanelContainerView];
 }
 
@@ -318,15 +325,31 @@
 
 #pragma mark - TTVideoEngineDelegate
 
+- (void)videoEngine:(TTVideoEngine *)videoEngine usingUrlInfos:(NSArray<TTVideoEngineURLInfo *> *)urlInfos {
+    TTVideoEngineURLInfo *info = urlInfos.firstObject;
+    NSString *url = NULL;
+    if ([self.mediaSource isKindOfClass:[TTVideoEngineVidSource class]]) {
+        TTVideoEngineVidSource *source = (TTVideoEngineVidSource *)self.mediaSource;
+        NSArray *arr = [info allURLForVideoID:source.vid transformedURL:NO];
+        if ([arr[0] isKindOfClass:[NSString class]]) {
+            url = arr[0];
+        }
+    } else if ([self.mediaSource isKindOfClass:[TTVideoEngineUrlSource class]]) {
+        TTVideoEngineUrlSource *source = (TTVideoEngineUrlSource *)self.mediaSource;
+        if ([source.urls[0] isKindOfClass:[NSString class]]) {
+            url = source.urls[0];
+        }
+    }
+    if (url.length > 0 && [self.delegate respondsToSelector:@selector(videoPlayer:resolvedPlayUrl:)]) {
+        [self.delegate videoPlayer:self resolvedPlayUrl:url];
+    }
+}
+
 - (void)videoEngine:(TTVideoEngine *)videoEngine retryForError:(NSError *)error {
     VOLogI(VOVodPlayer,@"retryForError %@", error);
 }
 
 - (void)videoEnginePrepared:(TTVideoEngine *)videoEngine {
-    if (self.abrOpen) {
-        // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
-        [videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
-    }
     if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayerPrepared:)]) {
         [self.delegate videoPlayerPrepared:self];
     }

@@ -18,9 +18,9 @@ import SnapKit
 import BytePlusRTC
 
 @objc(VolcBeautyViewController)
-class VolcBeautyViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate,BeautyBarViewDelegate {
+class VolcBeautyViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate,BeautyBarViewDelegate {
     
-    var rtcVideo: ByteRTCVideo?
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom: ByteRTCRoom?
     let roomId = "202311"
     let userId = "888888"
@@ -29,11 +29,11 @@ class VolcBeautyViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
     private var rtcVideoEffect: ByteRTCVideoEffect?
     
     deinit {
-        self.rtcRoom?.leaveRoom()
+        self.rtcRoom?.leave()
         self.rtcRoom?.destroy()
         self.rtcRoom = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -75,8 +75,10 @@ class VolcBeautyViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("byte-beauty")
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -132,7 +134,7 @@ class VolcBeautyViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
         canvas.renderMode = .fit
         self.localView.userId = userId
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     @objc func joinRoom()  {
@@ -150,7 +152,7 @@ class VolcBeautyViewController: BaseViewController, ByteRTCVideoDelegate, ByteRT
             roomCfg.isAutoSubscribeAudio = true
             roomCfg.isAutoSubscribeVideo = true
             
-            self?.rtcRoom?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+            self?.rtcRoom?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
         }
     }
     

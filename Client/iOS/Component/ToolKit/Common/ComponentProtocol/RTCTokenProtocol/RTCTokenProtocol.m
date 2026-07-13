@@ -4,23 +4,38 @@
 
 #import "RTCTokenProtocol.h"
 
+@protocol RTCTokenGenerator <NSObject>
+
++ (NSString *)rtcAppId;
+
++ (void)generateTokenWithRoomId:(NSString *_Nonnull)roomId
+                         userId:(NSString *_Nonnull)userId
+                     completion:(void (^_Nonnull)(NSString *_Nullable))completion;
+
+@end
+
 @implementation RTCTokenProtocol
 
-- (void)tokenWithAppID:(NSString *)appId
-                appKey:(NSString *)appKey
-                roomId:(NSString *)roomId
-                   uid:(NSString *)userId
-                 block:(nonnull void (^)(NSString * _Nonnull))block {
-    NSObject<RTCTokenDelegate> *delegate = [[NSClassFromString(@"TokenGenerator") alloc] init];
-
-    if ([delegate respondsToSelector:@selector(protocol:tokenWithAppID:appKey:roomId:uid:block:)]) {
-        [delegate protocol:self
-            tokenWithAppID:appId
-                    appKey:appKey
-                    roomId:roomId
-                       uid:userId
-                     block:block];
++ (NSString *)rtcAppId {
+    Class generatorClass = NSClassFromString(@"TokenGenerator");
+    if ([generatorClass respondsToSelector:@selector(rtcAppId)]) {
+        return [(Class<RTCTokenGenerator>)generatorClass rtcAppId];
     }
+    return @"";
+}
+
++ (void)generateTokenWithRoomId:(NSString *)roomId
+                         userId:(NSString *)userId
+                     completion:(void (^_Nonnull)(NSString * _Nullable token))completion {
+    Class generatorClass = NSClassFromString(@"TokenGenerator");
+    if ([generatorClass respondsToSelector:@selector(generateTokenWithRoomId:userId:completion:)]) {
+        [(Class<RTCTokenGenerator>)generatorClass generateTokenWithRoomId:roomId
+                                                                   userId:userId
+                                                               completion:completion];
+        return;
+    }
+
+    completion(@"");
 }
 
 @end

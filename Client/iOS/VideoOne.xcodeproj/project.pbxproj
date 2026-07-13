@@ -25,8 +25,8 @@
 		2B7C80BA2BE9DA6600B803FC /* TTSDK_UPLOAD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2B7C80B92BE9DA6600B803FC /* TTSDK_UPLOAD.bundle */; };
 		2B7C80BF2BE9DAD100B803FC /* TTSDK_UPLOAD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2B7C80B92BE9DA6600B803FC /* TTSDK_UPLOAD.bundle */; };
 		2B7C80C02BE9DADC00B803FC /* TTSDK_VOD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2B7C80B62BE9DA4D00B803FC /* TTSDK_VOD.bundle */; };
-		579BCE29837EBCFF26C2D0EB /* libPods-VideoOne.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECB38EC82C014CFE7B704009 /* libPods-VideoOne.a */; };
-		618A758396CC14381B82AA50 /* libPods-ScreenShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD476FEFCD897DE19EA29EA1 /* libPods-ScreenShareExtension.a */; };
+		5C63CE6ACDEC14EC820ECBEF /* libPods-VideoOne.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F27CABEC2F6B17DC2ACB426 /* libPods-VideoOne.a */; };
+		AF51F7E746333B52DF739D1B /* libPods-ScreenShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A17B7D96C426BE88D481B2B2 /* libPods-ScreenShareExtension.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +40,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		2B24AC512FAD94D6007A8EDB /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2B24AC502FAD94D6007A8EDB /* ReplayKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2B8850012BA43CE400D43696 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -86,11 +97,11 @@
 		2B88500A2BA43DE200D43696 /* VideoOneRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VideoOneRelease.entitlements; sourceTree = "<group>"; };
 		2B88500B2BA43DEE00D43696 /* VideoOneInHouse.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VideoOneInHouse.entitlements; sourceTree = "<group>"; };
 		2B88500C2BA4403A00D43696 /* ScreenShare-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "ScreenShare-Debug.xcconfig"; sourceTree = "<group>"; };
+		3F27CABEC2F6B17DC2ACB426 /* libPods-VideoOne.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VideoOne.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7DD53AD33F91B07876725FB6 /* Pods-ScreenShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScreenShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ScreenShareExtension/Pods-ScreenShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		A17B7D96C426BE88D481B2B2 /* libPods-ScreenShareExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ScreenShareExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B760A432774BEA19A6D54419 /* Pods-VideoOne.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoOne.release.xcconfig"; path = "Target Support Files/Pods-VideoOne/Pods-VideoOne.release.xcconfig"; sourceTree = "<group>"; };
-		DD476FEFCD897DE19EA29EA1 /* libPods-ScreenShareExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ScreenShareExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E86E9FA342DE35274CA20689 /* Pods-ScreenShareExtension.inhouse.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScreenShareExtension.inhouse.xcconfig"; path = "Target Support Files/Pods-ScreenShareExtension/Pods-ScreenShareExtension.inhouse.xcconfig"; sourceTree = "<group>"; };
-		ECB38EC82C014CFE7B704009 /* libPods-VideoOne.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VideoOne.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD663BED8436A10AAC7E6FFF /* Pods-ScreenShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScreenShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ScreenShareExtension/Pods-ScreenShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -100,7 +111,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B07C1642BA45257000D16AF /* ReplayKit.framework in Frameworks */,
-				618A758396CC14381B82AA50 /* libPods-ScreenShareExtension.a in Frameworks */,
+				AF51F7E746333B52DF739D1B /* libPods-ScreenShareExtension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,7 +119,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				579BCE29837EBCFF26C2D0EB /* libPods-VideoOne.a in Frameworks */,
+				5C63CE6ACDEC14EC820ECBEF /* libPods-VideoOne.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -196,10 +207,10 @@
 		CCDAC9626A8C3A68697F77D4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				ECB38EC82C014CFE7B704009 /* libPods-VideoOne.a */,
 				2B884FF52BA43CE400D43696 /* ReplayKit.framework */,
 				2B884FF72BA43CE400D43696 /* UIKit.framework */,
-				DD476FEFCD897DE19EA29EA1 /* libPods-ScreenShareExtension.a */,
+				A17B7D96C426BE88D481B2B2 /* libPods-ScreenShareExtension.a */,
+				3F27CABEC2F6B17DC2ACB426 /* libPods-VideoOne.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -324,12 +335,8 @@
 			);
 			inputFileListPaths = (
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -365,12 +372,8 @@
 			);
 			inputFileListPaths = (
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -384,12 +387,8 @@
 			);
 			inputFileListPaths = (
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -477,10 +476,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = ScreenShareExtension/ScreenShareExtensionDebug.entitlements;
-				CODE_SIGN_IDENTITY = "${inherited}";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5.4.0;
-				DEVELOPMENT_TEAM = "${inherited}";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5.5.0;
+				DEVELOPMENT_TEAM = L5HCL383AF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -494,10 +493,10 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 5.4.0;
+				MARKETING_VERSION = 5.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios.screen;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "${inherited}";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -514,9 +513,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = ScreenShareExtension/ScreenShareExtensionRelease.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5.4.0;
+				CURRENT_PROJECT_VERSION = 5.5.0;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L5HCL383AF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -525,14 +525,14 @@
 				INFOPLIST_FILE = ScreenShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScreenShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 5.4.0;
+				MARKETING_VERSION = 5.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios.screen;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -556,27 +556,27 @@
 				CODE_SIGN_IDENTITY = "${inherited}";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5.4.0;
+				CURRENT_PROJECT_VERSION = 5.5.0;
 				DEVELOPMENT_TEAM = "${inherited}";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 3XMD9D6A65;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L5HCL383AF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ScreenShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScreenShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 5.4.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.bytedance.vcloud.bplive.demo.replaykit;
+				MARKETING_VERSION = 5.5.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios.screen;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "${inherited}";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "VeLiveDemo-BytePlus-SCExt-AdHoc";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "VideoOne-Screen-AdHoc";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -633,7 +633,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -652,22 +652,22 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5.4.0;
+				CURRENT_PROJECT_VERSION = 5.5.0;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 3XMD9D6A65;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L5HCL383AF;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VideoOne/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.4.0;
+				MARKETING_VERSION = 5.5.0;
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.bytedance.vcloud.bplive.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "VeLiveDemo-BytePlus-AdHoc";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "VideoOne-App-AdHoc";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -730,7 +730,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -783,7 +783,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -799,24 +799,22 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VideoOne/VideoOneDebug.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5.4.0;
-				DEVELOPMENT_TEAM = "$(inherited)";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "${inherited}";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5.5.0;
+				DEVELOPMENT_TEAM = L5HCL383AF;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VideoOne/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.4.0;
+				MARKETING_VERSION = 5.5.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(inherited)";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "${inherited}";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -837,19 +835,20 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VideoOne/VideoOneRelease.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5.4.0;
+				CURRENT_PROJECT_VERSION = 5.5.0;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L5HCL383AF;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VideoOne/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.4.0;
+				MARKETING_VERSION = 5.5.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.byteplus.videoone.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";

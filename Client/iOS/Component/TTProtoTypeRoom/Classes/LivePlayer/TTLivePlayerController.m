@@ -1,7 +1,6 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 #import "TTLivePlayerController.h"
-#import "TVLManager.h"
 #import <TTSDKFramework/TTSDKFramework.h>
 #import <ToolKit/Localizator.h>
 #import <ToolKit/ToolKit.h>
@@ -52,7 +51,7 @@
 }
 
 - (void)setupPlayer {
-    _playerManager = [[TVLManager alloc] initWithOwnPlayer:YES];
+    _playerManager = [[TVLManager alloc] initWithType:(VeLivePlayerTypeOwn)];
     if (!_playerManager) {
         [[ToastComponent shareToastComponent] showWithMessage:LocalizedStringFromBundle(@"tt_live_license_invalid", @"TTProto")];
     }
@@ -60,10 +59,7 @@
     VeLivePlayerConfiguration *config = [[VeLivePlayerConfiguration alloc] init];
     config.enableStatisticsCallback = YES;
     [self.playerManager setConfig:config];
-    
-    [self.playerManager setPlayerViewRenderType:(TVLPlayerViewRenderTypeMetal)];
     [self.playerManager setObserver:self];
-    [self.playerManager setProjectKey:[NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleName"]];
     self.playerManager.playerView.frame = UIScreen.mainScreen.bounds;
     [self.playerContainer addSubview:self.playerManager.playerView];
     [self.playerManager.playerView mas_makeConstraints:^(MASConstraintMaker *make) {

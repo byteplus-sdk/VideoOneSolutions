@@ -79,20 +79,19 @@
 - (void)updatePlayScaleMode:(PullScalingMode)scalingMode {
     switch (scalingMode) {
         case PullScalingModeNone:
-            self.player.playerViewScaleMode = TVLViewScalingModeNone;
+            [self.player setRenderFillMode:VeLivePlayerFillModeAspectFill];
             break;
         case PullScalingModeAspectFit:
-            self.player.playerViewScaleMode = TVLViewScalingModeAspectFit;
+            [self.player setRenderFillMode:VeLivePlayerFillModeAspectFit];
             break;
         case PullScalingModeAspectFill:
-            self.player.playerViewScaleMode = TVLViewScalingModeAspectFill;
+            [self.player setRenderFillMode:VeLivePlayerFillModeAspectFill];
             break;
         case PullScalingModeFill:
-            self.player.playerViewScaleMode = TVLViewScalingModeFill;
+            [self.player setRenderFillMode:VeLivePlayerFillModeFullFill];
             break;
-
         default:
-            self.player.playerViewScaleMode = TVLViewScalingModeNone;
+            [self.player setRenderFillMode:VeLivePlayerFillModeAspectFill];
             break;
     }
 }
@@ -116,7 +115,7 @@
 }
 
 - (void)destroy {
-    [self.player close];
+    [self.player destroy];
     self.player = nil;
 }
 
@@ -455,18 +454,13 @@
 #pragma mark - Getter
 - (TVLManager *)player {
     if (!_player) {
-        _player = [[TVLManager alloc] initWithOwnPlayer:YES];
-        [_player setPlayerViewRenderType:(TVLPlayerViewRenderTypeMetal)];
-        [_player setProjectKey:@"VideoOne"];
+        _player = [[TVLManager alloc] initWithType:(VeLivePlayerTypeOwn)];
         _player.observer = self;
         VeLivePlayerConfiguration *config = [[VeLivePlayerConfiguration alloc] init];
         config.enableSei = YES;
         config.enableHardwareDecode = YES;
         config.enableStatisticsCallback = YES;
         [_player setConfig:config];
-        [TVLManager setLogCallback:^(TVLLogLevel level, NSString *tag, NSString *log) {
-            VOLogI(VOToolKit,@"LiveTTSDK setLogCallback %luu|%@", (unsigned long)(unsigned long)level, log);
-        }];
     }
     return _player;
 }

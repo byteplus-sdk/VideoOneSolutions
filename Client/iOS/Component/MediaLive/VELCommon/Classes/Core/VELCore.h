@@ -34,42 +34,37 @@
 #ifndef VEL_PULL_MODULE_NEW_API_ENABLE
 #define VEL_PULL_MODULE_NEW_API_ENABLE 1
 #if __has_include("VeLivePlayerStream.h")
-#   import "TTVideoLive.h"
+//#   import "TTVideoLive.h"
 #   import "VeLivePlayerStream.h"
 #   import "VeLivePlayerStreamData.h"
 #   import "VeLivePlayerData.h"
 #   import "VeLivePlayer.h"
 #   import "VeLivePlayerError.h"
 #elif __has_include(<TTSDK/VeLivePlayerStream.h>)
-#   import <TTSDK/TTVideoLive.h>
 #   import <TTSDK/VeLivePlayerStream.h>
 #   import <TTSDK/VeLivePlayerStreamData.h>
 #   import <TTSDK/VeLivePlayerData.h>
 #   import <TTSDK/VeLivePlayer.h>
 #   import <TTSDK/VeLivePlayerError.h>
 #elif __has_include(<TTSDKFramework/VeLivePlayerStream.h>)
-#   import <TTSDKFramework/TTVideoLive.h>
 #   import <TTSDKFramework/VeLivePlayerStream.h>
 #   import <TTSDKFramework/VeLivePlayerStreamData.h>
 #   import <TTSDKFramework/VeLivePlayerData.h>
 #   import <TTSDKFramework/VeLivePlayer.h>
 #   import <TTSDKFramework/VeLivePlayerError.h>
 #elif __has_include(<TTSDKPullFramework/VeLivePlayerStream.h>)
-#   import <TTSDKPullFramework/TTVideoLive.h>
 #   import <TTSDKPullFramework/VeLivePlayerStream.h>
 #   import <TTSDKPullFramework/VeLivePlayerStreamData.h>
 #   import <TTSDKPullFramework/VeLivePlayerData.h>
 #   import <TTSDKPullFramework/VeLivePlayer.h>
 #   import <TTSDKPullFramework/VeLivePlayerError.h>
 #elif __has_include(<TTSDKRTMPullFramework/VeLivePlayerStream.h>)
-#   import <TTSDKRTMPullFramework/TTVideoLive.h>
 #   import <TTSDKRTMPullFramework/VeLivePlayerStream.h>
 #   import <TTSDKRTMPullFramework/VeLivePlayerStreamData.h>
 #   import <TTSDKRTMPullFramework/VeLivePlayerData.h>
 #   import <TTSDKRTMPullFramework/VeLivePlayer.h>
 #   import <TTSDKRTMPullFramework/VeLivePlayerError.h>
 #elif __has_include(<TTSDKBasePullFramework/VeLivePlayerStream.h>)
-#   import <TTSDKBasePullFramework/TTVideoLive.h>
 #   import <TTSDKBasePullFramework/VeLivePlayerStream.h>
 #   import <TTSDKBasePullFramework/VeLivePlayerStreamData.h>
 #   import <TTSDKBasePullFramework/VeLivePlayerData.h>

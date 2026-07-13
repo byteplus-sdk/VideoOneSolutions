@@ -223,7 +223,7 @@ public class APIViewController: UIViewController {
     lazy var versionLabel: UILabel = {
         let versionLabel = UILabel()
         let experiencingTitle = LocalizedString("sdk_version_%@")
-        versionLabel.text = String(format: experiencingTitle, ByteRTCVideo.getSDKVersion())
+        versionLabel.text = String(format: experiencingTitle, ByteRTCEngine.getSDKVersion())
         versionLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         versionLabel.textColor = UIColor(red: 66/255, green: 70/255, blue: 78/255, alpha: 1.0)
         versionLabel.sizeToFit()

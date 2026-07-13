@@ -58,6 +58,7 @@
 "function_title_playlist"="Playlist";
 "function_title_smart_subtitles"="Smart subtitling";
 "function_title_prevent_recoding"="Prevent recording and screenshot";
+"function_title_airplay"="AirPlay";
 "full_screen_video_left_guide_title"="Brightness adjustment";
 "full_screen_video_left_guide_des"="Slide up and down on the left side";
 "full_screen_video_right_guide_title"="Volume adjustment";
@@ -71,3 +72,7 @@
 "off_button_text"="Off";
 "prevent_recording_toast"="The feature to prevent system screen recording and screenshotting has been enabled.";
 "failed_to_obtain_subtitles_toast"="Failed to obtain subtitles, please reopen the video and try again.";
+"switch_or_stop_airplay" = "switch devices / stop airplay";
+"is_airplaying" = "video is airplaying";
+"to" = "to";
+"airplay_fail" = "airplay failed, please retry.";

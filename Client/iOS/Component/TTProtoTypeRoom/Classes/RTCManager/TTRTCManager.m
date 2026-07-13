@@ -42,7 +42,7 @@
                  userID:(NSString *)userID {
     if (self.businessRoom) {
         if (![[self.businessRoom getRoomId] isEqualToString:roomID]) {
-            [self leaveRoom];
+            [self leave];
         } else {
             return;
         }
@@ -59,10 +59,11 @@
     config.isAutoSubscribeVideo = NO;
     [self.businessRoom joinRoom:token
                        userInfo:userInfo
+                 userVisibility:true
                      roomConfig:config];
 }
 
-- (void)leaveRoom {
+- (void)leave {
     NSString *curRoomId = [self.businessRoom getRoomId];
     [NetworkingManager liveSwitchFeedRoom:curRoomId newRoomId:@"" userId:[LocalUserComponent userModel].uid success:^(NSInteger audienceCount) {
         VOLogI(VOTTProto, @"leaveLiveRoom, audienceCount: %ld", audienceCount);

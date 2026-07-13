@@ -4,6 +4,7 @@
 #import <ToolKit/Localizator.h>
 #import "MediaLiveCamera.h"
 #import "VELPushInnerNewViewController.h"
+#import "RTCJoinRTS.h"
 
 @implementation MediaLiveCamera
 
@@ -20,11 +21,9 @@
 - (void)enterWithCallback:(void (^)(BOOL))block {
     [super enterWithCallback:block];
     VELPushInnerNewViewController *vc = [[VELPushInnerNewViewController alloc] initWithCaptureType:VELSettingCaptureTypeInner];
-    UIViewController *topVC = [DeviceInforTool topViewController];
-    [topVC.navigationController pushViewController:vc animated:YES];
-    if (block) {
-        block(YES);
-    }
+//    UIViewController *topVC = [DeviceInforTool topViewController];
+//    [topVC.navigationController pushViewController:vc animated:YES];
+    [RTCJoinRTS joinRTS:vc block:block];
 }
 
 @end

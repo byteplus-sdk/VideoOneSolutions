@@ -12,9 +12,9 @@ import UIKit
 import BytePlusRTC
 
 @objc(AudioEffectMixingViewController)
-class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate,ByteRTCAudioEffectPlayerEventHandler {
+class AudioEffectMixingViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate,ByteRTCAudioEffectPlayerEventHandler {
     
-    var rtcVideo: ByteRTCVideo?
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom1: ByteRTCRoom?
     var effectPlayer: ByteRTCAudioEffectPlayer?
     var effectId1: Int32!
@@ -35,15 +35,16 @@ class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate,
     }
     
     deinit {
-        self.rtcRoom1?.leaveRoom()
+        self.rtcRoom1?.leave()
         self.rtcRoom1?.destroy()
         self.rtcRoom1 = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
     // MARK: Private method
+    // 加入房间
     @objc func joinRoom()  {
         let roomId = self.roomTextField.text ?? ""
         let userId = self.userTextField.text ?? ""
@@ -79,12 +80,12 @@ class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate,
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
-                self?.rtcRoom1?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom1?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         }
         else {
             self.joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom1?.leaveRoom()
+            self.rtcRoom1?.leave()
         }
     }
     
@@ -194,11 +195,12 @@ class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate,
     @objc func scrollViewAction()  {
         self.view.endEditing(true)
     }
-    
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("audio-effect-mixing")
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         
         // Start local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -225,7 +227,7 @@ class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate,
          canvas.renderMode = .hidden
         self.localView.userId = userTextField.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     func createUI() -> Void {
@@ -721,6 +723,23 @@ class AudioEffectMixingViewController: BaseViewController, ByteRTCVideoDelegate,
     // Room entry status
     func rtcRoom(_ rtcRoom: ByteRTCRoom, onRoomStateChanged roomId: String, withUid uid: String, state: Int, extraInfo: String) {
         ToastComponents.shared.show(withMessage: "onRoomStateChanged uid: \(uid) state:\(state)")
+        
+    }
+    
+    // 远端用户发布流
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStreamVideo streamId: String, info: ByteRTCStreamInfo, isPublish: Bool) {
+        ToastComponents.shared.show(withMessage: "onUserPublishStreamVideo uid: \(info.userId), isPub: \(isPublish)")
+    }
+    
+    // 远端用户加入房间
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo) {
+        ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
+        
+    }
+    
+    // 远端用户离开房间
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserLeave uid: String, reason: ByteRTCUserOfflineReason) {
+        ToastComponents.shared.show(withMessage: "onUserLeave uid: \(uid)")
         
     }
     

@@ -4,6 +4,7 @@
 #import <ToolKit/Localizator.h>
 #import "MediaLiveFile.h"
 #import "VELPushFileNewViewController.h"
+#import "RTCJoinRTS.h"
 
 @implementation MediaLiveFile
 
@@ -20,11 +21,9 @@
 - (void)enterWithCallback:(void (^)(BOOL))block {
     [super enterWithCallback:block];
     VELPushFileNewViewController *vc = [[VELPushFileNewViewController alloc] initWithCaptureType:VELSettingCaptureTypeFile];
-    UIViewController *topVC = [DeviceInforTool topViewController];
-    [topVC.navigationController pushViewController:vc animated:YES];
-    if (block) {
-        block(YES);
-    }
+//    UIViewController *topVC = [DeviceInforTool topViewController];
+//    [topVC.navigationController pushViewController:vc animated:YES];
+    [RTCJoinRTS joinRTS:vc block:block];
 }
 
 @end

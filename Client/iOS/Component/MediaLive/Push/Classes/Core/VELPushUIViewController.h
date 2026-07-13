@@ -60,9 +60,7 @@ typedef NS_ENUM(NSInteger, VELStreamStatus) {
 - (void)switchCamera;
 - (void)muteAudio;
 - (void)unMuteAudio;
-- (void)setStreamMirror:(BOOL)mirror;
-- (void)setPreviewMirror:(BOOL)mirror;
-- (void)setCaptureMirror:(BOOL)mirror;
+- (void)setMirrorType: (VELSettingsMirrorType)mirrorType isOn:(BOOL)enable;
 - (BOOL)isSupportTorch;
 - (void)torch:(BOOL)isOn;
 - (void)rotatedTo:(UIInterfaceOrientation)orientation;

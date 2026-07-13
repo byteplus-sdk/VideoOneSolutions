@@ -4,8 +4,6 @@
 //
 
 #import "LiveInteractivePushStreaming.h"
-#import "LiveNormalPushStreaming.h"
-#import "LiveNormalStreamConfig.h"
 #import "LivePushStreamParams.h"
 #import "LiveRTCManager.h"
 #import <Foundation/Foundation.h>
@@ -22,14 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface LiveRtcLinkSession : NSObject
 
-@property (nonatomic, strong) LiveNormalStreamConfig *streamConfig;
+@property (nonatomic, copy) NSString *rtmpUrl;
 @property (nonatomic, weak) id<LiveInteractiveDelegate> interactiveDelegate;
 
 @property (nonatomic, strong, readonly) NSArray<LiveUserModel *> *userList;
 
 @property (nonatomic, weak) id<LiveRtcLinkSessionNetworkChangeDelegate> netwrokDelegate;
 
-@property (nonatomic, strong, readonly) id<LiveNormalPushStreaming> normalPushStreaming;
+//@property (nonatomic, strong, readonly) id<LiveNormalPushStreaming> normalPushStreaming;
 
 - (instancetype)initWithRoom:(LiveRoomInfoModel *)roomModel;
 
@@ -75,8 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief switch interactive mode
  * @param play mode like: single anchor, pk, guests(two or more).
  */
-
-- (void)switchPlayMode:(LiveInteractivePlayMode)playMode;
 
 /**
  * @brief Enable span the room retweet stream

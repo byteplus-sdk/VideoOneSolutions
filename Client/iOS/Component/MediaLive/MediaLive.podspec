@@ -10,9 +10,7 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'Apache License 2.0', :file => 'LICENSE' }
   s.author       = { 'author' => 'byteplus' }
   s.source       = { :path => './'}
-  s.resource_bundle = {
-    'MediaLive' => ['Resources/*.{xcassets,bundle}']
-  }
+
   s.module_name = 'MediaLive'
   s.ios.deployment_target = '11.0'
 
@@ -46,6 +44,9 @@ Pod::Spec.new do |s|
     subspec.frameworks = 'UIKit'
     subspec.dependency 'MediaLive/VELCommon'
     subspec.dependency 'YYModel'
+    subspec.resource_bundle = {
+      'MediaLive' => ['Resources/*.{xcassets,bundle}']
+    }
   end
 
   s.subspec 'Push' do |subspec|
@@ -54,6 +55,7 @@ Pod::Spec.new do |s|
     subspec.public_header_files = 'Push/Classes/**/*.h'
     subspec.dependency 'MediaLive/VELCommon'
     subspec.dependency 'ToolKit'
+    subspec.dependency 'RTCTokenOnlineKit'
     subspec.frameworks = [
       'VideoToolBox',
     ]

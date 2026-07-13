@@ -11,9 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 ///  @[@(0)), @(1)), @(2)), @(3)), @(4))]
 @property (nonatomic, strong, readonly) NSArray <NSNumber *> *supportResolutions;
 @property (nonatomic, assign, readonly) NSInteger defaultResolution;
-
-/// hdr
-@property (nonatomic, strong) VELSettingsButtonViewModel *hdrViewModel;
 @property (nonatomic, strong) VELSettingsButtonViewModel *backgroundPlayViewModel;
 @property (nonatomic, weak) id <VELPullBasicSettingDelegate> delegate;
 - (void)setShouldPlayInBackground:(BOOL)playInBackground;

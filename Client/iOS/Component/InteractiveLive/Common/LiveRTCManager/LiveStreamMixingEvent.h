@@ -8,9 +8,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface LiveStreamMixingEvent : NSObject
-@property (nonatomic, assign) ByteRTCStreamMixingEvent event;
+@property (nonatomic, assign) ByteRTCMixedStreamTaskEvent event;
 @property (nonatomic, strong) NSString *taskId;
-@property (nonatomic, assign) ByteRTCStreamMixingErrorCode code;
+@property (nonatomic, assign) ByteRTCMixedStreamTaskErrorCode code;
 @property (nonatomic, assign) ByteRTCMixedStreamType mixType;
 @end
 

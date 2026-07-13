@@ -187,6 +187,7 @@
     dispatch_once(&onceToken, ^{
         _scenes = @[
             @{@"className": @"AIChat"},
+            @{@"className": @"LiveSportStreamingEntrance"},
             @{@"className": @"MiniDrama"},
             @{@"className": @"MiniDramaWithInStreamAds"},
             @{@"className": @"TTProtoTypeRoom"},

@@ -5,11 +5,11 @@ import SnapKit
 import BytePlusRTC
 
 @objc(ScreenShareViewController)
-class ScreenShareViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
+class ScreenShareViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate {
     
-    var rtcVideo: ByteRTCVideo?
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom: ByteRTCRoom?
-    var users : Array = Array<ByteRTCRemoteStreamKey>()
+    var userVideoStreamMap: Dictionary = Dictionary<String, ByteRTCStreamInfo>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,12 +19,11 @@ class ScreenShareViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
     }
     
     deinit {
-        
-        self.rtcRoom?.leaveRoom()
+        self.rtcRoom?.leave()
         self.rtcRoom?.destroy()
         self.rtcRoom = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -65,12 +64,12 @@ class ScreenShareViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
 
-                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         }
         else {
             joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom?.leaveRoom()
+            self.rtcRoom?.leave()
         }
     }
     
@@ -89,9 +88,11 @@ class ScreenShareViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
     
     func buildRTCEngine() {
         // Create engine.
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        
-        // Start local video and audio capture.
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
+
         self.rtcVideo?.startVideoCapture()
         self.rtcVideo?.startAudioCapture()
         
@@ -108,32 +109,40 @@ class ScreenShareViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     func updateRenderView() {
-        var remoteUser:ByteRTCRemoteStreamKey?
-        
-        for streamKey in self.users {
-            if remoteUser == nil && streamKey.roomId ==  self.roomSettingItem.text {
-                remoteUser = streamKey
+        var remoteStreamInfo:ByteRTCStreamInfo?
+                
+        for (userId, info) in self.userVideoStreamMap {
+            if info.roomId == self.roomSettingItem.text {
+                remoteStreamInfo = info
             }
         }
         
-        if (remoteUser != nil) {
-            self.bindRemoteRenderView(streamKey: remoteUser!)
+        if (remoteStreamInfo != nil) {
+            self.bindRemoteRenderView(view: self.firstRemoteView, roomId:remoteStreamInfo!.roomId, userId:remoteStreamInfo!.userId)
         }
     }
     
-    func bindRemoteRenderView(streamKey: ByteRTCRemoteStreamKey) {
-        
-        let canvas = ByteRTCVideoCanvas.init()
-        canvas.view = self.firstRemoteView.videoView
-        canvas.renderMode = .hidden
-        self.firstRemoteView.userId = streamKey.userId ?? ""
-        
-        self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
-    }
+    func bindRemoteRenderView(view: UserVideoView, roomId: String, userId: String) {
+           var streamInfo = self.userVideoStreamMap[userId]
+           if streamInfo == nil {
+               return
+           }
+           var streamId = streamInfo?.streamId
+           if streamId == nil {
+               return
+           }
+           
+           let canvas = ByteRTCVideoCanvas.init()
+           canvas.view = view.videoView
+           canvas.renderMode = .hidden
+           view.userId = userId
+           
+           self.rtcVideo?.setRemoteVideoCanvas(streamId!, withCanvas: canvas)
+       }
     
     func createUI() -> Void {
         view.addSubview(containerView)
@@ -238,149 +247,56 @@ class ScreenShareViewController: BaseViewController, ByteRTCVideoDelegate, ByteR
         ToastComponents.shared.show(withMessage: "onRoomStateChanged uid: \(uid) state:\(state)")
         
     }
-
-    // Remote user puhlishing stream.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId)")
-        
-        if type == .video || type == .both {
-            
-            let streamKey = ByteRTCRemoteStreamKey.init()
-            streamKey.userId = userId;
-            streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .indexMain
-            
-            self.users.append(streamKey)
-            
+    
+    func rtcRoom(_ rtcRoom:ByteRTCRoom, onUserPublishStreamVideo streamId:String,info:ByteRTCStreamInfo,isPublish:Bool){
+        if isPublish {
+            self.userVideoStreamMap.updateValue(info, forKey: info.userId)
+                        
             DispatchQueue.main.async {
                 self.updateRenderView()
             }
-        }
-    }
+        } else {
+            self.userVideoStreamMap.removeValue(forKey: info.userId)
 
-     // Remote user cancel publish stream.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
-        
-        if type == .video || type == .both {
-            var itemsToRemove: [ByteRTCRemoteStreamKey] = []
-            
-            for streamKey in self.users {
-                if streamKey.userId == userId && streamKey.streamIndex == .indexMain{
-                    itemsToRemove.append(streamKey)
-                }
-            }
-            
-            for item in itemsToRemove {
-                if let index = self.users.firstIndex(of: item) {
-                    self.users.remove(at: index)
-                }
-            }
-            
             DispatchQueue.main.async {
                 for videoView in self.containerView.subviews {
                     if let view = videoView as? UserVideoView {
                         let userId = view.userId
-                        
                         if userId == userId {
                             view.userId = ""
                         }
                     }
                 }
             }
-            
-            DispatchQueue.main.async {
-                self.updateRenderView()
-            }
         }
+        
     }
 
-    // Remote user publishes screen stream.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishScreen userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishScreen uid: \(userId)")
-        
-        if type == .video || type == .both {
-            
-            let streamKey = ByteRTCRemoteStreamKey.init()
-            streamKey.userId = userId;
-            streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .indexScreen
-            
-            self.users.append(streamKey)
-            
-            DispatchQueue.main.async {
-                self.updateRenderView()
-            }
-        }
-    }
-
-    // Remote user stops publishing screen stream.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishScreen userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishScreen uid: \(userId)")
-        
-        if type == .video || type == .both {
-            var itemsToRemove: [ByteRTCRemoteStreamKey] = []
-            
-            for streamKey in self.users {
-                if streamKey.userId == userId && streamKey.streamIndex == .indexScreen{
-                    itemsToRemove.append(streamKey)
-                }
-            }
-            
-            for item in itemsToRemove {
-                if let index = self.users.firstIndex(of: item) {
-                    self.users.remove(at: index)
-                }
-            }
-            
-            DispatchQueue.main.async {
-                for videoView in self.containerView.subviews {
-                    if let view = videoView as? UserVideoView {
-                        let userId = view.userId
-                        
-                        if userId == userId {
-                            view.userId = ""
-                        }
-                    }
-                }
-            }
-            
-            DispatchQueue.main.async {
-                self.updateRenderView()
-            }
-        }
-    }
 
     // Screen sharing status.
-    func rtcEngine(_ engine: ByteRTCVideo, onVideoDeviceStateChanged deviceID: String, device_type deviceType: ByteRTCVideoDeviceType, device_state deviceState: ByteRTCMediaDeviceState, device_error deviceError: ByteRTCMediaDeviceError) {
+    func rtcEngine(_ engine: ByteRTCEngine, onVideoDeviceStateChanged deviceID: String, device_type deviceType: ByteRTCVideoDeviceType, device_state deviceState: ByteRTCMediaDeviceState, device_error deviceError: ByteRTCMediaDeviceError) {
         
         if deviceType == .screenCaptureDevice {
             if deviceState == .stateStarted {
                 // Screen sharing started.
-                self.rtcRoom?.publishScreenVideo(true)
-                
-                
+                ToastComponents.shared.show(withMessage: "screen share start")
                 DispatchQueue.main.async {
                     self.shareButton.isSelected = true
                     self.shareButton .setTitle(LocalizedString("example_end_sharing"), for: .normal)
-                    self.rtcRoom?.publishStreamVideo(false)
                 }
                 
             } else if deviceState == .stateStopped || deviceState == .stateRuntimeError {
-                self.rtcRoom?.publishScreenAudio(false)
-                self.rtcRoom?.publishScreenVideo(false)
-
+                ToastComponents.shared.show(withMessage: "screen share stop")
                 DispatchQueue.main.async {
                     self.shareButton.isSelected = false
                     self.shareButton .setTitle(LocalizedString("example_start_sharing"), for: .normal)
-                    self.rtcRoom?.publishStreamVideo(true)
                 }
             }
         }
     }
 
     // Remote user joined the room.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo) {
         ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
         
     }

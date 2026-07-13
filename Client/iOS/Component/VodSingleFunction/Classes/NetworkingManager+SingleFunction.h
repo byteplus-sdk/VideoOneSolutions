@@ -13,6 +13,7 @@ typedef NS_ENUM(NSUInteger, VESingleFunctionType) {
     VESingleFunctionTypePlaylist,
     VESingleFunctionTypeSmartSubtitles,
     VESingleFunctionTypePreventRecording,
+    VESingleFunctionTypeAirPlay,
 };
 
 @class VEVideoModel;

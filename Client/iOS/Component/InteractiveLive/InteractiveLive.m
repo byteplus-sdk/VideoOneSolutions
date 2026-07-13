@@ -7,9 +7,23 @@
 #import "LiveRoomListsViewController.h"
 #import <AppConfig/BuildConfig.h>
 #import <TTSDKFramework/TTSDKFramework.h>
+#import <TTSDKFramework/TTVideoEngine.h>
 #import <ToolKit/BaseRTCManager.h>
 #import <ToolKit/JoinRTSParams.h>
 #import <ToolKit/ToolKit.h>
+
+// TTVideoEngine log delegate must be retained for the lifetime of the process.
+@interface VOInteractiveLiveTTVideoEngineLogger : NSObject <TTVideoEngineLogDelegate>
+@end
+
+@implementation VOInteractiveLiveTTVideoEngineLogger
+- (void)consoleLog:(NSString *)log {
+    // Keep it lightweight; TTVideoEngine may log very frequently.
+    NSLog(@"[TTVideoEngine] %@", log ?: @"");
+}
+@end
+
+static VOInteractiveLiveTTVideoEngineLogger *s_ttVideoEngineLogger = nil;
 
 @implementation InteractiveLive
 
@@ -83,7 +97,18 @@
     cfg.bizType = TTSDKServiceBizType_Live;
     [TTSDKManager setCurrentUserUniqueID:[LocalUserComponent userModel].uid ?: @""];
     [VeLiveCommon enableReportApplog:YES];
+    
+    // Enable TTVideoEngine logs BEFORE initializing TTSDKManager.
+    [TTVideoEngine setLogFlag:TTVideoEngineLogFlagAll];
+    
     [TTSDKManager startWithConfiguration:cfg];
+
+    // Set TTVideoEngine log delegate AFTER TTSDKManager init.
+    // Retain the delegate to ensure it keeps receiving callbacks.
+    if (!s_ttVideoEngineLogger) {
+        s_ttVideoEngineLogger = [[VOInteractiveLiveTTVideoEngineLogger alloc] init];
+    }
+    [TTVideoEngine setLogDelegate:s_ttVideoEngineLogger];
 }
 
 @end

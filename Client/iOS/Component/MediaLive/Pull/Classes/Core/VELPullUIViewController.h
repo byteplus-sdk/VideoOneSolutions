@@ -40,9 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray <NSNumber *> *)getCurrentSupportResolutions;
 - (VELPullResolutionType)getCurrentResolution;
 - (void)refreshCurrentResolution NS_REQUIRES_SUPER;
-- (void)openHDR;
-- (void)closeHDR;
-- (BOOL)isSupportHDR;
 - (void)showCallbackNote NS_REQUIRES_SUPER;
 - (void)hideCallbackNote NS_REQUIRES_SUPER;
 - (void)showCycleInfo NS_REQUIRES_SUPER;

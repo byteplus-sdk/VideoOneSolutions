@@ -33,3 +33,5 @@
 "function_rtc_title" = "RTC";
 "developers_rtc_api_des" = "RTC API function demonstration, including audio, video and other modules";
 "unknown_error" = "unknown error";
+"medialive_pull_section_title" = "Live stream pulling";
+"medialive_pull_entry_title" = "Live stream pulling";

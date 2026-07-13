@@ -210,33 +210,4 @@
     return _resolutionViewModel;
 }
 
-
-- (VELSettingsButtonViewModel *)hdrViewModel {
-    if (!_hdrViewModel) {
-        __weak __typeof__(self)weakSelf = self;
-        _hdrViewModel = [VELSettingsButtonViewModel checkBoxModelWithTitle:LocalizedStringFromBundle(@"medialive_open_hdr", @"MediaLive") action:^(VELSettingsButtonViewModel *model, NSInteger index) {
-            __strong __typeof__(weakSelf)self = weakSelf;
-            BOOL supportHDR = NO;
-            if ([self.delegate respondsToSelector:@selector(isSupportHDR)]) {
-                supportHDR = [self.delegate isSupportHDR];
-            }
-            if (!supportHDR) {
-                model.isSelected = NO;
-                [model updateUI];
-                [VELUIToast showText:LocalizedStringFromBundle(@"medialive_not_support_hdr", @"MediaLive")];
-                return;
-            }
-            if (model.isSelected && [self.delegate respondsToSelector:@selector(openHDR)]) {
-                [self.delegate openHDR];
-            } else if (!model.isSelected && [self.delegate respondsToSelector:@selector(closeHDR)]) {
-                [self.delegate closeHDR];
-            }
-        }];
-        _hdrViewModel.margin = UIEdgeInsetsMake(8, 10, 8, 10);
-        _hdrViewModel.size = CGSizeMake(VELAutomaticDimension, 27);
-    }
-    return _hdrViewModel;
-}
-
-
 @end

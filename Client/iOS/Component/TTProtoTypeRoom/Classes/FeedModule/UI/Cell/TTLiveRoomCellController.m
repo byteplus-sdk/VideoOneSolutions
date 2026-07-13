@@ -181,7 +181,7 @@
 }
 
 - (void)closeLiveButtonAction {
-    [[TTRTCManager shareRtc] leaveRoom];
+    [[TTRTCManager shareRtc] leave];
     [[TTLivePlayerManager sharedLiveManager] recoveryAllPlayerWithException:self.player];
     [self.navigationController popViewControllerAnimated:NO];
 }
