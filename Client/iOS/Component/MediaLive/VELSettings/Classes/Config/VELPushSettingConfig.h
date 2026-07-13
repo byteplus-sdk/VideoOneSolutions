@@ -43,9 +43,9 @@ typedef NS_ENUM(NSInteger, VELSettingVideoProfileType) {
     VELSettingVideoProfileType_H265_MAIN_10_AUTO = 902,
 };
 typedef NS_ENUM(NSInteger, VELSettingPreviewRenderMode) {
-    VELSettingPreviewRenderModeHidden = 0,
-    VELSettingPreviewRenderModeFit = 1,
-    VELSettingPreviewRenderModeFill = 2,
+    VELSettingPreviewRenderModeHidden = 1,
+    VELSettingPreviewRenderModeFit = 2,
+    VELSettingPreviewRenderModeFill = 3,
 };
 
 

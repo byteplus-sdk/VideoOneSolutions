@@ -4,9 +4,9 @@ import SnapKit
 import BytePlusRTC
 
 @objc(CustomAudioCaptureViewController)
-class CustomAudioCaptureViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
+class CustomAudioCaptureViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate {
     
-    var rtcVideo: ByteRTCVideo?
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom1: ByteRTCRoom?
     var firstPush:Bool = true
     var timer: GCDTimer?
@@ -23,13 +23,16 @@ class CustomAudioCaptureViewController: BaseViewController, ByteRTCVideoDelegate
     }
     
     deinit {
-        self.rtcVideo!.registerAudioFrameObserver(nil)
+        self.timer?.cancel()
+        self.timer = nil
+        
+        self.rtcVideo?.registerAudioFrameObserver(nil)
 
-        self.rtcRoom1?.leaveRoom()
+        self.rtcRoom1?.leave()
         self.rtcRoom1?.destroy()
         self.rtcRoom1 = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -69,18 +72,20 @@ class CustomAudioCaptureViewController: BaseViewController, ByteRTCVideoDelegate
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
 
-                self?.rtcRoom1?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom1?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         }
         else {
             joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom1?.leaveRoom()
+            self.rtcRoom1?.leave()
         }
     }
     
     func buildRTCEngine() {
-        // Create engine.
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         
         // Start local video capture.
         self.rtcVideo?.startVideoCapture()
@@ -102,7 +107,7 @@ class CustomAudioCaptureViewController: BaseViewController, ByteRTCVideoDelegate
         canvas.renderMode = .hidden
         self.localView.userId = userTextField.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -120,7 +125,8 @@ class CustomAudioCaptureViewController: BaseViewController, ByteRTCVideoDelegate
         weak var weakSelf = self
         // Start timer to push data at 10ms intervals.
         self.timer = GCDTimer(interval: .milliseconds(10)) {
-            weakSelf!.pushPCMData()
+            guard let strongSelf = weakSelf else { return }
+            strongSelf.pushPCMData()
         }
         
         self.timer!.start()
@@ -165,6 +171,7 @@ class CustomAudioCaptureViewController: BaseViewController, ByteRTCVideoDelegate
     
     @objc func stopPush() {
         self.timer?.cancel()
+        self.timer = nil
     }
     
     func createUI() -> Void {

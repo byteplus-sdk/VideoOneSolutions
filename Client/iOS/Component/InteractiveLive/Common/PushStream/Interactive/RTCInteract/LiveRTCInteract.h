@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, RTCInteractState) {
 
 - (void)rtcInteract:(LiveRTCInteract *_Nullable)interact didJoinChannel:(NSString *_Nullable)channelId withUid:(NSString *_Nullable)uid elapsed:(NSInteger)elapsed;
 - (void)rtcInteract:(LiveRTCInteract *_Nullable)interact onUserPublishStream:(NSString *_Nullable)uid;
-- (void)rtcInteract:(LiveRTCInteract *_Nullable)interact onMixingStreamSuccess:(ByteRTCMixedStreamType)mixType;
+- (void)rtcInteract:(LiveRTCInteract *_Nullable)interact onMixingStreamSuccess:(ByteRTCMixedStreamPushTargetType)mixType;
 
 @end
 
@@ -40,14 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPushStreamParams:(LivePushStreamParams *)params;
 
 - (void)updateStreamParams:(LivePushStreamParams *)params;
-
-- (void)startInteractive;
-- (void)stopInteractive;
 - (BOOL)isAnchorSelf:(NSString *)uid;
-
-- (void)onUserListChanged:(NSArray<LiveUserModel *> *_Nullable)userList;
-
-- (void)startForwardStreamToRooms:(NSString *)roomId token:(NSString *)token;
 
 @end
 

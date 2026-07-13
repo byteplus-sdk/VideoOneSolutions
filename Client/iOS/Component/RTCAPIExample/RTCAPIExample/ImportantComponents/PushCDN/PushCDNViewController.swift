@@ -14,14 +14,17 @@
 import UIKit
 import SnapKit
 import BytePlusRTC
+import Foundation
+import CommonCrypto
 
 @objc(PushCDNViewController)
-class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate,ByteRTCMixedStreamObserver {
+class PushCDNViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate {
     
-    var rtcVideo: ByteRTCVideo?
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom: ByteRTCRoom?
-    var users : Array = Array<ByteRTCRemoteStreamKey>()
+    var userVideoStreamMap: Dictionary = Dictionary<String, ByteRTCStreamInfo>()
     var mixConfig: ByteRTCMixedStreamConfig?
+    var targetConfig: ByteRTCMixedStreamPushTargetConfig?
     let taskId = "pushCDNtaskId_001"
     
     override func viewDidLoad() {
@@ -33,11 +36,11 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
     }
     
     deinit {
-        self.rtcRoom?.leaveRoom()
+        self.rtcRoom?.leave()
         self.rtcRoom?.destroy()
         self.rtcRoom = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -78,20 +81,21 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
-                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         } else {
             self.joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom?.leaveRoom()
+            self.rtcRoom?.leave()
         }
     }
     
     func buildRTCEngine() {
-        // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("cdn-stream")
-        
         // Enable local audio and video collection
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
+
         self.rtcVideo?.startVideoCapture()
         self.rtcVideo?.startAudioCapture()
         
@@ -100,41 +104,85 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         
         // Set default merge parameters
         self.mixConfig = ByteRTCMixedStreamConfig.default()
-        self.mixConfig?.layoutConfig.backgroundColor = "#FFFFFF"
+        self.targetConfig = ByteRTCMixedStreamPushTargetConfig.init()
+        self.mixConfig?.backgroundColor = "#FFFFFF"
 
     }
     
-    @objc func startPushCDN()  {
-        if let text = self.urlTextField.text, !text.isEmpty {
-            self.mixConfig?.pushURL = self.urlTextField.text
-            
-            let roomId = roomSettingItem.text
-            let userId = userSettingItem.text
-            
-            self.mixConfig?.layoutConfig.regions = self.getMixRegions()
-            
-            self.mixConfig?.roomID = roomId!
-            self.mixConfig?.userID = userId!
-            
-            self.rtcVideo?.startPushMixedStream(toCDN: taskId, mixedConfig: self.mixConfig, observer: self)
+
+
+    func signURL(roomID: String) -> String? {
+        let timeStamp = Int(Date().timeIntervalSince1970)
+        let expire = timeStamp + 7200
+        
+        let path = "/rtc_test/pushcdn\(roomID)111"
+        let authKey = "Uq8e962ghCCY2pBUB9Me2Fwy"
+        
+        let keyStr = "\(path)\(authKey)\(expire)"
+        
+        guard let sign = md5(string: keyStr) else {
+            return nil
+        }
+        
+        let finalURL = "rtmp://fcdn-test-hl.uplive.ixigua.com/rtc_test/pushcdn\(roomID)111?sign=\(sign)&expire=\(expire)"
+        
+        return finalURL
+    }
+
+    func md5(string: String) -> String? {
+        let length = Int(CC_MD5_DIGEST_LENGTH)
+        let messageData = string.data(using: .utf8)!
+        var digest = [UInt8](repeating: 0, count: length)
+        
+        messageData.withUnsafeBytes {
+            _ = CC_MD5($0.baseAddress, CC_LONG(messageData.count), &digest)
+        }
+        
+        return digest.map { String(format: "%02hhx", $0) }.joined()
+    }
+    @objc func startPushCDN() {
+        let roomId = roomSettingItem.text ?? ""
+        let userId = userSettingItem.text ?? ""
+        if let text = signURL(roomID: roomId), !text.isEmpty {
+            if let cdnurl = signURL(roomID: roomId) {
+                self.mixConfig?.regions = self.getMixRegions()
+                self.mixConfig?.roomID = roomId
+                self.mixConfig?.userID = userId
+                self.targetConfig?.pushCDNURL = cdnurl
+                self.urlTextField.text = cdnurl
+                self.targetConfig?.pushTargetType = .toCDN
+                
+                print("URL: \(cdnurl)")
+//                ToastComponents.shared.show(withMessage: "Updated URL: \(cdnurl)")
+//                ToastComponents.shared.show(withMessage: "Pull sdk using key : pushcdn\(roomId)111")
+                
+                let ret = self.rtcVideo?.startPushMixedStream(taskId, with: self.targetConfig, withMixedConfig: self.mixConfig)
+                if (ret != 0){
+                    ToastComponents.shared.show(withMessage: "startPushMixedStream failed, ret:\(String(describing: ret))")
+                }
+            } else {
+                print("Failed to generate signed URL")
+            }
         } else {
             ToastComponents.shared.show(withMessage: LocalizedString("toast_mix_url_false"))
         }
     }
+
     
     @objc func updatePushConfig()  {
         // Update layout
-        self.mixConfig?.layoutConfig.regions = self.getMixRegions()
+        self.mixConfig?.regions = self.getMixRegions()
 
-        self.rtcVideo?.updatePushMixedStream(toCDN: taskId, mixedConfig: self.mixConfig!)
+        self.rtcVideo?.updatePushMixedStream(taskId, with: self.targetConfig, withMixedConfig: self.mixConfig!)
     }
     
     @objc func stopPushCDN()  {
-        self.rtcVideo?.stopPushStreamToCDN(taskId)
+        self.rtcVideo?.stopPushMixedStream(taskId, with: .toCDN)
     }
     
     @objc func scrollViewAction()  {
         self.view.endEditing(true)
+        self.rtcVideo?.stopPushMixedStream(taskId, with: .toCDN)
     }
     
     func getMixRegions() -> [ByteRTCMixedStreamLayoutRegionConfig] {
@@ -142,6 +190,8 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         let userId = userSettingItem.text
         
         var regions = [ByteRTCMixedStreamLayoutRegionConfig]()
+        var users = self.userVideoStreamMap.values
+
         if self.layoutSheetView.selectedIndex == 0 {
             // 1x4 layout
             let width = (self.mixConfig?.videoConfig.width ?? 360) / 4
@@ -162,11 +212,11 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
             regions.append(regionConfig)
             
             // Remote user
-            for (index, item) in self.users.enumerated() {
+            for (index, item) in users.enumerated() {
                 if index < 3 {
                     let regionConfig = ByteRTCMixedStreamLayoutRegionConfig.init()
-                    regionConfig.userID = item.userId!
-                    regionConfig.roomID = item.roomId!
+                    regionConfig.userID = item.userId
+                    regionConfig.roomID = item.roomId
                     
                     regionConfig.locationX = width * (index + 1)
                     regionConfig.locationY = 0
@@ -199,11 +249,11 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
             regions.append(regionConfig)
             
             // Remote user
-            for (index, item) in self.users.enumerated() {
+            for (index, item) in users.enumerated() {
                 if index < 3 {
                     let regionConfig = ByteRTCMixedStreamLayoutRegionConfig.init()
-                    regionConfig.userID = item.userId!
-                    regionConfig.roomID = item.roomId!
+                    regionConfig.userID = item.userId
+                    regionConfig.roomID = item.roomId
                     
                     let col = (index + 1) % 2
                     let row = (index + 1) / 2
@@ -225,8 +275,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
     }
     
     func buildActions() {
-        weak var weakSelf = self
-        
+        weak var weakSelf = self        
         // Audio sample rate
         self.audioSampleRateSheetView.didSelectOption = {(value) in
             var sampleRate = 48000
@@ -303,7 +352,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         
         // Background color
         self.backgroundSettingItem.onValueChanged = {(value) in
-            weakSelf?.mixConfig?.layoutConfig.backgroundColor = value
+            weakSelf?.mixConfig?.backgroundColor = value
         }
         
         // Frame rate
@@ -340,7 +389,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         
         // Layout mode: 1*4 or 2*2
         self.layoutSheetView.didSelectOption = {(value) in
-            weakSelf?.mixConfig?.layoutConfig.regions = (weakSelf?.getMixRegions())!
+            weakSelf?.mixConfig?.regions = (weakSelf?.getMixRegions())!
         }
     }
     
@@ -351,40 +400,45 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     func updateRenderView() {
         // Get the first user of the room
-        var remoteUser:ByteRTCRemoteStreamKey?
+        var remoteStreamInfo:ByteRTCStreamInfo?
         
-        for streamKey in self.users {
-            if remoteUser == nil && streamKey.roomId ==  self.roomSettingItem.text {
-                remoteUser = streamKey
+        for (userId, info) in self.userVideoStreamMap {
+            if info.roomId == self.roomSettingItem.text {
+                remoteStreamInfo = info
             }
         }
         
-        if (remoteUser != nil) {
-            self.bindRemoteRenderView(view: self.firstRemoteView,roomId: (remoteUser?.roomId)!,userId: (remoteUser?.userId)!)
+        if (remoteStreamInfo != nil) {
+            self.bindRemoteRenderView(view: self.firstRemoteView, roomId:remoteStreamInfo!.roomId, userId:remoteStreamInfo!.userId)
         }
     }
     
     func bindRemoteRenderView(view: UserVideoView, roomId: String, userId: String) {
         // Set the remote user video rendering view
+        var streamInfo = self.userVideoStreamMap[userId]
+        if streamInfo == nil {
+            return
+        }
+        var streamId = streamInfo?.streamId
+        if streamId == nil {
+            return
+        }
+        
         let canvas = ByteRTCVideoCanvas.init()
         canvas.view = view.videoView
         canvas.renderMode = .hidden
         view.userId = userId
         
-        let streamKey = ByteRTCRemoteStreamKey.init()
-        streamKey.userId = userId
-        streamKey.roomId = roomId;
-        streamKey.streamIndex = .indexMain
-        
-        self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
+        self.rtcVideo?.setRemoteVideoCanvas(streamId!, withCanvas: canvas)
     }
     
     func createUI() -> Void {
+        
         self.view.addSubview(scrollView)
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(topView.snp.bottom)
@@ -807,44 +861,17 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
     }
     
     // Remote user publishing stream
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId)")
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStreamVideo streamId: String, info: ByteRTCStreamInfo, isPublish: Bool) {
+        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(info.userId), isPub: \(isPublish)")
         
-        if type == .video || type == .both {
-            
-            let streamKey = ByteRTCRemoteStreamKey.init()
-            streamKey.userId = userId
-            streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .indexMain
-            
-            self.users.append(streamKey)
+        if isPublish {
+            self.userVideoStreamMap.updateValue(info, forKey: info.userId)
             
             DispatchQueue.main.async {
                 self.updateRenderView()
             }
-        }
-    }
-    
-    // Remote user cancels publishing flow
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
-        
-        if type == .video || type == .both {
-            
-            // Remove from self.users
-            var itemsToRemove: [ByteRTCRemoteStreamKey] = []
-            
-            for streamKey in self.users {
-                if streamKey.userId == userId {
-                    itemsToRemove.append(streamKey)
-                }
-            }
-            
-            for item in itemsToRemove {
-                if let index = self.users.firstIndex(of: item) {
-                    self.users.remove(at: index)
-                }
-            }
+        } else {
+            self.userVideoStreamMap.removeValue(forKey: info.userId)
             
             DispatchQueue.main.async {
                 for videoView in self.containerView.subviews {
@@ -865,7 +892,7 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
     }
     
     // Remote users join the room
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo) {
         ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
         
     }
@@ -877,12 +904,10 @@ class PushCDNViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRo
     }
     
     // MARK: ByteRTCMixedStreamObserver
-    func isSupportClientPushStream() -> Bool {
-        return false
+    func rtcEngine(_ engine: ByteRTCEngine, onMixedStreamEvent event: ByteRTCMixedStreamTaskEvent, withMixedStreamInfo info: ByteRTCMixedStreamTaskInfo, with errorCode: ByteRTCMixedStreamTaskErrorCode) {
+            ToastComponents.shared.show(withMessage: "onMixedStreamEvent:\(event.rawValue) taskId:\(info.taskId) errorCode:\(errorCode.rawValue) + mixType:\(info.description)")
+        NSLog("onMixedStreamEvent: \(event), info_des: \(info.description), errorcode : \(errorCode)")
     }
     
-    // Confluence event callback
-    func onMixingEvent(_ event: ByteRTCStreamMixingEvent, taskId: String, error errorCode: ByteRTCStreamMixingErrorCode, mix mixType: ByteRTCMixedStreamType) {
-        ToastComponents.shared.show(withMessage: "onMixingEvent:\(event.rawValue) taskId:\(taskId) errorCode:\(errorCode.rawValue) + mixType:\(mixType.rawValue)")
-    }
+
 }

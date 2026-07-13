@@ -14,9 +14,9 @@ import SnapKit
 import BytePlusRTC
 
 @objc(AudioRawDataViewController)
-class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate,ByteRTCAudioFrameObserver {
-    
-    var rtcVideo: ByteRTCVideo?
+class AudioRawDataViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate,ByteRTCAudioFrameObserver {
+     
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom1: ByteRTCRoom?
     var lastLogTime: Date?
 
@@ -30,13 +30,13 @@ class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, Byte
     }
     
     deinit {
-        self.rtcVideo?.registerAudioFrameObserver(nil)
+        self.rtcVideo!.registerAudioFrameObserver(nil)
 
-        self.rtcRoom1?.leaveRoom()
+        self.rtcRoom1?.leave()
         self.rtcRoom1?.destroy()
         self.rtcRoom1 = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -77,19 +77,21 @@ class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, Byte
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
-                self?.rtcRoom1?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom1?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         }
         else {
             self.joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom1?.leaveRoom()
+            self.rtcRoom1?.leave()
         }
     }
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("audio-raw-data")
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -166,7 +168,7 @@ class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, Byte
         canvas.renderMode = .hidden
         self.localView.userId = userTextField.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -322,22 +324,6 @@ class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, Byte
         
     }
     
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
-        ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
-    }
-    
-    // Remote user publishing stream
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId)")
-        
-    }
-    
-    // Remote user cancels publishing flow
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
-        
-    }
-    
     // MARK: ByteRTCAudioFrameObserver
     func onRecord(_ audioFrame: ByteRTCAudioFrame) {
         print("onRecord audioFrame")
@@ -363,7 +349,7 @@ class AudioRawDataViewController: BaseViewController, ByteRTCVideoDelegate, Byte
         }
     }
     
-    func onRemoteUserAudioFrame(_ streamKey: ByteRTCRemoteStreamKey, audioFrame: ByteRTCAudioFrame) {
+    func onRemoteUserAudioFrame(_ streamId: String, info: ByteRTCStreamInfo, audioFrame: ByteRTCAudioFrame) {
         print("onRemoteUserAudioFrame")
         
         if checkLogTimeVaild() {

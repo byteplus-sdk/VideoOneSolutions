@@ -25,7 +25,7 @@
           initWithEngine:(id)engine
                 useCache:(BOOL)useCache {
     self.useCache = useCache;
-    _videoEffect = [(ByteRTCVideo *)engine getVideoEffectInterface];
+    _videoEffect = [(ByteRTCEngine *)engine getVideoEffectInterface];
     if (_videoEffect) {
         if ([self initEffectSDK]) {
             return (EffectBeautyComponent *)protocol;

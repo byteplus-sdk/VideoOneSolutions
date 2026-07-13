@@ -31,16 +31,15 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
         return;
     }
     if (self.rtcEngineKit) {
-        [ByteRTCVideo destroyRTCVideo];
+        [ByteRTCEngine destroyRTCEngine];
         self.rtcEngineKit = nil;
     }
 
     // Create an engine instance.
-    self.rtcEngineKit = [ByteRTCVideo createRTCVideo:appID delegate:self parameters:@{}];
+    ByteRTCEngineConfig *config = [[ByteRTCEngineConfig alloc] init];
+    config.appID = appID;
+    self.rtcEngineKit = [ByteRTCEngine createRTCEngine:config delegate:self];
     [self configeRTCEngine];
-
-    // Set Business ID
-    [self.rtcEngineKit setBusinessId:bid];
 
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
         if (block) {
@@ -50,7 +49,7 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
 }
 
 - (void)disconnect {
-    [ByteRTCVideo destroyRTCVideo];
+    [ByteRTCEngine destroyRTCEngine];
     self.rtcEngineKit = nil;
 }
 
@@ -108,15 +107,21 @@ static RTSMessageType const RTSMessageTypeNotice = @"inform";
 }
 
 + (NSString *_Nullable)getSDKVersion {
-    return [ByteRTCVideo getSDKVersion];
+    return [ByteRTCEngine getSDKVersion];
 }
 
 #pragma mark - ByteRTCVideoDelegate
 
 // Callback when receiving a message from outside the room
-- (void)rtcEngine:(ByteRTCVideo *)engine onUserMessageReceivedOutsideRoom:(NSString *)uid message:(NSString *)message {
+- (void)rtcEngine:(ByteRTCEngine *)engine onUserMessageReceivedOutsideRoom:(NSString *)uid message:(NSString *)message {
     [self dispatchMessageFrom:uid message:message];
     [self addLog:@"onUserMessageReceivedOutsideRoom-" message:message];
+}
+
+- (void)rtcEngine:(ByteRTCEngine *)engine onMixedStreamEvent:(ByteRTCMixedStreamTaskEvent)event withMixedStreamInfo:(ByteRTCMixedStreamTaskInfo *)info withErrorCode:(ByteRTCMixedStreamTaskErrorCode)errorCode {
+    if (self.mixedStreamDelegate && [self.mixedStreamDelegate respondsToSelector:@selector(rtcEngine:onMixedStreamEvent:withMixedStreamInfo:withErrorCode:)]) {
+        [self.mixedStreamDelegate rtcEngine:engine onMixedStreamEvent:event withMixedStreamInfo:info withErrorCode:errorCode];
+    }
 }
 
 #pragma mark - ByteRTCRoomDelegate

@@ -5,7 +5,7 @@
 #import "LiveRTCManager.h"
 #import "LiveSettingVideoConfig.h"
 
-@interface LiveRTCManager () <ByteRTCVideoDelegate>
+@interface LiveRTCManager () <ByteRTCEngineDelegate>
 
 // Business RTS room. Audience users do not need to join the RTC room when they are not make guest, but they need to join the RTS room for business logic processing.
 @property (nonatomic, strong) ByteRTCRoom *businessRoom;
@@ -21,10 +21,17 @@
 @property (nonatomic, assign) ByteRTCCameraID cameraID;
 @property (nonatomic, assign) BOOL isVideoCaptued;
 @property (nonatomic, assign) BOOL isAudioCaptued;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, ByteRTCStreamInfo *> *userStreamDic;
 
 // Network Quality Block
 @property (nonatomic, copy) void (^networkQualityBlock)(LiveNetworkQualityStatus status,
                                                         NSString *uid);
+
+@property (nonatomic, assign, readwrite) NSInteger captureFps;
+@property (nonatomic, assign, readwrite) NSInteger transportFps;
+@property (nonatomic, assign, readwrite) NSInteger encodeBitrateKbps;
+@property (nonatomic, assign, readwrite) NSInteger transportBitrateKbps;
+@property (nonatomic, assign, readwrite) CGSize encodeResolution;
 @end
 
 @implementation LiveRTCManager
@@ -54,7 +61,7 @@
     captureConfig.preference = ByteRTCVideoCapturePreferenceAutoPerformance;
     [self.rtcEngineKit setVideoCaptureConfig:captureConfig];
     // Set the RTC encoding resolution, frame rate, and bit rate.
-    [self.rtcEngineKit setMaxVideoEncoderConfig:self.pushRTCVideoConfig];
+    [self.rtcEngineKit setVideoEncoderConfig:self.pushRTCVideoConfig];
 
     // Set up video mirroring
     [self.rtcEngineKit setLocalVideoMirrorType:ByteRTCMirrorTypeRenderAndEncoder];
@@ -91,6 +98,7 @@
     config.isAutoSubscribeVideo = NO;
     [self.businessRoom joinRoom:token
                        userInfo:userInfo
+                 userVisibility:true
                      roomConfig:config];
 }
 
@@ -98,7 +106,7 @@
     // Leave the RTS business room.
     CGSize videoSize = [LiveSettingVideoConfig defaultVideoConfig].videoSize;
     [self updateVideoEncoderResolution:videoSize];
-    [self.rtcEngineKit stopPushStreamToCDN:@""];
+    [self.rtcEngineKit stopPushMixedStream:@"" withPushTargetType:ByteRTCMixedStreamPushTargetTypeToCDN];
     [self leaveRTCRoom];
 
     [self switchAudioCapture:NO];
@@ -126,8 +134,11 @@
     config.isAutoSubscribeAudio = YES;
     config.isAutoSubscribeVideo = YES;
     self.rtcRoom = [self.rtcEngineKit createRTCRoom:rtcRoomID];
-    self.rtcRoom.delegate = self;
-    [self.rtcRoom joinRoom:token userInfo:userInfo roomConfig:config];
+    [self.rtcRoom setRTCRoomDelegate:self];
+    [self.rtcRoom joinRoom:token
+                  userInfo:userInfo
+            userVisibility:YES
+                roomConfig:config];
 }
 
 - (void)leaveRTCRoom {
@@ -152,7 +163,7 @@
     self.pushRTCVideoConfig.width = videoSize.width;
     self.pushRTCVideoConfig.height = videoSize.height;
 
-    [self.rtcEngineKit setMaxVideoEncoderConfig:self.pushRTCVideoConfig];
+    [self.rtcEngineKit setVideoEncoderConfig:self.pushRTCVideoConfig];
     [self.rtcRoom stopForwardStreamToRooms];
 }
 
@@ -209,12 +220,12 @@
     // Update RTC encoding resolution
     self.pushRTCVideoConfig.width = size.width;
     self.pushRTCVideoConfig.height = size.height;
-    [self.rtcEngineKit setMaxVideoEncoderConfig:self.pushRTCVideoConfig];
+    [self.rtcEngineKit setVideoEncoderConfig:self.pushRTCVideoConfig];
 }
 
 - (void)updateVideoEncoderFrameRate:(NSInteger)frameRate {
     self.pushRTCVideoConfig.frameRate = frameRate;
-    [self.rtcEngineKit setMaxVideoEncoderConfig:self.pushRTCVideoConfig];
+    [self.rtcEngineKit setVideoEncoderConfig:self.pushRTCVideoConfig];
 }
 
 #pragma mark - NetworkQuality
@@ -233,6 +244,8 @@
                withUid:(NSString *)uid
                  state:(NSInteger)state
              extraInfo:(NSString *)extraInfo {
+    VOLogI(VOInteractiveLive, @"[stats] onRoomStateChanged room=%@ uid=%@ state=%ld extra=%@",
+           roomId, uid, (long)state, extraInfo);
     [super rtcRoom:rtcRoom onRoomStateChanged:roomId withUid:uid state:state extraInfo:extraInfo];
     if ([rtcRoom.getRoomId isEqualToString:self.rtcRoom.getRoomId]) {
         // Join the RTC room successfully
@@ -265,18 +278,37 @@
     }
 }
 
-- (void)rtcRoom:(ByteRTCRoom *)rtcRoom onUserPublishStream:(NSString *)userId type:(ByteRTCMediaStreamType)type {
-    if (type == ByteRTCMediaStreamTypeBoth ||
-        type == ByteRTCMediaStreamTypeVideo) {
+- (void)rtcRoom:(ByteRTCRoom *)rtcRoom onUserPublishStreamVideo:(NSString * _Nonnull)streamId info:(ByteRTCStreamInfo * _Nonnull)info isPublish:(BOOL)isPublish {
+    VOLogI(VOInteractiveLive, @"[stats] onUserPublishStreamVideo room=%@ uid=%@ isPublish=%d",
+           rtcRoom.getRoomId, info.userId, isPublish);
+    if (isPublish) {
         dispatch_queue_async_safe(dispatch_get_main_queue(), (^{
+            [self.userStreamDic setValue:info forKey:info.userId];
+            [self bindCanvasViewToUid:info.userId];
             if ([self.delegate respondsToSelector:@selector(liveRTCManager:onUserPublishStream:)]) {
-                [self.delegate liveRTCManager:self onUserPublishStream:userId];
+                [self.delegate liveRTCManager:self onUserPublishStream:info.userId];
             }
         }));
+    } else {
+        
     }
 }
 
-- (void)rtcRoom:(ByteRTCRoom *)rtcRoom onLocalStreamStats:(ByteRTCLocalStreamStats *)stats {
+- (void)rtcRoom:(ByteRTCRoom * _Nonnull)rtcRoom
+onLocalStreamStats:(NSString * _Nonnull)streamId
+           info:(ByteRTCStreamInfo * _Nonnull)info
+          stats:(ByteRTCLocalStreamStats * _Nonnull)stats {
+    VOLogI(VOInteractiveLive,
+           @"[stats] onLocalStreamStats room=%@ streamId=%@ fps(in/sent)=%d/%d enc=%d kbps=%d %dx%d",
+           rtcRoom.getRoomId,
+           streamId,
+           stats.videoStats.inputFrameRate,
+           stats.videoStats.sentFrameRate,
+           stats.videoStats.encodedBitrate,
+           stats.videoStats.sentKBitrate,
+           (int)stats.videoStats.encodedFrameWidth,
+           (int)stats.videoStats.encodedFrameHeight);
+
     LiveNetworkQualityStatus liveStatus = LiveNetworkQualityStatusNone;
     if (stats.txQuality == ByteRTCNetworkQualityExcellent ||
         stats.txQuality == ByteRTCNetworkQualityGood) {
@@ -284,6 +316,21 @@
     } else {
         liveStatus = LiveNetworkQualityStatusBad;
     }
+
+    // 只有 rtcRoom（真正发流的房间）才覆盖统计字段，避免 businessRoom 的 0 值干扰
+    if ([rtcRoom.getRoomId isEqualToString:self.rtcRoom.getRoomId]) {
+        if (stats.videoStats.inputFrameRate > 0)   self.captureFps = stats.videoStats.inputFrameRate;
+        if (stats.videoStats.sentFrameRate > 0)    self.transportFps = stats.videoStats.sentFrameRate;
+        if (stats.videoStats.encodedBitrate > 0)   self.encodeBitrateKbps = stats.videoStats.encodedBitrate;
+        if (stats.videoStats.sentKBitrate > 0)     self.transportBitrateKbps = stats.videoStats.sentKBitrate;
+
+        NSInteger width = stats.videoStats.encodedFrameWidth;
+        NSInteger height = stats.videoStats.encodedFrameHeight;
+        if (width > 0 && height > 0) {
+            self.encodeResolution = CGSizeMake(width, height);
+        }
+    }
+
     if (self.networkQualityBlock) {
         self.networkQualityBlock(liveStatus, [LocalUserComponent userModel].uid);
     }
@@ -332,8 +379,7 @@
         canvas.renderMode = ByteRTCRenderModeHidden;
         canvas.view.backgroundColor = [UIColor clearColor];
         canvas.view = streamView;
-        [self.rtcEngineKit setLocalVideoCanvas:ByteRTCStreamIndexMain
-                                    withCanvas:canvas];
+        [self.rtcEngineKit setLocalVideoCanvas:canvas];
     } else {
         ByteRTCVideoCanvas *canvas = [[ByteRTCVideoCanvas alloc] init];
         canvas.renderMode = ByteRTCRenderModeHidden;
@@ -344,8 +390,11 @@
         streamKey.userId = uid;
         streamKey.roomId = self.rtcRoom.getRoomId;
         streamKey.streamIndex = ByteRTCStreamIndexMain;
-
-        [self.rtcEngineKit setRemoteVideoCanvas:streamKey withCanvas:canvas];
+        
+        ByteRTCStreamInfo *streamInfo = [self.userStreamDic objectForKey:uid];
+        if (streamInfo) {
+            [self.rtcEngineKit setRemoteVideoCanvas:streamInfo.streamId withCanvas:canvas];
+        }
     }
     return streamView;
 }
@@ -457,5 +506,12 @@
         _streamViewDic = [[NSMutableDictionary alloc] init];
     }
     return _streamViewDic;
+}
+
+- (NSMutableDictionary<NSString *, ByteRTCStreamInfo *> *)userStreamDic {
+    if (!_userStreamDic) {
+        _userStreamDic = [[NSMutableDictionary alloc] init];
+    }
+    return _userStreamDic;
 }
 @end

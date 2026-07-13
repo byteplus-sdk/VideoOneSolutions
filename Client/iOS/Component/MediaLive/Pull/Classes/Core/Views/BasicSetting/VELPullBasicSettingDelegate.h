@@ -16,9 +16,6 @@
 - (void)stopPlayInBackground;
 - (BOOL)resolutionShouldChanged:(VELPullResolutionType)fromResolution to:(VELPullResolutionType)toResolution;
 - (void)resolutionDidChanged:(VELPullResolutionType)fromResolution to:(VELPullResolutionType)toResolution;
-- (void)openHDR;
-- (void)closeHDR;
-- (BOOL)isSupportHDR;
 - (void)showCycleInfo;
 - (void)hideCycleInfo;
 - (void)showCallbackNote;

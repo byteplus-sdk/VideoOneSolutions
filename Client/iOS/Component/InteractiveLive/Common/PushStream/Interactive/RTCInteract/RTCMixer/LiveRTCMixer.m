@@ -7,25 +7,30 @@
 #import "LiveRTCInteractUtils.h"
 #import "LiveSettingVideoConfig.h"
 
-@interface LiveRTCMixer () <ByteRTCMixedStreamObserver>
+static NSString *kMixedStreamTaskId = @"pushCDNtaskId_001";
 
-@property (nonatomic, strong) ByteRTCVideo *rtcEngineKit;
+@interface LiveRTCMixer () <BaseRTCManagerMixedStreamDelegate>
+
+@property (nonatomic, strong) ByteRTCEngine *rtcEngineKit;
 
 // Mix streaming status
 @property (nonatomic, assign) RTCMixStatus mixStatus;
 
 // Mix streaming config
 @property (nonatomic, strong) ByteRTCMixedStreamConfig *mixedStreamConfig;
+@property (nonatomic, strong) ByteRTCMixedStreamPushTargetConfig *mixedStreamPushConfig;
 
 @end
 
 @implementation LiveRTCMixer
 
-- (instancetype)initWithRTCEngine:(ByteRTCVideo *)rtcEngine {
+- (instancetype)initWithRTCEngine:(ByteRTCEngine *)rtcEngine {
     if (self = [super init]) {
         _rtcEngineKit = rtcEngine;
         // Confluence retweet Setting
         _mixedStreamConfig = [ByteRTCMixedStreamConfig defaultMixedStreamConfig];
+        _mixedStreamPushConfig = [ByteRTCMixedStreamPushTargetConfig new];
+        [LiveRTCManager shareRtc].mixedStreamDelegate = self;
     }
     return self;
 }
@@ -35,7 +40,10 @@
     NSAssert(params, @"push stream params for transocder is nil");
     NSString *rtmpUrl = [LiveRTCInteractUtils setPriorityForUrl:params.pushUrl];
 
-    self.mixedStreamConfig.expectedMixingType = ByteRTCMixedStreamByServer;
+    self.mixedStreamPushConfig.pushTargetType = ByteRTCMixedStreamPushTargetTypeToCDN;
+    self.mixedStreamPushConfig.pushCDNURL = rtmpUrl;
+    
+    self.mixedStreamConfig.pushTargetType = ByteRTCMixedStreamPushTargetTypeToCDN;
     ByteRTCMixedStreamVideoConfig *videoConfig = [ByteRTCMixedStreamVideoConfig new];
     videoConfig.videoCodec = kCMVideoCodecType_H264;
     videoConfig.width = params.width;
@@ -49,26 +57,31 @@
     audioConfig.sampleRate = 44100;
     audioConfig.channels = 2;
     audioConfig.bitrate = 64;
+    
     self.mixedStreamConfig.audioConfig = audioConfig;
     self.mixedStreamConfig.pushURL = rtmpUrl;
     self.mixedStreamConfig.roomID = params.rtcRoomId;
     self.mixedStreamConfig.userID = [LocalUserComponent userModel].uid;
-
-    ByteRTCMixedStreamLayoutConfig *layoutConfig = [[ByteRTCMixedStreamLayoutConfig alloc] init];
-    layoutConfig.backgroundColor = @"#0D0B53";
+    self.mixedStreamConfig.backgroundColor = @"#0D0B53";
     // Set mix SEI
     NSString *json = [self getSEIJsonWithMixStatus:RTCMixStatusSingleLive];
-    layoutConfig.userConfigExtraInfo = json;
+    self.mixedStreamConfig.userConfigExtraInfo = json;
     // Set mix Regions
-    NSArray *regions = [self getRegionWithUserList:@[params.host]
+    LiveUserModel *host = params.host;
+    if (!host || host.uid.length == 0) {
+        VOLogE(VOInteractiveLive, @"startPushMixStreamToCDN: host is nil/invalid. roomID=%@ currentUID=%@",
+               params.rtcRoomId ?: @"", [LocalUserComponent userModel].uid ?: @"");
+        return;
+    }
+
+    NSArray *regions = [self getRegionWithUserList:@[host]
                                          mixStatus:RTCMixStatusSingleLive
                                          rtcRoomId:params.rtcRoomId
                                              width:params.width
                                             height:params.height];
-    layoutConfig.regions = regions;
-    self.mixedStreamConfig.layoutConfig = layoutConfig;
-
-    [self.rtcEngineKit startPushMixedStreamToCDN:@"" mixedConfig:self.mixedStreamConfig observer:self];
+    self.mixedStreamConfig.regions = regions;
+    self.mixedStreamConfig.layoutMode = ByteRTCStreamLayoutModeCustom;
+    [self.rtcEngineKit startPushMixedStream:kMixedStreamTaskId withPushTargetConfig:self.mixedStreamPushConfig withMixedConfig:self.mixedStreamConfig];
 }
 
 - (void)updatePushMixedStreamToCDN:(NSArray<LiveUserModel *> *)userList
@@ -81,19 +94,19 @@
     // Update the merge layout
     // Set mix SEI
     NSString *json = [self getSEIJsonWithMixStatus:mixStatus];
-    self.mixedStreamConfig.layoutConfig.userConfigExtraInfo = json;
-    self.mixedStreamConfig.layoutConfig.regions = [self getRegionWithUserList:userList
+    self.mixedStreamConfig.userConfigExtraInfo = json;
+    self.mixedStreamConfig.regions = [self getRegionWithUserList:userList
                                                                     mixStatus:mixStatus
                                                                     rtcRoomId:rtcRoomId
                                                                         width:self.mixedStreamConfig.videoConfig.width
                                                                        height:self.mixedStreamConfig.videoConfig.height];
-    [self.rtcEngineKit updatePushMixedStreamToCDN:@"" mixedConfig:self.mixedStreamConfig];
+    [self.rtcEngineKit updatePushMixedStream:kMixedStreamTaskId withPushTargetConfig:self.mixedStreamPushConfig withMixedConfig:self.mixedStreamConfig];
 }
 
 - (void)stopPushStreamToCDN {
     // Stop span the room retweet stream
     [[LiveRTCManager shareRtc] stopForwardStreamToRooms];
-    [self.rtcEngineKit stopPushStreamToCDN:@""];
+    [self.rtcEngineKit stopPushMixedStream:kMixedStreamTaskId withPushTargetType:ByteRTCMixedStreamPushTargetTypeToCDN];
 }
 
 #pragma mark - Private Action
@@ -221,19 +234,11 @@
 
 #pragma mark - Getter
 
-#pragma mark - ByteRTCMixedStreamObserver
-
-- (BOOL)isSupportClientPushStream {
-    return NO;
-}
-
-- (void)onMixingEvent:(ByteRTCStreamMixingEvent)event
-               taskId:(NSString *_Nonnull)taskId
-                error:(ByteRTCStreamMixingErrorCode)Code
-              mixType:(ByteRTCMixedStreamType)mixType {
+#pragma mark - BaseRTCManagerMixedStreamDelegate
+- (void)rtcEngine:(ByteRTCEngine *)engine onMixedStreamEvent:(ByteRTCMixedStreamTaskEvent)event withMixedStreamInfo:(ByteRTCMixedStreamTaskInfo *)info withErrorCode:(ByteRTCMixedStreamTaskErrorCode)errorCode {
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
         if ([self.delegate respondsToSelector:@selector(mixingEvent:taskId:error:mixType:)]) {
-            [self.delegate mixingEvent:event taskId:taskId error:Code mixType:mixType];
+            [self.delegate mixingEvent:event taskId:info.taskId error:errorCode mixType:info.pushTargetType];
         }
     });
 }

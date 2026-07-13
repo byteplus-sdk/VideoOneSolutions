@@ -4,6 +4,7 @@
 #import <ToolKit/Localizator.h>
 #import "MediaLiveVoice.h"
 #import "VELPushAudioOnlyNewViewController.h"
+#import "RTCJoinRTS.h"
 
 
 @implementation MediaLiveVoice
@@ -21,11 +22,9 @@
 - (void)enterWithCallback:(void (^)(BOOL))block {
     [super enterWithCallback:block];
     VELPushAudioOnlyNewViewController *vc = [[VELPushAudioOnlyNewViewController alloc] initWithCaptureType:VELSettingCaptureTypeAudioOnly];
-    UIViewController *topVC = [DeviceInforTool topViewController];
-    [topVC.navigationController pushViewController:vc animated:YES];
-    if (block) {
-        block(YES);
-    }
+//    UIViewController *topVC = [DeviceInforTool topViewController];
+//    [topVC.navigationController pushViewController:vc animated:YES];
+    [RTCJoinRTS joinRTS:vc block:block];
 }
 
 @end

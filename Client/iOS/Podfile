@@ -1,20 +1,21 @@
 source 'https://cdn.cocoapods.org/'
 source 'https://github.com/byteplus-sdk/byteplus-specs.git'
 source 'https://github.com/volcengine/volcengine-specs.git'
-source 'https://github.com/CocoaPods/Specs.git'
 
 platform :ios, '14.0'
 install! 'cocoapods',
 :deterministic_uuids => false,
 :disable_input_output_paths => true
+use_modular_headers!
 
 
 # TTSDK version
-$TT_SDK_VERSION = '1.48.200.2-premium'
+#$TT_SDK_VERSION = '1.48.200.2-premium'
+$TT_SDK_VERSION = '1.50.200.2-premium'
 
-$RTC_SDK = 'TTSDKFramework/RTCSDK'
+$RTC_SDK = 'BytePlusRTC'
 def rtc_pods
-  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['RTCSDK'], :modular_headers => true
+  pod 'BytePlusRTC', '3.60.103.6100', :subspecs => ['ScreenCapture']
 end
 
 def common_pods
@@ -31,7 +32,8 @@ end
 
 def scene_InteractiveLive_pods
   # Interactive Live
-  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'RTCSDK']
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS']
+  rtc_pods
   pod 'InteractiveLive', :path => './Component/InteractiveLive'
   # Effect
   pod 'EffectResources', :path => './Component/Effects/EffectResources'
@@ -54,8 +56,9 @@ end
 
 def scene_MediaLive_pods
   # LiveDemo SingleFunction
-  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'LivePush-RTS', 'Quic/Pull', 'Quic/Push', 'ScreenCapture']
-  pod 'MediaLive', :path => './Component/MediaLive'
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'Quic/Pull']
+  # MediaLive feature module without Push
+  pod 'MediaLive', :path => './Component/MediaLive', :subspecs => ['Entry', 'Pull', 'VELCommon', 'VELSettings', 'ScreenCapture']
   # Effect
   pod 'EffectResources', :path => './Component/Effects/EffectResources'
   pod 'EffectUIKit', :path => './Component/Effects/EffectUIKit'
@@ -65,7 +68,8 @@ end
 
 def develop_rtc_pods
   pod 'ApiExampleEntry', :path => 'component/ApiExampleEntry'
-  pod 'RTCDependency', :path => 'component/RTCDependency', :subspecs=> ['audioeffect', 'ScreenCapture']
+  rtc_pods
+  # pod 'RTCDependency', :path => 'component/RTCDependency', :subspecs=> ['audioeffect', 'ScreenCapture']
   pod 'RTCAPIExample', :path => 'Component/RTCAPIExample'
   pod 'RTCTokenOnlineKit', :path => 'Component/RTCTokenOnlineKit'
   
@@ -80,7 +84,8 @@ end
 
 
 def scene_TTProtoTypeRoom_pods
-    pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'Player', 'RTCSDK']
+    pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS', 'Player']
+    rtc_pods
     pod 'TTProtoTypeRoom', :path => './Component/TTProtoTypeRoom'
 end
 
@@ -100,6 +105,12 @@ def scene_AIChat_pods
   pod 'AIChat', :path => './Component/AIChat'
 end
 
+def scene_LiveSportStreaming_pods
+  pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['LivePull-RTS']
+  pod 'SnapKit', '~> 5.6.0'
+  pod 'LiveSportStreaming', :path => './Component/LiveSportStreaming'
+end
+
 target 'VideoOne' do
   common_pods
   scene_InteractiveLive_pods
@@ -111,13 +122,13 @@ target 'VideoOne' do
   scene_MiniDrama_pods
   scene_MiniDramaWithInStreamAds_pods
   scene_AIChat_pods
+  scene_LiveSportStreaming_pods
   
 end
 
 target 'ScreenShareExtension' do
   pod 'AppConfig', :path => './Component/AppConfig'
-  pod 'TTSDKFramework',$TT_SDK_VERSION, :subspecs => ['ScreenCaptureExtension']
-  pod 'RTCDependency', :path => 'component/RTCDependency', :subspecs=> ['audioeffect', 'ScreenCapture']
+  rtc_pods
 end
 
 post_install do |installer|
@@ -132,6 +143,13 @@ post_install do |installer|
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] = '-'
         config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+      end
+
+      # Xcode 16 verifies SnapKit's generated swiftinterface and fails on the
+      # underlying Objective-C module import. Disabling library evolution for
+      # this pod avoids the broken verification step.
+      if target.name == 'SnapKit'
+        config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'NO'
       end
     end
   end

@@ -4,6 +4,7 @@
 //
 
 #import "VODFunctionSection.h"
+#import "AirPlay.h"
 #import "PreventRecording.h"
 #import "SmartSubtitles.h"
 #import "VideoPlayback.h"
@@ -19,7 +20,8 @@
         section.items = @[[VideoPlayback new],
                           [PreventRecording new],
                           [SmartSubtitles new],
-                          [PlayList new]];
+                          [PlayList new],
+                          [AirPlay new]];
         _items = @[section];
     }
     return _items;

@@ -61,6 +61,12 @@ typedef NS_ENUM(NSUInteger, RTCMixStatus) {
 
 @property (nonatomic, strong) LiveNormalStreamConfig *streamConfig;
 
+@property (nonatomic, assign, readonly) NSInteger captureFps;
+@property (nonatomic, assign, readonly) NSInteger transportFps;
+@property (nonatomic, assign, readonly) NSInteger encodeBitrateKbps;
+@property (nonatomic, assign, readonly) NSInteger transportBitrateKbps;
+@property (nonatomic, assign, readonly) CGSize encodeResolution;
+
 + (LiveRTCManager *_Nullable)shareRtc;
 
 /**

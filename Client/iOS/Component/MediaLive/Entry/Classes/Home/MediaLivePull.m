@@ -4,6 +4,7 @@
 #import <ToolKit/Localizator.h>
 #import "MediaLivePull.h"
 #import "VELPullViewController.h"
+#import "RTCJoinRTS.h"
 
 @implementation MediaLivePull
 
@@ -20,11 +21,9 @@
 - (void)enterWithCallback:(void (^)(BOOL))block {
     [super enterWithCallback:block];
     VELPullViewController *vc = [[VELPullViewController alloc] init];
-    UIViewController *topVC = [DeviceInforTool topViewController];
-    [topVC.navigationController pushViewController:vc animated:YES];
-    if (block) {
-        block(YES);
-    }
+//    UIViewController *topVC = [DeviceInforTool topViewController];
+//    [topVC.navigationController pushViewController:vc animated:YES];
+    [RTCJoinRTS joinRTS:vc block:block];
 }
 
 @end

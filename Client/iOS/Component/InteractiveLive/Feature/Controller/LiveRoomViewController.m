@@ -1017,9 +1017,7 @@
 
     if ([self isHost]) {
         // Host join RTC room
-        LiveNormalStreamConfig *config = [LiveNormalStreamConfig defaultConfig];
-        config.rtmpUrl = self.streamPushUrl;
-        self.linkSession.streamConfig = config;
+        self.linkSession.rtmpUrl = self.streamPushUrl;
         [self.linkSession startNormalStreaming];
     }
 }

@@ -36,12 +36,12 @@ static inline void DispatchSafeAsyncRunOnMainThread(void (^ _Nullable block)(voi
     info.extraInfo = @"";
     
     ByteRTCRoomConfig *config = [[ByteRTCRoomConfig alloc] init];
-    config.profile = ByteRTCRoomProfileChat;
+    config.profile = ByteRTCRoomProfileCall;
     config.isPublishAudio = YES;
     config.isPublishVideo = YES;
     config.isAutoSubscribeAudio = YES;
     config.isAutoSubscribeVideo = NO;
-    int res = [self.chatRoom joinRoom:token userInfo:info roomConfig:config];
+    int res = [self.chatRoom joinRoom:token userInfo:info userVisibility:true roomConfig:config];
     dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
         if (block) {
             block(res);
@@ -84,26 +84,26 @@ static inline void DispatchSafeAsyncRunOnMainThread(void (^ _Nullable block)(voi
     return [self.rtcEngineKit getMediaPlayer:0];
 }
 
-#pragma mark - ByteRTCVideoDelegate
+#pragma mark - ByteRTCEngineDelegate
 
-- (void)rtcEngine:(ByteRTCVideo *)engine onUserStartAudioCapture:(NSString *)roomId uid:(NSString *)userId {
+- (void)rtcEngine:(ByteRTCEngine *)engine onUserStartAudioCapture:(NSString *)roomId uid:(NSString *)userId {
     VOLogD(VOAIChat, @"onUserStartAudioCapture");
 }
 
-- (void)rtcEngine:(ByteRTCVideo *)engine onUserStopAudioCapture:(NSString *)roomId uid:(NSString *)userId {
+- (void)rtcEngine:(ByteRTCEngine *)engine onUserStopAudioCapture:(NSString *)roomId uid:(NSString *)userId {
     VOLogD(VOAIChat, @"onUserStopAudioCapture");
 }
 
 
-- (void)rtcEngine:(ByteRTCVideo *)engine onLocalAudioPropertiesReport:(NSArray<ByteRTCLocalAudioPropertiesInfo *> *)audioPropertiesInfos {
+- (void)rtcEngine:(ByteRTCEngine *)engine onLocalAudioPropertiesReport:(NSArray<ByteRTCLocalAudioPropertiesInfo *> *)audioPropertiesInfos {
     
 }
 
-- (void)rtcEngine:(ByteRTCVideo *)engine onRemoteAudioPropertiesReport:(NSArray<ByteRTCRemoteAudioPropertiesInfo *> *)audioPropertiesInfos totalRemoteVolume:(NSInteger)totalRemoteVolume {
+- (void)rtcEngine:(ByteRTCEngine *)engine onRemoteAudioPropertiesReport:(NSArray<ByteRTCRemoteAudioPropertiesInfo *> *)audioPropertiesInfos totalRemoteVolume:(NSInteger)totalRemoteVolume {
     
 }
 
-- (void)rtcEngine:(ByteRTCVideo *)engine onActiveSpeaker:(NSString *)roomId uid:(NSString *)uid {
+- (void)rtcEngine:(ByteRTCEngine *)engine onActiveSpeaker:(NSString *)roomId uid:(NSString *)uid {
     if ([self.delegate respondsToSelector:@selector(onActiveSpeakerChange:)]) {
         WeakSelf
         DispatchSafeAsyncRunOnMainThread(^{

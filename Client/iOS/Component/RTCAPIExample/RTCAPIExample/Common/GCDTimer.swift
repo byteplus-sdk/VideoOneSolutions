@@ -14,7 +14,7 @@ class GCDTimer {
     
     init(interval: DispatchTimeInterval, executionBlock: @escaping () -> Void) {
         self.executionBlock = executionBlock
-        
+
         timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
         timer?.schedule(deadline: .now(), repeating: interval)
         timer?.setEventHandler(handler: { [weak self] in
@@ -27,6 +27,7 @@ class GCDTimer {
     }
     
     func cancel() {
+        timer?.setEventHandler {}
         timer?.cancel()
         timer = nil
         executionBlock = nil

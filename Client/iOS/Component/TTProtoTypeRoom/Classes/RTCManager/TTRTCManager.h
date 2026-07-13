@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
                      roomID:(NSString *)roomID
                      userID:(NSString *)userID;
 
-- (void)leaveRoom;
+- (void)leave;
 
 @end
 

@@ -12,16 +12,14 @@ import SnapKit
 import BytePlusRTC
 
 @objc(VideoRotationViewController)
-class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
+class VideoRotationViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate {
     
-    var rtcVideo: ByteRTCVideo?
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom: ByteRTCRoom?
-    var users : Array = Array<ByteRTCRemoteStreamKey>()
-    
+    var userVideoStreamMap: Dictionary = Dictionary<String, ByteRTCStreamInfo>()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.postInterfaceOrientation(.unknown)
-        self.addOrientationNotice()
         
         self.createUI()
         self.buildRTCEngine()
@@ -30,14 +28,12 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
     
     deinit {
         
-        self.rtcRoom?.leaveRoom()
+        self.rtcRoom?.leave()
         self.rtcRoom?.destroy()
         self.rtcRoom = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
-        
-        self.setDeviceInterfaceOrientation(.portrait)
     }
     
     // MARK: Private method
@@ -76,18 +72,20 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
-                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         } else {
             self.joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom?.leaveRoom()
+            self.rtcRoom?.leave()
         }
     }
     
     func buildRTCEngine() {
         // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("video-config-rotate")
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         
         // Enable local audio and video collection
         self.rtcVideo?.startVideoCapture()
@@ -103,21 +101,21 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     func updateRenderView() {
         // Get the first user of the room
-        var remoteUser:ByteRTCRemoteStreamKey?
+        var remoteStreamInfo:ByteRTCStreamInfo?
         
-        for streamKey in self.users {
-            if remoteUser == nil && streamKey.roomId ==  self.roomSettingItem.text {
-                remoteUser = streamKey
+        for (userId, info) in self.userVideoStreamMap {
+            if info.roomId == self.roomSettingItem.text {
+                remoteStreamInfo = info
             }
         }
         
-        if (remoteUser != nil) {
-            self.bindRemoteRenderView(view: self.firstRemoteView,roomId: (remoteUser?.roomId)!,userId: (remoteUser?.userId)!)
+        if (remoteStreamInfo != nil) {
+            self.bindRemoteRenderView(view: self.firstRemoteView, roomId:remoteStreamInfo!.roomId, userId:remoteStreamInfo!.userId)
         }
     }
     
@@ -143,11 +141,11 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
             config.positionInPortraitMode = position
             config.positionInLandscapeMode = position
             
-            self.rtcVideo?.setVideoWatermark(.indexMain, withImagePath: filePath, withRtcWatermarkConfig: config)
+            self.rtcVideo?.setVideoWatermark(filePath, withRtcWatermarkConfig: config)
         } else {
             addWatermarkButton.setTitle(LocalizedString("button_add_watermark"), for: .normal)
             
-            self.rtcVideo?.clearVideoWatermark(.indexMain)
+            self.rtcVideo?.clearVideoWatermark()
         }
     }
     
@@ -170,17 +168,20 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
     
     func bindRemoteRenderView(view: UserVideoView, roomId: String, userId: String) {
         // Set the remote user video rendering view
+        var streamInfo = self.userVideoStreamMap[userId]
+        if streamInfo == nil {
+            return
+        }
+        var streamId = streamInfo?.streamId
+        if streamId == nil {
+            return
+        }
         let canvas = ByteRTCVideoCanvas.init()
         canvas.view = view.videoView
         canvas.renderMode = .hidden
         view.userId = userId
-
-        let streamKey = ByteRTCRemoteStreamKey.init()
-        streamKey.userId = userId
-        streamKey.roomId = roomId;
-        streamKey.streamIndex = .indexMain
         
-        self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
+        self.rtcVideo?.setRemoteVideoCanvas(streamId!, withCanvas: canvas)
     }
     
     func createUI() -> Void {
@@ -328,53 +329,27 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
         return view
     }()
     
-    // MARK: ByteRTCVideoDelegate & ByteRTCRoomDelegate
+    // MARK: ByteRTCEngineDelegate & ByteRTCRoomDelegate
+    //进房状态
     func rtcRoom(_ rtcRoom: ByteRTCRoom, onRoomStateChanged roomId: String, withUid uid: String, state: Int, extraInfo: String) {
         ToastComponents.shared.show(withMessage: "onRoomStateChanged uid: \(uid) state:\(state)")
         
     }
     
     // Remote user publishing stream
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId)")
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStreamVideo streamId: String, info: ByteRTCStreamInfo, isPublish: Bool) {
+        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(info.userId), isPub: \(isPublish)")
         
-        if type == .video || type == .both {
-            
-            let streamKey = ByteRTCRemoteStreamKey.init()
-            streamKey.userId = userId
-            streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .indexMain
-            
-            self.users.append(streamKey)
+        if isPublish {
+            self.userVideoStreamMap.updateValue(info, forKey: info.userId)
             
             DispatchQueue.main.async {
                 self.updateRenderView()
             }
-        }
-    }
-    
-     // Remote user cancels publishing flow
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
-        
-        DispatchQueue.main.async {
-            if type == .video || type == .both {
-                
-                // Remove from self.users
-                var itemsToRemove: [ByteRTCRemoteStreamKey] = []
-                
-                for streamKey in self.users {
-                    if streamKey.userId == userId {
-                        itemsToRemove.append(streamKey)
-                    }
-                }
-                
-                for item in itemsToRemove {
-                    if let index = self.users.firstIndex(of: item) {
-                        self.users.remove(at: index)
-                    }
-                }
-                
+        } else {
+            self.userVideoStreamMap.removeValue(forKey: info.userId)
+            
+            DispatchQueue.main.async {
                 for videoView in self.containerView.subviews {
                     if let view = videoView as? UserVideoView {
                         let userId = view.userId
@@ -384,19 +359,21 @@ class VideoRotationViewController: BaseViewController, ByteRTCVideoDelegate, Byt
                         }
                     }
                 }
-                
+            }
+            
+            DispatchQueue.main.async {
                 self.updateRenderView()
             }
         }
     }
     
     // Callback when local video size or direction changes
-    func rtcEngine(_ engine: ByteRTCVideo, onLocalVideoSizeChanged streamIndex: ByteRTCStreamIndex, withFrameInfo frameInfo: ByteRTCVideoFrameInfo) {
+    func rtcEngine(_ engine: ByteRTCEngine, onLocalVideoSizeChanged videoSource: ByteRTCVideoSource?, withFrameInfo frameInfo: ByteRTCVideoFrameInfo) {
         ToastComponents.shared.show(withMessage: "onLocalVideoSizeChanged width: \(frameInfo.width) height: \(frameInfo.height) rotation: \(frameInfo.rotation)")
     }
     
     // Remote users join the room
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo) {
         ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
         
     }

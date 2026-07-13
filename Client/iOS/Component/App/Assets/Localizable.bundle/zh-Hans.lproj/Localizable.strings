@@ -32,3 +32,5 @@
 "function_rtc_title" = "实时音视频";
 "developers_rtc_api_des" = "RTC 的 API 功能演示，包括音频、视频等模块";
 "unknown_error" = "未知错误";
+"medialive_pull_section_title" = "直播拉流";
+"medialive_pull_entry_title" = "直播拉流";

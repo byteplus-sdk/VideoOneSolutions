@@ -12,7 +12,7 @@
 @protocol LiveRTCMixerDelegate <NSObject>
 
 - (LivePushStreamParams *_Nonnull)pushStreamConfigForMixer;
-- (void)mixingEvent:(ByteRTCStreamMixingEvent)event taskId:(NSString *_Nullable)taskId error:(ByteRTCStreamMixingErrorCode)Code mixType:(ByteRTCMixedStreamType)mixType;
+- (void)mixingEvent:(ByteRTCMixedStreamTaskEvent)event taskId:(NSString *_Nullable)taskId error:(ByteRTCMixedStreamTaskErrorCode)Code mixType:(ByteRTCMixedStreamPushTargetType)mixType;
 
 @end
 
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface LiveRTCMixer : NSObject
 
-- (instancetype)initWithRTCEngine:(ByteRTCVideo *)rtcEngine;
+- (instancetype)initWithRTCEngine:(ByteRTCEngine *)rtcEngine;
 @property (nonatomic, weak) id<LiveRTCMixerDelegate> delegate;
 
 - (void)startPushMixStreamToCDN;

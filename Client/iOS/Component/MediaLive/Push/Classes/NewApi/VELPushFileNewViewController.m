@@ -6,7 +6,7 @@
 #import <ToolKit/Localizator.h>
 #define LOG_TAG @"NEW_PUSH_FILE"
 #define VEL_DEFINE_TO_STR(x) #x
-static int vel_push_new_file_index = 2;
+static int vel_push_new_file_index = 1;
 @interface VELPushFileNewViewController ()
 @property (nonatomic, strong) VELFileReader *videoFileReader;
 @property (nonatomic, strong) VELVideoFileConfig *videoConfig;
@@ -35,12 +35,6 @@ static int vel_push_new_file_index = 2;
         return;
     }
     [super startStreaming];
-    [self setPreviewRenderMode:(VELSettingPreviewRenderModeFit)];
-}
-- (void)applicationWillResignActive {
-}
-
-- (void)applicationDidBecomeActive {
 }
 
 - (void)changeFileType:(NSInteger)index {
@@ -88,10 +82,11 @@ static int vel_push_new_file_index = 2;
     __weak __typeof__(self)weakSelf = self;
     [self.videoFileReader startWithDataCallBack:^(NSData * _Nullable data, CMTime pts) {
         __strong __typeof__(weakSelf)self = weakSelf;
-        VeLiveVideoFrame *videoFrame = [[VeLiveVideoFrame alloc] init];
+        ByteRTCVideoFrameData *videoFrame = [[ByteRTCVideoFrameData alloc] init];
         videoFrame.width = config.width;
         videoFrame.height = config.height;
-        videoFrame.pts = pts;
+        videoFrame.contentType = ByteRTCVideoContentTypeNormalFrame;
+        videoFrame.timestamp = pts;
         if (config.convertType == VELVideoFileConvertTypeTextureID) {
             [self.imageUtils beginCurrentContext];
             VELPushImageBuffer *imgBuffer = [self.imageUtils allocBufferWithWidth:config.width
@@ -103,49 +98,64 @@ static int vel_push_new_file_index = 2;
             }
             [data getBytes:imgBuffer.buffer length:data.length];
             id <VELPushGLTexture> texture = [self.imageUtils transforBufferToTexture:imgBuffer];
-            videoFrame.bufferType = VeLiveVideoBufferTypeTexture;
-            videoFrame.pixelFormat = VeLivePixelFormat2DTexture;
-            videoFrame.textureId = texture.texture;
-            [self.pusher pushExternalVideoFrame:videoFrame];
-        } else if (config.convertType == VELVideoFileConvertTypePixelBuffer) {
-            videoFrame.bufferType = VeLiveVideoBufferTypePixelBuffer;
+            videoFrame.bufferType = ByteRTCVideoBufferTypeGLTexture;
+            videoFrame.pixelFormat = ByteRTCVideoPixelFormatTexture2D;
+            void *planeData[1] = { (void *)(uintptr_t)texture.texture };
+            int planeStride[1] = { config.width * 4 };
+            videoFrame.planeDataArray = planeData;
+            videoFrame.planeStrideArray = planeStride;
+            videoFrame.numberOfPlanes = 1;
+            [self.rtcEngine pushExternalVideoFrame:videoFrame];
+        } else if (config.convertType == VELVideoFileConvertTypePixelBuffer || config.convertType == VELVideoFileConvertTypeSampleBuffer) {
             CVPixelBufferRef pixelBuffer = [VELPixelBufferManager fromBGRAData:data width:config.width height:config.height];
-            videoFrame.pixelBuffer = pixelBuffer;
-            [videoFrame setReleaseCallback:^{
-                CVPixelBufferRelease(pixelBuffer);
-            }];
-            [self.pusher pushExternalVideoFrame:videoFrame];
-        } else if (config.convertType == VELVideoFileConvertTypeSampleBuffer) {
-            videoFrame.bufferType = VeLiveVideoBufferTypeSampleBuffer;
-            CVPixelBufferRef pixelBuffer = [VELPixelBufferManager fromBGRAData:data width:config.width height:config.height];
-            CMSampleBufferRef sampleBuffer = [VELPixelBufferManager sampleBufferFromPixelBuffer:pixelBuffer];
-            videoFrame.sampleBuffer = sampleBuffer;
-            [videoFrame setReleaseCallback:^{
-                CFRelease(sampleBuffer);
-                CVPixelBufferRelease(pixelBuffer);
-            }];
-            [self.pusher pushExternalVideoFrame:videoFrame];
+            videoFrame.bufferType = ByteRTCVideoBufferTypeCVPixelBuffer;
+            videoFrame.cvpixelbuffer = pixelBuffer;
+            [self.rtcEngine pushExternalVideoFrame:videoFrame];
+            CVPixelBufferRelease(pixelBuffer);
         } else {
-            videoFrame.bufferType = VeLiveVideoBufferTypeNSData;
-            videoFrame.data = data;
+            videoFrame.bufferType = ByteRTCVideoBufferTypeRawMemory;
+            void *planeDataArray[4];
+            int planeStrideArray[4];
             switch (config.fileType) {
                 case VELVideoFileType_BGRA:
-                    videoFrame.pixelFormat = VeLivePixelFormatBGRA32;
+                    videoFrame.pixelFormat = ByteRTCVideoPixelFormatBGRA;
+                    videoFrame.numberOfPlanes = 1;
+                    planeDataArray[0] = data.bytes;
+                    planeStrideArray[0] = config.width * 4;
                     break;
                 case VELVideoFileType_NV12:
-                    videoFrame.pixelFormat = VeLivePixelFormatNV12;
+                    videoFrame.pixelFormat = ByteRTCVideoPixelFormatNV12;
+                    videoFrame.numberOfPlanes = 2;
+                    planeDataArray[0] = data.bytes;
+                    planeDataArray[1] = data.bytes + config.width * config.height;
+                    planeStrideArray[0] = config.width;
+                    planeStrideArray[1] = config.width;
                     break;
                 case VELVideoFileType_NV21:
-                    videoFrame.pixelFormat = VeLivePixelFormatNV21;
+                    videoFrame.pixelFormat = ByteRTCVideoPixelFormatNV21;
+                    videoFrame.numberOfPlanes = 2;
+                    planeDataArray[0] = data.bytes;
+                    planeDataArray[1] = data.bytes + config.width * config.height;
+                    planeStrideArray[0] = config.width;
+                    planeStrideArray[1] = config.width;
                     break;
                 case VELVideoFileType_YUV:
-                    videoFrame.pixelFormat = VeLivePixelFormatI420;
+                    videoFrame.pixelFormat = ByteRTCVideoPixelFormatI420;
+                    videoFrame.numberOfPlanes = 3;
+                    planeDataArray[0] = data.bytes;
+                    planeDataArray[1] = data.bytes + config.width * config.height;
+                    planeDataArray[2] = data.bytes + config.width * config.height / 4;
+                    planeStrideArray[0] = config.width;
+                    planeStrideArray[1] = config.width / 2;
+                    planeStrideArray[2] = config.width / 2;
                     break;
-                default:
-                    return;
+                case VELVideoFileType_UnKnown:
+                    videoFrame.pixelFormat = ByteRTCVideoPixelFormatUnknown;
                     break;
             }
-            [self.pusher pushExternalVideoFrame:videoFrame];
+            videoFrame.planeDataArray = planeDataArray;
+            videoFrame.planeStrideArray = planeStrideArray;
+            [self.rtcEngine pushExternalVideoFrame:videoFrame];
         }
     } completion:^(NSError * _Nullable error, BOOL isEnd) {
         
@@ -161,12 +171,12 @@ static int vel_push_new_file_index = 2;
 
 - (void)startVideoCapture {
     [self startVideoFileReader];
-    [self.pusher startVideoCapture:(VeLiveVideoCaptureExternal)];
+    [self.rtcEngine setVideoSourceType:ByteRTCVideoSourceTypeExternal];
 }
 
 - (void)stopVideoCapture {
     [self stopVideoFileReader];
-    [self.pusher stopVideoCapture];
+    [self.rtcEngine stopVideoCapture];
 }
 
 - (void)startAudioFileReader {
@@ -194,13 +204,12 @@ static int vel_push_new_file_index = 2;
     __weak __typeof__(self)weakSelf = self;
     [self.audioFileReader startWithDataCallBack:^(NSData * _Nullable data, CMTime pts) {
         __strong __typeof__(weakSelf)self = weakSelf;
-        VeLiveAudioFrame *audioFrame = [[VeLiveAudioFrame alloc] init];
-        audioFrame.bufferType = VeLiveAudioBufferTypeNSData;
-        audioFrame.data = data;
-        audioFrame.sampleRate = config.sampleRate;
-        audioFrame.channels = config.channels;
-        audioFrame.pts = pts;
-        [self.pusher pushExternalAudioFrame:audioFrame];
+        ByteRTCAudioFrame *audioFrame = [[ByteRTCAudioFrame alloc] init];
+        audioFrame.buffer = data;
+        audioFrame.samples = (int)(data.length / (2 * config.channels));
+        audioFrame.channel = (ByteRTCAudioChannel)config.channels;
+        audioFrame.sampleRate = (ByteRTCAudioSampleRate)config.sampleRate;
+        [self.rtcEngine pushExternalAudioFrame:audioFrame];
     } completion:^(NSError * _Nullable error, BOOL isEnd) {
     }];
 }
@@ -214,12 +223,12 @@ static int vel_push_new_file_index = 2;
 
 - (void)startAudioCapture {
     [self startAudioFileReader];
-    [self.pusher startAudioCapture:(VeLiveAudioCaptureExternal)];
+    [self.rtcEngine setAudioSourceType:ByteRTCAudioSourceTypeExternal];
 }
 
 - (void)stopAudioCapture {
     [self stopAudioFileReader];
-    [self.pusher stopAudioCapture];
+    [self.rtcEngine stopAudioCapture];
 }
 
 - (void)setupAudioCapture {
@@ -241,4 +250,3 @@ static int vel_push_new_file_index = 2;
     [VELFileTool getVideoFileWithConfig:config inView:self.view completion:completion];
 }
 @end
-

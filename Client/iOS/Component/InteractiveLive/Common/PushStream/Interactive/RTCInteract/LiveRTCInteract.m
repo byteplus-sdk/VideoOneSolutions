@@ -16,8 +16,6 @@
 @property (nonatomic, strong) LivePushStreamParams *streamParams;
 
 // Mix streaming status
-@property (atomic, assign) RTCInteractState interactState;
-
 @property (nonatomic, copy) NSArray<LiveUserModel *> *userList;
 @property (atomic, assign) BOOL hasForwardStreamToRooms;
 @property (atomic, assign) BOOL hasPublishStream;
@@ -32,7 +30,6 @@
 - (instancetype)initWithPushStreamParams:(LivePushStreamParams *)params {
     if (self = [super init]) {
         _streamParams = params;
-        _interactState = RTCInteractStateInit;
         _playMode = LiveInteractivePlayModeNormal;
         _hasForwardStreamToRooms = NO;
         _hasPublishStream = NO;
@@ -49,34 +46,48 @@
     _streamParams = params;
 }
 
-- (BOOL)isInteractive {
-    return self.interactState == RTCInteractStateJoin || self.interactState == RTCInteractStateJoinSuccess;
-}
-
 - (BOOL)isAnchorSelf:(NSString *)uid {
     return [self p_isHost] && [self p_isCurrentUser:uid];
 }
 
 
 #pragma mark -- LiveInteractivePushStreaming
-
-- (void)startInteractive {
-    VOLogI(VOInteractiveLive,@"aaa startInteractive rtc");
-    if (![self p_isHost]) {
+- (void)startPushStream {
+    VOLogI(VOInteractiveLive,@"aaa startPushStream");
+    if ([self p_isHost]) {
         [[LiveRTCManager shareRtc] switchVideoCapture:YES];
         [[LiveRTCManager shareRtc] switchAudioCapture:YES];
-    } else {
         if (!_rtcMixer) {
             self.rtcMixer = [[LiveRTCMixer alloc] initWithRTCEngine:[LiveRTCManager shareRtc].rtcEngineKit];
         }
         self.rtcMixer.delegate = self;
     }
+    [self joinChannel];
+    [self p_publishStream];
 
-    if (![self isInteractive]) {
-        [self joinChannel];
-    } else if ([self p_supportPublish]) {
-        [self p_publishStream];
+    [LiveRTCManager shareRtc].delegate = self;
+}
+
+- (void)stopPushStream {
+    [[LiveRTCManager shareRtc] leaveRTCRoom];
+    [self.rtcMixer stopPushStreamToCDN];
+}
+
+- (void)startInteractive {
+    VOLogI(VOInteractiveLive,@"aaa startInteractive rtc");
+    if ([self p_isHost]) {
+        if (!_rtcMixer) {
+            self.rtcMixer = [[LiveRTCMixer alloc] initWithRTCEngine:[LiveRTCManager shareRtc].rtcEngineKit];
+        }
+    } else {
+        self.rtcMixer.delegate = self;
+        [[LiveRTCManager shareRtc] switchVideoCapture:YES];
+        [[LiveRTCManager shareRtc] switchAudioCapture:YES];
     }
+
+    [self joinChannel];
+    [self p_publishStream];
+    
     [LiveRTCManager shareRtc].delegate = self;
 }
 
@@ -92,22 +103,35 @@
         }
         // Stop span the room retweet stream
         [[LiveRTCManager shareRtc] stopForwardStreamToRooms];
-        [self.rtcMixer stopPushStreamToCDN];
         self.hasPublishStream = NO;
     } else {
         [[LiveRTCManager shareRtc] switchVideoCapture:NO];
         [[LiveRTCManager shareRtc] switchAudioCapture:NO];
     }
-    [[LiveRTCManager shareRtc] leaveRTCRoom];
-    self.interactState = RTCInteractStateLeave;
     self.playMode = LiveInteractivePlayModeNormal;
 }
+
+- (void)startNormalStreaming {
+    VOLogI(VOInteractiveLive,@"aaa startNormal");
+    if ([self p_isHost]) {
+        [[LiveRTCManager shareRtc] switchVideoCapture:YES];
+        [[LiveRTCManager shareRtc] switchAudioCapture:YES];
+        if (!_rtcMixer) {
+            self.rtcMixer = [[LiveRTCMixer alloc] initWithRTCEngine:[LiveRTCManager shareRtc].rtcEngineKit];
+        }
+        self.rtcMixer.delegate = self;
+    }
+    [self joinChannel];
+    [self p_publishStream];
+
+    [LiveRTCManager shareRtc].delegate = self;
+}
+
 
 - (void)joinChannel {
     [[LiveRTCManager shareRtc] joinRTCRoomByToken:self.streamParams.rtcToken
                                         rtcRoomID:self.streamParams.rtcRoomId
                                            userID:self.streamParams.currerntUserId];
-    self.interactState = RTCInteractStateJoin;
 }
 
 - (void)switchPlayMode:(LiveInteractivePlayMode)playMode {
@@ -121,10 +145,8 @@
 }
 
 - (void)startForwardStreamToRooms:(NSString *)roomId token:(NSString *)token {
-    if (self.interactState == RTCInteractStateJoinSuccess) {
-        [[LiveRTCManager shareRtc] startForwardStreamToRooms:roomId token:token];
-        self.hasForwardStreamToRooms = YES;
-    }
+    [[LiveRTCManager shareRtc] startForwardStreamToRooms:roomId token:token];
+    self.hasForwardStreamToRooms = YES;
 }
 
 - (void)updatePushStreamResolution:(CGSize)resolution {
@@ -156,14 +178,17 @@
 
 - (void)p_publishStream {
     VOLogI(VOInteractiveLive,@"aaa p_publishStream");
+    if (![self p_supportPublish]) {
+        VOLogI(VOInteractiveLive,@"aaa p_publishStream not host");
+        return;
+    }
     NSAssert(self.streamParams.pushUrl, @"rtc push url is nil");
     [self.rtcMixer startPushMixStreamToCDN];
     self.hasPublishStream = YES;
 }
 
 - (void)updateTranscodingIfNeed {
-    if (self.userList.count && [self p_isHost] &&
-        (self.interactState == RTCInteractStateJoin || self.interactState == RTCInteractStateJoinSuccess)) {
+    if (self.userList.count && [self p_isHost]) {
         WeakSelf;
         dispatch_queue_async_safe(dispatch_get_main_queue(), ^{
             StrongSelf;
@@ -224,11 +249,8 @@
                    uid:(nonnull NSString *)uid {
     if (joinModel.joinType == 0) {
         if ([self p_isCurrentUser:uid]) {
-            self.interactState = RTCInteractStateJoinSuccess;
             VOLogI(VOInteractiveLive,@"aaa joinsuccess %@ hostId: %@", uid, self.streamParams.host.uid);
-            if ([self p_supportPublish] && !self.hasPublishStream) {
-                [self p_publishStream];
-            }
+            [self p_publishStream];
         }
         if ([self.delegate respondsToSelector:@selector(rtcInteract:didJoinChannel:withUid:elapsed:)]) {
             [self.delegate rtcInteract:self didJoinChannel:joinModel.roomId withUid:uid elapsed:joinModel.elapsed];
@@ -257,10 +279,7 @@
     if ([self.delegate respondsToSelector:@selector(rtcInteract:onUserPublishStream:)]) {
         [self.delegate rtcInteract:self onUserPublishStream:uid];
     }
-    //    if ([self isAnchorSelf:uid] && self.playMode == LiveInteractivePlayModePK) {
-    //    } else {
     [self updateTranscodingIfNeed];
-    //    }
 }
 
 - (void)liveRTCManager:(LiveRTCManager *)manager onUserLeave:(NSString *)uid reason:(ByteRTCUserOfflineReason)reason {
@@ -272,8 +291,8 @@
     return self.streamParams;
 }
 
-- (void)mixingEvent:(ByteRTCStreamMixingEvent)event taskId:(NSString *_Nullable)taskId error:(ByteRTCStreamMixingErrorCode)Code mixType:(ByteRTCMixedStreamType)mixType {
-    if (event == ByteRTCStreamMixingEventStartSuccess && Code == ByteRTCStreamMixingErrorCodeOK) {
+- (void)mixingEvent:(ByteRTCMixedStreamTaskEvent)event taskId:(NSString *_Nullable)taskId error:(ByteRTCMixedStreamTaskErrorCode)Code mixType:(ByteRTCMixedStreamPushTargetType)mixType {
+    if (event == ByteRTCMixedStreamTaskEventStartSuccess && Code == ByteRTCMixedStreamTaskErrorCodeOK) {
         if ([self.delegate respondsToSelector:@selector(rtcInteract:onMixingStreamSuccess:)]) {
             [self.delegate rtcInteract:self onMixingStreamSuccess:mixType];
         }

@@ -10,7 +10,8 @@ import UIKit
 import BytePlusRTC
 
 class CustomVideoRenderView: UIView,ByteRTCVideoSinkDelegate {
-    
+    var lastLogTime: Date?
+
     lazy var imageView: UIImageView = {
         let imageView = UIImageView.init()
         imageView.contentMode = .scaleAspectFill
@@ -64,7 +65,11 @@ class CustomVideoRenderView: UIView,ByteRTCVideoSinkDelegate {
     
     // MARK: ByteRTCVideoSinkDelegate
     func onFrame(_ videoFrame: ByteRTCVideoFrame) {
-        self.render(imageBuffer: videoFrame.textureBuf!, forImageView: self.imageView, rotation: videoFrame.rotation)
+        if checkLogTimeVaild() {
+            ToastComponents.shared.show(withMessage: "onFrame")
+        }
+
+        self.render(imageBuffer: videoFrame.cvpixelbuffer!, forImageView: self.imageView, rotation: videoFrame.rotation)
     }
     
     func getRenderElapse() -> Int32 {
@@ -73,6 +78,16 @@ class CustomVideoRenderView: UIView,ByteRTCVideoSinkDelegate {
     
     func renderPixelBuffer(_ pixelBuffer: CVPixelBuffer, rotation: ByteRTCVideoRotation, contentType: ByteRTCVideoContentType, extendedData: Data?) {
         
+    }
+    
+    func checkLogTimeVaild() -> Bool {
+        let currentTime = Date()
+        if let lastLogTime = self.lastLogTime, currentTime.timeIntervalSince(lastLogTime) < 5 {
+            return false
+        }
+        
+        self.lastLogTime = currentTime
+        return true
     }
 
 }

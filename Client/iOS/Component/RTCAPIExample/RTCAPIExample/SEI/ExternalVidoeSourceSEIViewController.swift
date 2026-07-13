@@ -4,11 +4,11 @@ import SnapKit
 import BytePlusRTC
 
 @objc(ExternalVidoeSourceSEIViewController)
-class ExternalVidoeSourceSEIViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate, CameraDelegate {
+class ExternalVidoeSourceSEIViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate, CameraDelegate {
     
-    var rtcVideo: ByteRTCVideo?
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom: ByteRTCRoom?
-    var users : Array = Array<ByteRTCRemoteStreamKey>()
+    var userVideoStreamMap: Dictionary = Dictionary<String, ByteRTCStreamInfo>()
     
     var customCamera: CustomVideoCapture?
     var seiMessage: String?
@@ -23,11 +23,11 @@ class ExternalVidoeSourceSEIViewController: BaseViewController, ByteRTCVideoDele
     
     deinit {
         
-        self.rtcRoom?.leaveRoom()
+        self.rtcRoom?.leave()
         self.rtcRoom?.destroy()
         self.rtcRoom = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -67,24 +67,27 @@ class ExternalVidoeSourceSEIViewController: BaseViewController, ByteRTCVideoDele
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
 
-                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         }
         else {
             joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom?.leaveRoom()
+            self.rtcRoom?.leave()
         }
     }
     
     func buildRTCEngine() {
         // Create engine.
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         
         // Start local audio capture.
         self.rtcVideo?.startAudioCapture()
         
         // Enable external video source.
-        self.rtcVideo?.setVideoSourceType(.external, WithStreamIndex: .indexMain)
+        self.rtcVideo?.setVideoSourceType(.external)
         self.customCamera = CustomVideoCapture()
         self.customCamera?.delegate = self
         
@@ -100,21 +103,21 @@ class ExternalVidoeSourceSEIViewController: BaseViewController, ByteRTCVideoDele
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     func updateRenderView() {
         // Get the first room user.
-        var remoteUser:ByteRTCRemoteStreamKey?
+        var remoteStreamInfo:ByteRTCStreamInfo?
         
-        for streamKey in self.users {
-            if remoteUser == nil && streamKey.roomId ==  self.roomSettingItem.text {
-                remoteUser = streamKey
+        for (userId, info) in self.userVideoStreamMap {
+            if info.roomId == self.roomSettingItem.text {
+                remoteStreamInfo = info
             }
         }
         
-        if (remoteUser != nil) {
-            self.bindRemoteRenderView(view: self.firstRemoteView,roomId: (remoteUser?.roomId)!,userId: (remoteUser?.userId)!)
+        if (remoteStreamInfo != nil) {
+            self.bindRemoteRenderView(view: self.firstRemoteView, roomId:remoteStreamInfo!.roomId, userId: remoteStreamInfo!.userId)
         }
     }
     
@@ -135,17 +138,21 @@ class ExternalVidoeSourceSEIViewController: BaseViewController, ByteRTCVideoDele
     
     func bindRemoteRenderView(view: UserVideoView, roomId: String, userId: String) {
         // Set remote user render view.
+        var streamInfo = self.userVideoStreamMap[userId]
+        if streamInfo == nil {
+            return
+        }
+        var streamId = streamInfo?.streamId
+        if streamId == nil {
+            return
+        }
+        
         let canvas = ByteRTCVideoCanvas.init()
         canvas.view = view.videoView
         canvas.renderMode = .hidden
         view.userId = userId
-
-        let streamKey = ByteRTCRemoteStreamKey.init()
-        streamKey.userId = userId;
-        streamKey.roomId = roomId;
-        streamKey.streamIndex = .indexMain
         
-        self.rtcVideo?.setRemoteVideoCanvas(streamKey, withCanvas: canvas)
+        self.rtcVideo?.setRemoteVideoCanvas(streamId!, withCanvas: canvas)
     }
     
     func createUI() -> Void {
@@ -265,45 +272,21 @@ class ExternalVidoeSourceSEIViewController: BaseViewController, ByteRTCVideoDele
     // Status of entering the room.
     func rtcRoom(_ rtcRoom: ByteRTCRoom, onRoomStateChanged roomId: String, withUid uid: String, state: Int, extraInfo: String) {
         ToastComponents.shared.show(withMessage: "onRoomStateChanged uid: \(uid) state:\(state)")
+        
     }
     
     // Remote user publish stream.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStream userId: String, type: ByteRTCMediaStreamType) {
-        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(userId)")
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserPublishStreamVideo streamId: String, info: ByteRTCStreamInfo, isPublish: Bool) {
+        ToastComponents.shared.show(withMessage: "onUserPublishStream uid: \(info.userId), isPub: \(isPublish)")
         
-        if type == .video || type == .both {
-            
-            let streamKey = ByteRTCRemoteStreamKey.init()
-            streamKey.userId = userId;
-            streamKey.roomId = rtcRoom.getId();
-            streamKey.streamIndex = .indexMain
-            
-            self.users.append(streamKey)
+        if isPublish {
+            self.userVideoStreamMap.updateValue(info, forKey: info.userId)
             
             DispatchQueue.main.async {
                 self.updateRenderView()
             }
-        }
-    }
-    
-     // Remote user cancel publish stream.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserUnpublishStream userId: String, type: ByteRTCMediaStreamType, reason: ByteRTCStreamRemoveReason) {
-        ToastComponents.shared.show(withMessage: "onUserUnpublishStream uid: \(userId)")
-        
-        if type == .video || type == .both {
-            var itemsToRemove: [ByteRTCRemoteStreamKey] = []
-            
-            for streamKey in self.users {
-                if streamKey.userId == userId {
-                    itemsToRemove.append(streamKey)
-                }
-            }
-            
-            for item in itemsToRemove {
-                if let index = self.users.firstIndex(of: item) {
-                    self.users.remove(at: index)
-                }
-            }
+        } else {
+            self.userVideoStreamMap.removeValue(forKey: info.userId)
             
             DispatchQueue.main.async {
                 for videoView in self.containerView.subviews {
@@ -322,9 +305,10 @@ class ExternalVidoeSourceSEIViewController: BaseViewController, ByteRTCVideoDele
             }
         }
     }
+
     
     // Remote user joined the room.
-    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo, elapsed: Int) {
+    func rtcRoom(_ rtcRoom: ByteRTCRoom, onUserJoined userInfo: ByteRTCUserInfo) {
         ToastComponents.shared.show(withMessage: "onUserJoined uid: \(userInfo.userId)")
         
     }
@@ -345,19 +329,19 @@ class ExternalVidoeSourceSEIViewController: BaseViewController, ByteRTCVideoDele
             return
         }
         
-        let newFrame = ByteRTCVideoFrame()
-        newFrame.format = 12
-        newFrame.contentType = .normalFrame
-        newFrame.time = getCMTime()
+        let newFrame = ByteRTCVideoFrameData()
+        newFrame.bufferType = .cvPixelBuffer
+        newFrame.timestamp = getCMTime()
         newFrame.width = Int32(CVPixelBufferGetWidth(pixelBufferRef))
         newFrame.height = Int32(CVPixelBufferGetHeight(pixelBufferRef))
-        newFrame.textureBuf = pixelBufferRef
-        newFrame.colorSpace = .unknown
+        newFrame.cvpixelbuffer = pixelBufferRef
         newFrame.rotation = .rotation90
+        newFrame.seiData = nil
+        
         
         // Add SEI message.
         if let seiData = self.seiMessage?.data(using: .utf8) {
-            newFrame.extendedData = seiData
+            newFrame.seiData = seiData
         }
         
         if let ret = rtcVideo?.pushExternalVideoFrame(newFrame), ret != 0 {

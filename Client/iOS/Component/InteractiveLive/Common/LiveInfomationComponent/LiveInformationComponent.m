@@ -4,6 +4,8 @@
 
 #import "LiveInformationComponent.h"
 #import "LiveInfomationContentView.h"
+#import "LiveRTCInteract.h"
+#import "LiveRTCManager.h"
 
 @interface LiveInformationComponent ()
 
@@ -13,6 +15,7 @@
 
 @property (nonatomic, strong) LiveInfomationContentView *contentView;
 @property (nonatomic, strong) LiveInformationStreamModel *streamModel;
+@property (nonatomic, strong) NSTimer *refreshTimer;
 
 @end
 
@@ -30,6 +33,9 @@
 #pragma mark - Publish Action
 
 - (void)show {
+    if (self.contentView.superview != nil || self.refreshTimer != nil) {
+        return;
+    }
     if (![self.linkSession isInteracting]) {
         [[ToastComponent shareToastComponent] showLoading];
     }
@@ -54,45 +60,108 @@
         [self.contentView.superview layoutIfNeeded];
     }];
 
+    [self updateStreamModelBasicIfNeeded];
+    [self updateStreamModelRealTime];
     self.contentView.basicDataLists = [self getBasicDataLists];
     self.contentView.realTimeDataLists = [self getRealTimeDataLists];
-    WeakSelf;
-    self.linkSession.normalPushStreaming.streamLogCallback = ^(NSInteger bitrate, NSDictionary *log, NSDictionary *extra) {
-        StrongSelf;
-        if ([log[@"event_key"] isEqualToString:@"push_stream"]) {
-            [sself.streamModel parseStreamLog:log extra:extra];
-            sself.contentView.basicDataLists = [sself getBasicDataLists];
-            sself.contentView.realTimeDataLists = [sself getRealTimeDataLists];
-            [sself.contentView refresh];
-            [[ToastComponent shareToastComponent] dismiss];
+    [self.contentView refresh];
+    [[ToastComponent shareToastComponent] dismiss];
+
+    // 面板可见期间每秒刷新一次实时指标；加入 CommonModes 防止列表滚动时暂停。
+    __weak __typeof(self) wself = self;
+    NSTimer *timer = [NSTimer timerWithTimeInterval:1.0 repeats:YES block:^(__unused NSTimer * _Nonnull t) {
+        __strong __typeof(wself) sself = wself;
+        if (!sself) {
+            [t invalidate];
+            return;
         }
-    };
+        [sself updateStreamModelRealTime];
+        sself.contentView.realTimeDataLists = [sself getRealTimeDataLists];
+        [sself.contentView refresh];
+    }];
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+    self.refreshTimer = timer;
 }
 
 #pragma mark - Private Action
 
+- (LivePushStreamParams *)currentPushStreamParams {
+    id streaming = nil;
+    @try {
+        streaming = [self.linkSession valueForKey:@"interactivePushStreaming"];
+    } @catch (__unused NSException *exception) {
+        streaming = nil;
+    }
+    if ([streaming isKindOfClass:LiveRTCInteract.class]) {
+        return ((LiveRTCInteract *)streaming).streamParams;
+    }
+    return nil;
+}
+
+- (void)updateStreamModelBasicIfNeeded {
+    // 基础信息来源于当前推流配置，面板展示期间保持稳定
+    LivePushStreamParams *params = [self currentPushStreamParams];
+    if (!params) {
+        return;
+    }
+    self.streamModel.defaultBitrate = MAX(0, params.defaultBitrate);
+    self.streamModel.minBitrate = MAX(0, params.minBitrate);
+    self.streamModel.maxBitrate = MAX(0, params.maxBitrate);
+    self.streamModel.defaultFps = MAX(0, params.fps);
+
+    NSString *resolution = nil;
+    if (params.width > 0 && params.height > 0) {
+        resolution = [NSString stringWithFormat:@"%ld*%ld", (long)params.width, (long)params.height];
+    } else {
+        resolution = @"--";
+    }
+    self.streamModel.captureResolution = resolution;
+    self.streamModel.pushResolution = resolution.copy;
+
+    // 编码格式：当前 RTC 推流固定使用 H264 硬编（见 LiveRTCMixer）
+    self.streamModel.encodeFormat = @"H264(hardware)";
+
+    // 自适应码率：min/max 不相等即认为启用了动态码率（normal），否则为 none
+    BOOL adaptiveEnabled = (params.minBitrate > 0
+                            && params.maxBitrate > 0
+                            && params.minBitrate != params.maxBitrate);
+    self.streamModel.adaptiveBitrateMode = adaptiveEnabled ? @"normal" : @"none";
+}
+
+- (void)updateStreamModelRealTime {
+    LiveRTCManager *rtc = [LiveRTCManager shareRtc];
+    self.streamModel.captureFps = MAX(0, rtc.captureFps);
+    self.streamModel.transFps = MAX(0, rtc.transportFps);
+    self.streamModel.realTimeEncodeBitrate = MAX(0, rtc.encodeBitrateKbps);
+    self.streamModel.realTimeTransBitrate = MAX(0, rtc.transportBitrateKbps);
+    if (rtc.encodeResolution.width > 0 && rtc.encodeResolution.height > 0) {
+        self.streamModel.pushResolution = [NSString stringWithFormat:@"%ld*%ld",
+                                           (long)rtc.encodeResolution.width,
+                                           (long)rtc.encodeResolution.height];
+    }
+}
+
 - (NSArray *)getRealTimeDataLists {
-    BOOL interacting = [self.linkSession isInteracting];
     NSMutableArray *list = [[NSMutableArray alloc] init];
     LiveInfomationModel *model1 = [[LiveInfomationModel alloc] init];
     model1.title = LocalizedString(@"real-time_capture_fps");
-    model1.value = interacting ? @"0" : [NSString stringWithFormat:@"%ld", self.streamModel.captureFps];
+    model1.value = [NSString stringWithFormat:@"%ld", self.streamModel.captureFps];
     [list addObject:model1];
 
     LiveInfomationModel *model2 = [[LiveInfomationModel alloc] init];
     model2.title = LocalizedString(@"real-time_transmission_fps");
-    model2.value = interacting ? @"0" : [NSString stringWithFormat:@"%ld", self.streamModel.transFps];
+    model2.value = [NSString stringWithFormat:@"%ld", self.streamModel.transFps];
     [list addObject:model2];
 
     LiveInfomationModel *model3 = [[LiveInfomationModel alloc] init];
     model3.title = LocalizedString(@"real-time_encoding_bitrate");
-    model3.value = interacting ? @"0 kbps" : [NSString stringWithFormat:@"%ld kbps", self.streamModel.realTimeEncodeBitrate];
+    model3.value = [NSString stringWithFormat:@"%ld kbps", self.streamModel.realTimeEncodeBitrate];
     model3.isSegmentation = YES;
     [list addObject:model3];
 
     LiveInfomationModel *model4 = [[LiveInfomationModel alloc] init];
     model4.title = LocalizedString(@"real-time_transmission_bitrate");
-    model4.value = interacting ? @"0 kbps" : [NSString stringWithFormat:@"%ld kbps", self.streamModel.realTimeTransBitrate];
+    model4.value = [NSString stringWithFormat:@"%ld kbps", self.streamModel.realTimeTransBitrate];
     [list addObject:model4];
 
     return [list copy];
@@ -102,17 +171,17 @@
     NSMutableArray *list = [[NSMutableArray alloc] init];
     LiveInfomationModel *model1 = [[LiveInfomationModel alloc] init];
     model1.title = LocalizedString(@"initial_video_bitrate");
-    model1.value = [NSString stringWithFormat:@"%ld kbps", self.streamModel.defaultBitrate / 1000];
+    model1.value = [NSString stringWithFormat:@"%ld kbps", self.streamModel.defaultBitrate];
     [list addObject:model1];
 
     LiveInfomationModel *model2 = [[LiveInfomationModel alloc] init];
     model2.title = LocalizedString(@"maximum_video_bitrate");
-    model2.value = [NSString stringWithFormat:@"%ld kbps", self.streamModel.maxBitrate / 1000];
+    model2.value = [NSString stringWithFormat:@"%ld kbps", self.streamModel.maxBitrate];
     [list addObject:model2];
 
     LiveInfomationModel *model3 = [[LiveInfomationModel alloc] init];
     model3.title = LocalizedString(@"minimum_video_bitrate");
-    model3.value = [NSString stringWithFormat:@"%ld kbps", self.streamModel.minBitrate / 1000];
+    model3.value = [NSString stringWithFormat:@"%ld kbps", self.streamModel.minBitrate];
     [list addObject:model3];
 
     LiveInfomationModel *model4 = [[LiveInfomationModel alloc] init];
@@ -128,13 +197,13 @@
 
     LiveInfomationModel *model6 = [[LiveInfomationModel alloc] init];
     model6.title = LocalizedString(@"capture_fps");
-    model6.value = [NSString stringWithFormat:@"%ld", self.streamModel.captureFps];
+    model6.value = [NSString stringWithFormat:@"%ld", self.streamModel.defaultFps];
     [list addObject:model6];
 
     LiveInfomationModel *model7 = [[LiveInfomationModel alloc] init];
     model7.title = LocalizedString(@"encoding_format");
     //h264/hardware = 1
-    model7.value = LocalizedString(self.streamModel.encodeFormat);
+    model7.value = self.streamModel.encodeFormat;
     [list addObject:model7];
 
     LiveInfomationModel *model8 = [[LiveInfomationModel alloc] init];
@@ -151,6 +220,10 @@
 }
 
 - (void)dismiss {
+    if (self.refreshTimer) {
+        [self.refreshTimer invalidate];
+        self.refreshTimer = nil;
+    }
     if (self.infoMaskView.superview) {
         [self.infoMaskView removeFromSuperview];
         self.infoMaskView = nil;
@@ -160,8 +233,21 @@
         [self.contentView removeFromSuperview];
         self.contentView = nil;
     }
-    self.linkSession.normalPushStreaming.streamLogCallback = nil;
     [[ToastComponent shareToastComponent] dismiss];
+}
+
+- (void)dealloc {
+    if (_refreshTimer) {
+        [_refreshTimer invalidate];
+        _refreshTimer = nil;
+    }
+}
+
+- (void)setRefreshTimer:(NSTimer *)refreshTimer {
+    if (_refreshTimer != refreshTimer) {
+        [_refreshTimer invalidate];
+        _refreshTimer = refreshTimer;
+    }
 }
 
 #pragma mark - Getter

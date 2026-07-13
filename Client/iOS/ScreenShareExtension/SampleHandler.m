@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "SampleHandler.h"
 #import <Appconfig/BuildConfig.h>
-#import <VeLiveReplayKitExtension/VeLiveReplayKitExtension.h>
 #import <BytePlusRTCScreenCapturer/ByteRTCScreenCapturerExt.h>
 
-@interface SampleHandler()<VeLiveReplayKitExtensionDelegate, ByteRtcScreenCapturerExtDelegate>
+@interface SampleHandler()<ByteRtcScreenCapturerExtDelegate>
 
 @property (nonatomic, copy) NSString* stopMessage;
 
@@ -16,6 +15,7 @@
 @implementation SampleHandler
 
 - (instancetype)init {
+    NSLog(@"[ScreenShare] init");
     self = [super init];
     if (self) {
         _stopMessage = @"stopShare";
@@ -25,75 +25,45 @@
 }
 
 - (void)broadcastStartedWithSetupInfo:(NSDictionary<NSString *,NSObject *> *)setupInfo {
+    NSLog(@"[ScreenShare] broadcastStartedWithSetupInfo setupInfo:%@", setupInfo);  
     NSUserDefaults  *screenShareUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:APP_GROUP_ID];
     _shareType = [screenShareUserDefaults stringForKey:@"shareType"];
     // User has requested to start the broadcast. Setup info from the UI extension can be supplied but optional.
-    if (self.shareType && [self.shareType isEqualToString:@"rtc"]) {
-        [[ByteRtcScreenCapturerExt shared] startWithDelegate:self groupId:APP_GROUP_ID];
-        [screenShareUserDefaults setValue:@"" forKey:@"shareType"];
-        [screenShareUserDefaults synchronize];
-    } else {
-        [[VeLiveReplayKitExtension sharedInstance] startWithAppGroup:APP_GROUP_ID delegate:self];
-    }
+    [[ByteRtcScreenCapturerExt shared] startWithDelegate:self groupId:APP_GROUP_ID];
+    [screenShareUserDefaults setValue:@"" forKey:@"shareType"];
+    [screenShareUserDefaults synchronize];
 }
 
 - (void)broadcastPaused {
+    NSLog(@"[ScreenShare] broadcastPaused");
     if (self.shareType && [self.shareType isEqualToString:@"rtc"]) {
         return;
     }
-    [[VeLiveReplayKitExtension sharedInstance] broadcastPaused];
     // User has requested to pause the broadcast. Samples will stop being delivered.
 }
 
 - (void)broadcastResumed {
+    NSLog(@"[ScreenShare] broadcastResumed");
     if (self.shareType && [self.shareType isEqualToString:@"rtc"]) {
         return;
     }
-    [[VeLiveReplayKitExtension sharedInstance] broadcastResumed];
     // User has requested to resume the broadcast. Samples delivery will resume.
 }
 
 - (void)broadcastFinished {
+    NSLog(@"[ScreenShare] broadcastFinished");
     // User has requested to finish the broadcast.
-    if (self.shareType && [self.shareType isEqualToString:@"rtc"]) {
-        [[ByteRtcScreenCapturerExt shared] stop];
-    } else {
-        [[VeLiveReplayKitExtension sharedInstance] broadcastFinished];
-    }
+    [[ByteRtcScreenCapturerExt shared] stop];
 }
 
 - (void)processSampleBuffer:(CMSampleBufferRef)sampleBuffer withType:(RPSampleBufferType)sampleBufferType {
-    if (self.shareType && [self.shareType isEqualToString:@"rtc"]) {
-        [[ByteRtcScreenCapturerExt shared] processSampleBuffer:sampleBuffer withType:sampleBufferType];
-    } else {
-        [[VeLiveReplayKitExtension sharedInstance] processSampleBuffer:sampleBuffer withType:sampleBufferType];
-    }
-}
-
-
-- (void)broadcastFinished:(VeLiveReplayKitExtension *)broadcast reason:(VeLiveReplayKitExtensionReason)reason {
-    if (self.shareType && [self.shareType isEqualToString:@"rtc"]) {
-        return;
-    }
-    NSString *tip = @"";
-    switch (reason) {
-        case VeLiveReplayKitExtensionReasonMainStop:
-            tip = @"main app stop screen capture";
-            break;
-    }
-
-    NSError *error = [NSError errorWithDomain:NSStringFromClass(self.class)
-                                             code:0
-                                         userInfo:@{
-                                             NSLocalizedFailureReasonErrorKey:tip
-                                         }];
-    [self finishBroadcastWithError:error];
-
+    [[ByteRtcScreenCapturerExt shared] processSampleBuffer:sampleBuffer withType:sampleBufferType];
 }
 
 #pragma mark- ByteRtcScreenCapturerExtDelegate
 
 - (void)onNotifyAppRunning {
+    NSLog(@"[ScreenShare] onNotifyAppRunning");
     
 }
 
@@ -106,14 +76,16 @@
 }
 
 - (void)onReceiveMessageFromApp:(nonnull NSData *)message {
+    NSLog(@"[ScreenShare] onReceiveMessageFromApp message:%@", message);
     self.stopMessage = [[NSString alloc] initWithData:message encoding:NSUTF8StringEncoding];
 }
 
 - (void)onSocketConnect {
-    
+    NSLog(@"[ScreenShare] onSocketConnect");
 }
 
 - (void)onSocketDisconnect {
+    NSLog(@"[ScreenShare] onSocketDisconnect");
     [[ByteRtcScreenCapturerExt shared] stop];
     [self onQuitFromApp];
 }

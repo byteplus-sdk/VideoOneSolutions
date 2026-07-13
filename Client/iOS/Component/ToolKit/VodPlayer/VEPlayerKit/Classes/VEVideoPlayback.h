@@ -25,6 +25,8 @@
 
 - (void)videoPlayer:(id<VEVideoPlayback> _Nullable)player fetchedVideoModel:(TTVideoEngineModel *_Nonnull)videoModel;
 
+- (void)videoPlayer:(id<VEVideoPlayback> _Nullable)player resolvedPlayUrl:(NSString *_Nullable)url;
+
 @end
 
 @protocol VEVideoPlayback <NSObject>

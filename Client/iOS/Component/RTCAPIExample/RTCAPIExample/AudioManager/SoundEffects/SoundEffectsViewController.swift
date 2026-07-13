@@ -12,8 +12,8 @@ import SnapKit
 import BytePlusRTC
 
 @objc(SoundEffectsViewController)
-class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, ByteRTCRoomDelegate {
-    var rtcVideo: ByteRTCVideo?
+class SoundEffectsViewController: BaseViewController, ByteRTCEngineDelegate, ByteRTCRoomDelegate {
+    var rtcVideo: ByteRTCEngine?
     var rtcRoom: ByteRTCRoom?
     
     override func viewDidLoad() {
@@ -25,11 +25,11 @@ class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, Byte
     }
     
     deinit {
-        self.rtcRoom?.leaveRoom()
+        self.rtcRoom?.leave()
         self.rtcRoom?.destroy()
         self.rtcRoom = nil
         
-        ByteRTCVideo.destroyRTCVideo()
+        ByteRTCEngine.destroyRTCEngine()
         self.rtcVideo = nil
     }
     
@@ -69,24 +69,27 @@ class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, Byte
                 roomCfg.isAutoSubscribeAudio = true
                 roomCfg.isAutoSubscribeVideo = true
                 
-                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, roomConfig: roomCfg)
+                self?.rtcRoom?.joinRoom(token, userInfo: userInfo, userVisibility: true, roomConfig: roomCfg)
             }
         }
         else {
             self.joinButton.setTitle(LocalizedString("button_join_room"), for: .normal)
-            self.rtcRoom?.leaveRoom()
+            self.rtcRoom?.leave()
         }
         
     }
     
     func buildRTCEngine() {
-        // Create engine
-        self.rtcVideo = ByteRTCVideo.createRTCVideo(rtcAppId(), delegate: self, parameters: [:])
-        self.rtcVideo?.setBusinessId("voice-effect")
+        let engineCfg = ByteRTCEngineConfig.init()
+        engineCfg.appID = rtcAppId()
+        engineCfg.parameters = [:]
+        self.rtcVideo = ByteRTCEngine.createRTCEngine(engineCfg, delegate: self)
         
         // Enable local audio and video collection
+        self.rtcVideo?.setAudioScenario(ByteRTCAudioScenarioType.chatRoom)
         self.rtcVideo?.startVideoCapture()
         self.rtcVideo?.startAudioCapture()
+        self.rtcVideo?.setAudioScenario(ByteRTCAudioScenarioType.gameStreaming)
         
         self.bindLocalRenderView()
     }
@@ -98,7 +101,7 @@ class SoundEffectsViewController: BaseViewController, ByteRTCVideoDelegate, Byte
         canvas.renderMode = .hidden
         self.localView.userId = userSettingItem.text ?? ""
         
-        self.rtcVideo?.setLocalVideoCanvas(.indexMain, withCanvas: canvas);
+        self.rtcVideo?.setLocalVideoCanvas(withCanvas: canvas);
     }
     
     func buildActions() {

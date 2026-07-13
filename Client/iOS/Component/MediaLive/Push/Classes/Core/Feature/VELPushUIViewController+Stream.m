@@ -187,13 +187,7 @@
         __weak __typeof__(self)weakSelf = self;
         [_mirrorViewModel setMirrorActionBlock:^(VELSettingsMirrorViewModel * _Nonnull model, VELSettingsMirrorType mirrorType, BOOL isOn) {
             __strong __typeof__(weakSelf)self = weakSelf;
-            if (mirrorType == VELSettingsMirrorTypeCapture) {
-                [self setCaptureMirror:isOn];
-            } else if (mirrorType == VELSettingsMirrorTypePreview) {
-                [self setPreviewMirror:isOn];
-            } else if (mirrorType == VELSettingsMirrorTypeStream) {
-                [self setStreamMirror:isOn];
-            }
+            [self setMirrorType:mirrorType isOn:isOn];
         }];
     }
     return _mirrorViewModel;

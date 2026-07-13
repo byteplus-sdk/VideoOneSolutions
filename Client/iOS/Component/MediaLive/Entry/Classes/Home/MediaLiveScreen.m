@@ -4,6 +4,7 @@
 #import <ToolKit/Localizator.h>
 #import "MediaLiveScreen.h"
 #import "VELPushScreenCaptureNewViewController.h"
+#import "RTCJoinRTS.h"
 
 @implementation MediaLiveScreen
 
@@ -20,11 +21,9 @@
 - (void)enterWithCallback:(void (^)(BOOL))block {
     [super enterWithCallback:block];
     VELPushScreenCaptureNewViewController *vc = [[VELPushScreenCaptureNewViewController alloc] initWithCaptureType:VELSettingCaptureTypeScreen];
-    UIViewController *topVC = [DeviceInforTool topViewController];
-    [topVC.navigationController pushViewController:vc animated:YES];
-    if (block) {
-        block(YES);
-    }
+//    UIViewController *topVC = [DeviceInforTool topViewController];
+//    [topVC.navigationController pushViewController:vc animated:YES];
+    [RTCJoinRTS joinRTS:vc block:block];
 }
 
 @end

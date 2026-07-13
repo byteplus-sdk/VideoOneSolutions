@@ -163,7 +163,11 @@
     }
     if (authStatus == AVAuthorizationStatusNotDetermined) {
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-            handler(granted);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (handler) {
+                    handler(granted);
+                }
+            });
         }];
     } else if (authStatus == AVAuthorizationStatusAuthorized) {
         handler(YES);
@@ -182,7 +186,11 @@
     }
     if (authStatus == AVAuthorizationStatusNotDetermined) {
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
-            handler(granted);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (handler) {
+                    handler(granted);
+                }
+            });
         }];
     } else if (authStatus == AVAuthorizationStatusAuthorized) {
         handler(YES);

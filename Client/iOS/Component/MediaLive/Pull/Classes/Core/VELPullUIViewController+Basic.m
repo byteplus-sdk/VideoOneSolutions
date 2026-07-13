@@ -325,9 +325,6 @@ static char kAssociatedObjectKey_infoVM;
 - (void)stopPlayInBackground {[VELUIToast showText:LocalizedStringFromBundle(@"medialive_not_support_now", @"MediaLive") inView:self.playerContainer];};
 - (BOOL)resolutionShouldChanged:(VELPullResolutionType)fromResolution to:(VELPullResolutionType)toResolution{return NO;};
 - (void)resolutionDidChanged:(VELPullResolutionType)fromResolution to:(VELPullResolutionType)toResolution{[VELUIToast showText:LocalizedStringFromBundle(@"medialive_not_support_now", @"MediaLive") inView:self.playerContainer];};
-- (void)openHDR {[VELUIToast showText:LocalizedStringFromBundle(@"medialive_not_support_now", @"MediaLive") inView:self.playerContainer];};
-- (void)closeHDR {[VELUIToast showText:LocalizedStringFromBundle(@"medialive_not_support_now", @"MediaLive") inView:self.playerContainer];};
-- (BOOL)isSupportHDR {[VELUIToast showText:LocalizedStringFromBundle(@"medialive_not_support_now", @"MediaLive") inView:self.playerContainer]; return NO;};
 - (NSArray<NSNumber *> *)getCurrentSupportResolutions { return @[]; };
 - (VELPullResolutionType)getCurrentResolution { return (VELPullResolutionType)self.getCurrentSupportResolutions.firstObject.integerValue; };
 
