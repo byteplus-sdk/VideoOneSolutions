@@ -20,6 +20,7 @@ import com.byteplus.vod.scenekit.R;
 import com.byteplus.vod.scenekit.ui.video.layer.GestureLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.Layers;
 import com.byteplus.vod.scenekit.ui.video.layer.TipsLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.listener.SpeedSelectListener;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 
 import java.util.Arrays;
@@ -28,28 +29,41 @@ import java.util.List;
 
 public class SpeedSelectDialogLayer extends DialogListLayer<Float> {
 
-    public SpeedSelectDialogLayer() {
-        adapter().setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(int position, RecyclerView.ViewHolder holder) {
-                Item<Float> item = adapter().getItem(position);
-                if (item != null) {
-                    Player player = player();
-                    if (player != null) {
-                        float speed = player.getSpeed();
-                        float select = item.obj;
-                        if (select != speed) {
-                            player.setSpeed(select);
-                            animateDismiss();
+    private SpeedSelectListener mSpeedSelectListener;
 
-                            VideoLayerHost layerHost = layerHost();
-                            if (layerHost == null) return;
-                            TipsLayer tipsLayer = layerHost.findLayer(TipsLayer.class);
-                            if (tipsLayer != null) {
-                                tipsLayer.show("Speed is switched to " + item.text);
-                            }
-                            adapter().setSelected(adapter().findItem(select));
+
+    private boolean inCasting = false;
+
+    public void setInCasting(boolean inCasting) {
+        this.inCasting = inCasting;
+    }
+
+    public void setSpeedSelectListener(SpeedSelectListener listener) {
+        mSpeedSelectListener = listener;
+    }
+
+    public SpeedSelectDialogLayer() {
+        adapter().setOnItemClickListener((position, holder) -> {
+            Item<Float> item = adapter().getItem(position);
+            if (item != null) {
+                Player player = player();
+                if (player != null) {
+                    float speed = player.getSpeed();
+                    float select = item.obj;
+                    if (select != speed) {
+                        player.setSpeed(select);
+                        if (mSpeedSelectListener!= null) {
+                            mSpeedSelectListener.onSpeedSelect(select);
                         }
+                        animateDismiss();
+
+                        VideoLayerHost layerHost = layerHost();
+                        if (layerHost == null) return;
+                        TipsLayer tipsLayer = layerHost.findLayer(TipsLayer.class);
+                        if (tipsLayer != null) {
+                            tipsLayer.show("Speed is switched to " + item.text);
+                        }
+                        adapter().setSelected(adapter().findItem(select));
                     }
                 }
             }

@@ -50,4 +50,11 @@ dependencies {
     implementation libs.ttsdk.ttlicense2
 
     implementation project(':component:solution-base')
+    implementation project(':component:rtc-toolkit')
+
+    implementation project(':solutions:rtc-api-example:rtc-api-example-base')
+
+    implementation project(':solutions:rtc-api-example:rtc-api-example-entry')
+
+    implementation libs.gson
 }

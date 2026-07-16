@@ -39,6 +39,7 @@ object FunctionEntry {
 class FunctionEntryFragment : Fragment(R.layout.fragment_function_entry) {
 
     private var mBinding: FragmentFunctionEntryBinding? = null
+    private var mTabLayoutMediator: TabLayoutMediator? = null
 
     private lateinit var mMainViewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,13 +55,23 @@ class FunctionEntryFragment : Fragment(R.layout.fragment_function_entry) {
 
         val context = requireContext()
         binding.viewPager.adapter = TabAdapter(this, FunctionEntry.entries)
-        TabLayoutMediator(binding.tabs, binding.viewPager) { tab, position ->
+        mTabLayoutMediator = TabLayoutMediator(binding.tabs, binding.viewPager) { tab, position ->
             val tabLayout: View = LayoutInflater.from(context)
                 .inflate(R.layout.layout_function_tablayout_item, binding.tabs, false);
             val tabView: TextView = tabLayout.findViewById(R.id.tab_text)
             tabView.text = getString(FunctionEntry.entries[position].title)
             tab.customView = tabView
-        }.attach()
+        }.also { mediator ->
+            mediator.attach()
+        }
+    }
+
+    override fun onDestroyView() {
+        mTabLayoutMediator?.detach()
+        mTabLayoutMediator = null
+        mBinding?.viewPager?.adapter = null
+        mBinding = null
+        super.onDestroyView()
     }
 
     class TabAdapter(fragment: Fragment, entries: List<IFunctionTabEntry>) :

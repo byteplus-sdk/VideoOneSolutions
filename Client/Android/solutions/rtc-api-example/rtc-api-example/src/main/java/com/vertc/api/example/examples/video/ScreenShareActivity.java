@@ -17,19 +17,16 @@ import androidx.annotation.Nullable;
 import com.ss.bytertc.base.media.screen.RXScreenCaptureService;
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
-import com.ss.bytertc.engine.ScreenVideoEncoderConfig;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
+import com.ss.bytertc.engine.VideoEncoderConfig;
 import com.ss.bytertc.engine.data.ScreenMediaType;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
-import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.RTCRoomStats;
-import com.ss.bytertc.engine.type.StreamRemoveReason;
 import com.ss.bytertc.engine.type.VideoDeviceType;
 import com.vertc.api.example.R;
 import com.vertc.api.example.base.ExampleBaseActivity;
@@ -46,10 +43,10 @@ public class ScreenShareActivity extends ExampleBaseActivity {
 
     private boolean isJoined;
     private boolean isSharing;
-    private RTCVideo rtcVideo;
+    private RTCEngine rtcVideo;
     private RTCRoom rtcRoom;
-    private String roomID;
     private String userID;
+    private String remoteScreenStreamId;
 
     ActivityScreenShareBinding binding;
 
@@ -120,8 +117,8 @@ public class ScreenShareActivity extends ExampleBaseActivity {
                     startScreenCapture(result.getData());
 
                     if (rtcRoom != null) {
-                        rtcRoom.publishScreenVideo(true);
-                        rtcRoom.publishScreenAudio(true);
+                        rtcRoom.publishStreamAudio(true);
+                        rtcRoom.publishStreamVideo(true);
                     }
                 }
 
@@ -138,8 +135,8 @@ public class ScreenShareActivity extends ExampleBaseActivity {
         binding.btnStartScreenShare.setText(R.string.button_start_screen_sharing);
 
         if (rtcRoom != null) {
-            rtcRoom.publishScreenVideo(false);
-            rtcRoom.publishScreenAudio(false);
+            rtcRoom.publishStreamVideo(false);
+            rtcRoom.publishStreamAudio(false);
 
         }
         rtcVideo.stopScreenCapture();
@@ -147,12 +144,12 @@ public class ScreenShareActivity extends ExampleBaseActivity {
 
     private void startScreenCapture(Intent data) {
         startRXScreenCaptureService(data);
-        ScreenVideoEncoderConfig config = new ScreenVideoEncoderConfig();
+        VideoEncoderConfig config = new VideoEncoderConfig();
         config.width = 720;
         config.height = 1280;
         config.frameRate = 15;
         config.maxBitrate = 1600;
-        rtcVideo.setScreenVideoEncoderConfig(config);
+        rtcVideo.setVideoEncoderConfig(config);
         rtcVideo.startScreenCapture(ScreenMediaType.SCREEN_MEDIA_TYPE_VIDEO_AND_AUDIO, data);
     }
 
@@ -170,7 +167,6 @@ public class ScreenShareActivity extends ExampleBaseActivity {
     }
 
     private void joinRoom(String roomId) {
-        this.roomID = roomId;
         rtcRoom = rtcVideo.createRTCRoom(roomId);
         rtcRoom.setRTCRoomEventHandler(rtcRoomEventHandler);
         requestRoomToken(roomId, userID, token -> {
@@ -179,12 +175,12 @@ public class ScreenShareActivity extends ExampleBaseActivity {
             boolean isAutoSubscribeAudio = true;
             boolean isAutoSubscribeVideo = true;
             RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM, isAutoPublish, isAutoPublish, isAutoSubscribeAudio, isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
             rtcRoom.publishStreamAudio(true);
 
             if (isSharing) {
-                rtcRoom.publishScreenAudio(true);
-                rtcRoom.publishScreenVideo(true);
+                rtcRoom.publishStreamVideo(true);
+                rtcRoom.publishStreamAudio(true);
             }
         });
     }
@@ -197,10 +193,13 @@ public class ScreenShareActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = localTextureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
-    private void setRemoteRenderView(String uid) {
+    private void setRemoteRenderView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
         TextureView textureView = new TextureView(this);
 
         binding.remoteContainer.removeAllViews();
@@ -209,32 +208,29 @@ public class ScreenShareActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_SCREEN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
     }
 
-    private void removeRemoteView(String uid) {
+    private void removeRemoteView(String streamId) {
         binding.remoteContainer.removeAllViews();
-
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_SCREEN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+        if (streamId != null) {
+            rtcVideo.setRemoteVideoCanvas(streamId, null);
+        }
     }
 
     private void leaveRoom() {
         if (rtcRoom != null) {
             if (isSharing) {
-                rtcRoom.publishScreenAudio(false);
-                rtcRoom.publishScreenVideo(false);
+                rtcRoom.publishStreamAudio(false);
+                rtcRoom.publishStreamVideo(false);
             }
             rtcRoom.leaveRoom();
             rtcRoom.destroy();
             rtcRoom = null;
         }
-        this.roomID = null;
     }
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
         @Override
         public void onVideoDeviceStateChanged(String deviceId, VideoDeviceType deviceType, int deviceState, int deviceError) {
             Log.i(TAG, "onVideoDeviceStateChanged, type: " + deviceType + " state:" + deviceState);
@@ -250,36 +246,34 @@ public class ScreenShareActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishScreenVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
+            if (!streamInfo.getIsScreen()) {
+                return;
+            }
             if (isPublish) {
-                Log.i(TAG, "onUserPublishScreen, uid: " + uid + " type:" + "ScreenVideo");
-                ToastUtil.showToast(ScreenShareActivity.this, "onUserPublishScreen, uid: " + uid + " type:" + "ScreenVideo");
-                runOnUiThread(() -> {
-                    setRemoteRenderView(uid);
-                });
+                ToastUtil.showToast(ScreenShareActivity.this, "onUserPublishStreamVideo(Screen), uid: " + streamInfo.getUserId());
+                remoteScreenStreamId = streamId;
+                runOnUiThread(() -> setRemoteRenderView(streamId));
             } else {
-                Log.i(TAG, "onUserUnpublishScreen, uid: " + uid + " type:" + "ScreenVideo");
-                ToastUtil.showToast(ScreenShareActivity.this, "onUserUnpublishScreen, uid: " + uid + " type:" + "ScreenVideo");
-                runOnUiThread(() -> {
-                    removeRemoteView(uid);
-                });
+                ToastUtil.showToast(ScreenShareActivity.this, "onUserUnpublishStreamVideo(Screen), uid: " + streamInfo.getUserId());
+                if (TextUtils.equals(remoteScreenStreamId, streamId)) {
+                    remoteScreenStreamId = null;
+                }
+                runOnUiThread(() -> removeRemoteView(streamId));
             }
         }
 
         @Override
-        public void onUserPublishScreenAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
+            if (!streamInfo.getIsScreen()) {
+                return;
+            }
             if (isPublish) {
-                Log.i(TAG, "onUserPublishScreen, uid: " + uid + " type:" + "ScreenAudio");
-                ToastUtil.showToast(ScreenShareActivity.this, "onUserPublishScreen, uid: " + uid + " type:" + "ScreenAudio");
-                runOnUiThread(() -> {
-                    setRemoteRenderView(uid);
-                });
+                runOnUiThread(() -> setRemoteRenderView(streamId));
+                Log.i(TAG, "onUserPublishStreamAudio(Screen), uid: " + streamInfo.getUserId());
             } else {
-                Log.i(TAG, "onUserUnpublishScreen, uid: " + uid + " type:" + "ScreenAudio");
-                ToastUtil.showToast(ScreenShareActivity.this, "onUserUnpublishScreen, uid: " + uid + " type:" + "ScreenAudio");
-                runOnUiThread(() -> {
-                    removeRemoteView(uid);
-                });
+                runOnUiThread(() -> removeRemoteView(streamId));
+                Log.i(TAG, "onUserUnpublishStreamAudio(Screen), uid: " + streamInfo.getUserId());
             }
         }
 
@@ -293,7 +287,8 @@ public class ScreenShareActivity extends ExampleBaseActivity {
         public void onUserLeave(String uid, int reason) {
             super.onUserLeave(uid, reason);
             runOnUiThread(() -> {
-                removeRemoteView(uid);
+                removeRemoteView(remoteScreenStreamId);
+                remoteScreenStreamId = null;
             });
         }
     };
@@ -310,6 +305,6 @@ public class ScreenShareActivity extends ExampleBaseActivity {
             rtcVideo.stopScreenCapture();
         }
 
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
     }
 }

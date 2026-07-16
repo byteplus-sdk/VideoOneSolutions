@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Landscape (fullscreen) overlay for the Live Watch page.
+
+  This layout is NOT loaded via setContentView. LandscapeController inflates it
+  and attaches it directly to the Activity's DecorView, then moves the player's
+  TextureView from the portrait layout into [landscape_player_container] so
+  playback never restarts. Removing the overlay reverses the move.
+
+  Regions:
+    - landscape_stage            : centered 16:9 box (sized at runtime by
+                                   LandscapeController). The video fills it
+                                   completely. Controls live INSIDE the stage
+                                   so they never spill onto the side letterbox
+                                   bars; controls are additionally inset by
+                                   16dp on each side per design.
+    - landscape_player_container : holds the moved-in TextureView (fills the
+                                   stage, i.e. the 16:9 box).
+    - landscape_controls         : top + bottom bar wrapper. Toggled together
+                                   by tapping the video. Hidden entirely while
+                                   the screen is locked. The lock button lives
+                                   OUTSIDE this wrapper so it can be shown
+                                   independently while locked.
+    - btn_landscape_lock         : left-center lock toggle. Visibility is
+                                   driven by LandscapeController separately
+                                   from the rest of the controls.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/landscape_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- Centered 16:9 stage. Sized at runtime to the largest 16:9 box that fits
+         the screen; the video + all controls live inside it so nothing renders
+         on the letterbox bars. -->
+    <FrameLayout
+        android:id="@+id/landscape_stage"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <!-- Player surface. The TextureView is added at runtime and fills the
+             stage (the stage itself is already 16:9). -->
+        <FrameLayout
+            android:id="@+id/landscape_player_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Bilibili-style scrolling danmaku, sized to the video stage. Drawn
+             over the video, under the like hearts + controls. Non-interactive
+             so it never steals taps from the video / controls. -->
+        <com.byteplus.live.sport.watch.danmaku.DanmakuView
+            android:id="@+id/landscape_danmaku"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <!-- Tap-catcher + like-burst canvas over the stage. A confirmed single
+             tap toggles the controls; a double-tap spawns a like heart. -->
+        <com.byteplus.live.sport.watch.like.LikeBurstView
+            android:id="@+id/landscape_like_burst"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null" />
+
+        <!-- All toggleable controls (top + bottom bars) wrapped together. The
+             wrapper has 16dp horizontal padding so every cluster inside is
+             inset from the 16:9 video edges per design; the video itself
+             still fills the stage underneath. The lock button is OUTSIDE
+             this wrapper to keep its visibility independent. -->
+        <FrameLayout
+            android:id="@+id/landscape_controls"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <!-- ===================== Top scrim ===================== -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="104dp"
+                android:layout_gravity="top"
+                android:layout_marginStart="-16dp"
+                android:layout_marginEnd="-16dp"
+                android:background="@drawable/live_sport_landscape_top_scrim" />
+
+            <!-- ===================== Top bar =====================
+                 Single horizontal row that aligns back / anchor name /
+                 follow / settings on the same vertical center. The heat
+                 pill sits below this row, anchored to the top-left
+                 cluster. -->
+            <LinearLayout
+                android:id="@+id/landscape_top_bar"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_gravity="top"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <!-- Back: 44×44 hit-target with a 20dp visual icon. -->
+                <FrameLayout
+                    android:id="@+id/btn_landscape_back"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/live_sport_watch_back">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@null"
+                        android:src="@drawable/live_sport_ic_arrow_left" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/landscape_anchor_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-medium"
+                    android:maxLines="1"
+                    android:maxWidth="220dp"
+                    android:text="@string/live_sport_watch_anchor_name"
+                    android:textColor="#FFFFFF"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/btn_landscape_follow"
+                    android:layout_width="42dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/live_sport_btn_follow"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="@string/live_sport_watch_follow"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp" />
+
+                <!-- Spring fills the gap so the trailing settings button
+                     sticks to the right edge while everything stays
+                     center-aligned vertically. -->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- Settings: 36dp circular black-tint background (Figma
+                     fill_A374IC, alpha lowered per spec) with a 24dp
+                     centered icon — total padding 6dp. -->
+                <ImageButton
+                    android:id="@+id/btn_landscape_settings"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/live_sport_landscape_circle_btn_bg"
+                    android:contentDescription="@string/live_sport_watch_settings"
+                    android:padding="6dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/live_sport_ic_settings" />
+            </LinearLayout>
+
+            <!-- Heat pill: anchored under the top bar, aligned with the
+                 anchor name (back button width 44 + name marginStart 4
+                 ≈ pill marginStart 24 to stay roughly under the name's
+                 leading edge). -->
+            <LinearLayout
+                android:id="@+id/landscape_heat_pill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="64dp"
+                android:background="@drawable/live_sport_landscape_heat_pill_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="6dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="3dp">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/live_sport_ic_fire" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:text="@string/live_sport_watch_heat"
+                    android:textColor="#E6FFFFFF"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_sport_watch_heat_suffix"
+                    android:textColor="#E6FFFFFF"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <!-- ===================== Bottom scrim ===================== -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="104dp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="-16dp"
+                android:layout_marginEnd="-16dp"
+                android:background="@drawable/live_sport_landscape_bottom_scrim" />
+
+            <!-- ===================== Bottom bar =====================
+                 Single horizontal row with two clusters separated by a
+                 spring; everything is vertically centered. -->
+            <LinearLayout
+                android:id="@+id/landscape_bottom_bar"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btn_landscape_play_pause"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/live_sport_watch_play_pause"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/live_sport_ic_play_pause" />
+
+                <EditText
+                    android:id="@+id/landscape_comment_input"
+                    android:layout_width="200dp"
+                    android:layout_height="38dp"
+                    android:layout_marginStart="24dp"
+                    android:background="@drawable/live_sport_landscape_input_bg"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:hint="@string/live_sport_watch_input_hint"
+                    android:imeOptions="actionSend"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#B0B0B0"
+                    android:textCursorDrawable="@null"
+                    android:textSize="13sp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:id="@+id/btn_landscape_multi_camera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/live_sport_watch_multi_camera"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/live_sport_ic_multi_camera" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="@string/live_sport_watch_multi_camera"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btn_landscape_quality"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/live_sport_watch_quality"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    tools:ignore="HardcodedText" />
+
+                <!-- Gift: 36dp circular black-tint background with a 24dp
+                     centered icon — same shape language as Settings. -->
+                <ImageButton
+                    android:id="@+id/btn_landscape_gift"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="24dp"
+                    android:background="@drawable/live_sport_landscape_circle_btn_bg"
+                    android:contentDescription="@string/live_sport_watch_gift"
+                    android:padding="6dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/live_sport_ic_gift" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Lock toggle (left-center). Outside [landscape_controls] so
+             LandscapeController can show / hide it independently:
+              - non-locked: lock button rides with the controls (auto-hides
+                on the 5s timer just like the rest);
+              - locked:    every other control is hidden, but the lock
+                button can flash for 5s when the user taps the screen so
+                they can find it. -->
+        <ImageButton
+            android:id="@+id/btn_landscape_lock"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/live_sport_watch_lock"
+            android:scaleType="fitCenter"
+            android:src="@drawable/live_sport_ic_lock_open" />
+
+        <!-- Floating-like stream for landscape, anchored above the gift button.
+             Non-interactive so taps still reach the controls / tap-catcher.
+             Topmost in the stage so hearts are never clipped by the bars. -->
+        <com.byteplus.live.sport.watch.like.ThumbFloatingView
+            android:id="@+id/landscape_thumb_floating"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:clickable="false"
+            android:focusable="false" />
+
+    </FrameLayout>
+
+</FrameLayout>

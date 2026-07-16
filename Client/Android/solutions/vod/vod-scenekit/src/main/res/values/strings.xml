@@ -68,4 +68,14 @@
     <string name="vevod_abr_startup_and_sr_downgrade">ABR Startup + Super Resolution Downgrade</string>
     <string name="vevod_abr_disable">Disable</string>
     <string name="vevod_enable_private_encrypt">Enable Private Encrypt</string>
+    <string name="vevod_casting_searching_devices">Searching for devices…</string>
+    <string name="vevod_casting_select_device">Select a target device for casting.</string>
+    <string name="vevod_casting_tips">Please confirm completion of the following steps.</string>
+    <string name="vevod_casting_confirm_tips">Confirm TV/box power on."</string>
+    <string name="vevod_casting_wifi_confirm_tips">Link TV/box and phone to same Wi-Fi.</string>
+    <string name="vevod_casting_device">Devices</string>
+    <string name="vevod_cast_switch_device">Switch Device</string>
+    <string name="vevod_cast_end_casting">End Casting</string>
+    <string name="vevod_cast_service_not_ready">Cast service is not ready, please try again later.</string>
+    <string name="vevod_cast_no_network">No network available, please check your network connection.</string>
 </resources>

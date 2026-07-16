@@ -118,6 +118,7 @@ public class LivePushActivity extends AppCompatActivity
     private boolean mIsClosing = false;
     private LivePusher mLivePusher;
     private LiveVideoEffect mEffectHandler;
+    private Intent mScreenIntent = null;
 
     Bitmap mPushPic;
 
@@ -200,6 +201,7 @@ public class LivePushActivity extends AppCompatActivity
 
         @Override
         public void onRebuildLivePusher() {
+            mScreenIntent = null;
             destroyPreview();
 
             mEffectHandler.setEffectManager(mLivePusher.getEffectHandler());
@@ -320,6 +322,9 @@ public class LivePushActivity extends AppCompatActivity
                 if (mExternalCaptureSource != null) {
                     mExternalCaptureSource.stop();
                 }
+            } else if (mCaptureMode == LiveCaptureType.SCREEN) {
+                mLivePusher.stopScreenRecording();
+                stopKeepLive();
             }
         }
         if (captureMode == LiveCaptureType.CAMERA) {
@@ -329,6 +334,10 @@ public class LivePushActivity extends AppCompatActivity
             audioCaptureType = PUSH_AUDIO_CAPTURE_MICROPHONE;
             videoCaptureType = PUSH_VIDEO_CAPTURE_DUMMY_FRAME;
         } else if (captureMode == LiveCaptureType.SCREEN) {
+            if (!checkPermission()) {
+                return;
+            }
+            mLivePusher.startScreenRecording(mScreenIntent);
             audioCaptureType = PUSH_AUDIO_CAPTURE_VOICE_COMMUNICATION;
             videoCaptureType = PUSH_VIDEO_CAPTURE_SCREEN;
         } else if (captureMode == LiveCaptureType.FILE) {
@@ -340,14 +349,16 @@ public class LivePushActivity extends AppCompatActivity
             videoCaptureType = PUSH_VIDEO_CAPTURE_EXTERNAL;
         }
         mCaptureMode = captureMode;
-        if (!mIsCapturing) {
-            mLivePusher.startVideoCapture(videoCaptureType);
-            mLivePusher.startAudioCapture(audioCaptureType);
-        } else {
-            mLivePusher.switchAudioCapture(audioCaptureType);
-            mLivePusher.switchVideoCapture(videoCaptureType);
+        if (captureMode != LiveCaptureType.SCREEN) {
+            if (!mIsCapturing) {
+                mLivePusher.startVideoCapture(videoCaptureType);
+                mLivePusher.startAudioCapture(audioCaptureType);
+            } else {
+                mLivePusher.switchAudioCapture(audioCaptureType);
+                mLivePusher.switchVideoCapture(videoCaptureType);
+            }
+            mIsCapturing = true;
         }
-        mIsCapturing = true;
     }
 
     private void stopCaptureMode() {
@@ -358,6 +369,9 @@ public class LivePushActivity extends AppCompatActivity
             if (mExternalCaptureSource != null) {
                 mExternalCaptureSource.stop();
             }
+        } else if (mCaptureMode == LiveCaptureType.SCREEN) {
+            mLivePusher.stopScreenRecording();
+            stopKeepLive();
         }
         mLivePusher.stopVideoCapture();
         mLivePusher.stopAudioCapture();
@@ -559,6 +573,29 @@ public class LivePushActivity extends AppCompatActivity
         }
     };
 
+    private boolean checkPermission() {
+        if (mScreenIntent == null) {
+            if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.LOLLIPOP) {
+                MediaProjectionManager mgr = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+                Intent intent = mgr.createScreenCaptureIntent();
+                mediaProjectionLauncher.launch(intent);
+            }
+            return false;
+        }
+
+
+        return true;
+    }
+
+    final ActivityResultLauncher<Intent> mediaProjectionLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    mScreenIntent = result.getData();
+                    startKeepLive();
+                    startCaptureMode(LiveCaptureType.SCREEN);
+                }
+            });
+
     private void checkCaptureTypeFileResources() {
         Context context = LivePushActivity.this;
         Toast.makeText(context, R.string.medialive_preparing, Toast.LENGTH_SHORT).show();
@@ -623,6 +660,20 @@ public class LivePushActivity extends AppCompatActivity
     private void startPublish() {
         if (mIsLive) {
             return;
+        }
+        if (mCaptureMode == LiveCaptureType.SCREEN) {
+            if (!mKeepLiveServiceConnectionIsConnected) {
+                Toast.makeText(this, R.string.medialive_starting_foreground_service, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!mIsCapturing) {
+                mLivePusher.startVideoCapture(videoCaptureType);
+                mLivePusher.startAudioCapture(audioCaptureType);
+            } else {
+                mLivePusher.switchAudioCapture(audioCaptureType);
+                mLivePusher.switchVideoCapture(videoCaptureType);
+            }
+            mIsCapturing = true;
         }
         mIsLive = true;
         findViewById(R.id.group_preview).setVisibility(View.GONE);
@@ -698,13 +749,17 @@ public class LivePushActivity extends AppCompatActivity
             stopCaptureMode();
             destroyPreview();
         }
-        startKeepLive();
+        if (mCaptureMode != LiveCaptureType.SCREEN) {
+            startKeepLive();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        stopKeepLive();
+        if (mCaptureMode != LiveCaptureType.SCREEN) {
+            stopKeepLive();
+        }
         if (mCaptureMode == LiveCaptureType.CAMERA && mIsLive && mLivePusher != null) {
             preparePreview();
             mLivePusher.startPush();
@@ -726,9 +781,7 @@ public class LivePushActivity extends AppCompatActivity
                 Intent intent = Objects.requireNonNull(result.getData());
                 Uri uri = Objects.requireNonNull(intent.getData());
                 try (InputStream in = getContentResolver().openInputStream(uri)) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.RGB_565;
-                    Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
+                    Bitmap bitmap = BitmapFactory.decodeStream(in);
                     if (mChoosePicListener != null) {
                         mChoosePicListener.onChoosePic(bitmap);
                     }
@@ -801,7 +854,7 @@ public class LivePushActivity extends AppCompatActivity
         private void startVideoReaderInner(String videoFilePath, int fmt, int bufferType, int width, int height, int interval, int frameSize) {
             if (fmt == LivePusher.VideoFrame.VIDEO_PIXEL_FMT_2D_TEXTURE) {
                 if (mTextureMgr == null) {
-                    mTextureMgr = new TextureMgr(width, height);
+                    mTextureMgr = new TextureMgr(LivePushActivity.this, width, height);
                 }
                 mVideoReader.start(videoFilePath, frameSize, interval, new MediaFileReader.Callback() {
                     @Override

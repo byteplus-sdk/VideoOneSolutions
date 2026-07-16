@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Top scrim for the landscape overlay (Figma fill_6N4LCY). Black gradient,
+  darkest at the top (alpha ~0.6) easing to fully transparent at the bottom so
+  the anchor info / settings stay legible over the video.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle"
+    android:dither="true">
+    <gradient
+        android:angle="270"
+        android:startColor="#99000000"
+        android:endColor="#00000000"
+        android:type="linear" />
+</shape>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fake gift: crown. Vector placeholder. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <path
+        android:fillColor="#FFCB47"
+        android:pathData="M7,14 L13,22 L20,11 L27,22 L33,14 L31,31 L9,31 Z" />
+    <path
+        android:fillColor="#FF8A3D"
+        android:pathData="M9,31 L31,31 L30.5,35 L9.5,35 Z" />
+    <path
+        android:fillColor="#FFE08A"
+        android:pathData="M7,14 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+    <path
+        android:fillColor="#FFE08A"
+        android:pathData="M33,14 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+</vector>

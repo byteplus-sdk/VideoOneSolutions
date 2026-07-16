@@ -4,8 +4,13 @@
 package com.byteplus.vod.scenekit.ui.video.layer;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +20,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.vod.scenekit.R;
+import com.byteplus.vodcast.api.CastSdk;
 import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
 import com.byteplus.vod.scenekit.ui.video.layer.base.AnimateLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.dialog.CastingDeviceSearchDialogLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.dialog.MoreDialogLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.helper.MiniPlayerHelper;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
@@ -35,9 +43,13 @@ public class TitleBarLayer extends AnimateLayer implements GestureControllable {
 
     private View mMore;
 
+    private View mCasting;
+
     private ImageView mMiniPlayer;
 
     private final int[] showInScenes;
+
+    private boolean enableCasting = false;
 
     @Override
     public String tag() {
@@ -51,6 +63,16 @@ public class TitleBarLayer extends AnimateLayer implements GestureControllable {
     public TitleBarLayer(int... scenes) {
         showInScenes = scenes;
     }
+
+    public void enableCasting(boolean enableCasting) {
+        this.enableCasting = enableCasting;
+        if (mCasting == null) {
+            return;
+        }
+        // B10: 不再要求全屏才显示，按 enableCasting 决定
+        mCasting.setVisibility(enableCasting ? View.VISIBLE : View.GONE);
+    }
+
 
     @Nullable
     @Override
@@ -69,7 +91,7 @@ public class TitleBarLayer extends AnimateLayer implements GestureControllable {
 
         mMore = view.findViewById(R.id.more);
         mMore.setOnClickListener(v -> {
-            if (!PlayScene.isFullScreenMode(playScene())) {
+            if (!isFullScreen()) {
                 Toast.makeText(context(), "More is only supported in fullscreen for now!",
                         Toast.LENGTH_SHORT).show();
                 return;
@@ -79,6 +101,29 @@ public class TitleBarLayer extends AnimateLayer implements GestureControllable {
                 layer.animateShow(false);
             }
         });
+
+        mCasting = view.findViewById(R.id.casting);
+        mCasting.setOnClickListener(v -> {
+            boolean fullScreen = isFullScreen();
+            Log.d("CAST_DEMO", "Click casting button,fullScreen mode = " + fullScreen);
+            // 入口预检 1 —— 投屏是否可用（已注册 + Google Play Services 可用 + impl 已 install）
+            if (!CastSdk.isAvailable()) {
+                Log.w("CAST_DEMO", "CastSdk unavailable, ignore casting click");
+                CenteredToast.show(v.getContext(), "当前设备不支持投屏");
+                return;
+            }
+            // 入口预检 2 —— 当前是否有可用网络（API 21+）
+            if (!hasInternet(v.getContext())) {
+                CenteredToast.show(v.getContext(), "无网络，请检查网络连接");
+                return;
+            }
+            // 非全屏也允许打开设备搜索弹窗
+            CastingDeviceSearchDialogLayer layer = findLayer(CastingDeviceSearchDialogLayer.class);
+            if (layer != null) {
+                layer.animateShow(false);
+            }
+        });
+        mCasting.setVisibility(enableCasting ? View.VISIBLE : View.GONE);
 
         mMiniPlayer = view.findViewById(R.id.miniplayer);
         mMiniPlayer.setOnClickListener(v -> {
@@ -98,6 +143,28 @@ public class TitleBarLayer extends AnimateLayer implements GestureControllable {
             }
         });
         return view;
+    }
+
+    private boolean isFullScreen() {
+        return PlayScene.isFullScreenMode(playScene());
+    }
+
+    /**
+     * 判断当前是否存在可联网的网络。优先使用 API 23+ 的 NetworkCapabilities；
+     * 在更老的设备上退化为 ConnectivityManager#getActiveNetworkInfo（已 deprecated 但仍可用）。
+     */
+    private boolean hasInternet(Context ctx) {
+        if (ctx == null) return true; // 上下文异常时不阻塞用户
+        ConnectivityManager cm = ContextCompat.getSystemService(ctx, ConnectivityManager.class);
+        if (cm == null) return true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network active = cm.getActiveNetwork();
+            if (active == null) return false;
+            NetworkCapabilities caps = cm.getNetworkCapabilities(active);
+            return caps != null && caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        } else {
+            return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+        }
     }
 
     @Override
@@ -167,7 +234,7 @@ public class TitleBarLayer extends AnimateLayer implements GestureControllable {
     }
 
     private void applyTheme() {
-        if (PlayScene.isFullScreenMode(playScene())) {
+        if (isFullScreen()) {
             applyFullScreenTheme();
         } else if (playScene() == PlayScene.SCENE_DETAIL) {
             applyHalfScreenTheme();
@@ -180,6 +247,10 @@ public class TitleBarLayer extends AnimateLayer implements GestureControllable {
         setTitleBarHorizontalMargin(44);
         if (mTitle != null) {
             mTitle.setVisibility(View.VISIBLE);
+        }
+
+        if (mCasting != null) {
+            mCasting.setVisibility(enableCasting ? View.VISIBLE : View.GONE);
         }
 
         if (mMore != null) {
@@ -197,6 +268,10 @@ public class TitleBarLayer extends AnimateLayer implements GestureControllable {
         }
         if (mMore != null) {
             mMore.setVisibility(View.GONE);
+        }
+        if (mCasting != null) {
+            // Casting is only supported in fullscreen (landscape); hide the entry on half-screen.
+            mCasting.setVisibility(View.GONE);
         }
         if (mMiniPlayer != null) {
             MiniPlayerLayer miniPlayerLayer = findLayer(MiniPlayerLayer.class);

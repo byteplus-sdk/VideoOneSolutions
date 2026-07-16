@@ -43,8 +43,15 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
 
     private final boolean mShowLoopMode;
 
+    private boolean inCasting;
+
+
     MoreDialogLayerSimple(boolean showLoopMode, boolean showMiniPlayer) {
         this.mShowLoopMode = showLoopMode;
+    }
+
+    public void setInCasting(boolean inCasting) {
+        this.inCasting = inCasting;
     }
 
     @Override
@@ -109,6 +116,7 @@ public class MoreDialogLayerSimple extends MoreDialogLayer implements VolumeRece
         setAnimateDismissListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                if (inCasting) return;
                 GestureLayer layer = layerHost().findLayer(GestureLayer.class);
                 if (layer != null) {
                     layer.showController();

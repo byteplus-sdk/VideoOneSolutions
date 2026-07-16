@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Play/Pause toggle icon for the player control bar.
+  `state_selected = true` means the stream is playing → show the Pause icon;
+  otherwise show the Play icon. The host flips View.isSelected accordingly.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/live_sport_ic_pause" android:state_selected="true" />
+    <item android:drawable="@drawable/live_sport_ic_play" />
+</selector>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder fill for a 16:9 player slot (grey rounded box) shown before the
+     surface renders or for reserved (HLS / RTMPS) protocols. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#1F2733" />
+    <corners android:radius="8dp" />
+</shape>

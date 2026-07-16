@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Selected-state overlay for a camera thumbnail: a 2dp white border plus a
+     dark scrim, matching Figma (rgba(0,0,0,0.69) fill + #FFFFFF 2px stroke).
+     Toggled visible by the adapter for the active camera. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="4dp" />
+    <solid android:color="#B0000000" />
+    <stroke
+        android:width="2dp"
+        android:color="#FFFFFF" />
+</shape>

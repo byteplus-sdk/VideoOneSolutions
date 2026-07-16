@@ -1,986 +1,232 @@
-// Copyright (c) 2023 BytePlus Pte. Ltd.
-// SPDX-License-Identifier: Apache-2.0
 package com.byteplus.live.pusher;
 
 import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_EXTERNAL;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_MICROPHONE;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_MUTE_FRAME;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_VOICE_COMMUNICATION;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_CAPTURE_VOICE_RECOGNITION;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_16K;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_32K;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_44_1K;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_48K;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_AUDIO_SAMPLE_RATE_8K;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_BACK;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_CUSTOM_IMAGE;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_DUAL;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_DUMMY_FRAME;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_EXTERNAL;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_FRONT;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_LAST_FRAME;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_MIRROR;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_CAPTURE_SCREEN;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_PREVIEW_MIRROR;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_PUSH_MIRROR;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_RENDER_MODE_FILL;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_RENDER_MODE_FIT;
-import static com.byteplus.live.settings.PreferenceUtil.PUSH_VIDEO_RENDER_MODE_HIDDEN;
-import static com.byteplus.live.settings.PreferenceUtil.RESOLUTION_1080P;
-import static com.byteplus.live.settings.PreferenceUtil.RESOLUTION_360P;
-import static com.byteplus.live.settings.PreferenceUtil.RESOLUTION_480P;
-import static com.byteplus.live.settings.PreferenceUtil.RESOLUTION_540P;
-import static com.byteplus.live.settings.PreferenceUtil.RESOLUTION_720P;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeLiveAudioCaptureExternal;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeLiveAudioCaptureMicrophone;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeLiveAudioCaptureMuteFrame;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioCaptureType.VeLiveAudioCaptureVoiceCommunication;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioChannel.VeLiveAudioChannelStereo;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioFrameSource.VeLiveAudioFrameSourceCapture;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioFrameSource.VeLiveAudioFrameSourcePreEncode;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate16000;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate32000;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate44100;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate48000;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveAudioSampleRate.VeLiveAudioSampleRate8000;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveNetworkQuality.VeLiveNetworkQualityBad;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveNetworkQuality.VeLiveNetworkQualityGood;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveNetworkQuality.VeLiveNetworkQualityPoor;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveNetworkQuality.VeLiveNetworkQualityUnknown;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveOrientation.VeLiveOrientationLandscape;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveOrientation.VeLiveOrientationPortrait;
-import static com.ss.avframework.live.VeLivePusherDef.VeLivePixelFormat.VeLivePixelFormatI420;
-import static com.ss.avframework.live.VeLivePusherDef.VeLivePixelFormat.VeLivePixelFormatNV12;
-import static com.ss.avframework.live.VeLivePusherDef.VeLivePixelFormat.VeLivePixelFormatNV21;
-import static com.ss.avframework.live.VeLivePusherDef.VeLivePusherRenderMode.VeLivePusherRenderModeFill;
-import static com.ss.avframework.live.VeLivePusherDef.VeLivePusherRenderMode.VeLivePusherRenderModeFit;
-import static com.ss.avframework.live.VeLivePusherDef.VeLivePusherRenderMode.VeLivePusherRenderModeHidden;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureBackCamera;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureCustomImage;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureDummyFrame;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureExternal;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureFrontCamera;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureLastFrame;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoCaptureType.VeLiveVideoCaptureScreen;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoFrameSource.VeLiveVideoFrameSourceCapture;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoFrameSource.VeLiveVideoFrameSourcePreEncode;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoMirrorType.VeLiveVideoMirrorCapture;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoMirrorType.VeLiveVideoMirrorPreview;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoMirrorType.VeLiveVideoMirrorPushStream;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoResolution.VeLiveVideoResolution1080P;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoResolution.VeLiveVideoResolution360P;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoResolution.VeLiveVideoResolution480P;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoResolution.VeLiveVideoResolution540P;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoResolution.VeLiveVideoResolution720P;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoRotation.VeLiveVideoRotation0;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoRotation.VeLiveVideoRotation180;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoRotation.VeLiveVideoRotation270;
-import static com.ss.avframework.live.VeLivePusherDef.VeLiveVideoRotation.VeLiveVideoRotation90;
+import static com.ss.bytertc.engine.data.AudioSourceType.AUDIO_SOURCE_TYPE_EXTERNAL;
+import static com.ss.bytertc.engine.data.AudioSourceType.AUDIO_SOURCE_TYPE_INTERNAL;
+import static com.ss.bytertc.engine.data.StreamIndex.STREAM_INDEX_MAIN;
+import static com.ss.bytertc.engine.data.VideoSourceType.VIDEO_SOURCE_TYPE_EXTERNAL;
+import static com.ss.bytertc.engine.data.VideoSourceType.VIDEO_SOURCE_TYPE_INTERNAL;
+import static com.ss.bytertc.engine.video.VideoCaptureConfig.CapturePreference.MANUAL;
+import static com.ss.bytertc.engine.data.CameraId.CAMERA_ID_BACK;
+import static com.ss.bytertc.engine.data.CameraId.CAMERA_ID_FRONT;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.byteplus.live.common.FileUtils;
-import com.byteplus.live.common.WriterPCMFile;
+import com.vertc.api.example.base.RTCTokenManager;
+import com.ss.bytertc.engine.RTCEngine;
+import com.ss.bytertc.engine.RTCRoom;
+import com.ss.bytertc.engine.RTCRoomConfig;
+import com.ss.bytertc.engine.UserInfo;
+import com.ss.bytertc.engine.VideoCanvas;
+import com.ss.bytertc.engine.VideoEncoderConfig;
+import com.ss.bytertc.engine.data.CameraId;
+import com.ss.bytertc.engine.data.EngineConfig;
+import com.ss.bytertc.engine.data.MediaPlayerCustomSourceMode;
+import com.ss.bytertc.engine.data.MediaPlayerCustomSourceStreamType;
+import com.ss.bytertc.engine.data.MirrorType;
+import com.ss.bytertc.engine.data.RecordingConfig;
+import com.ss.bytertc.engine.type.AudioDeviceType;
+import com.ss.bytertc.engine.type.ChannelProfile;
+import com.ss.bytertc.engine.type.TorchState;
+import com.ss.bytertc.engine.type.RecordingType;
+import com.ss.bytertc.engine.type.VideoDeviceType;
+import com.ss.bytertc.engine.video.IVideoEffect;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
+import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
+import com.ss.bytertc.engine.live.PushSingleStreamParam;
+import com.ss.bytertc.engine.data.EarMonitorMode;
+import com.ss.bytertc.engine.data.VideoOrientation;
 import com.byteplus.live.settings.PreferenceUtil;
-import com.ss.avframework.live.VeLiveAudioDevice;
-import com.ss.avframework.live.VeLiveAudioFrame;
-import com.ss.avframework.live.VeLiveCameraDevice;
-import com.ss.avframework.live.VeLiveMediaPlayer;
-import com.ss.avframework.live.VeLiveMixerManager;
-import com.ss.avframework.live.VeLivePusher;
-import com.ss.avframework.live.VeLivePusherConfiguration;
-import com.ss.avframework.live.VeLivePusherDef;
-import com.ss.avframework.live.VeLivePusherObserver;
-import com.ss.avframework.live.VeLiveVideoEffectManager;
-import com.ss.avframework.live.VeLiveVideoFrame;
 
-import org.json.JSONObject;
-
+import java.nio.ByteBuffer;
+import java.security.SecureRandom;
+import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
 import java.io.File;
+import android.os.Environment;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
-public class LivePusherImpl implements LivePusher,
-        VeLivePusherDef.VeLiveAudioFrameListener,
-        VeLivePusherDef.VeLiveVideoFrameListener {
-    private VeLivePusher mLivePusher;
-    private VeLiveCameraDevice mLiveCameraDev;
-    private VeLiveAudioDevice mLiveAudioDev;
-    private VeLiveMediaPlayer mMediaPlayer;
-    private MediaPlayerListener mMediaPlayerListener;
-    private VeLiveMixerManager mMixerManager;
-    private String mMixBgColor;
-    private VeLivePusherDef.VeLiveStreamMixDescription mMixDescription;
+import com.byteplus.live.common.WriterPCMFile;
+import com.ss.bytertc.engine.video.IVideoProcessor;
+import com.ss.bytertc.engine.video.IVideoFrame;
+import com.ss.bytertc.engine.video.VideoCaptureConfig;
+import com.ss.bytertc.engine.video.VideoPreprocessorConfig;
+import com.ss.bytertc.engine.IAudioFrameProcessor;
+import com.ss.bytertc.engine.utils.IAudioFrame;
+import com.ss.bytertc.engine.data.AudioFormat;
+import com.ss.bytertc.engine.data.AudioProcessorMethod;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.Timer;
+import java.util.TimerTask;
+import android.graphics.Color;
+import android.graphics.Canvas;
+
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.core.util.Consumer;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.ss.bytertc.base.media.screen.RXScreenCaptureService;
+
+public class LivePusherImpl implements LivePusher {
+
+    private static final String TAG = "LivePusherImpl";
+    private static final String PUSH_TASK_ID = "vel_push_single_stream_task_0";
+    private static final Random random = new SecureRandom();
+    private static final String PUSH_ROOM_ID = "vel_push_room_" + random.nextInt(100000);
+
+    public static final ExecutorService cached = Executors.newCachedThreadPool();
+
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
     private Context mContext;
-    private final String TAG = "LivePusherImpl";
-    private LivePusherObserver mPusherObserver;
-    private LivePusherCycleInfo mCycleInfo = new LivePusherCycleInfo();
-    private final File mParentPath;
+    private LivePusherObserver mObserver;
+    private RTCEngine mRTCEngine;
+    private RTCRoom mRTCRoom;
+    private String mUserId;
+    private class LocalVideoProcessor extends IVideoProcessor {
+        private final AtomicReference<IVideoFrame> mNextFrame = new AtomicReference<>(null);
+        public boolean enableListener = false;
+
+        public void pushFrame(IVideoFrame frame) {
+            IVideoFrame oldFrame = mNextFrame.getAndSet(frame);
+            if (oldFrame != null) {
+                oldFrame.releaseRef();
+            }
+        }
+
+        @Override
+        public IVideoFrame processVideoFrame(IVideoFrame srcFrame) {
+            if (enableListener) {
+                if (mCaptureVideoStreamHandler == null) {
+                    mCaptureVideoStreamHandler = addVideoStream();
+                }
+                // Send back a placeholder/no-op just to satisfy the listener test loop
+                sendVideoFrame(mCaptureVideoStreamHandler, null);
+            }
+            IVideoFrame overrideFrame = mNextFrame.getAndSet(null);
+            if (overrideFrame != null) {
+                return overrideFrame;
+            }
+            return srcFrame;
+        }
+    }
+
+    private class LocalAudioProcessor implements IAudioFrameProcessor {
+        private final AtomicReference<AudioFrame> mNextFrame = new AtomicReference<>(null);
+
+        public void pushFrame(AudioFrame frame) {
+            mNextFrame.set(frame);
+        }
+
+        @Override
+        public int onProcessRecordAudioFrame(IAudioFrame srcFrame) {
+            AudioFrame overrideFrame = mNextFrame.getAndSet(null);
+            if (overrideFrame != null && overrideFrame.buffer != null) {
+                java.nio.ByteBuffer buffer = srcFrame.getDataBuffer();
+                if (buffer != null) {
+                    buffer.clear();
+                    byte[] data = overrideFrame.buffer.array();
+                    buffer.put(data, 0, Math.min(data.length, buffer.capacity()));
+                }
+            }
+            return 0;
+        }
+
+        @Override
+        public int onProcessPlayBackAudioFrame(IAudioFrame frame) { return 0; }
+
+        @Override
+        public int onProcessRemoteUserAudioFrame(String roomId, com.ss.bytertc.engine.data.StreamInfo info, IAudioFrame frame) { return 0; }
+
+        @Override
+        public int onProcessEarMonitorAudioFrame(IAudioFrame frame) { return 0; }
+
+        @Override
+        public int onProcessScreenAudioFrame(IAudioFrame frame) { return 0; }
+    }
+
+    private LocalVideoProcessor mLocalVideoProcessor;
+    private LocalAudioProcessor mLocalAudioProcessor;
+
     private WriterPCMFile mCaptureAudioWriter;
-    private WriterPCMFile mPreEncodeAudioWriter;
-    private WriterPCMFile mBgmAudioWriter;
+    private com.ss.bytertc.engine.IAudioFrameObserver mAudioFrameObserver;
     private Object mCaptureVideoStreamHandler;
     private Object mPreEncodeVideoStreamHandler;
-    private boolean mIsBgmPlaying;
-    private String mBgmFilePath;
-    private int mRecordHeight;
-    private int mRecordWidth;
-    private int mRecordBitrate;
-    private int mRecordFps;
+
+    private CameraId mLastCameraId = CameraId.CAMERA_ID_FRONT;
+    private boolean mIsMuted = false;
+    private boolean mIsPublishing = false;
+    private float mVoiceLoudness = 1.0f;
+    private boolean mEnableEcho = false;
+    private boolean mEnableBgmLoop = false;
+    private boolean mEnableBgmMixer = true;
+
+    private Timer mCustomImageTimer;
+    private Bitmap mCustomImageBitmap;
+    private Bitmap mDummyBlackBitmap;
+
+    private LivePusherCycleInfo mCycleInfo = new LivePusherCycleInfo();
 
     public static LivePusher createLivePusher(Context context, LivePusherObserver observer) {
         return new LivePusherImpl(context, observer);
     }
 
-    private LivePusherImpl(Context context, LivePusherObserver appObserver) {
+    private LivePusherImpl(Context context, LivePusherObserver observer) {
         Log.d(TAG, "create LivePusherImpl");
         mContext = context;
-        mParentPath = FileUtils.getAppPicturesDir(mContext, "VideoOne/TTSDK");
-        mPusherObserver = appObserver;
-        initInternal();
-        configLivePusher();
-        updateOrientation();
+        mObserver = observer;
+        mUserId = UUID.randomUUID().toString();
+        initEngine();
+        setOrientation(0);
     }
 
-    private void updateOrientation() {
-        if (LivePusherSettingsHelper.isLandscape()) {
-            mLivePusher.setOrientation(VeLiveOrientationLandscape);
-        } else {
-            mLivePusher.setOrientation(VeLiveOrientationPortrait);
+    private void initEngine() {
+        EngineConfig config = new EngineConfig();
+        config.context = mContext;
+        config.appID = Objects.requireNonNull(RTCTokenManager.getInstance().getAppId(), "AppId not provided");
+        Log.d(TAG, "initEngine appID: " + config.appID);
+        mRTCEngine = RTCEngine.createRTCEngine(config, mEngineEventHandler);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "create rtcEngine failed");
         }
+        mRTCEngine.setBusinessId(RTCTokenManager.getInstance().getBusinessId("live"));
+        updateRTCVideoEncoderConfig();
     }
 
-    @Override
-    public VeLiveVideoEffectManager getEffectHandler() {
-        return mLivePusher.getVideoEffectManager();
+    private void updateRTCVideoEncoderConfig() {
+        if (mRTCEngine == null) return;
+        VideoEncoderConfig config = new VideoEncoderConfig();
+        config.width = LivePusherSettingsHelper.getResolutionWidthVal(LivePusherSettingsHelper.getEncodeResolutionSettings());
+        config.height = LivePusherSettingsHelper.getResolutionHeightVal(LivePusherSettingsHelper.getEncodeResolutionSettings());
+        config.frameRate = LivePusherSettingsHelper.getEncodeFpsVal();
+        config.maxBitrate = getDefaultBitrate(config.width, config.height) * 1000;
+        mRTCEngine.setVideoEncoderConfig(config);
     }
 
-    @Override
-    public void setOrientation(int orientation) {
-        PreferenceUtil.getInstance().setPushOrientation(orientation);
-        updateOrientation();
-    }
-
-    @Override
-    public void setRenderView(View view) {
-        Log.d(TAG, "setRenderView");
-        if (mLivePusher == null) {
-            Log.e(TAG, "setRenderView, mLivePusher is null.");
-            return;
-        }
-        mLivePusher.setRenderView(view);
-    }
-
-    @Override
-    public void startVideoCapture(int type) {
-        Log.d(TAG, "startVideoCapture, type: " + type);
-        if (mLivePusher == null) {
-            Log.e(TAG, "startVideoCapture, mLivePusher is null.");
-            return;
-        }
-        if (type != -1) {
-            mLivePusher.startVideoCapture(convertVideoCaptureType(type));
-        }
-    }
-
-    @Override
-    public void stopVideoCapture() {
-        Log.d(TAG, "stopVideoCapture.");
-        if (mLivePusher == null) {
-            Log.e(TAG, "stopVideoCapture, mLivePusher is null.");
-            return;
-        }
-        if (mLiveCameraDev != null) {
-            mLiveCameraDev = null;
-        }
-        mLivePusher.stopVideoCapture();
-    }
-
-    @Override
-    public void startAudioCapture(int type) {
-        Log.d(TAG, "startAudioCapture, type: " + type);
-        if (mLivePusher == null) {
-            Log.e(TAG, "startAudioCapture, mLivePusher is null.");
-            return;
-        }
-        mLivePusher.startAudioCapture(convertAudioCaptureType(type));
-    }
-
-    @Override
-    public void stopAudioCapture() {
-        Log.d(TAG, "stopAudioCapture");
-        if (mLivePusher == null) {
-            Log.e(TAG, "stopAudioCapture, mLivePusher is null.");
-            return;
-        }
-        mLivePusher.stopAudioCapture();
-    }
-
-    @Override
-    public void updateCustomImage(Bitmap bm) {
-        Log.d(TAG, "updateCustomImage");
-        if (mLivePusher == null) {
-            Log.e(TAG, "updateCustomImage, mLivePusher is null.");
-            return;
-        }
-        mLivePusher.updateCustomImage(bm);
-    }
-
-    @Override
-    public int pushExternalVideoFrame(VideoFrame frame) {
-        Log.d(TAG, "pushExternalVideoFrame");
-        if (mLivePusher == null) {
-            Log.e(TAG, "pushExternalVideoFrame, mLivePusher is null.");
-            return -1;
-        }
-        VeLiveVideoFrame f = convertVideoFrame(frame);
-        int ret = mLivePusher.pushExternalVideoFrame(f);
-        f.release();
-        return ret;
-    }
-
-    @Override
-    public int pushExternalAudioFrame(AudioFrame frame) {
-        Log.d(TAG, "pushExternalAudioFrame");
-        if (mLivePusher == null) {
-            Log.e(TAG, "pushExternalAudioFrame, mLivePusher is null.");
-            return -1;
-        }
-        return mLivePusher.pushExternalAudioFrame(
-                new VeLiveAudioFrame(VeLiveAudioSampleRate44100, VeLiveAudioChannelStereo, frame.pts, frame.buffer));
-    }
-
-    @Override
-    public void switchVideoCapture(int type) {
-        Log.d(TAG, "switchVideoCapture, type: " + type);
-        if (mLivePusher == null) {
-            Log.e(TAG, "switchVideoCapture, mLivePusher is null.");
-            return;
-        }
-        mLivePusher.switchVideoCapture(convertVideoCaptureType(type));
-    }
-
-    @Override
-    public void switchAudioCapture(int type) {
-        Log.d(TAG, "switchAudioCapture, type: " + type);
-        if (mLivePusher == null) {
-            Log.e(TAG, "switchAudioCapture, mLivePusher is null.");
-            return;
-        }
-        mLivePusher.switchAudioCapture(convertAudioCaptureType(type));
-    }
-
-    @Override
-    public int enableTorch(boolean enable) {
-        Log.d(TAG, "enableTorch, enable: " + enable);
-        if (mLiveCameraDev == null) {
-            mLiveCameraDev = mLivePusher.getCameraDevice();
-            if (mLiveCameraDev == null) {
-                Log.e(TAG, "enableTorch, mLiveCameraDev is null.");
-                return -1;
-            }
-        }
-        return mLiveCameraDev.enableTorch(enable);
-    }
-
-    @Override
-    public void updateSettings(boolean isNeedRebuild) {
-        Log.d(TAG, "updateSettings");
-        if (isNeedRebuild) {
-            releaseInternal();
-            initInternal();
-        }
-        configLivePusher();
-        if (isNeedRebuild) {
-            updateOrientation();
-            mPusherObserver.onRebuildLivePusher();
-        }
-    }
-
-    @Override
-    public void startPush() {
-        Log.d(TAG, "startPush, url: " + LivePusherSettingsHelper.getPushUrl());
-        if (mLivePusher != null) {
-            mLivePusher.startPush(LivePusherSettingsHelper.getPushUrl());
-        }
-    }
-
-    @Override
-    public void stopPush() {
-        Log.d(TAG, "stopPush");
-        if (mLivePusher != null) {
-            mLivePusher.stopPush();
-        }
-    }
-
-    @Override
-    public boolean isMute() {
-        Log.d(TAG, "isMute.");
-        if (mLivePusher != null) {
-            return mLivePusher.isMute();
-        }
-        return false;
-    }
-
-    @Override
-    public void setMute(boolean mute) {
-        Log.d(TAG, "setMute, mute: " + mute);
-        if (mLivePusher != null) {
-            mLivePusher.setMute(mute);
-        }
-    }
-
-    @Override
-    public void setFileRecordingConfig(int resolution, int fps, int bitrate) {
-        mRecordHeight = LivePusherSettingsHelper.getResolutionHeightVal(resolution);
-        mRecordWidth = LivePusherSettingsHelper.getResolutionWidthVal(resolution);
-        if (LivePusherSettingsHelper.isLandscape()) {
-            int tmp = mRecordHeight;
-            mRecordHeight = mRecordWidth;
-            mRecordWidth = tmp;
-        }
-        mRecordFps = LivePusherSettingsHelper.getFpsVal(fps);
-        mRecordBitrate = bitrate;
-    }
-
-    @Override
-    public void startFileRecording(FileRecordingListener listener) {
-        Log.d(TAG, "startFileRecording");
-        if (mLivePusher != null) {
-            VeLivePusherDef.VeLiveFileRecorderConfiguration config = new VeLivePusherDef.VeLiveFileRecorderConfiguration();
-            config.setFps(mRecordFps);
-            config.setHeight(mRecordHeight);
-            config.setWidth(mRecordWidth);
-            config.setBitrate(mRecordBitrate);
-            File mp4Path = new File(mParentPath, "Record_" + System.currentTimeMillis() + ".mp4");
-            File parent = Objects.requireNonNull(mp4Path.getParentFile());
-            if (!parent.exists() && !parent.mkdirs()) {
-                Log.d(TAG, "startFileRecording failed, can't create parent file: " + parent);
-                listener.onFileRecordingError(-1, "failed to create file");
-                return;
-            }
-            mLivePusher.startFileRecording(mp4Path.getAbsolutePath(), config,
-                    new VeLivePusherDef.VeLiveFileRecordingListener() {
-                        @Override
-                        public void onFileRecordingStarted() {
-                            if (listener != null) {
-                                listener.onFileRecordingStarted();
-                            }
-                        }
-
-                        @Override
-                        public void onFileRecordingStopped() {
-                            if (listener != null) {
-                                listener.onFileRecordingStopped();
-                            }
-                            FileUtils.exportVideoToGallery(mContext, mp4Path, mp4Path.getName());
-                        }
-
-                        @Override
-                        public void onFileRecordingError(int errorCode, String message) {
-                            if (listener != null) {
-                                listener.onFileRecordingError(errorCode, message);
-                            }
-                        }
-                    });
-        }
-    }
-
-    @Override
-    public void stopFileRecording() {
-        Log.d(TAG, "stopFileRecording");
-        if (mLivePusher != null) {
-            mLivePusher.stopFileRecording();
-        }
-    }
-
-    @Override
-    public void setVideoMirror(int type, boolean enable) {
-        Log.d(TAG, "setVideoMirror, enable: " + enable);
-        if (mLivePusher != null) {
-            mLivePusher.setVideoMirror(convertMirrorType(type), enable);
-        }
-    }
-
-    @Override
-    public void snapshot() {
-        Log.d(TAG, "snapshot");
-        if (mLivePusher != null) {
-            mLivePusher.snapshot(new VeLivePusherDef.VeLiveSnapshotListener() {
-                @Override
-                public void onSnapshotComplete(Bitmap image) {
-                    File file = new File(mParentPath, "Snapshot_" + System.currentTimeMillis() + ".jpg");
-                    Log.d(TAG, "saveBitmap to " + file);
-                    boolean retValue = FileUtils.saveBitmap(image, file);
-                    if (retValue) {
-                        FileUtils.exportImageToGallery(mContext, file, file.getName());
-                    } else {
-                        Log.i(TAG, "saveBitmap: save failed");
-                    }
-                }
-            });
-        }
-    }
-
-    @Override
-    public void sendSeiMessage(String content, int repeatCount) {
-        Log.d(TAG, "sendSeiMessage");
-        if (mLivePusher != null) {
-            boolean isKeyFrame = true;
-            boolean allowCovered = true;
-            mLivePusher.sendSeiMessage("test_sei", content, repeatCount, isKeyFrame, isKeyFrame);
-        }
-    }
-
-    @Override
-    public void setWatermark(Bitmap bm, float x, float y, float scale) {
-        Log.d(TAG, "setWatermark, x: " + x + ", y: " + y + ", scale: " + scale);
-        if (mLivePusher != null) {
-            mLivePusher.setWatermark(bm, x, y, scale);
-        }
-    }
-
-    @Override
-    public Object addAudioStream() {
-        Log.d(TAG, "addAudioStream");
-        if (mLivePusher == null) {
-            Log.e(TAG, "addAudioStream, livePusher is null.");
-            return null;
-        }
-        if (mMixerManager == null) {
-            mMixerManager = mLivePusher.getMixerManager();
-            Log.i(TAG, "addAudioStream, create MixerManager");
-        }
-        return mMixerManager.addAudioStream();
-    }
-
-    @Override
-    public void sendAudioFrame(Object streamHandle, AudioFrame frame) {
-        if (mMixerManager == null) {
-            Log.e(TAG, "sendAudioFrame, mMixerManager is null.");
-            return;
-        }
-        Log.d(TAG, "sendAudioFrame, frame: " + frame.buffer.position());
-        mMixerManager.sendCustomAudioFrame(
-                new VeLiveAudioFrame(VeLiveAudioSampleRate44100, VeLiveAudioChannelStereo, frame.pts, frame.buffer),
-                (int) streamHandle);
-    }
-
-    @Override
-    public void removeAudioStream(Object streamHandle) {
-        Log.d(TAG, "removeAudioStream, streamHandle: " + streamHandle);
-        if (mMixerManager == null) {
-            Log.e(TAG, "removeAudioStream, mMixerManager is null.");
-            return;
-        }
-        mMixerManager.removeAudioStream((int) streamHandle);
-    }
-
-    @Override
-    public Object addVideoStream() {
-        Log.d(TAG, "addVideoStream");
-        if (mLivePusher == null) {
-            Log.e(TAG, "addVideoStream, livePusher is null.");
-            return null;
-        }
-        if (mMixerManager == null) {
-            mMixerManager = mLivePusher.getMixerManager();
-            Log.i(TAG, "addVideoStream, create MixerManager");
-        }
-        return mMixerManager.addVideoStream();
-    }
-
-    @Override
-    public void sendVideoFrame(Object streamHandle, VideoFrame frame) {
-        if (streamHandle == null) {
-            return;
-        }
-        Log.d(TAG, "sendVideoFrame, bufferType: " + frame.bufferType + ", streamHandle: " + (int) streamHandle);
-        sendVideoFrameInner(streamHandle, convertVideoFrame(frame));
-    }
-
-    private void sendVideoFrameInner(Object streamHandle, VeLiveVideoFrame frame) {
-        if (mMixerManager == null) {
-            Log.e(TAG, "sendVideoFrame, mMixerManager is null.");
-            return;
-        }
-        mMixerManager.sendCustomVideoFrame(frame, (int) streamHandle);
-    }
-
-    @Override
-    public void updateStreamMixDescription(Object streamHandle, float x, float y, float alpha, int renderMode) {
-        if (mMixerManager == null) {
-            Log.e(TAG, "updateStreamMixDescription, mMixerManager is null.");
-            return;
-        }
-        Log.d(TAG, "updateStreamMixDescription, streamHandle: " + (int) streamHandle + ", x: " + x + ", y: " + y);
-        VeLivePusherDef.VeLiveMixVideoLayout layout = new VeLivePusherDef.VeLiveMixVideoLayout();
-        layout.x = x;
-        layout.y = y;
-        layout.width = 0.3f;
-        layout.height = 0.3f;
-        layout.zOrder = 20;
-        layout.alpha = alpha;
-        layout.streamId = (int) streamHandle;
-        layout.renderMode = convertRenderMode(renderMode);
-        if (mMixDescription == null) {
-            mMixDescription = new VeLivePusherDef.VeLiveStreamMixDescription();
-        }
-        mMixDescription.mixVideoStreams.add(layout);
-        mMixDescription.backgroundColor = "#" + mMixBgColor;
-        mMixerManager.updateStreamMixDescription(mMixDescription);
-    }
-
-    @Override
-    public void removeVideoStream(Object streamHandle) {
-        Log.d(TAG, "removeVideoStream, streamHandle: " + streamHandle);
-        if (mMixerManager == null) {
-            Log.e(TAG, "removeVideoStream, mMixerManager is null.");
-            return;
-        }
-        mMixerManager.removeVideoStream((int) streamHandle);
-    }
-
-    @Override
-    public void updateMixBgColor(int color) {
-        mMixBgColor = Integer.toHexString(color);
-        Log.d(TAG, "updateMixBgColor, color:0x" + mMixBgColor);
-        if (mMixerManager == null) {
-            Log.e(TAG, "updateMixBgColor, mMixerManager is null.");
-            return;
-        }
-        if (mMixDescription == null) {
-            mMixDescription = new VeLivePusherDef.VeLiveStreamMixDescription();
-        }
-        mMixDescription.backgroundColor = "#" + mMixBgColor;
-        mMixerManager.updateStreamMixDescription(mMixDescription);
-    }
-
-    @Override
-    public float getVoiceLoudness() {
-        Log.d(TAG, "getVoiceLoudness");
-        if (mLivePusher == null) {
-            Log.e(TAG, "getVoiceLoudness, livePusher is null.");
-            return 0;
-        }
-        if (mLiveAudioDev == null) {
-            mLiveAudioDev = mLivePusher.getAudioDevice();
-        }
-        return mLiveAudioDev.getVoiceLoudness();
-    }
-
-    @Override
-    public void setVoiceLoudness(float level) {
-        Log.d(TAG, "setVoiceLoudness, level: " + level);
-        if (mLivePusher == null) {
-            Log.e(TAG, "setVoiceLoudness, livePusher is null.");
-            return;
-        }
-        if (mLiveAudioDev == null) {
-            mLiveAudioDev = mLivePusher.getAudioDevice();
-        }
-        mLiveAudioDev.setVoiceLoudness(level);
-    }
-
-    @Override
-    public boolean enableEcho(boolean enable) {
-        Log.d(TAG, "enableEcho, enable:" + enable);
-        if (mLivePusher == null) {
-            Log.e(TAG, "enableEcho, livePusher is null.");
-            return false;
-        }
-        if (mLiveAudioDev == null) {
-            mLiveAudioDev = mLivePusher.getAudioDevice();
-            return false;
-        }
-        if (mLiveAudioDev.isSupportHardwareEcho()) {
-            mLiveAudioDev.enableEcho(enable);
-            return true;
-        } else {
-            Toast.makeText(mContext, R.string.medialive_audio_echo_not_supported, Toast.LENGTH_SHORT).show();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isEnableEcho() {
-        Log.d(TAG, "isEnableEcho");
-        if (mLivePusher == null) {
-            Log.e(TAG, "isEnableEcho, livePusher is null.");
-            return false;
-        }
-        if (mLiveAudioDev == null) {
-            mLiveAudioDev = mLivePusher.getAudioDevice();
-            return false;
-        }
-        return mLiveAudioDev.isEnableEcho();
-    }
-
-    @Override
-    public int startBgm(String filePath, MediaPlayerListener listener) {
-        Log.d(TAG, "startBgm, filePath: " + filePath);
-        if (mLivePusher == null) {
-            Log.e(TAG, "startBgm, livePusher is null.");
-            return -1;
-        }
-        if (mMediaPlayer == null) {
-            mMediaPlayer = mLivePusher.createPlayer();
-        }
-        mMediaPlayerListener = listener;
-        mMediaPlayer.setListener(new VeLivePusherDef.VeLiveMediaPlayerListener() {
-            @Override
-            public void onProgress(long timeMs) {
-                Log.d(TAG, "[onProgress] timeMs: " + timeMs);
-                if (mMediaPlayerListener != null) {
-                    mMediaPlayerListener.onProgress((int) ((double) timeMs / mMediaPlayer.getDuration() * 100));
-                }
-            }
-
-            @Override
-            public void onError(int code, String msg) {
-                String info = "[" + getTimestamp() + "] onError: " +
-                        "mediaPlayer, code:" + code +
-                        ", msg:" + msg;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                }
-            }
-
-            @Override
-            public void onStop() {
-                if (mMediaPlayerListener != null) {
-                    mMediaPlayerListener.onProgress(0);
-                }
-                mIsBgmPlaying = false;
-//                if (mMediaPlayer != null) {
-//                    mMediaPlayer.prepare(filePath);
-//                    mMediaPlayer.start();
-//                }
-            }
-        });
-        mIsBgmPlaying = true;
-        mBgmFilePath = filePath;
-        mMediaPlayer.prepare(filePath);
-        return mMediaPlayer.start();
-    }
-
-    @Override
-    public void stopBgm() {
-        Log.d(TAG, "stopBgm");
-        if (mLivePusher == null) {
-            Log.e(TAG, "stopBgm, livePusher is null.");
-            return;
-        }
-        if (mMediaPlayer == null) {
-            return;
-        }
-        mIsBgmPlaying = false;
-        mMediaPlayer.stop();
-        mMediaPlayer.release();
-        mMediaPlayer = null;
-    }
-
-    @Override
-    public int seekBgm(int pos) {
-        Log.d(TAG, "seekBgm, pos: " + pos);
-        if (mLivePusher == null) {
-            Log.e(TAG, "seekBgm, livePusher is null.");
-            return -1;
-        }
-        if (mMediaPlayer == null) {
-            return -1;
-        }
-        if (!mIsBgmPlaying && mBgmFilePath != null) {
-            mMediaPlayer.prepare(mBgmFilePath);
-            mMediaPlayer.start();
-        }
-        return mMediaPlayer.seek((long) ((double) pos / 100 * mMediaPlayer.getDuration()));
-    }
-
-    @Override
-    public void resumeBgm() {
-        Log.d(TAG, "resumeBgm");
-        if (mLivePusher == null) {
-            Log.e(TAG, "resumeBgm, livePusher is null.");
-            return;
-        }
-        if (mMediaPlayer == null) {
-            return;
-        }
-        mMediaPlayer.resume();
-    }
-
-    @Override
-    public void pauseBgm() {
-        Log.d(TAG, "pauseBgm");
-        if (mLivePusher == null) {
-            Log.e(TAG, "pauseBgm, livePusher is null.");
-            return;
-        }
-        if (mMediaPlayer == null) {
-            return;
-        }
-        mMediaPlayer.pause();
-    }
-
-    @Override
-    public void enableBgmMixer(boolean enable) {
-        Log.d(TAG, "enableBgmMixer, enable:" + enable);
-        if (mLivePusher == null) {
-            Log.e(TAG, "enableBgmMixer, livePusher is null.");
-            return;
-        }
-        if (mMediaPlayer == null) {
-            return;
-        }
-        mMediaPlayer.enableMixer(enable);
-    }
-
-    @Override
-    public void enableBgmFrameListener(boolean enable) {
-        Log.d(TAG, "enableBgmFrameListener, enable:" + enable);
-        if (mLivePusher == null) {
-            Log.e(TAG, "enableBgmFrameListener, livePusher is null.");
-            return;
-        }
-        if (mMediaPlayer == null) {
-            return;
-        }
-        if (enable) {
-            mMediaPlayer.setFrameListener(new VeLivePusherDef.VeLiveMediaPlayerFrameListener() {
-                @Override
-                public void onAudioFrame(VeLiveAudioFrame frame) {
-                    if (mBgmAudioWriter == null) {
-                        mBgmAudioWriter = new WriterPCMFile(frame.getSampleRate().value(), frame.getChannels().value(), 16, "bgmAudio", "le");
-                    }
-                    byte[] data = new byte[frame.getBuffer().limit()];
-                    frame.getBuffer().get(data);
-                    mBgmAudioWriter.writeBytes(data);
-                }
-            });
-        } else {
-            mMediaPlayer.setFrameListener(null);
-            if (mBgmAudioWriter != null) {
-                mBgmAudioWriter.finish();
-                mBgmAudioWriter = null;
-            }
-        }
-    }
-
-    @Override
-    public void setBgmVolume(float volume) {
-        Log.d(TAG, "setBgmVolume, volume:" + volume);
-        if (mLivePusher == null) {
-            Log.e(TAG, "setBgmVolume, livePusher is null.");
-            return;
-        }
-        if (mMediaPlayer == null) {
-            return;
-        }
-        mMediaPlayer.setBGMVolume(volume);
-    }
-
-    @Override
-    public void setVoiceVolume(float volume) {
-        Log.d(TAG, "setVoiceVolume, volume:" + volume);
-        if (mLivePusher == null) {
-            Log.e(TAG, "setVoiceVolume, livePusher is null.");
-            return;
-        }
-        if (mMediaPlayer == null) {
-            return;
-        }
-        mMediaPlayer.setVoiceVolume(volume);
-    }
-
-    @Override
-    public void enableBgmLoop(boolean loop) {
-        Log.d(TAG, "enableBgmLoop, loop:" + loop);
-        if (mLivePusher == null) {
-            Log.e(TAG, "enableBgmLoop, livePusher is null.");
-            return;
-        }
-        if (mMediaPlayer == null) {
-            return;
-        }
-        mMediaPlayer.enableBGMLoop(loop);
-    }
-
-    @NonNull
-    @Override
-    public VeLivePusherDef.VeLiveAudioFrameSource getObservedAudioFrameSource() {
-        return new VeLivePusherDef.VeLiveAudioFrameSource(VeLiveAudioFrameSourceCapture | VeLiveAudioFrameSourcePreEncode);
-    }
-
-    @Override
-    public void onCaptureAudioFrame(VeLiveAudioFrame frame) {
-//        Log.d(TAG, "onCaptureAudioFrame, frame:" + frame.getSampleRate().value() + ", " + frame.getChannels().value());
-        if (mCaptureAudioWriter == null) {
-            mCaptureAudioWriter = new WriterPCMFile(frame.getSampleRate().value(), frame.getChannels().value(), 16, "captureAudio", "le");
-        }
-        byte[] data = new byte[frame.getBuffer().limit()];
-        frame.getBuffer().get(data);
-        mCaptureAudioWriter.writeBytes(data);
-    }
-
-    @Override
-    public void onPreEncodeAudioFrame(VeLiveAudioFrame frame) {
-//        Log.d(TAG, "onPreEncodeAudioFrame, frame:" + frame.getSampleRate().value() + ", " + frame.getChannels().value());
-        if (mPreEncodeAudioWriter == null) {
-            mPreEncodeAudioWriter = new WriterPCMFile(frame.getSampleRate().value(), frame.getChannels().value(), 16, "preEncodeAudio", "le");
-        }
-        byte[] data = new byte[frame.getBuffer().limit()];
-        frame.getBuffer().get(data);
-        mPreEncodeAudioWriter.writeBytes(data);
-    }
-
-    @Override
-    public void enableAudioFrameListener(boolean enable) {
-        Log.d(TAG, "enableAudioFrameListener, enable:" + enable);
-        if (mLivePusher == null) {
-            Log.e(TAG, "enableAudioFrameListener, livePusher is null.");
-            return;
-        }
-        if (enable) {
-            mLivePusher.addAudioFrameListener(this);
-        } else {
-            mLivePusher.removeAudioFrameListener(this);
-            if (mCaptureAudioWriter != null) {
-                mCaptureAudioWriter.finish();
-                mCaptureAudioWriter = null;
-            }
-            if (mPreEncodeAudioWriter != null) {
-                mPreEncodeAudioWriter.finish();
-                mPreEncodeAudioWriter = null;
-            }
-        }
-    }
-
-    @NonNull
-    @Override
-    public VeLivePusherDef.VeLiveVideoFrameSource getObservedVideoFrameSource() {
-        return new VeLivePusherDef.VeLiveVideoFrameSource(VeLiveVideoFrameSourceCapture | VeLiveVideoFrameSourcePreEncode);
-    }
-
-    @Override
-    public void onCaptureVideoFrame(VeLiveVideoFrame frame) {
-        if (mCaptureVideoStreamHandler == null) {
-            mCaptureVideoStreamHandler = addVideoStream();
-            updateStreamMixDescription(mCaptureVideoStreamHandler, 0, 0.3f, 1.0f, PUSH_VIDEO_RENDER_MODE_FIT);
-        }
-        sendVideoFrameInner(mCaptureVideoStreamHandler, frame);
-    }
-
-    @Override
-    public void onPreEncodeVideoFrame(VeLiveVideoFrame frame) {
-        if (mPreEncodeVideoStreamHandler == null) {
-            mPreEncodeVideoStreamHandler = addVideoStream();
-            updateStreamMixDescription(mPreEncodeVideoStreamHandler, 0, 0.6f, 1.0f, PUSH_VIDEO_RENDER_MODE_FIT);
-        }
-        sendVideoFrameInner(mPreEncodeVideoStreamHandler, frame);
-    }
-
-    @Override
-    public void enableVideoFrameListener(boolean enable) {
-        Log.d(TAG, "enableVideoFrameListener, enable:" + enable);
-        if (mLivePusher == null) {
-            Log.e(TAG, "enableVideoFrameListener, livePusher is null.");
-            return;
-        }
-        if (enable) {
-            mLivePusher.addVideoFrameListener(this);
-        } else {
-            mLivePusher.removeVideoFrameListener(this);
-            if (mCaptureVideoStreamHandler != null) {
-                removeVideoStream(mCaptureVideoStreamHandler);
-                mCaptureVideoStreamHandler = null;
-            }
-            if (mPreEncodeVideoStreamHandler != null) {
-                removeVideoStream(mPreEncodeVideoStreamHandler);
-                mPreEncodeVideoStreamHandler = null;
-            }
-        }
-    }
-
-    @Override
-    public void setFocusPosition(int width, int height, int x, int y) {
-        Log.d(TAG, "setFocusPosition, x: " + x + ", y: " + y);
-        if (mLiveCameraDev == null) {
-            mLiveCameraDev = mLivePusher.getCameraDevice();
-            if (mLiveCameraDev == null) {
-                Log.e(TAG, "setFocusPosition, mLiveCameraDev is null.");
-                return;
-            }
-        }
-        mLiveCameraDev.setFocusPosition(width, height, x, y);
-    }
-
-    @Override
-    public float getCurrentZoomRatio() {
-        Log.d(TAG, "getCurrentZoomRatio");
-        if (mLiveCameraDev == null) {
-            mLiveCameraDev = mLivePusher.getCameraDevice();
-            if (mLiveCameraDev == null) {
-                Log.e(TAG, "getCurrentZoomRatio, mLiveCameraDev is null.");
-                return 1;
-            }
-        }
-        return mLiveCameraDev.getCurrentZoomRatio();
-    }
-
-    @Override
-    public float getMaxZoomRatio() {
-        Log.d(TAG, "getMaxZoomRatio");
-        if (mLiveCameraDev == null) {
-            mLiveCameraDev = mLivePusher.getCameraDevice();
-            if (mLiveCameraDev == null) {
-                Log.e(TAG, "getMaxZoomRatio, mLiveCameraDev is null.");
-                return 1;
-            }
-        }
-        return mLiveCameraDev.getMaxZoomRatio();
-    }
-
-    @Override
-    public float getMinZoomRatio() {
-        Log.d(TAG, "getMinZoomRatio");
-        if (mLiveCameraDev == null) {
-            mLiveCameraDev = mLivePusher.getCameraDevice();
-            if (mLiveCameraDev == null) {
-                Log.e(TAG, "getMinZoomRatio, mLiveCameraDev is null.");
-                return 1;
-            }
-        }
-        return mLiveCameraDev.getMinZoomRatio();
-    }
-
-    @Override
-    public void setZoomRatio(float ratio) {
-        Log.d(TAG, "setZoomRatio, ratio: " + ratio);
-        if (mLiveCameraDev == null) {
-            mLiveCameraDev = mLivePusher.getCameraDevice();
-            if (mLiveCameraDev == null) {
-                Log.e(TAG, "setZoomRatio, mLiveCameraDev is null.");
-                return;
-            }
-        }
-        mLiveCameraDev.setZoomRatio(ratio);
-    }
-
-    @Override
-    public void release() {
-        Log.d(TAG, "release");
-        releaseInternal();
+    private int getDefaultBitrate(int width, int height) {
+        int pixels = width * height;
+        if (pixels <= 360 * 640) return 800;
+        if (pixels <= 540 * 960) return 1200;
+        if (pixels <= 720 * 1280) return 1600;
+        return 3000;
     }
 
     private static String getTimestamp() {
@@ -988,333 +234,953 @@ public class LivePusherImpl implements LivePusher,
         return sdf.format(new Date());
     }
 
-    private void initInternal() {
-        VeLivePusherConfiguration config = new VeLivePusherConfiguration()
-                .setContext(mContext)
-                .setVideoCaptureConfig(new VeLivePusherDef.VeLiveVideoCaptureConfiguration()
-                        .setFps(LivePusherSettingsHelper.getCaptureFpsVal())
-                        .setWidth(LivePusherSettingsHelper.getCaptureWidthVal())
-                        .setHeight(LivePusherSettingsHelper.getCaptureHeightVal()))
-                .setAudioCaptureConfig(new VeLivePusherDef.VeLiveAudioCaptureConfiguration());
-        config.getExtraParams().mPushBase.projectKey = "VeLivePusher";
-        mLivePusher = config.build();
-        mLivePusher.setObserver(new VeLivePusherObserver() {
-            @Override
-            public void onError(int code, int subCode, String msg) {
-                String info = "[" + getTimestamp() + "] onError: " +
-                        ", ErrCode:" + code +
-                        ", SubCode:" + subCode +
-                        ", ErrMsg:" + msg;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                }
-            }
-
-            @Override
-            public void onStatusChange(VeLivePusherDef.VeLivePusherStatus status) {
-                String info = "[" + getTimestamp() + "] onStatusChange: " +
-                        ", status:" + status;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                }
-            }
-
-            @Override
-            public void onFirstVideoFrame(VeLivePusherDef.VeLiveFirstFrameType type, long timestampMs) {
-                String info = "[" + getTimestamp() + "] onFirstVideoFrame: " +
-                        ", type:" + type +
-                        ", timestampMs:" + timestampMs;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                }
-            }
-
-            @Override
-            public void onFirstAudioFrame(VeLivePusherDef.VeLiveFirstFrameType type, long timestampMs) {
-                String info = "[" + getTimestamp() + "] onFirstAudioFrame: " +
-                        ", type:" + type +
-                        ", timestampMs:" + timestampMs;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                }
-            }
-
-            @Override
-            public void onCameraOpened(boolean open) {
-                String info = "[" + getTimestamp() + "] onCameraOpened: " +
-                        ", open:" + open;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                }
-            }
-
-            @Override
-            public void onMicrophoneOpened(boolean open) {
-                Log.d(TAG, "[onMicrophoneOpened] open: " + open);
-                String info = "[" + getTimestamp() + "] onMicrophoneOpened: " +
-                        ", open:" + open;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                }
-            }
-
-            @Override
-            public void onScreenRecording(boolean open) {
-                String info = "[" + getTimestamp() + "] onScreenRecording: " +
-                        ", open:" + open;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                }
-                if (open) {
-                    mLivePusher.startMixSystemAudio();
-                } else {
-                    mLivePusher.stopMixSystemAudio();
-                }
-            }
-
-            @Override
-            public void onNetworkQuality(VeLivePusherDef.VeLiveNetworkQuality quality) {
-                String info = "[" + getTimestamp() + "] onNetworkQuality: " +
-                        ", quality:" + quality;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                    if (quality == VeLiveNetworkQualityUnknown) {
-                        mPusherObserver.onNetworkQuality(PreferenceUtil.NETWORK_QUALITY_UNKNOWN);
-                    } else if (quality == VeLiveNetworkQualityBad) {
-                        mPusherObserver.onNetworkQuality(PreferenceUtil.NETWORK_QUALITY_BAD);
-                    } else if (quality == VeLiveNetworkQualityPoor) {
-                        mPusherObserver.onNetworkQuality(PreferenceUtil.NETWORK_QUALITY_POOR);
-                    } else if (quality == VeLiveNetworkQualityGood) {
-                        mPusherObserver.onNetworkQuality(PreferenceUtil.NETWORK_QUALITY_GOOD);
-                    }
-                }
-            }
-
-            @Override
-            public void onAudioPowerQuality(VeLivePusherDef.VeLiveAudioPowerLevel level, float value) {
-                String info = "[" + getTimestamp() + "] onAudioPowerQuality: " +
-                        ", level:" + level +
-                        ", value:" + value;
-                Log.d(TAG, info);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCallbackRecordUpdate(info);
-                }
-            }
-        });
-        mLivePusher.setStatisticsObserver(new VeLivePusherDef.VeLivePusherStatisticsObserver() {
-            @Override
-            public void onStatistics(VeLivePusherDef.VeLivePusherStatistics statistics) {
-                mCycleInfo.url = statistics.url;
-                mCycleInfo.encodeWidth = statistics.encodeWidth;
-                mCycleInfo.encodeHeight = statistics.encodeHeight;
-                mCycleInfo.captureWidth = statistics.captureWidth;
-                mCycleInfo.captureHeight = statistics.captureHeight;
-                mCycleInfo.captureFps = statistics.captureFps;
-                mCycleInfo.encodeFps = statistics.encodeFps;
-                mCycleInfo.transportFps = statistics.transportFps;
-                mCycleInfo.fps = statistics.fps;
-                mCycleInfo.videoBitrate = statistics.videoBitrate;
-                mCycleInfo.minVideoBitrate = statistics.minVideoBitrate;
-                mCycleInfo.maxVideoBitrate = statistics.maxVideoBitrate;
-                mCycleInfo.encodeVideoBitrate = statistics.encodeVideoBitrate;
-                mCycleInfo.transportVideoBitrate = statistics.transportVideoBitrate;
-                mCycleInfo.encodeAudioBitrate = statistics.encodeAudioBitrate;
-                mCycleInfo.videoCodec = statistics.codec;
-//                Log.d(TAG, "[onStatistics]: " + mCycleInfo);
-                if (mPusherObserver != null) {
-                    mPusherObserver.onCycleInfoUpdate(mCycleInfo);
-                }
-            }
-
-            @Override
-            public void onLogMonitor(JSONObject logInfo) {
-                VeLivePusherDef.VeLivePusherStatisticsObserver.super.onLogMonitor(logInfo);
-            }
-        }, 5);
-    }
-
-    private void releaseInternal() {
-        if (mLiveCameraDev != null) {
-            mLiveCameraDev = null;
+    private final IRTCEngineEventHandler mEngineEventHandler = new IRTCEngineEventHandler() {
+        @Override
+        public void onWarning(int warn) {
+            super.onWarning(warn);
+            Log.w(TAG, "onWarning: " + warn);
         }
-        if (mMediaPlayer != null) {
-            mMediaPlayer.release();
-            mMediaPlayer = null;
+
+        @Override
+        public void onError(int err) {
+            super.onError(err);
+            String info = "[" + getTimestamp() + "] onError: " + err;
+            Log.e(TAG, info);
+            if (mObserver != null) {
+                mObserver.onCallbackRecordUpdate(info);
+            }
         }
-        if (mLivePusher == null) {
-            Log.e(TAG, "release, mLivePusher is null.");
-            return;
+
+        @Override
+        public void onVideoDeviceStateChanged(String deviceID,
+                                              VideoDeviceType deviceType,
+                                              int deviceState,
+                                              int deviceError) {
+            super.onVideoDeviceStateChanged(deviceID, deviceType, deviceState, deviceState);
+            String info = "onVideoDeviceStateChanged " + deviceType + " " + deviceState + " " + deviceError;
+            Log.e(TAG, info);
+            if (mObserver != null) {
+                mObserver.onCallbackRecordUpdate(info);
+            }
         }
-        mLivePusher.release();
-        mLivePusher = null;
-    }
 
-    private void configLivePusher() {
-        VeLivePusherDef.VeLiveVideoEncoderConfiguration videoConfig = mLivePusher.getVideoEncoderConfiguration();
-        videoConfig.setFps(LivePusherSettingsHelper.getEncodeFpsVal());
-        videoConfig.setResolution(convertVideoResolution(LivePusherSettingsHelper.getEncodeResolutionSettings()));
-        mLivePusher.setVideoEncoderConfiguration(videoConfig);
-
-        VeLivePusherDef.VeLiveAudioEncoderConfiguration audioConfig = new VeLivePusherDef.VeLiveAudioEncoderConfiguration();
-        audioConfig.setSampleRate(convertAudioEncodeSampleRate(LivePusherSettingsHelper.getAudioEncodeSampleRate()));
-        mLivePusher.setAudioEncoderConfiguration(audioConfig);
-    }
-
-    private static VeLivePusherDef.VeLiveVideoResolution convertVideoResolution(int res) {
-        switch (res) {
-            case RESOLUTION_360P:
-                return VeLiveVideoResolution360P;
-            case RESOLUTION_480P:
-                return VeLiveVideoResolution480P;
-            case RESOLUTION_540P:
-                return VeLiveVideoResolution540P;
-            case RESOLUTION_1080P:
-                return VeLiveVideoResolution1080P;
-
-            case RESOLUTION_720P:
-            default:
-                return VeLiveVideoResolution720P;
+        @Override
+        public void onAudioDeviceStateChanged(String deviceID,
+                                              AudioDeviceType deviceType,
+                                              int deviceState,
+                                              int deviceError) {
+            super.onAudioDeviceStateChanged(deviceID, deviceType, deviceState, deviceState);
+            String info = "onAudioDeviceStateChanged " + deviceType + " " + deviceState + " " + deviceError;
+            Log.e(TAG, info);
+            if (mObserver != null) {
+                mObserver.onCallbackRecordUpdate(info);
+            }
         }
-    }
 
-    private VeLivePusherDef.VeLiveVideoCaptureType convertVideoCaptureType(int type) {
-        switch (type) {
-            case PUSH_VIDEO_CAPTURE_BACK:
-                return VeLiveVideoCaptureBackCamera;
-            case PUSH_VIDEO_CAPTURE_SCREEN:
-                return VeLiveVideoCaptureScreen;
-            case PUSH_VIDEO_CAPTURE_EXTERNAL:
-                return VeLiveVideoCaptureExternal;
-            case PUSH_VIDEO_CAPTURE_CUSTOM_IMAGE:
-                return VeLiveVideoCaptureCustomImage;
-            case PUSH_VIDEO_CAPTURE_LAST_FRAME:
-                return VeLiveVideoCaptureLastFrame;
-            case PUSH_VIDEO_CAPTURE_DUMMY_FRAME:
-                return VeLiveVideoCaptureDummyFrame;
-
-            case PUSH_VIDEO_CAPTURE_FRONT:
-            default:
-                return VeLiveVideoCaptureFrontCamera;
+        @Override
+        public void onVideoDeviceWarning(String deviceID,
+                                         VideoDeviceType deviceType,
+                                         int deviceWarning) {
+            super.onVideoDeviceWarning(deviceID, deviceType, deviceWarning);
+            String info = "onVideoDeviceWarning " + deviceType + " " + deviceWarning;
+            Log.e(TAG, info);
+            if (mObserver != null) {
+                mObserver.onCallbackRecordUpdate(info);
+            }
         }
-    }
 
-    private static VeLivePusherDef.VeLiveAudioCaptureType convertAudioCaptureType(int type) {
-        switch (type) {
-            case PUSH_AUDIO_CAPTURE_VOICE_COMMUNICATION:
-                return VeLiveAudioCaptureVoiceCommunication;
-            case PUSH_AUDIO_CAPTURE_EXTERNAL:
-                return VeLiveAudioCaptureExternal;
-            case PUSH_AUDIO_CAPTURE_MUTE_FRAME:
-                return VeLiveAudioCaptureMuteFrame;
-
-            case PUSH_AUDIO_CAPTURE_MICROPHONE:
-            default:
-                return VeLiveAudioCaptureMicrophone;
+        @Override
+        public void onAudioDeviceWarning(String deviceID,
+                                         AudioDeviceType deviceType,
+                                         int deviceWarning) {
+            super.onAudioDeviceWarning(deviceID, deviceType, deviceWarning);
+            String info = "onAudioDeviceWarning " + deviceType + " " + deviceWarning;
+            Log.e(TAG, info);
+            if (mObserver != null) {
+                mObserver.onCallbackRecordUpdate(info);
+            }
         }
-    }
-
-    private static VeLivePusherDef.VeLiveVideoMirrorType convertMirrorType(int type) {
-        switch (type) {
-            case PUSH_VIDEO_PREVIEW_MIRROR:
-                return VeLiveVideoMirrorPreview;
-            case PUSH_VIDEO_PUSH_MIRROR:
-                return VeLiveVideoMirrorPushStream;
-
-            case PUSH_VIDEO_CAPTURE_MIRROR:
-            default:
-                return VeLiveVideoMirrorCapture;
+        
+        @Override
+        public void onConnectionStateChanged(int state, int info) {
+            super.onConnectionStateChanged(state, info);
+            String msg = "[" + getTimestamp() + "] onConnectionStateChanged: state:" + state;
+            Log.d(TAG, msg);
+            if (mObserver != null) {
+                mObserver.onCallbackRecordUpdate(msg);
+            }
         }
-    }
+    };
 
-    private static VeLiveVideoFrame convertVideoFrame(VideoFrame frame) {
-        if (frame.bufferType == VideoFrame.VIDEO_BUFFER_TYPE_TEXTURE_ID) {
-            VeLiveVideoFrame tmp = new VeLiveVideoFrame(frame.width, frame.height, frame.pts,
-                    frame.textureId,
-                    (frame.pixelFormat == VideoFrame.VIDEO_PIXEL_FMT_OES_TEXTURE), null);
+    private final IRTCRoomEventHandler mRoomEventHandler = new IRTCRoomEventHandler() {
+        @Override
+        public void onRoomStateChanged(String roomId, String uid, int state, String extraInfo) {
+            super.onRoomStateChanged(roomId, uid, state, extraInfo);
+            String msg = "[" + getTimestamp() + "] onRoomStateChanged: state:" + state;
+            Log.d(TAG, msg);
+            if (mObserver != null) {
+                mObserver.onCallbackRecordUpdate(msg);
+            }
+        }
 
-            tmp.setRotation(convertRotation(frame.rotation));
+        @Override
+        public void onNetworkQuality(com.ss.bytertc.engine.type.NetworkQualityStats localQuality, com.ss.bytertc.engine.type.NetworkQualityStats[] remoteQualities) {
+            super.onNetworkQuality(localQuality, remoteQualities);
+            if (mObserver != null && localQuality != null) {
+                mObserver.onNetworkQuality(localQuality.txQuality);
+            }
+        }
 
-            return tmp;
-        } else if (frame.bufferType == VideoFrame.VIDEO_BUFFER_TYPE_BYTE_BUFFER) {
-            VeLiveVideoFrame tmp = new VeLiveVideoFrame(frame.width, frame.height, frame.pts, frame.buffer);
-            tmp.setPixelFormat(convertPixelFmt(frame.pixelFormat));
-            tmp.setRotation(convertRotation(frame.rotation));
+        @Override
+        public void onLocalStreamStats(java.lang.String roomId, com.ss.bytertc.engine.data.StreamInfo streamInfo, com.ss.bytertc.engine.type.LocalStreamStats stats) {
+            super.onLocalStreamStats(roomId, streamInfo, stats);
+            if (mObserver != null && stats != null) {
+                if (stats.videoStats != null) {
+                    mCycleInfo.url = LivePusherSettingsHelper.getPushUrl();
+                    mCycleInfo.encodeWidth = stats.videoStats.encodedFrameWidth;
+                    mCycleInfo.encodeHeight = stats.videoStats.encodedFrameHeight;
+                    mCycleInfo.captureWidth = stats.videoStats.encodedFrameWidth; // Use encode width/height as fallback since RTC doesn't directly expose capture width/height here
+                    mCycleInfo.captureHeight = stats.videoStats.encodedFrameHeight;
+                    mCycleInfo.captureFps = stats.videoStats.inputFrameRate;
+                    mCycleInfo.encodeFps = stats.videoStats.encoderOutputFrameRate;
+                    mCycleInfo.transportFps = stats.videoStats.sentFrameRate;
+                    mCycleInfo.fps = stats.videoStats.sentFrameRate;
+                    mCycleInfo.encodeVideoBitrate = stats.videoStats.encodedBitrate * 1000;
+                    mCycleInfo.transportVideoBitrate = stats.videoStats.sentKBitrate * 1000;
+                    mCycleInfo.videoBitrate = (long) (stats.videoStats.sentKBitrate * 1000);
+                    mCycleInfo.videoCodec = stats.videoStats.codecType == 1 ? "bytevc1" : "h264";
+                    
+                    // We can estimate min/max bitrate based on target encode bitrate
+                    long targetBitrate = getDefaultBitrate(mCycleInfo.encodeWidth, mCycleInfo.encodeHeight) * 1000;
+                    mCycleInfo.minVideoBitrate = targetBitrate / 2;
+                    mCycleInfo.maxVideoBitrate = targetBitrate * 2;
+                }
+                if (stats.audioStats != null) {
+                    mCycleInfo.encodeAudioBitrate = stats.audioStats.sendKBitrate * 1000;
+                }
+                mObserver.onCycleInfoUpdate(mCycleInfo);
+            }
+        }
+    };
 
-            return tmp;
-        } else if (frame.bufferType == VideoFrame.VIDEO_BUFFER_TYPE_BYTE_ARRAY) {
-            VeLiveVideoFrame tmp = new VeLiveVideoFrame(frame.width, frame.height, frame.pts, frame.data);
-            tmp.setPixelFormat(convertPixelFmt(frame.pixelFormat));
-            tmp.setRotation(convertRotation(frame.rotation));
-
-            return tmp;
-        } else {
+    @Override
+    public IVideoEffect getEffectHandler() {
+        if (mRTCEngine == null) {
+            Log.e(TAG, "getEffectHandler, mRTCEngine is null.");
             return null;
         }
+        return mRTCEngine.getVideoEffectInterface();
     }
 
-    private static VeLivePusherDef.VeLivePixelFormat convertPixelFmt(int fmt) {
-        switch (fmt) {
-            case VideoFrame.VIDEO_PIXEL_FMT_NV12:
-                return VeLivePixelFormatNV12;
-            case VideoFrame.VIDEO_PIXEL_FMT_NV21:
-                return VeLivePixelFormatNV21;
+    @Override
+    public void setOrientation(int orientation) {
+        Log.d(TAG, "setOrientation, orientation: " + orientation);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "setOrientation, mRTCEngine is null.");
+            return;
+        }
+        VideoOrientation rtcOrientation = VideoOrientation.PORTRAIT;
+        if (orientation == 1) { // Landscape
+            rtcOrientation = VideoOrientation.LANDSCAPE;
+        }
+        mRTCEngine.setVideoOrientation(rtcOrientation);
+    }
 
-            case VideoFrame.VIDEO_PIXEL_FMT_I420:
-            default:
-                return VeLivePixelFormatI420;
+    @Override
+    public void setRenderView(View view) {
+        Log.d(TAG, "setRenderView");
+        if (mRTCEngine == null) {
+            Log.e(TAG, "setRenderView, mRTCEngine is null.");
+            return;
+        }
+        VideoCanvas canvas = new VideoCanvas();
+        canvas.renderView = view;
+        canvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
+        mRTCEngine.setLocalVideoCanvas(canvas);
+    }
+
+    @Override
+    public void startVideoCapture(int type) {
+        Log.d(TAG, "startVideoCapture, type: " + type);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "startVideoCapture, mRTCEngine is null.");
+            return;
+        }
+        switchVideoCapture(type);
+    }
+
+    @Override
+    public void stopVideoCapture() {
+        Log.d(TAG, "stopVideoCapture.");
+        if (mRTCEngine == null) {
+            Log.e(TAG, "stopVideoCapture, mRTCEngine is null.");
+            return;
+        }
+        mRTCEngine.stopVideoCapture();
+    }
+
+    @Override
+    public void startAudioCapture(int type) {
+        Log.d(TAG, "startAudioCapture, type: " + type);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "startAudioCapture, mRTCEngine is null.");
+            return;
+        }
+        switchAudioCapture(type);
+    }
+
+    @Override
+    public void stopAudioCapture() {
+        Log.d(TAG, "stopAudioCapture.");
+        if (mRTCEngine == null) {
+            Log.e(TAG, "stopAudioCapture, mRTCEngine is null.");
+            return;
+        }
+        mRTCEngine.stopAudioCapture();
+    }
+
+    private void startRXScreenCaptureService(@NonNull Intent data) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Intent intent = new Intent();
+            intent.putExtra(RXScreenCaptureService.KEY_LARGE_ICON, com.ss.bytertc.R.drawable.abc_btn_check_material);
+            intent.putExtra(RXScreenCaptureService.KEY_SMALL_ICON, com.ss.bytertc.R.drawable.abc_btn_check_material);
+            intent.putExtra(RXScreenCaptureService.KEY_LAUNCH_ACTIVITY, this.getClass().getCanonicalName());
+            intent.putExtra(RXScreenCaptureService.KEY_CONTENT_TEXT, "正在录制/投射您的屏幕");
+            intent.putExtra(RXScreenCaptureService.KEY_RESULT_DATA, data);
+            mContext.startForegroundService(RXScreenCaptureService.getServiceIntent(mContext, RXScreenCaptureService.COMMAND_LAUNCH, intent));
         }
     }
 
-    private static VeLivePusherDef.VeLiveVideoRotation convertRotation(int rotation) {
-        switch (rotation) {
-            case VideoFrame.VIDEO_ROTATION_1:
-                return VeLiveVideoRotation90;
-            case VideoFrame.VIDEO_ROTATION_2:
-                return VeLiveVideoRotation180;
-            case VideoFrame.VIDEO_ROTATION_3:
-                return VeLiveVideoRotation270;
+    @Override
+    public void startScreenRecording(Intent screenIntent) {
+        Log.d(TAG, "startScreenRecording");
+        if (mRTCEngine == null) {
+            Log.e(TAG, "startScreenRecording, mRTCEngine is null.");
+            return;
+        }
 
-            case VideoFrame.VIDEO_ROTATION_0:
-            default:
-                return VeLiveVideoRotation0;
+        startRXScreenCaptureService(screenIntent);
+
+        updateRTCVideoEncoderConfig();
+        mRTCEngine.setVideoSourceType(VIDEO_SOURCE_TYPE_INTERNAL);
+        mRTCEngine.setAudioSourceType(AUDIO_SOURCE_TYPE_INTERNAL);
+        int ret = mRTCEngine.startScreenCapture(com.ss.bytertc.engine.data.ScreenMediaType.SCREEN_MEDIA_TYPE_VIDEO_AND_AUDIO, screenIntent);
+        Log.e(TAG, "startScreenRecording, ret: " + ret);
+    }
+
+    @Override
+    public void stopScreenRecording() {
+        Log.d(TAG, "stopScreenRecording");
+        if (mRTCEngine == null) {
+            Log.e(TAG, "stopScreenRecording, mRTCEngine is null.");
+            return;
+        }
+        mRTCEngine.stopScreenCapture();
+    }
+
+    @Override
+    public void updateCustomImage(Bitmap bm) {
+        Log.d(TAG, "updateCustomImage");
+        mCustomImageBitmap = bm;
+    }
+
+    private void stopCustomImageTimer() {
+        if (mCustomImageTimer != null) {
+            mCustomImageTimer.cancel();
+            mCustomImageTimer = null;
         }
     }
 
-    private static VeLivePusherDef.VeLivePusherRenderMode convertRenderMode(int mode) {
-        switch (mode) {
-            case PUSH_VIDEO_RENDER_MODE_FILL:
-                return VeLivePusherRenderModeFill;
-            case PUSH_VIDEO_RENDER_MODE_HIDDEN:
-                return VeLivePusherRenderModeHidden;
+    private void startCustomImageTimer(int type) {
+        if (mCustomImageTimer != null) return;
+        mCustomImageTimer = new Timer();
+        mCustomImageTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Bitmap bmp = null;
+                if (type == PreferenceUtil.PUSH_VIDEO_CAPTURE_CUSTOM_IMAGE) {
+                    bmp = mCustomImageBitmap;
+                } else if (type == PreferenceUtil.PUSH_VIDEO_CAPTURE_DUMMY_FRAME) {
+                    if (mDummyBlackBitmap == null) {
+                        mDummyBlackBitmap = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888);
+                        mDummyBlackBitmap.eraseColor(Color.BLACK);
+                    }
+                    bmp = mDummyBlackBitmap;
+                }
+                
+                if (bmp != null) {
+                    pushBitmapAsVideoFrame(bmp);
+                }
+            }
+        }, 0, 1000 / 15); // 15 fps
+    }
 
-            case PUSH_VIDEO_RENDER_MODE_FIT:
-            default:
-                return VeLivePusherRenderModeFit;
+    private void pushBitmapAsVideoFrame(Bitmap bm) {
+        if (bm == null || mRTCEngine == null) return;
+        int bytes = bm.getByteCount();
+        java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(bytes);
+        bm.copyPixelsToBuffer(buffer);
+        buffer.rewind();
+        
+        com.ss.bytertc.engine.data.VideoFrameData rtcFrameData = new com.ss.bytertc.engine.data.VideoFrameData();
+        rtcFrameData.width = bm.getWidth();
+        rtcFrameData.height = bm.getHeight();
+        rtcFrameData.rotation = com.ss.bytertc.engine.data.VideoRotation.VIDEO_ROTATION_0;
+        rtcFrameData.timestampUs = System.currentTimeMillis() * 1000;
+        rtcFrameData.bufferType = com.ss.bytertc.engine.data.VideoBufferType.RAW_MEMORY;
+        rtcFrameData.pixelFormat = com.ss.bytertc.engine.data.VideoPixelFormat.RGBA;
+        rtcFrameData.planeData = new java.nio.ByteBuffer[]{buffer};
+        rtcFrameData.numberOfPlanes = 1;
+        rtcFrameData.planeStride = new int[1];
+        rtcFrameData.planeStride[0] = bm.getWidth() * 4;
+
+        mRTCEngine.pushExternalVideoFrame(rtcFrameData);
+    }
+
+    @Override
+    public int pushExternalVideoFrame(VideoFrame frame) {
+        if (mRTCEngine == null || frame == null) {
+            return -1;
+        }
+        
+        com.ss.bytertc.engine.data.VideoFrameData rtcFrameData = new com.ss.bytertc.engine.data.VideoFrameData();
+        rtcFrameData.width = frame.width;
+        rtcFrameData.height = frame.height;
+        rtcFrameData.rotation = com.ss.bytertc.engine.data.VideoRotation.fromId(frame.rotation);
+        rtcFrameData.timestampUs = frame.pts * 1000;
+
+        if (frame.bufferType == VideoFrame.VIDEO_BUFFER_TYPE_TEXTURE_ID) {
+            rtcFrameData.bufferType = com.ss.bytertc.engine.data.VideoBufferType.GL_TEXTURE;
+            rtcFrameData.pixelFormat = frame.pixelFormat == VideoFrame.VIDEO_PIXEL_FMT_OES_TEXTURE ? 
+                                   com.ss.bytertc.engine.data.VideoPixelFormat.TEXTURE_OES : 
+                                   com.ss.bytertc.engine.data.VideoPixelFormat.TEXTURE_2D;
+            rtcFrameData.textureId = frame.textureId;
+        } else if (frame.bufferType == VideoFrame.VIDEO_BUFFER_TYPE_BYTE_BUFFER) {
+            rtcFrameData.bufferType = com.ss.bytertc.engine.data.VideoBufferType.RAW_MEMORY;
+            rtcFrameData.pixelFormat = com.ss.bytertc.engine.data.VideoPixelFormat.I420;
+
+            int chromaWidth = (frame.width + 1) / 2;
+            int chromaHeight = (frame.height + 1) / 2;
+            int uvSize = chromaWidth * chromaHeight;
+            int uStart = frame.width * frame.height;
+            int vStart = uStart + uvSize;
+            ByteBuffer directBufferY = frame.buffer.slice();
+            frame.buffer.position(uStart);
+            frame.buffer.limit(uStart + uvSize);
+            ByteBuffer directBufferU = frame.buffer.slice();
+            frame.buffer.position(vStart);
+            frame.buffer.limit(vStart + uvSize);
+            ByteBuffer directBufferV = frame.buffer.slice();
+            rtcFrameData.numberOfPlanes = 3;
+            rtcFrameData.planeData = new ByteBuffer[3];
+            rtcFrameData.planeStride = new int[3];
+            rtcFrameData.planeData[0] = directBufferY;
+            rtcFrameData.planeStride[0] = frame.width;
+            rtcFrameData.planeData[1] = directBufferU;
+            rtcFrameData.planeStride[1] = chromaWidth;
+            rtcFrameData.planeData[2] = directBufferV;
+            rtcFrameData.planeStride[2] = chromaWidth;
+        } else if (frame.bufferType == VideoFrame.VIDEO_BUFFER_TYPE_BYTE_ARRAY) {
+            // TODO: support array
+            rtcFrameData.bufferType = com.ss.bytertc.engine.data.VideoBufferType.RAW_MEMORY;
+            rtcFrameData.pixelFormat = com.ss.bytertc.engine.data.VideoPixelFormat.I420;
+            if (frame.data != null) {
+                rtcFrameData.planeData = new java.nio.ByteBuffer[]{java.nio.ByteBuffer.wrap(frame.data)};
+            }
+        } else {
+            return -1; // Unsupported
+        }
+        
+        return mRTCEngine.pushExternalVideoFrame(rtcFrameData);
+    }
+
+    @Override
+    public int pushExternalAudioFrame(AudioFrame frame) { 
+        if (mRTCEngine == null || frame == null || frame.buffer == null) {
+            return -1;
+        }
+        
+        com.ss.bytertc.engine.utils.AudioFrame rtcAudioFrame = new com.ss.bytertc.engine.utils.AudioFrame();
+        rtcAudioFrame.sampleRate = com.ss.bytertc.engine.data.AudioSampleRate.fromId(frame.sampleRate);
+        rtcAudioFrame.channel = com.ss.bytertc.engine.data.AudioChannel.fromId(frame.channels);
+        rtcAudioFrame.buffer = new byte[frame.buffer.array().length];
+        System.arraycopy(frame.buffer.array(), 0, rtcAudioFrame.buffer, 0, frame.buffer.array().length);
+        rtcAudioFrame.samples = rtcAudioFrame.sampleRate.value() / 100;
+        
+        return mRTCEngine.pushExternalAudioFrame(rtcAudioFrame);
+    }
+
+    @Override
+    public void switchVideoCapture(int type) {
+        Log.d(TAG, "switchVideoCapture, type: " + type);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "switchVideoCapture, mRTCEngine is null.");
+            return;
+        }
+        
+        stopCustomImageTimer();
+
+        if (type == PreferenceUtil.PUSH_VIDEO_CAPTURE_FRONT || type == PreferenceUtil.PUSH_VIDEO_CAPTURE_BACK) {
+            mLastCameraId = type == PreferenceUtil.PUSH_VIDEO_CAPTURE_FRONT ? CameraId.CAMERA_ID_FRONT : CameraId.CAMERA_ID_BACK;
+            mRTCEngine.setVideoSourceType(VIDEO_SOURCE_TYPE_INTERNAL);
+            mRTCEngine.switchCamera(mLastCameraId);
+
+            VideoCaptureConfig captureConfig = new VideoCaptureConfig();
+            captureConfig.capturePreference = MANUAL;
+            captureConfig.frameRate = LivePusherSettingsHelper.getCaptureFpsVal();
+            captureConfig.width = LivePusherSettingsHelper.getCaptureWidthVal();
+            captureConfig.height = LivePusherSettingsHelper.getCaptureHeightVal();
+            mRTCEngine.setVideoCaptureConfig(captureConfig);
+            mRTCEngine.startVideoCapture();
+            if (type == PreferenceUtil.PUSH_VIDEO_CAPTURE_FRONT) {
+                mRTCEngine.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER_AND_ENCODER);
+            } else {
+                mRTCEngine.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_NONE);
+            }
+        } else if (type == PreferenceUtil.PUSH_VIDEO_CAPTURE_CUSTOM_IMAGE || type == PreferenceUtil.PUSH_VIDEO_CAPTURE_DUMMY_FRAME) {
+            mRTCEngine.stopVideoCapture();
+            mRTCEngine.setVideoSourceType(VIDEO_SOURCE_TYPE_EXTERNAL);
+            startCustomImageTimer(type);
+        } else if (type == PreferenceUtil.PUSH_VIDEO_CAPTURE_EXTERNAL) {
+            mRTCEngine.stopVideoCapture();
+            mRTCEngine.setVideoSourceType(VIDEO_SOURCE_TYPE_EXTERNAL);
+        } else {
+            mRTCEngine.stopVideoCapture();
         }
     }
 
-    private static VeLivePusherDef.VeLiveAudioSampleRate convertAudioEncodeSampleRate(int index) {
-        switch (index) {
-            case PUSH_AUDIO_SAMPLE_RATE_8K:
-                return VeLiveAudioSampleRate8000;
-            case PUSH_AUDIO_SAMPLE_RATE_16K:
-                return VeLiveAudioSampleRate16000;
-            case PUSH_AUDIO_SAMPLE_RATE_32K:
-                return VeLiveAudioSampleRate32000;
-            case PUSH_AUDIO_SAMPLE_RATE_48K:
-                return VeLiveAudioSampleRate48000;
+    @Override
+    public void switchAudioCapture(int type) {
+        Log.d(TAG, "switchAudioCapture, type: " + type);
 
-            case PUSH_AUDIO_SAMPLE_RATE_44_1K:
-            default:
-                return VeLiveAudioSampleRate44100;
+        if (type != PUSH_AUDIO_CAPTURE_EXTERNAL) {
+            mRTCEngine.setAudioSourceType(AUDIO_SOURCE_TYPE_INTERNAL);
+            mRTCEngine.startAudioCapture();
+        } else {
+            stopAudioCapture();
+            mRTCEngine.setAudioSourceType(AUDIO_SOURCE_TYPE_EXTERNAL);
+        }
+    }
+
+    @Override
+    public int enableTorch(boolean enable) {
+        Log.d(TAG, "enableTorch, enable: " + enable);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "enableTorch, mRTCEngine is null.");
+            return -1;
+        }
+        mRTCEngine.setCameraTorch(enable ? TorchState.TORCH_STATE_ON : TorchState.TORCH_STATE_OFF);
+        return 0;
+    }
+
+    @Override
+    public void updateSettings(boolean isNeedRebuild) {
+        Log.d(TAG, "updateSettings, isNeedRebuild: " + isNeedRebuild);
+        updateRTCVideoEncoderConfig();
+    }
+
+    @MainThread
+    protected void requestRoomToken(String roomId, String userId, @NonNull Consumer<String> consumer) {
+        Future<String> future = RTCTokenManager.getInstance().getToken(roomId, userId);
+        if (future.isDone()) {
+            try {
+                consumer.accept(future.get());
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            cached.submit(() -> {
+                try {
+                    String result = future.get();
+                    mainHandler.post(() -> {
+                        consumer.accept(result);
+                    });
+                } catch (Exception e) {
+                    Log.e(TAG, "Generate token fail:", e);
+                }
+            });
+        }
+    }
+    @Override
+    public void startPush() {
+        Log.d(TAG, "startPush, url: " + LivePusherSettingsHelper.getPushUrl());
+        if (mRTCEngine == null) {
+            Log.e(TAG, "startPush, mRTCEngine is null.");
+            return;
+        }
+        if (mIsPublishing) return;
+        mIsPublishing = true;
+        updateRTCVideoEncoderConfig();
+
+        if (mRTCRoom == null) {
+            requestRoomToken(PUSH_ROOM_ID, mUserId, token -> {
+                mRTCRoom = mRTCEngine.createRTCRoom(PUSH_ROOM_ID);
+                mRTCRoom.setRTCRoomEventHandler(mRoomEventHandler);
+                UserInfo userInfo = new UserInfo(mUserId, null);
+                RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_LIVE_PUSH, true, true, true, true);
+                Log.d(TAG, "startPush roomID:" + PUSH_ROOM_ID + ", userID:" + mUserId);
+                mRTCRoom.joinRoom(token, userInfo, true, roomConfig);
+            });
+        }
+
+
+        String pushUrl = LivePusherSettingsHelper.getPushUrl();
+        if (pushUrl != null && !pushUrl.isEmpty()) {
+            PushSingleStreamParam param = new PushSingleStreamParam();
+            param.url = pushUrl;
+            param.roomId = PUSH_ROOM_ID;
+            param.userId = mUserId;
+            mRTCEngine.startPushSingleStream(PUSH_TASK_ID, param);
+        }
+    }
+
+    @Override
+    public void stopPush() {
+        Log.d(TAG, "stopPush.");
+        if (mRTCEngine == null) {
+            Log.e(TAG, "stopPush, mRTCEngine is null.");
+            return;
+        }
+        if (!mIsPublishing) return;
+        mIsPublishing = false;
+        mRTCEngine.stopPushSingleStream(PUSH_TASK_ID);
+        if (mRTCRoom != null) {
+            mRTCRoom.leaveRoom();
+            mRTCRoom.destroy();
+            mRTCRoom = null;
+        }
+    }
+
+    @Override
+    public boolean isMute() { 
+        return mIsMuted; 
+    }
+
+    @Override
+    public void setMute(boolean mute) {
+        Log.d(TAG, "setMute, mute: " + mute);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "setMute, mRTCEngine is null.");
+            return;
+        }
+        mIsMuted = mute;
+        if (mute) {
+            mRTCEngine.stopAudioCapture();
+        } else {
+            mRTCEngine.startAudioCapture();
+        }
+    }
+
+    @Override
+    public void setFileRecordingConfig(int resolution, int fps, int bitrate) {
+        Log.d(TAG, "setFileRecordingConfig");
+    }
+
+    @Override
+    public void startFileRecording(FileRecordingListener listener) {
+        Log.d(TAG, "startFileRecording");
+        if (mRTCEngine == null) {
+            Log.e(TAG, "startFileRecording, mRTCEngine is null.");
+            return;
+        }
+        RecordingConfig config = new RecordingConfig();
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "MediaLive");
+        if (!dir.exists()) dir.mkdirs();
+        config.dirPath = dir.getAbsolutePath();
+        mRTCEngine.startFileRecording(config, RecordingType.RECORD_VIDEO_AND_AUDIO);
+        if (listener != null) listener.onFileRecordingStarted();
+    }
+
+    @Override
+    public void stopFileRecording() {
+        Log.d(TAG, "stopFileRecording");
+        if (mRTCEngine == null) {
+            Log.e(TAG, "stopFileRecording, mRTCEngine is null.");
+            return;
+        }
+        mRTCEngine.stopFileRecording();
+    }
+
+    @Override
+    public void setVideoMirror(int mirrorType, boolean enable) {
+        Log.d(TAG, "setVideoMirror, mirrorType: " + mirrorType + ", enable: " + enable);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "setVideoMirror, mRTCEngine is null.");
+            return;
+        }
+
+        if (enable) {
+            if (mirrorType == 0) {
+                mRTCEngine.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER_AND_ENCODER);
+            } else if (mirrorType == 1) {
+                mRTCEngine.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER);
+            } else if (mirrorType == 2) {
+                mRTCEngine.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_ENCODER);
+            }
+        } else {
+            mRTCEngine.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_NONE);
+        }
+    }
+
+    @Override
+    public void snapshot() {
+        Log.d(TAG, "snapshot");
+        if (mRTCEngine == null) {
+            Log.e(TAG, "snapshot, mRTCEngine is null.");
+            return;
+        }
+        // Take Local Snapshot needs ISnapshotResultCallback
+    }
+
+    @Override
+    public void sendSeiMessage(String content, int repeatCount) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("test_sei", content);
+            String json = obj.toString();
+ 
+            Log.d(TAG, "sendSeiMessage " + json + ", count: " + repeatCount);
+            mRTCEngine.enableSendLivePushSEI(true);
+            mRTCEngine.sendLivePushSEIMessage(json, 100, false, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void setWatermark(Bitmap bm, float x, float y, float scale) {
+        Log.d(TAG, "setWatermark");
+        if (mRTCEngine == null) {
+            return;
+        }
+        com.ss.bytertc.engine.video.RTCWatermarkConfig config = new com.ss.bytertc.engine.video.RTCWatermarkConfig();
+        config.visibleInPreview = true;
+        
+        com.ss.bytertc.engine.video.ByteWatermark position = new com.ss.bytertc.engine.video.ByteWatermark();
+        position.x = x;
+        position.y = y;
+        position.width = scale;
+        position.height = scale * (bm == null ? 1 : ((float)bm.getHeight() / bm.getWidth()));
+        config.positionInLandscapeMode = position;
+        config.positionInPortraitMode = position;
+        
+        // This expects a local file path to the watermark image.
+        // If 'bm' is passed directly, we'd need to save it to a file first.
+        // For now using empty string which would clear it.
+        mRTCEngine.setVideoWatermark("", config);
+    }
+
+    @Override
+    public Object addAudioStream() { 
+        if (mRTCEngine == null) return null;
+        if (mLocalAudioProcessor == null) {
+            mLocalAudioProcessor = new LocalAudioProcessor();
+            mRTCEngine.registerAudioProcessor(mLocalAudioProcessor);
+            mRTCEngine.enableAudioProcessor(AudioProcessorMethod.AUDIO_FRAME_PROCESSOR_RECORD, 
+                new AudioFormat(com.ss.bytertc.engine.data.AudioSampleRate.AUDIO_SAMPLE_RATE_44100, com.ss.bytertc.engine.data.AudioChannel.AUDIO_CHANNEL_STEREO));
+        }
+        return mLocalAudioProcessor; 
+    }
+
+    @Override
+    public void sendAudioFrame(Object streamHandle, AudioFrame frame) {
+        if (streamHandle instanceof LocalAudioProcessor && frame != null) {
+            ((LocalAudioProcessor) streamHandle).pushFrame(frame);
+        }
+    }
+
+    @Override
+    public void removeAudioStream(Object streamHandle) {
+        if (streamHandle instanceof LocalAudioProcessor && mRTCEngine != null) {
+            mRTCEngine.disableAudioProcessor(AudioProcessorMethod.AUDIO_FRAME_PROCESSOR_RECORD);
+            mRTCEngine.registerAudioProcessor(null);
+            if (mLocalAudioProcessor == streamHandle) {
+                mLocalAudioProcessor = null;
+            }
+        }
+    }
+
+    @Override
+    public Object addVideoStream() { 
+        if (mRTCEngine == null) return null;
+        if (mLocalVideoProcessor == null) {
+            mLocalVideoProcessor = new LocalVideoProcessor();
+            VideoPreprocessorConfig config = new VideoPreprocessorConfig();
+            config.requiredPixelFormat = com.ss.bytertc.engine.data.VideoPixelFormat.UNKNOWN;
+            mRTCEngine.registerLocalVideoProcessor(mLocalVideoProcessor, config);
+        }
+        return mLocalVideoProcessor; 
+    }
+
+    @Override
+    public void sendVideoFrame(Object streamHandle, VideoFrame frame) {
+        if (streamHandle instanceof LocalVideoProcessor && frame != null) {
+            ((LocalVideoProcessor) streamHandle).pushFrame(new CustomVideoFrame(frame));
+        }
+    }
+
+    @Override
+    public void updateStreamMixDescription(Object streamHandle, float x, float y, float alpha, int renderMode) {}
+
+    @Override
+    public void removeVideoStream(Object streamHandle) {
+        if (streamHandle instanceof LocalVideoProcessor && mRTCEngine != null) {
+            mRTCEngine.registerLocalVideoProcessor(null, null);
+            if (mLocalVideoProcessor == streamHandle) {
+                mLocalVideoProcessor = null;
+            }
+        }
+    }
+
+    @Override
+    public void updateMixBgColor(int color) {}
+
+    @Override
+    public float getVoiceLoudness() { 
+        return mVoiceLoudness; 
+    }
+
+    @Override
+    public void setVoiceLoudness(float level) {
+        Log.d(TAG, "setVoiceLoudness, level:" + level);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "setVoiceLoudness, mRTCEngine is null.");
+            return;
+        }
+        mVoiceLoudness = level;
+        mRTCEngine.setCaptureVolume((int)(level * 100));
+    }
+
+    @Override
+    public boolean enableEcho(boolean enable) {
+        Log.d(TAG, "enableEcho, enable:" + enable);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "enableEcho, mRTCEngine is null.");
+            return false;
+        }
+        mEnableEcho = enable;
+        mRTCEngine.setEarMonitorMode(enable ? EarMonitorMode.EAR_MONITOR_MODE_ON : EarMonitorMode.EAR_MONITOR_MODE_OFF);
+        return enable;
+    }
+
+    @Override
+    public boolean isEnableEcho() { 
+        return mEnableEcho; 
+    }
+
+    @Override
+    public int startBgm(String filePath, MediaPlayerListener listener) { 
+        Log.d(TAG, "startBgm, filePath: " + filePath);
+        if (mRTCEngine == null) {
+            return -1;
+        }
+        com.ss.bytertc.engine.audio.IMediaPlayer audioMixingManager = mRTCEngine.getMediaPlayer(0);
+        if (audioMixingManager != null) {
+            com.ss.bytertc.engine.data.MediaPlayerConfig config = new com.ss.bytertc.engine.data.MediaPlayerConfig();
+            config.type = mEnableBgmMixer ? com.ss.bytertc.engine.data.AudioMixingType.AUDIO_MIXING_TYPE_PLAYOUT_AND_PUBLISH : com.ss.bytertc.engine.data.AudioMixingType.AUDIO_MIXING_TYPE_PLAYOUT;
+            config.playCount = mEnableBgmLoop ? -1 : 1;
+            return audioMixingManager.open(filePath, config);
+        }
+        return -1;
+    }
+
+    @Override
+    public void stopBgm() {
+        Log.d(TAG, "stopBgm");
+        if (mRTCEngine == null) return;
+        com.ss.bytertc.engine.audio.IMediaPlayer audioMixingManager = mRTCEngine.getMediaPlayer(0);
+        if (audioMixingManager != null) {
+            audioMixingManager.stop();
+        }
+    }
+
+    @Override
+    public int seekBgm(int pos) { 
+        if (mRTCEngine == null) return -1;
+        com.ss.bytertc.engine.audio.IMediaPlayer audioMixingManager = mRTCEngine.getMediaPlayer(0);
+        if (audioMixingManager != null) {
+            return audioMixingManager.setPosition(pos);
+        }
+        return -1;
+    }
+
+    @Override
+    public void resumeBgm() {
+        if (mRTCEngine == null) return;
+        com.ss.bytertc.engine.audio.IMediaPlayer audioMixingManager = mRTCEngine.getMediaPlayer(0);
+        if (audioMixingManager != null) {
+            audioMixingManager.resume();
+        }
+    }
+
+    @Override
+    public void pauseBgm() {
+        if (mRTCEngine == null) return;
+        com.ss.bytertc.engine.audio.IMediaPlayer audioMixingManager = mRTCEngine.getMediaPlayer(0);
+        if (audioMixingManager != null) {
+            audioMixingManager.pause();
+        }
+    }
+
+    @Override
+    public void enableBgmMixer(boolean enable) {
+        mEnableBgmMixer = enable;
+    }
+
+    @Override
+    public void enableBgmFrameListener(boolean enable) {
+        Log.d(TAG, "enableBgmFrameListener, enable:" + enable);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "enableBgmFrameListener, mRTCEngine is null.");
+            return;
+        }
+    }
+
+    @Override
+    public void setBgmVolume(float volume) {
+        Log.d(TAG, "setBgmVolume, volume:" + volume);
+        if (mRTCEngine == null) return;
+        com.ss.bytertc.engine.audio.IMediaPlayer audioMixingManager = mRTCEngine.getMediaPlayer(0);
+        if (audioMixingManager != null) {
+            audioMixingManager.setVolume((int)(volume * 100), mEnableBgmMixer ? com.ss.bytertc.engine.data.AudioMixingType.AUDIO_MIXING_TYPE_PLAYOUT_AND_PUBLISH : com.ss.bytertc.engine.data.AudioMixingType.AUDIO_MIXING_TYPE_PLAYOUT);
+        }
+    }
+
+    @Override
+    public void setVoiceVolume(float volume) {
+        Log.d(TAG, "setVoiceVolume, volume:" + volume);
+        if (mRTCEngine == null) return;
+        mRTCEngine.setCaptureVolume((int)(volume * 100));
+    }
+
+    @Override
+    public void enableBgmLoop(boolean loop) {
+        mEnableBgmLoop = loop;
+    }
+
+    @Override
+    public void enableAudioFrameListener(boolean enable) {
+        Log.d(TAG, "enableAudioFrameListener, enable:" + enable);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "enableAudioFrameListener, mRTCEngine is null.");
+            return;
+        }
+        if (enable) {
+            if (mAudioFrameObserver == null) {
+                mAudioFrameObserver = new com.ss.bytertc.engine.IAudioFrameObserver() {
+                    @Override
+                    public void onRecordAudioFrame(IAudioFrame frame) {
+                        if (mCaptureAudioWriter == null) {
+                            mCaptureAudioWriter = new WriterPCMFile(frame.sample_rate().value(), frame.channel().value(), 16, "captureAudio", "le");
+                        }
+                        java.nio.ByteBuffer buffer = frame.getDataBuffer();
+                        if (buffer != null) {
+                            byte[] data = new byte[buffer.limit()];
+                            buffer.get(data);
+                            mCaptureAudioWriter.writeBytes(data);
+                            buffer.rewind();
+                        }
+                    }
+
+                    @Override
+                    public void onPlaybackAudioFrame(IAudioFrame frame) {}
+
+                    @Override
+                    public void onRemoteUserAudioFrame(String roomId, com.ss.bytertc.engine.data.StreamInfo info, IAudioFrame frame) {}
+
+                    @Override
+                    public void onMixedAudioFrame(IAudioFrame frame) {}
+
+                    @Override
+                    public void onCaptureMixedAudioFrame(IAudioFrame frame) {}
+                };
+            }
+            mRTCEngine.registerAudioFrameObserver(mAudioFrameObserver);
+        } else {
+            mRTCEngine.registerAudioFrameObserver(null);
+            if (mCaptureAudioWriter != null) {
+                mCaptureAudioWriter.finish();
+                mCaptureAudioWriter = null;
+            }
+        }
+    }
+
+    @Override
+    public void enableVideoFrameListener(boolean enable) {
+        Log.d(TAG, "enableVideoFrameListener, enable:" + enable);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "enableVideoFrameListener, mRTCEngine is null.");
+            return;
+        }
+        if (mLocalVideoProcessor == null) {
+            mLocalVideoProcessor = new LocalVideoProcessor();
+            VideoPreprocessorConfig config = new VideoPreprocessorConfig();
+            config.requiredPixelFormat = com.ss.bytertc.engine.data.VideoPixelFormat.UNKNOWN;
+            mRTCEngine.registerLocalVideoProcessor(mLocalVideoProcessor, config);
+        }
+        mLocalVideoProcessor.enableListener = enable;
+        if (!enable) {
+            if (mCaptureVideoStreamHandler != null) {
+                removeVideoStream(mCaptureVideoStreamHandler);
+                mCaptureVideoStreamHandler = null;
+            }
+        }
+    }
+
+    @Override
+    public void setFocusPosition(int width, int height, int x, int y) {
+        if (mRTCEngine != null) {
+            float normalizedX = width > 0 ? (float) x / width : 0.5f;
+            float normalizedY = height > 0 ? (float) y / height : 0.5f;
+            mRTCEngine.setCameraFocusPosition(normalizedX, normalizedY);
+            mRTCEngine.setCameraExposurePosition(normalizedX, normalizedY);
+        }
+    }
+
+    @Override
+    public float getCurrentZoomRatio() { 
+        // Note: RTCEngine doesn't have a direct getter for current zoom ratio.
+        // It's typically maintained by the caller or UI.
+        return 1.0f; 
+    }
+
+    @Override
+    public float getMaxZoomRatio() {
+        if (mRTCEngine == null) {
+            Log.e(TAG, "getMaxZoomRatio, mRTCEngine is null.");
+            return 1.0f;
+        }
+        return mRTCEngine.getCameraZoomMaxRatio();
+    }
+
+    @Override
+    public float getMinZoomRatio() { return 1.0f; }
+
+    @Override
+    public void setZoomRatio(float ratio) {
+        Log.d(TAG, "setZoomRatio, ratio: " + ratio);
+        if (mRTCEngine == null) {
+            Log.e(TAG, "setZoomRatio, mRTCEngine is null.");
+            return;
+        }
+        mRTCEngine.setCameraZoomRatio(ratio);
+    }
+
+    @Override
+    public void release() {
+        Log.d(TAG, "release");
+        stopCustomImageTimer();
+        if (mDummyBlackBitmap != null) {
+            mDummyBlackBitmap.recycle();
+            mDummyBlackBitmap = null;
+        }
+        stopPush();
+        stopAudioCapture();
+        stopVideoCapture();
+        if (mRTCEngine != null) {
+            RTCEngine.destroyRTCEngine();
+            mRTCEngine = null;
         }
     }
 }

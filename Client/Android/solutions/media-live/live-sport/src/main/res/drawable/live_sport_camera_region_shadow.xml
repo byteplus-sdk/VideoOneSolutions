@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Soft shadow that fades the multi-camera region into the chat area below.
+  Vertical gradient: deep blue-black at the top (alpha ~0.75) easing to fully
+  transparent at the bottom. Stacked on top of region_chat as a 40dp-tall
+  decorative strip — height + start alpha tuned to match the design's visible
+  drop-off (the previous 0.29 alpha looked washed out on top of the page bg).
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <gradient
+        android:angle="270"
+        android:startColor="#BF09121B"
+        android:endColor="#0009121B"
+        android:type="linear" />
+</shape>

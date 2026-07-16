@@ -70,7 +70,6 @@ dependencies {
     implementation project(':component:solution-base')
 
     implementation libs.rtc.sdk
-    implementation libs.ttsdk.ttlivepush.rtc
 
     // NOTE:
     // To enable BytePlus Effects, you need to follow the instructions below to integrate the BytePlus Effects SDK.

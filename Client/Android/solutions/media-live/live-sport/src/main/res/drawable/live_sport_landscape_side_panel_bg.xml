@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Background for the landscape quality side panel (Figma node 10833:6202).
+  Figma layers a noisy texture + rgba(0,0,0,0.64) tint + backdrop blur(32px),
+  which renders as a neutral translucent glass grey. Real backdrop blur needs
+  API 31+ and a custom surface, so we approximate the glass with a mid-grey
+  translucent fill (lets the video show through faintly) instead of the
+  near-opaque black we had before. Left-rounded corners (top-left + bottom-left)
+  since the panel docks to the right edge.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#D9555558" />
+    <corners
+        android:topLeftRadius="8dp"
+        android:bottomLeftRadius="8dp" />
+</shape>

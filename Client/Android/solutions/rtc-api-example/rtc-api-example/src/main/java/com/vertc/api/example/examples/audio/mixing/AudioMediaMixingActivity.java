@@ -14,7 +14,7 @@ import com.google.android.material.slider.Slider;
 import com.ss.bytertc.engine.IMediaPlayerEventHandler;
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
 import com.ss.bytertc.engine.audio.IMediaPlayer;
@@ -27,10 +27,10 @@ import com.ss.bytertc.engine.data.MediaPlayerCustomSource;
 import com.ss.bytertc.engine.data.MediaPlayerCustomSourceMode;
 import com.ss.bytertc.engine.data.MediaPlayerCustomSourceStreamType;
 import com.ss.bytertc.engine.data.PlayerError;
+import com.ss.bytertc.engine.data.PlayerEvent;
 import com.ss.bytertc.engine.data.PlayerState;
-import com.ss.bytertc.engine.data.StreamIndex;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.RTCRoomStats;
 import com.ss.bytertc.engine.utils.AudioFrame;
@@ -67,7 +67,7 @@ public class AudioMediaMixingActivity extends ExampleBaseActivity {
 
     private static final String TAG = "MediaMixingActivity";
 
-    private RTCVideo rtcVideo;
+    private RTCEngine rtcVideo;
     private RTCRoom rtcRoom;
     private IMediaPlayer mediaPlayer;
     private IMediaPlayer pcmPlayer;
@@ -217,7 +217,7 @@ public class AudioMediaMixingActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
 
@@ -336,7 +336,7 @@ public class AudioMediaMixingActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -393,6 +393,10 @@ public class AudioMediaMixingActivity extends ExampleBaseActivity {
                 binding.fileMixing.labelCurrentProgress.setText(String.valueOf(progress));
             });
         }
+
+        @Override
+        public void onMediaPlayerEvent(int playerId, PlayerEvent event, String message) {
+        }
     };
 
     final IMediaPlayerEventHandler pcmPlayerEventHandler = new IMediaPlayerEventHandler() {
@@ -406,9 +410,13 @@ public class AudioMediaMixingActivity extends ExampleBaseActivity {
         public void onMediaPlayerPlayingProgress(int playerId, long progress) {
             Log.d(TAG, "[PCM]onMediaPlayerPlayingProgress, playerId:" + playerId + " progress:" + progress);
         }
+
+        @Override
+        public void onMediaPlayerEvent(int playerId, PlayerEvent event, String message) {
+        }
     };
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
     };
 
     IRTCRoomEventHandler rtcRoomEventHandler = new IRTCRoomEventHandler() {
@@ -426,8 +434,8 @@ public class AudioMediaMixingActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserJoined(UserInfo userInfo, int elapsed) {
-            super.onUserJoined(userInfo, elapsed);
+        public void onUserJoined(UserInfo userInfo) {
+            super.onUserJoined(userInfo);
             ToastUtil.showToast(AudioMediaMixingActivity.this, "onUserJoined, uid:" + userInfo.getUid());
         }
 
@@ -448,7 +456,7 @@ public class AudioMediaMixingActivity extends ExampleBaseActivity {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
         rtcVideo = null;
     }
 }

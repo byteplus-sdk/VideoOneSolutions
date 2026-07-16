@@ -13,7 +13,7 @@ public class StatisticsInfo {
         return transportFps;
     }
 
-    public double getVideoTransportRealBps() {
+    public double getVideoTransportRealBitrate() {
         return transportVideoBitrate;
     }
 
@@ -21,7 +21,7 @@ public class StatisticsInfo {
         return encodeFps;
     }
 
-    public double getVideoEncodeRealBps() {
+    public double getVideoEncodeRealBitrate() {
         return encodeVideoBitrate;
     }
 }

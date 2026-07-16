@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Single multi-camera entry for the landscape side-panel (Figma node
+  10796:42062). Horizontal row: 80x46 (16:9) thumbnail with 4dp corners on the
+  left, channel name vertically centered on the right. The selected state shows
+  a 2dp white border overlay on the thumbnail (Figma node 10796:42066) and a
+  semibold name. The thumbnail reuses the shared channel cover the portrait
+  camera list uses (no per-channel art yet).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <FrameLayout
+        android:layout_width="80dp"
+        android:layout_height="46dp">
+
+        <ImageView
+            android:id="@+id/landscape_camera_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/live_sport_landscape_camera_thumb_bg"
+            android:clipToOutline="true"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/live_sport_channel_cover" />
+
+        <View
+            android:id="@+id/landscape_camera_selected_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/live_sport_landscape_camera_item_selected"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/landscape_camera_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#FFFFFF"
+        android:textSize="11sp" />
+</LinearLayout>

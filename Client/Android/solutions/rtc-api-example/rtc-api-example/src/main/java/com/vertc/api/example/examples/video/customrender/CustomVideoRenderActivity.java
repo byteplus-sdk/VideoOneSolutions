@@ -8,12 +8,13 @@ import android.widget.FrameLayout;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
+import com.ss.bytertc.engine.IVideoSource;
 import com.ss.bytertc.engine.UserInfo;
-import com.ss.bytertc.engine.data.StreamIndex;
 import com.ss.bytertc.engine.data.VideoFrameInfo;
+import com.ss.bytertc.engine.data.VideoPixelFormat;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.RTCRoomStats;
 import com.ss.bytertc.engine.video.IVideoSink;
@@ -29,7 +30,7 @@ import com.vertc.api.example.utils.ToastUtil;
 @ApiExample(title = "Custom Video Render", category = ExampleCategory.VIDEO, order = 7)
 public class CustomVideoRenderActivity extends ExampleBaseActivity {
 
-    RTCVideo rtcVideo;
+    RTCEngine rtcVideo;
     RTCRoom rtcRoom;
     boolean isJoined;
     private CustomRenderView videoSink;
@@ -98,7 +99,7 @@ public class CustomVideoRenderActivity extends ExampleBaseActivity {
             RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
                     isAutoPublish, isAutoPublish,
                     isAutoSubscribeAudio, isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -119,11 +120,11 @@ public class CustomVideoRenderActivity extends ExampleBaseActivity {
         LocalVideoSinkConfig config = new LocalVideoSinkConfig();
         String format = binding.videoFormatSpinner.getSelectedItem().toString();
         if ("I420".equals(format)) {
-            config.pixelFormat = IVideoSink.PixelFormat.I420;
+            config.pixelFormat = VideoPixelFormat.I420;
         } else {
-            config.pixelFormat = IVideoSink.PixelFormat.RGBA;
+            config.pixelFormat = VideoPixelFormat.RGBA;
         }
-        rtcVideo.setLocalVideoRender(StreamIndex.STREAM_INDEX_MAIN, videoSink, config);
+        rtcVideo.setLocalVideoSink(videoSink, config);
     }
 
     private void stopLocalRender() {
@@ -131,11 +132,11 @@ public class CustomVideoRenderActivity extends ExampleBaseActivity {
         LocalVideoSinkConfig config = new LocalVideoSinkConfig();
         String format = binding.videoFormatSpinner.getSelectedItem().toString();
         if ("I420".equals(format)) {
-            config.pixelFormat = IVideoSink.PixelFormat.I420;
+            config.pixelFormat = VideoPixelFormat.I420;
         } else {
-            config.pixelFormat = IVideoSink.PixelFormat.Original;
+            config.pixelFormat = VideoPixelFormat.UNKNOWN;
         }
-        rtcVideo.setLocalVideoRender(StreamIndex.STREAM_INDEX_MAIN, null, config);
+        rtcVideo.setLocalVideoSink(null, config);
     }
 
     IRTCRoomEventHandler rtcRoomEventHandler = new IRTCRoomEventHandler() {
@@ -153,10 +154,10 @@ public class CustomVideoRenderActivity extends ExampleBaseActivity {
         }
     };
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
         @Override
-        public void onFirstLocalVideoFrameCaptured(StreamIndex streamIndex, VideoFrameInfo frameInfo) {
-            super.onFirstLocalVideoFrameCaptured(streamIndex, frameInfo);
+        public void onFirstLocalVideoFrameCaptured(IVideoSource videoSource, VideoFrameInfo frameInfo) {
+            super.onFirstLocalVideoFrameCaptured(videoSource, frameInfo);
         }
     };
 
@@ -167,7 +168,7 @@ public class CustomVideoRenderActivity extends ExampleBaseActivity {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
         if (videoSink != null) {
             videoSink.release();
             videoSink = null;

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Selected resolution chip background for the landscape quality panel (Figma
+  node 10833:6211 fills+strokes): rgba(255,255,255,0.12) fill, 1dp white-30%
+  stroke, 2dp corners.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#1FFFFFFF" />
+    <stroke
+        android:width="1dp"
+        android:color="#4DFFFFFF" />
+    <corners android:radius="2dp" />
+</shape>

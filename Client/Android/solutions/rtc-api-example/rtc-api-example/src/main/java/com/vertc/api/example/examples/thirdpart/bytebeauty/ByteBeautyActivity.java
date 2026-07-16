@@ -17,18 +17,15 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.data.VideoOrientation;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
-import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.RTCRoomStats;
-import com.ss.bytertc.engine.type.StreamRemoveReason;
 import com.vertc.api.example.R;
 import com.vertc.api.example.base.ExampleBaseActivity;
 import com.vertc.api.example.base.ExampleCategory;
@@ -61,7 +58,7 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
     private FrameLayout localContainer;
     private FrameLayout remoteContainer;
 
-    private RTCVideo rtcVideo;
+    private RTCEngine rtcVideo;
     private RTCRoom rtcRoom;
 
     String roomId;
@@ -139,10 +136,13 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
-    private void setRemoteRenderView(String uid) {
+    private void setRemoteRenderView(String streamId, String uid) {
+        if (streamId == null) {
+            return;
+        }
         Object tag = remoteContainer.getTag(R.id.remote_user_id);
         if (tag != null) {
             // Used, a remote user already exists
@@ -161,14 +161,13 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
                 )
         );
 
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomId, uid, StreamIndex.STREAM_INDEX_MAIN);
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
     }
 
-    private void removeRemoteView(String uid) {
+    private void removeRemoteView(String streamId, String uid) {
         String tag = (String) remoteContainer.getTag(R.id.remote_user_id);
         if (!TextUtils.equals(uid, tag)) {
             // Not my remote view, skip
@@ -177,12 +176,9 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
         remoteContainer.setTag(R.id.remote_user_id, null);
 
         remoteContainer.removeAllViews();
-
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomId, uid, StreamIndex.STREAM_INDEX_MAIN);
-        VideoCanvas videoCanvas = new VideoCanvas();
-        videoCanvas.renderView = null;
-        videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        if (streamId != null) {
+            rtcVideo.setRemoteVideoCanvas(streamId, null);
+        }
     }
 
     private void joinRoom(String roomId) {
@@ -200,7 +196,7 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -221,20 +217,20 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
-                runOnUiThread(() -> setRemoteRenderView(uid));
+                runOnUiThread(() -> setRemoteRenderView(streamId, streamInfo.getUserId()));
             } else {
-                runOnUiThread(() -> removeRemoteView(uid));
+                runOnUiThread(() -> removeRemoteView(streamId, streamInfo.getUserId()));
             }
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
-                runOnUiThread(() -> setRemoteRenderView(uid));
+                runOnUiThread(() -> setRemoteRenderView(streamId, streamInfo.getUserId()));
             } else {
-                runOnUiThread(() -> removeRemoteView(uid));
+                runOnUiThread(() -> removeRemoteView(streamId, streamInfo.getUserId()));
             }
         }
 
@@ -245,13 +241,13 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserJoined(UserInfo userInfo, int elapsed) {
-            super.onUserJoined(userInfo, elapsed);
+        public void onUserJoined(UserInfo userInfo) {
+            super.onUserJoined(userInfo);
             ToastUtil.showLongToast(ByteBeautyActivity.this, "onUserJoined, uid:" + userInfo.getUid());
         }
     };
 
-    IRTCVideoEventHandler videoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler videoEventHandler = new IRTCEngineEventHandler() {
     };
 
     @Override
@@ -262,6 +258,6 @@ public class ByteBeautyActivity extends ExampleBaseActivity {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
     }
 }

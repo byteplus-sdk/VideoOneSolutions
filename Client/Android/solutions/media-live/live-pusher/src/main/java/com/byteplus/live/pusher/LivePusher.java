@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
 
-import com.ss.avframework.live.VeLiveVideoEffectManager;
+import com.ss.bytertc.engine.video.IVideoEffect;
 
 import java.nio.ByteBuffer;
 
@@ -42,7 +42,7 @@ public interface LivePusher {
         void onProgress(int progress);
     }
 
-    default VeLiveVideoEffectManager getEffectHandler() {
+    default IVideoEffect getEffectHandler() {
         return null;
     }
 
@@ -57,6 +57,10 @@ public interface LivePusher {
     void startAudioCapture(int type);
 
     void stopAudioCapture();
+
+    void startScreenRecording(Intent screenIntent);
+
+    void stopScreenRecording();
 
     void updateCustomImage(Bitmap bm);
 

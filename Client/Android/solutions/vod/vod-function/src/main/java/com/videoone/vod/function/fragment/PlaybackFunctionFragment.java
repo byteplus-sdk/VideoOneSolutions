@@ -50,6 +50,11 @@ public class PlaybackFunctionFragment extends Fragment {
                     R.drawable.vevod_function_playlist,
                     R.string.vevod_function_playlist_title,
                     Function.PLAYLIST
+            ),
+            new FunctionItem(
+                    R.drawable.vevod_function_casting,
+                    R.string.vevod_function_casting_title,
+                    Function.CASTING
             )
     );
 

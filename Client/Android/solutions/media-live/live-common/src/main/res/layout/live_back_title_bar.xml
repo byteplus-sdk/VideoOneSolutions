@@ -21,6 +21,7 @@
         android:textColor="@color/live_text_black"
         android:textSize="18sp"
         android:visibility="gone"
+        android:textStyle="bold"
         tools:text="Media Live"
         tools:visibility="visible" />
 

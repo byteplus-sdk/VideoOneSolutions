@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Slide-out animation for landscape side panels. The panel exits to the right
+  edge of the screen.
+-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_interpolator">
+    <translate
+        android:duration="200"
+        android:fromXDelta="0"
+        android:toXDelta="100%p" />
+</set>

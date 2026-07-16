@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bottom actions bar of the Live Watch page (Figma 10777:4661).
+
+  Layout: horizontal LinearLayout, 36dp tall, 12dp horizontal screen margin.
+    - Left:  EditText (19dp corner radius, rgba(0,0,0,0.2), 13sp, weight=1
+             — fills remaining space after the icon column on its right).
+    - Gap:   92dp from the input bar's right edge to the gift icon
+             (Figma: input is 181dp wide on a 375dp artboard, gift icon
+             starts at x=273 — 273 - (12 + 181) = 80, plus 12dp screen
+             margin difference rounds to the 92dp documented in spec).
+    - Right: gift + settings, two 36x36dp icon buttons with 6dp inter-gap.
+
+  EditText uses imeOptions=actionSend so the keyboard "send" key fires
+  Activity's OnEditorActionListener (see LiveWatchActivity#sendComment).
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/comment_input"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/live_sport_input_bar_bg"
+            android:hint="@string/live_sport_watch_input_hint"
+            android:imeOptions="actionSend"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#BFFFFFFF"
+            android:textCursorDrawable="@null"
+            android:textSize="13sp" />
+
+        <ImageButton
+            android:id="@+id/btn_gift"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="92dp"
+            android:background="@drawable/live_sport_action_btn_bg"
+            android:contentDescription="@string/live_sport_watch_gift"
+            android:src="@drawable/live_sport_ic_gift" />
+
+        <ImageButton
+            android:id="@+id/btn_settings"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/live_sport_action_btn_bg"
+            android:contentDescription="@string/live_sport_watch_settings"
+            android:src="@drawable/live_sport_ic_settings" />
+    </LinearLayout>
+
+</merge>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Unlocked padlock icon for the landscape screen-lock button (Figma node
+  10732:106343). Body rectangle + keyhole + an open shackle that arcs up on the
+  right. Viewport matches the Figma export (26×29) so proportions stay exact;
+  rendered at 24dp. SVG drop-shadow filter is omitted (no perceptible effect on
+  the dark video background and unsupported by vector drawables).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="26"
+    android:viewportHeight="29">
+    <path
+        android:pathData="M7.714,8.429 L17.667,8.429 A2.714,2.714 0 0 1 20.381,11.143 L20.381,19.286 A2.714,2.714 0 0 1 17.667,22 L7.714,22 A2.714,2.714 0 0 1 5,19.286 L5,11.143 A2.714,2.714 0 0 1 7.714,8.429 Z"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M12.69 13.582 V17.427"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M7.545 8.429 C7.119 5.088 9.644 3 12.232 3 C13.575 3 14.786 3.554 15.641 4.441"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

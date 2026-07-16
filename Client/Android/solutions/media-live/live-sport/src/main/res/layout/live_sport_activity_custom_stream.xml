@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F8FA">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_status_bar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_nav_bar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp" />
+
+    <FrameLayout
+        android:id="@+id/title_bar"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:background="#00FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_status_bar">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/live_sport_watch_back"
+            android:padding="14dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/live_sport_compare_ic_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/live_sport_custom_stream_title"
+            android:textColor="#020814"
+            android:textSize="16sp" />
+    </FrameLayout>
+
+    <ScrollView
+        android:id="@+id/content_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingStart="13dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="88dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline_nav_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_bar">
+
+        <include
+            android:id="@+id/custom_stream_form"
+            layout="@layout/live_sport_custom_stream_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="66dp"
+        android:paddingStart="29dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="29dp"
+        android:paddingBottom="14dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline_nav_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/btn_watch_now"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:background="@drawable/live_sport_settings_save_bg"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="@string/live_sport_custom_stream_watch_now"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" />
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

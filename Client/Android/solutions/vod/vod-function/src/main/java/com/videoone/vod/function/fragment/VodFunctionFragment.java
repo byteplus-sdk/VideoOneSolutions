@@ -201,6 +201,8 @@ public class VodFunctionFragment extends BaseFragment {
         VideoLayerHost layerHost = new VideoLayerHost(context);
         layerHost.addLayer(new PlayerConfigLayer());
         layerHost.addLayer(new GestureLayer());
+        // The casting hook needs to be inserted after GestureLayer
+        preInsertLayer(layerHost);
         layerHost.addLayer(new CoverLayer());
         layerHost.addLayer(new TimeProgressBarLayer(TimeProgressBarLayer.CompletedPolicy.KEEP));
         layerHost.addLayer(new TitleBarLayer());
@@ -239,6 +241,10 @@ public class VodFunctionFragment extends BaseFragment {
         videoView.selectDisplayView(DisplayView.DISPLAY_VIEW_TYPE_TEXTURE_VIEW);
         new PlaybackController().bind(videoView);
         return videoView;
+    }
+
+    protected void preInsertLayer(VideoLayerHost layerHost) {
+
     }
 
     protected VideoView getVideoView() {

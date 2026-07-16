@@ -7,17 +7,16 @@ import android.view.TextureView;
 import com.ss.bytertc.engine.IAudioFrameObserver;
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
 import com.ss.bytertc.engine.data.AudioChannel;
 import com.ss.bytertc.engine.data.AudioFormat;
 import com.ss.bytertc.engine.data.AudioFrameCallbackMethod;
 import com.ss.bytertc.engine.data.AudioSampleRate;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.RTCRoomStats;
 import com.ss.bytertc.engine.utils.IAudioFrame;
@@ -47,7 +46,7 @@ public class RawAudioDataActivity extends ExampleBaseActivity {
 
     private static final String TAG = "RawAudioDataActivity";
 
-    RTCVideo rtcVideo;
+    RTCEngine rtcVideo;
     RTCRoom rtcRoom;
 
     boolean isShowRecordDataLog;
@@ -150,8 +149,8 @@ public class RawAudioDataActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onRemoteUserAudioFrame(RemoteStreamKey streamKey, IAudioFrame audioFrame) {
-            Log.i(TAG, "onRemoteUserAudioFrame:" + streamKey);
+        public void onRemoteUserAudioFrame(String streamId, StreamInfo streamInfo, IAudioFrame audioFrame) {
+            Log.i(TAG, "onRemoteUserAudioFrame:" + streamId);
             if (!isShowRemoteUserDataLog) {
                 ToastUtil.showToast(RawAudioDataActivity.this, "onRemoteUserAudioFrame");
                 isShowRemoteUserDataLog = true;
@@ -181,7 +180,7 @@ public class RawAudioDataActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
 
     }
 
@@ -199,7 +198,7 @@ public class RawAudioDataActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -211,7 +210,7 @@ public class RawAudioDataActivity extends ExampleBaseActivity {
         }
     }
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
     };
 
     IRTCRoomEventHandler rtcRoomEventHandler = new IRTCRoomEventHandler() {
@@ -237,7 +236,7 @@ public class RawAudioDataActivity extends ExampleBaseActivity {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
         rtcVideo = null;
     }
 }

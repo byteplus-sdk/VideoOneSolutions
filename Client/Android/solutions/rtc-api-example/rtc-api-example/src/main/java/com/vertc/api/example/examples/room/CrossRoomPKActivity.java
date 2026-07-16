@@ -7,15 +7,14 @@ import android.view.TextureView;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
 import com.ss.bytertc.engine.data.ForwardStreamEventInfo;
 import com.ss.bytertc.engine.data.ForwardStreamInfo;
 import com.ss.bytertc.engine.data.ForwardStreamStateInfo;
-import com.ss.bytertc.engine.data.StreamIndex;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.RTCRoomStats;
 import com.vertc.api.example.R;
@@ -44,7 +43,7 @@ public class CrossRoomPKActivity extends ExampleBaseActivity {
 
     private static final String TAG = "CrossRoomPK";
 
-    RTCVideo rtcVideo;
+    RTCEngine rtcVideo;
     RTCRoom rtcRoom;
 
     ActivityCrossRoomPkBinding binding;
@@ -123,7 +122,7 @@ public class CrossRoomPKActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
     private void joinRoom(String roomId) {
@@ -140,7 +139,7 @@ public class CrossRoomPKActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -225,15 +224,15 @@ public class CrossRoomPKActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserJoined(UserInfo userInfo, int elapsed) {
-            super.onUserJoined(userInfo, elapsed);
+        public void onUserJoined(UserInfo userInfo) {
+            super.onUserJoined(userInfo);
             ToastUtil.showToast(CrossRoomPKActivity.this, "onUserJoined, uid:" + userInfo.getUid());
 
             Log.d(TAG, "onUserJoined: " + userInfo.getUid());
         }
     };
 
-    IRTCVideoEventHandler videoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler videoEventHandler = new IRTCEngineEventHandler() {
     };
 
     @Override
@@ -244,7 +243,7 @@ public class CrossRoomPKActivity extends ExampleBaseActivity {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
         rtcVideo = null;
     }
 }

@@ -68,4 +68,14 @@
     <string name="vevod_abr">ABR</string>
     <string name="vevod_abr_disable">关闭</string>
     <string name="vevod_enable_private_encrypt">开启视频自研加密</string>
+    <string name="vevod_casting_searching_devices">正在寻找设备…</string>
+    <string name="vevod_casting_select_device">请选择投屏设备</string>
+    <string name="vevod_casting_tips">请确认完成以下步骤</string>
+    <string name="vevod_casting_confirm_tips">确认电视/盒子已启动</string>
+    <string name="vevod_casting_wifi_confirm_tips">把电视/盒子与手机连接在同一Wi-Fi下</string>
+    <string name="vevod_casting_device">设备</string>
+    <string name="vevod_cast_switch_device">切换设备</string>
+    <string name="vevod_cast_end_casting">结束投屏</string>
+    <string name="vevod_cast_service_not_ready">投屏服务未就绪，请稍后再试</string>
+    <string name="vevod_cast_no_network">无网络，请检查网络连接</string>
 </resources>

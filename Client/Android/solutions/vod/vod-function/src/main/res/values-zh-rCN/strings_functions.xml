@@ -8,11 +8,21 @@
     <string name="vevod_function_playlist_title">播放列表</string>
     <string name="vevod_function_playlist_desc">一组视频轮播组件</string>
 
+    <string name="vevod_function_casting_title">投屏</string>
+    <string name="vevod_function_casting_desc">投屏组件</string>
+
+    <string name="vevod_function_casting_select_mode">选择模式</string>
+
+    <string name="vevod_short_video_mode">短视频模式</string>
+    <string name="vevod_long_video_mode">长视频模式</string>
+
     <string name="vevod_function_smart_subtitle_title">智能字幕</string>
     <string name="vevod_function_smart_subtitle_desc">多语言智能视频字幕组件</string>
 
     <string name="vevod_function_prevent_recording_title">防录屏/防截图</string>
     <string name="vevod_function_prevent_recording_desc">防止系统录屏和截图组件</string>
     <string name="vevod_function_prevent_recording_tips">防录屏、防截图功能已开启。</string>
+
+    <string name="vevod_function_load_failed">加载失败，请检查网络后重试</string>
 
 </resources>

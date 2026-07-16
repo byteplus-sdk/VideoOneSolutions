@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Haptic feedback for the double-tap like burst. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application>
+        <activity
+            android:name="com.byteplus.live.sport.entry.LiveSportHomeActivity"
+            android:exported="false"
+            android:label="@string/live_sport_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion" />
+
+        <activity
+            android:name="com.byteplus.live.sport.stream.LiveStreamAddressActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion" />
+
+        <!-- Orientation is driven in code (rotate button + gravity sensor) via
+             setRequestedOrientation. configChanges keeps the Activity alive
+             across rotation so the landscape overlay can reuse the same player
+             instance (no recreate, no setContentView swap). -->
+        <activity
+            android:name="com.byteplus.live.sport.watch.LiveWatchActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
+            android:exported="false"
+            android:theme="@style/AppTheme.Immersion"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <!-- Live Comparison page — portrait only; click-switched tabs reuse
+             SportLivePlayer (two instances side-by-side). -->
+        <activity
+            android:name="com.byteplus.live.sport.compare.LiveCompareActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Immersion" />
+    </application>
+</manifest>

@@ -14,10 +14,11 @@ import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import com.ss.bytertc.engine.RTCRoom
 import com.ss.bytertc.engine.RTCRoomConfig
-import com.ss.bytertc.engine.RTCVideo
+import com.ss.bytertc.engine.RTCEngine
 import com.ss.bytertc.engine.UserInfo
+import com.ss.bytertc.engine.data.EngineConfig
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler
 import com.ss.bytertc.engine.type.ChannelProfile
 import com.ss.bytertc.engine.type.RTCRoomStats
 import com.vertcdemo.core.SolutionDataManager
@@ -29,9 +30,9 @@ class RTCRoomManager(private val context: Context) {
         private const val TAG = "RTCRoomManager"
     }
 
-    private val videoHandler: IRTCVideoEventHandler = object : IRTCVideoEventHandler() {}
+    private val videoHandler: IRTCEngineEventHandler = object : IRTCEngineEventHandler() {}
 
-    private var rtcVideo: RTCVideo? = null
+    private var rtcVideo: RTCEngine? = null
 
     private val roomConfig: RTCRoomConfig =
         RTCRoomConfig(
@@ -50,21 +51,27 @@ class RTCRoomManager(private val context: Context) {
 
     fun switchRoom(item: LiveFeedItem) {
         val rtcVideo =
-            rtcVideo ?: RTCVideo.createRTCVideo(context, item.rtcAppId, videoHandler, null, null)
-                .also {
+            rtcVideo ?: run {
+                val engineConfig = EngineConfig().apply {
+                    this.context = context
+                    this.appID = item.rtcAppId
+                    this.isGameScene = false
+                }
+                RTCEngine.createRTCEngine(engineConfig, videoHandler).also {
                     it.setBusinessId(RTCManager.bid)
                     this.rtcVideo = it
                 }
+            }
 
         rtsRoom = rtcVideo.createRTCRoom(item.roomId).apply {
             setRTCRoomEventHandler(RTCRoomEventHandler(item.roomId))
-            joinRoom(item.rtsToken, userInfo, roomConfig)
+            joinRoom(item.rtsToken, userInfo, false, roomConfig)
         }
     }
 
     fun onCleared() {
         rtsRoom = null
-        RTCVideo.destroyRTCVideo()
+        RTCEngine.destroyRTCEngine()
         rtcVideo = null
     }
 

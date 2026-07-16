@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Solid heart used by the double-tap like burst. White by default so it can be
+  tinted to any colour at runtime (LikeBurstView cycles through a palette).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48"
+    android:tint="#FFFFFF">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,42 C24,42 6,30 6,17.5 C6,11.7 10.7,7 16.5,7 C20,7 23,8.8 24,11.5 C25,8.8 28,7 31.5,7 C37.3,7 42,11.7 42,17.5 C42,30 24,42 24,42 Z" />
+</vector>

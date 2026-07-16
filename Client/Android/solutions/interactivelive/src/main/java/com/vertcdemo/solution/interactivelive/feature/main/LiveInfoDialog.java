@@ -16,19 +16,31 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.vertcdemo.core.eventbus.SolutionEventBus;
 import com.vertcdemo.solution.interactivelive.R;
 import com.vertcdemo.solution.interactivelive.core.LiveRTCManager;
-import com.vertcdemo.solution.interactivelive.core.live.LiveConfigParams;
-import com.vertcdemo.solution.interactivelive.core.live.LiveCoreHolder;
+
+import com.vertcdemo.solution.interactivelive.core.LiveSettingConfig;
+import com.vertcdemo.solution.interactivelive.core.annotation.LiveRoleType;
 import com.vertcdemo.solution.interactivelive.core.live.StatisticsInfo;
 import com.vertcdemo.solution.interactivelive.databinding.DialogLiveInformationBinding;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 public class LiveInfoDialog extends BottomSheetDialogFragment {
     private DialogLiveInformationBinding mBinding;
+    private StatisticsInfo mStatisticsInfo;
 
     @Override
     public int getTheme() {
         return R.style.LiveBottomSheetDialog;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SolutionEventBus.register(this);
     }
 
     @Nullable
@@ -46,20 +58,17 @@ public class LiveInfoDialog extends BottomSheetDialogFragment {
         public void handleMessage(@NonNull Message msg) {
             if (MSG_UPDATE_INFO == msg.what) {
                 removeMessages(MSG_UPDATE_INFO);
-                final LiveCoreHolder liveCore = LiveRTCManager.ins().getLiveCore();
-                if (liveCore != null) {
-                    StatisticsInfo info = liveCore.getStatisticsInfo();
-
-                    final int transportRealFps = (int) info.getVideoTransportRealFps();
-                    final int transportRealBps = (int) info.getVideoTransportRealBps();
-                    final int videoEncodeRealFps = (int) info.getVideoEncodeRealFps();
-                    final int videoEncodeRealBps = (int) info.getVideoEncodeRealBps();
+                if (mStatisticsInfo != null) {
+                    final int transportRealFps = (int) mStatisticsInfo.getVideoTransportRealFps();
+                    final int transportRealBitrate = (int) mStatisticsInfo.getVideoTransportRealBitrate();
+                    final int videoEncodeRealFps = (int) mStatisticsInfo.getVideoEncodeRealFps();
+                    final int videoEncodeRealBitrate = (int) mStatisticsInfo.getVideoEncodeRealBitrate();
 
                     mBinding.realtimeCaptureFps.setText(getString(R.string.format_fps, videoEncodeRealFps));
                     mBinding.realtimeTransmissionFps.setText(getString(R.string.format_fps, transportRealFps));
 
-                    mBinding.realtimeEncodingBitrate.setText(getString(R.string.format_bitrate_kbps, videoEncodeRealBps / 1000));
-                    mBinding.realtimeTransmissionBitrate.setText(getString(R.string.format_bitrate_kbps, transportRealBps / 1000));
+                    mBinding.realtimeEncodingBitrate.setText(getString(R.string.format_bitrate_kbps, videoEncodeRealBitrate));
+                    mBinding.realtimeTransmissionBitrate.setText(getString(R.string.format_bitrate_kbps, transportRealBitrate));
                 }
 
                 sendEmptyMessageDelayed(MSG_UPDATE_INFO, INTERVAL_UPDATE_INFO);
@@ -81,15 +90,37 @@ public class LiveInfoDialog extends BottomSheetDialogFragment {
     }
 
     void renderBasicInfo() {
-        final LiveConfigParams params = LiveCoreHolder.getConfigParams();
-        mBinding.initialVideoBitrate.setText(getString(R.string.format_bitrate_kbps, params.defaultBitrate));
-        mBinding.maximumVideoBitrate.setText(getString(R.string.format_bitrate_kbps, params.maxBitrate));
-        mBinding.minimumVideoBitrate.setText(getString(R.string.format_bitrate_kbps, params.minBitrate));
+        final LiveRTCManager manager = LiveRTCManager.ins();
+        LiveSettingConfig config = null;
+        try {
+            config = manager.getLiveConfigByRole(LiveRoleType.HOST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        mBinding.captureResolution.setText(getString(R.string.format_resolution, params.width, params.height));
-        mBinding.pushVideoResolution.setText(getString(R.string.format_resolution, params.width, params.height));
+        if (config == null) {
+            return;
+        }
 
-        mBinding.captureFps.setText(getString(R.string.format_fps, params.fps));
+        int minBitrate = 800;
+        int maxBitrate = 1900;
+        if (config.width == 1080) {
+            minBitrate = 1000;
+            maxBitrate = 3800;
+        } else if (config.width == 540) {
+            minBitrate = 500;
+            maxBitrate = 1520;
+        }
+
+        mBinding.initialVideoBitrate.setText(getString(R.string.format_bitrate_kbps, config.bitRate));
+        mBinding.maximumVideoBitrate.setText(getString(R.string.format_bitrate_kbps, maxBitrate));
+        mBinding.minimumVideoBitrate.setText(getString(R.string.format_bitrate_kbps, minBitrate));
+
+        mBinding.captureResolution.setText(getString(R.string.format_resolution, config.width, config.height));
+        mBinding.pushVideoResolution.setText(getString(R.string.format_resolution, config.width, config.height));
+
+        mBinding.captureFps.setText(getString(R.string.format_fps, config.frameRate));
+
         mBinding.encodingFormat.setText(R.string.video_encoder_name);
         mBinding.adaptiveBitrateMode.setText(R.string.adaptive_bitrate_mode_normal);
     }
@@ -98,6 +129,7 @@ public class LiveInfoDialog extends BottomSheetDialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         mHandler.removeMessages(MSG_UPDATE_INFO);
+        SolutionEventBus.unregister(this);
     }
 
     void selectTab(boolean isBasic) {
@@ -114,5 +146,10 @@ public class LiveInfoDialog extends BottomSheetDialogFragment {
 
         mBinding.groupBasic.setVisibility(isBasic ? View.VISIBLE : View.GONE);
         mBinding.groupRealtime.setVisibility(isBasic ? View.GONE : View.VISIBLE);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onStatisticsInfoUpdate(StatisticsInfo info) {
+        mStatisticsInfo = info;
     }
 }

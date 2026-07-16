@@ -9,7 +9,7 @@ import android.widget.SeekBar;
 import com.ss.bytertc.engine.IAudioEffectPlayerEventHandler;
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
 import com.ss.bytertc.engine.audio.IAudioEffectPlayer;
@@ -17,9 +17,8 @@ import com.ss.bytertc.engine.data.AudioEffectPlayerConfig;
 import com.ss.bytertc.engine.data.AudioMixingType;
 import com.ss.bytertc.engine.data.PlayerError;
 import com.ss.bytertc.engine.data.PlayerState;
-import com.ss.bytertc.engine.data.StreamIndex;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.RTCRoomStats;
 import com.vertc.api.example.R;
@@ -48,7 +47,7 @@ import java.util.Locale;
 public class AudioEffectMixingActivity extends ExampleBaseActivity {
     private static final String TAG = "AudioEffectMixing";
 
-    private RTCVideo rtcVideo;
+    private RTCEngine rtcVideo;
     private RTCRoom rtcRoom;
     private IAudioEffectPlayer effectPlayer;
 
@@ -200,7 +199,7 @@ public class AudioEffectMixingActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
     private void startEffect(int effectId, String path) {
@@ -226,7 +225,7 @@ public class AudioEffectMixingActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -264,7 +263,7 @@ public class AudioEffectMixingActivity extends ExampleBaseActivity {
         }
     };
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
     };
 
     IRTCRoomEventHandler rtcRoomEventHandler = new IRTCRoomEventHandler() {
@@ -282,8 +281,8 @@ public class AudioEffectMixingActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserJoined(UserInfo userInfo, int elapsed) {
-            super.onUserJoined(userInfo, elapsed);
+        public void onUserJoined(UserInfo userInfo) {
+            super.onUserJoined(userInfo);
             ToastUtil.showToast(AudioEffectMixingActivity.this, "onUserJoined, uid:" + userInfo.getUid());
         }
 
@@ -303,7 +302,7 @@ public class AudioEffectMixingActivity extends ExampleBaseActivity {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
         rtcVideo = null;
     }
 }

@@ -11,6 +11,9 @@ android {
         targetSdkVersion project.targetSdkVersion
 
         consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField('String', 'APP_ID', "\"${safeGetProp('APP_ID')}\"")
+        buildConfigField('String', 'APP_KEY', "\"${safeGetProp('APP_KEY')}\"")
     }
 
     buildTypes {
@@ -25,6 +28,10 @@ android {
             languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
         }
     }
+
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 dependencies {
@@ -38,7 +45,19 @@ dependencies {
     implementation project(':component:effectkit')
     implementation project(':solutions:media-live:live-common')
 
-    implementation libs.ttsdk.ttlivepush.rtc
+    implementation libs.rtc.sdk
 
     implementation libs.zxing
+
+    implementation project(':solutions:rtc-api-example:rtc-api-example-base')
+}
+
+def safeGetProp(prop, defaultValue = '') {
+    if (rootProject.hasProperty(prop)) {
+        return rootProject.property(prop)
+    } else if (project.hasProperty(prop)) {
+        return project.property(prop)
+    } else {
+        return defaultValue
+    }
 }

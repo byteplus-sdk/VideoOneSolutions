@@ -11,38 +11,30 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 
 import com.google.gson.JsonObject;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.VideoEncoderConfig;
-import com.ss.bytertc.engine.live.ByteRTCStreamMixingType;
 import com.ss.bytertc.engine.live.MixedStreamConfig;
-import com.ss.bytertc.engine.live.MixedStreamConfig.MixedStreamLayoutConfig;
-import com.ss.bytertc.engine.live.MixedStreamConfig.MixedStreamLayoutRegionConfig;
-import com.ss.bytertc.engine.live.MixedStreamConfig.MixedStreamMediaType;
-import com.ss.bytertc.engine.live.MixedStreamConfig.MixedStreamRenderMode;
+import com.ss.bytertc.engine.live.MixedStreamLayoutRegionConfig;
+import com.ss.bytertc.engine.live.MixedStreamMediaType;
+import com.ss.bytertc.engine.live.MixedStreamPushTargetConfig;
+import com.ss.bytertc.engine.live.MixedStreamPushTargetType;
+import com.ss.bytertc.engine.live.MixedStreamRenderMode;
 import com.ss.bytertc.engine.type.MediaStreamType;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveMode;
-import com.vertcdemo.solution.interactivelive.core.live.LiveCoreHolder;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class VideoTranscoding {
 
-    public enum PushMode {
-        RTC,
-        LIVE_CORE
-    }
-
-    public static final PushMode PUSH_MODE = PushMode.LIVE_CORE;
-
     private static final String TAG = "VideoTranscoding";
+    private static final String MIXED_STREAM_TASK_ID = "interactive_live_mixed_stream";
 
     public static final String KEY_LIVE_MODE = "liveMode";
 
-    private static final ByteRTCStreamMixingType STREAM_MIXING_TYPE = ByteRTCStreamMixingType.STREAM_MIXING_BY_SERVER;
-
     @Nullable
-    protected RTCVideo mRTCVideo;
+    protected RTCEngine mRTCVideo;
 
     protected abstract LiveSettingConfig getLiveConfig();
     // Save the information of the current anchor user
@@ -52,12 +44,10 @@ public abstract class VideoTranscoding {
     // params of live transcoding
     protected MixedStreamConfig mMixedStreamConfig = null;
 
-    private boolean mIsLiveCoreTranscoding = false;
-
     private boolean mIsRTCTranscoding = false;
     // whether is transcoding
     protected boolean isTranscoding() {
-        return mIsRTCTranscoding || mIsLiveCoreTranscoding;
+        return mIsRTCTranscoding;
     }
     // whether is pk with other anchor
     protected boolean isInPK() {
@@ -79,7 +69,6 @@ public abstract class VideoTranscoding {
 
     protected void setCameraOn(boolean value) {
         mIsCameraOn = value;
-        notifyCameraStatusChanged(value);
     }
 
     public boolean isMicOn() {
@@ -88,26 +77,6 @@ public abstract class VideoTranscoding {
 
     protected void setMicOn(boolean value) {
         mIsMicOn = value;
-        notifyMicrophoneStatusChanged(value);
-    }
-
-    @Nullable
-    private LiveCoreHolder mHolder;
-
-    @Nullable
-    public LiveCoreHolder getLiveCore() {
-        return mHolder;
-    }
-
-    protected void release() {
-        releaseLiveCore();
-    }
-
-    protected void releaseLiveCore() {
-        if (mHolder != null) {
-            mHolder.release();
-            mHolder = null;
-        }
     }
 
     /**
@@ -120,8 +89,6 @@ public abstract class VideoTranscoding {
         mCoHostVideoWidth = coHostVideoWidth;
         mCoHostVideoHeight = coHostVideoHeight;
     }
-
-    private final MixedStreamObserverAdapter mMixedStreamObserver = new MixedStreamObserverAdapter();
 
     protected void setLiveInfo(@NonNull LiveInfoHost info) {
         mMyLiveInfo = info;
@@ -142,11 +109,8 @@ public abstract class VideoTranscoding {
             Log.d(TAG, "You're not a host, no need to startLiveTranscoding.[SKIP]");
             return;
         }
-
         assert mMyLiveInfo.match(roomId, userId) : "LiveInfo mismatch!";
-
         Log.d(TAG, "startLiveTranscoding: " + mMyLiveInfo);
-
         startSingleLiveTranscoding();
     }
 
@@ -158,9 +122,7 @@ public abstract class VideoTranscoding {
         if (mIsRTCTranscoding && mRTCVideo != null) {
             stopRTCTranscoding();
         }
-        if (mIsLiveCoreTranscoding) {
-            stopLiveCorePush();
-        }
+
         mCoHostInfo = null;
         mMyLiveInfo = null;
         mMixedStreamConfig = null;
@@ -176,9 +138,7 @@ public abstract class VideoTranscoding {
 
     protected void stopLiveTranscodingWithHost() {
         mCoHostInfo = null;
-
         adjustResolutionWhenPK(false, mCoHostVideoWidth, mCoHostVideoHeight);
-
         startSingleLiveTranscoding();
     }
 
@@ -222,26 +182,21 @@ public abstract class VideoTranscoding {
             Log.d(TAG, "muteCoHost() failed, LiveTranscoding params error");
             return;
         }
-        MixedStreamLayoutConfig layout = mMixedStreamConfig.getLayout();
-        if (layout == null) {
-            Log.d(TAG, "muteCoHost() failed, layout is null");
-            return;
-        }
-        MixedStreamLayoutRegionConfig[] regions = layout.getRegions();
+        MixedStreamLayoutRegionConfig[] regions = mMixedStreamConfig.regions;
         if (regions == null) {
             Log.d(TAG, "muteCoHost() failed, regions is null");
             return;
         }
         for (MixedStreamLayoutRegionConfig region : regions) {
-            if (region != null && !region.getIsLocalUser() && TextUtils.equals(userId, mCoHostInfo.userId)) {
-                region.setMediaType(isMute
+            if (region != null && !region.isLocalUser && TextUtils.equals(userId, mCoHostInfo.userId)) {
+                region.mediaType = isMute
                         ? MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_VIDEO_ONLY
-                        : MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO);
+                        : MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
                 break;
             }
         }
         if (mRTCVideo != null) {
-            mRTCVideo.updatePushMixedStreamToCDN("", mMixedStreamConfig);
+            startOrUpdateRTCTranscoding(mMixedStreamConfig);
         }
     }
 
@@ -263,9 +218,7 @@ public abstract class VideoTranscoding {
         } else {
             startOrUpdateRTCTranscoding(createLink1vNLiveTranscodingConfig(audienceIds));
         }
-    }
-
-    protected void handleUserPublishStream(String uid, MediaStreamType type) {
+    }    protected void handleUserPublishStream(String uid, MediaStreamType type) {
         if (!isTranscoding()) {
             return;
         }
@@ -283,42 +236,42 @@ public abstract class VideoTranscoding {
     private MixedStreamConfig createSingleLiveTranscodingConfig() {
         final String userId = mMyLiveInfo.userId;
         final String roomId = mMyLiveInfo.roomId;
-        final String pushUrl = mMyLiveInfo.pushUrl;
         final LiveSettingConfig myConfig = getLiveConfig();
 
-        final MixedStreamConfig streamConfig = MixedStreamConfig.defaultMixedStreamConfig()
-                .setRoomID(roomId)
-                .setPushURL(pushUrl)
-                .setExpectedMixingType(STREAM_MIXING_TYPE);
+        final MixedStreamConfig streamConfig = MixedStreamConfig.defaultMixedStreamConfig();
 
         final int videoWidth = myConfig.width;
         final int videoHeight = myConfig.height;
-        streamConfig.getVideoConfig()
-                .setWidth(videoWidth)
-                .setHeight(videoHeight)
-                .setFps(myConfig.frameRate)
-                .setBitrate(myConfig.bitRate);
-        // Set the live transcoding audio parameters, the specific parameters depend on the situation
-        streamConfig.getAudioConfig()
-                .setSampleRate(44100)
-                .setChannels(2);
-        // Set live transcoding video layout parameters
-        final MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig()
-                .setUserID(userId)
-                .setIsLocalUser(true)
-                .setRoomID(roomId)
-                .setLocationX(0)
-                .setLocationY(0)
-                .setWidth(videoWidth)
-                .setHeight(videoHeight)
-                .setAlpha(1)
-                .setZOrder(0)
-                .setRenderMode(MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
 
-        final MixedStreamLayoutConfig layout = new MixedStreamLayoutConfig()
-                .setRegions(new MixedStreamLayoutRegionConfig[]{region})
-                .setUserConfigExtraInfo(appData(LiveMode.NORMAL));
-        streamConfig.setLayout(layout);
+        streamConfig.roomID = roomId;
+        streamConfig.userID = userId;
+        streamConfig.userConfigExtraInfo = appData(LiveMode.NORMAL);
+
+        if (streamConfig.videoConfig != null) {
+            streamConfig.videoConfig.width = videoWidth;
+            streamConfig.videoConfig.height = videoHeight;
+            streamConfig.videoConfig.fps = myConfig.frameRate;
+            streamConfig.videoConfig.bitrate = myConfig.bitRate;
+        }
+        if (streamConfig.audioConfig != null) {
+            streamConfig.audioConfig.sampleRate = 44100;
+            streamConfig.audioConfig.channels = 2;
+        }
+
+        final MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig();
+        region.userID = userId;
+        region.roomID = roomId;
+        region.isLocalUser = true;
+        region.locationX = 0;
+        region.locationY = 0;
+        region.width = videoWidth;
+        region.height = videoHeight;
+        region.alpha = 1;
+        region.zOrder = 0;
+        region.mediaType = MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
+        region.renderMode = MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN;
+
+        streamConfig.regions = new MixedStreamLayoutRegionConfig[]{region};
 
         return streamConfig;
     }
@@ -327,55 +280,55 @@ public abstract class VideoTranscoding {
     private MixedStreamConfig createPK1v1LiveTranscodingConfig(String coHostUserId) {
         final String userId = mMyLiveInfo.userId;
         final String roomId = mMyLiveInfo.roomId;
-        final String pushUrl = mMyLiveInfo.pushUrl;
         final LiveSettingConfig myConfig = getLiveConfig();
 
-        final MixedStreamConfig streamConfig = MixedStreamConfig.defaultMixedStreamConfig()
-                .setRoomID(roomId)
-                .setPushURL(pushUrl)
-                .setExpectedMixingType(STREAM_MIXING_TYPE);
+        final MixedStreamConfig streamConfig = MixedStreamConfig.defaultMixedStreamConfig();
 
         final int videoWidth = myConfig.width;
         final int videoHeight = myConfig.height;
 
-        streamConfig.getVideoConfig()
-                .setWidth(videoWidth)
-                .setHeight(videoHeight)
-                .setFps(myConfig.frameRate)
-                .setBitrate(myConfig.bitRate);
+        streamConfig.roomID = roomId;
+        streamConfig.userID = userId;
+        streamConfig.userConfigExtraInfo = appData(LiveMode.LINK_PK);
 
-        streamConfig.getAudioConfig()
-                .setSampleRate(44100)
-                .setChannels(2);
+        if (streamConfig.videoConfig != null) {
+            streamConfig.videoConfig.width = videoWidth;
+            streamConfig.videoConfig.height = videoHeight;
+            streamConfig.videoConfig.fps = myConfig.frameRate;
+            streamConfig.videoConfig.bitrate = myConfig.bitRate;
+        }
+        if (streamConfig.audioConfig != null) {
+            streamConfig.audioConfig.sampleRate = 44100;
+            streamConfig.audioConfig.channels = 2;
+        }
 
-        final MixedStreamLayoutRegionConfig selfRegion = new MixedStreamLayoutRegionConfig()
-                .setUserID(userId)
-                .setIsLocalUser(true)
-                .setRoomID(roomId)
-                .setLocationX(0)
-                .setLocationY((int) (videoWidth * 0.25))
-                .setWidth((int) (videoWidth * 0.5))
-                .setHeight((int) (videoHeight * 0.5))
-                .setAlpha(1)
-                .setZOrder(0)
-                .setRenderMode(MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
+        final MixedStreamLayoutRegionConfig selfRegion = new MixedStreamLayoutRegionConfig();
+        selfRegion.userID = userId;
+        selfRegion.roomID = roomId;
+        selfRegion.isLocalUser = true;
+        selfRegion.locationX = 0;
+        selfRegion.locationY = (int) (videoWidth * 0.25);
+        selfRegion.width = (int) (videoWidth * 0.5);
+        selfRegion.height = (int) (videoHeight * 0.5);
+        selfRegion.alpha = 1;
+        selfRegion.zOrder = 0;
+        selfRegion.mediaType = MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
+        selfRegion.renderMode = MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN;
 
-        final MixedStreamLayoutRegionConfig hostRegion = new MixedStreamLayoutRegionConfig()
-                .setUserID(coHostUserId)
-                .setIsLocalUser(false)
-                .setRoomID(roomId)
-                .setLocationX((int) (videoWidth * 0.5))
-                .setLocationY((int) (videoHeight * 0.25))
-                .setWidth((int) (videoWidth * 0.5))
-                .setHeight((int) (videoHeight * 0.5))
-                .setAlpha(1)
-                .setZOrder(0)
-                .setRenderMode(MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
+        final MixedStreamLayoutRegionConfig hostRegion = new MixedStreamLayoutRegionConfig();
+        hostRegion.userID = coHostUserId;
+        hostRegion.roomID = roomId;
+        hostRegion.isLocalUser = false;
+        hostRegion.locationX = (int) (videoWidth * 0.5);
+        hostRegion.locationY = (int) (videoHeight * 0.25);
+        hostRegion.width = (int) (videoWidth * 0.5);
+        hostRegion.height = (int) (videoHeight * 0.5);
+        hostRegion.alpha = 1;
+        hostRegion.zOrder = 0;
+        hostRegion.mediaType = MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
+        hostRegion.renderMode = MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN;
 
-        final MixedStreamLayoutConfig layout = new MixedStreamLayoutConfig()
-                .setRegions(new MixedStreamLayoutRegionConfig[]{selfRegion, hostRegion})
-                .setUserConfigExtraInfo(appData(LiveMode.LINK_PK));
-        streamConfig.setLayout(layout);
+        streamConfig.regions = new MixedStreamLayoutRegionConfig[]{selfRegion, hostRegion};
 
         return streamConfig;
     }
@@ -383,39 +336,42 @@ public abstract class VideoTranscoding {
     private MixedStreamConfig createLink1v1LiveTranscodingConfig(@Size(value = 1) List<String> audienceIds) {
         final String userId = mMyLiveInfo.userId;
         final String roomId = mMyLiveInfo.roomId;
-        final String pushUrl = mMyLiveInfo.pushUrl;
         final LiveSettingConfig myConfig = getLiveConfig();
 
-        final MixedStreamConfig streamConfig = MixedStreamConfig.defaultMixedStreamConfig()
-                .setRoomID(roomId)
-                .setPushURL(pushUrl)
-                .setExpectedMixingType(STREAM_MIXING_TYPE);
+        final MixedStreamConfig streamConfig = MixedStreamConfig.defaultMixedStreamConfig();
 
         final int videoWidth = myConfig.width;
         final int videoHeight = myConfig.height;
 
-        streamConfig.getVideoConfig()
-                .setWidth(videoWidth)
-                .setHeight(videoHeight)
-                .setFps(myConfig.frameRate)
-                .setBitrate(myConfig.bitRate);
+        streamConfig.roomID = roomId;
+        streamConfig.userID = userId;
+        streamConfig.userConfigExtraInfo = appData(LiveMode.LINK_1v1);
 
-        streamConfig.getAudioConfig()
-                .setSampleRate(44100)
-                .setChannels(2);
+        if (streamConfig.videoConfig != null) {
+            streamConfig.videoConfig.width = videoWidth;
+            streamConfig.videoConfig.height = videoHeight;
+            streamConfig.videoConfig.fps = myConfig.frameRate;
+            streamConfig.videoConfig.bitrate = myConfig.bitRate;
+        }
+        if (streamConfig.audioConfig != null) {
+            streamConfig.audioConfig.sampleRate = 44100;
+            streamConfig.audioConfig.channels = 2;
+        }
 
         final List<MixedStreamLayoutRegionConfig> regions = new ArrayList<>();
 
-        final MixedStreamLayoutRegionConfig selfRegion = new MixedStreamLayoutRegionConfig()
-                .setUserID(userId)
-                .setIsLocalUser(true)
-                .setRoomID(roomId)
-                .setLocationX(0)
-                .setLocationY(0)
-                .setWidth(videoWidth)
-                .setHeight(videoHeight)
-                .setAlpha(1)
-                .setZOrder(0);
+        final MixedStreamLayoutRegionConfig selfRegion = new MixedStreamLayoutRegionConfig();
+        selfRegion.userID = userId;
+        selfRegion.roomID = roomId;
+        selfRegion.isLocalUser = true;
+        selfRegion.locationX = 0;
+        selfRegion.locationY = 0;
+        selfRegion.width = videoWidth;
+        selfRegion.height = videoHeight;
+        selfRegion.alpha = 1;
+        selfRegion.zOrder = 0;
+        selfRegion.mediaType = MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
+        selfRegion.renderMode = MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN;
         regions.add(selfRegion);
 
         final double screenWidth = 365;
@@ -434,23 +390,22 @@ public abstract class VideoTranscoding {
             double regionY = 1 - (itemBottomSpace + itemSize * (index + 1) + itemSpace * index) / screenHeight;
             double regionX = 1 - (regionHeight * screenHeight + itemRightSpace) / screenWidth;
 
-            MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig()
-                    .setUserID(audienceIds.get(index))
-                    .setRoomID(roomId)
-                    .setLocationX((int) (videoWidth * regionX))
-                    .setLocationY((int) (videoHeight * regionY))
-                    .setWidth((int) (videoWidth * regionWidth))
-                    .setHeight((int) (videoHeight * regionHeight))
-                    .setCornerRadius(cornerRadius)
-                    .setAlpha(1)
-                    .setZOrder(1);
+            MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig();
+            region.userID = audienceIds.get(index);
+            region.roomID = roomId;
+            region.locationX = (int) (videoWidth * regionX);
+            region.locationY = (int) (videoHeight * regionY);
+            region.width = (int) (videoWidth * regionWidth);
+            region.height = (int) (videoHeight * regionHeight);
+            region.cornerRadius = cornerRadius;
+            region.alpha = 1;
+            region.zOrder = 1;
+            region.mediaType = MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
+            region.renderMode = MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN;
             regions.add(region);
         }
 
-        final MixedStreamLayoutConfig layout = new MixedStreamLayoutConfig()
-                .setRegions(regions.toArray(new MixedStreamLayoutRegionConfig[0]))
-                .setUserConfigExtraInfo(appData(LiveMode.LINK_1v1));
-        streamConfig.setLayout(layout);
+        streamConfig.regions = regions.toArray(new MixedStreamLayoutRegionConfig[0]);
 
         return streamConfig;
     }
@@ -458,26 +413,28 @@ public abstract class VideoTranscoding {
     private MixedStreamConfig createLink1vNLiveTranscodingConfig(@Size(min = 2) List<String> audienceIds) {
         final String userId = mMyLiveInfo.userId;
         final String roomId = mMyLiveInfo.roomId;
-        final String pushUrl = mMyLiveInfo.pushUrl;
         final LiveSettingConfig myConfig = getLiveConfig();
 
-        final MixedStreamConfig streamConfig = MixedStreamConfig.defaultMixedStreamConfig()
-                .setRoomID(roomId)
-                .setPushURL(pushUrl)
-                .setExpectedMixingType(STREAM_MIXING_TYPE);
+        final MixedStreamConfig streamConfig = MixedStreamConfig.defaultMixedStreamConfig();
 
         final int videoWidth = myConfig.width;
         final int videoHeight = myConfig.height;
 
-        streamConfig.getVideoConfig()
-                .setWidth(videoWidth)
-                .setHeight(videoHeight)
-                .setFps(myConfig.frameRate)
-                .setBitrate(myConfig.bitRate);
+        streamConfig.roomID = roomId;
+        streamConfig.userID = userId;
+        streamConfig.userConfigExtraInfo = appData(LiveMode.LINK_1vN);
+        streamConfig.backgroundColor = "#0D0B53";
 
-        streamConfig.getAudioConfig()
-                .setSampleRate(44100)
-                .setChannels(2);
+        if (streamConfig.videoConfig != null) {
+            streamConfig.videoConfig.width = videoWidth;
+            streamConfig.videoConfig.height = videoHeight;
+            streamConfig.videoConfig.fps = myConfig.frameRate;
+            streamConfig.videoConfig.bitrate = myConfig.bitRate;
+        }
+        if (streamConfig.audioConfig != null) {
+            streamConfig.audioConfig.sampleRate = 44100;
+            streamConfig.audioConfig.channels = 2;
+        }
 
         final int edgePixels = 4;
 
@@ -485,16 +442,18 @@ public abstract class VideoTranscoding {
         final int itemWidthPixels = itemHeightPixels;
 
         final List<MixedStreamLayoutRegionConfig> regions = new ArrayList<>();
-        final MixedStreamLayoutRegionConfig selfRegion = new MixedStreamLayoutRegionConfig()
-                .setUserID(userId)
-                .setIsLocalUser(true)
-                .setRoomID(roomId)
-                .setLocationX(0)
-                .setLocationY(0)
-                .setWidth(videoWidth - itemWidthPixels - edgePixels)
-                .setHeight(videoHeight)
-                .setAlpha(1)
-                .setZOrder(0);
+        final MixedStreamLayoutRegionConfig selfRegion = new MixedStreamLayoutRegionConfig();
+        selfRegion.userID = userId;
+        selfRegion.roomID = roomId;
+        selfRegion.isLocalUser = true;
+        selfRegion.locationX = 0;
+        selfRegion.locationY = 0;
+        selfRegion.width = videoWidth - itemWidthPixels - edgePixels;
+        selfRegion.height = videoHeight;
+        selfRegion.alpha = 1;
+        selfRegion.zOrder = 0;
+        selfRegion.mediaType = MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
+        selfRegion.renderMode = MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN;
         regions.add(selfRegion);
 
         final double itemWidth = (double) itemWidthPixels / videoWidth;
@@ -505,124 +464,52 @@ public abstract class VideoTranscoding {
         final double edgeHeight = (double) edgePixels / videoHeight;
 
         for (int index = 0; index < audienceIds.size(); index++) {
-            MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig()
-                    .setUserID(audienceIds.get(index))
-                    .setRoomID(roomId)
-                    .setLocationX((int) (videoWidth * itemX))
-                    .setLocationY((int) (videoHeight * (itemHeight + edgeHeight) * index))
-                    .setWidth((int) (videoWidth * itemWidth))
-                    .setHeight((int) (videoHeight * itemHeight))
-                    .setAlpha(1)
-                    .setZOrder(1);
+            MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig();
+            region.userID = audienceIds.get(index);
+            region.roomID = roomId;
+            region.locationX = (int) (videoWidth * itemX);
+            region.locationY = (int) (videoHeight * (itemHeight + edgeHeight) * index);
+            region.width = (int) (videoWidth * itemWidth);
+            region.height = (int) (videoHeight * itemHeight);
+            region.alpha = 1;
+            region.zOrder = 1;
+            region.mediaType = MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
+            region.renderMode = MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN;
             regions.add(region);
         }
 
-        final MixedStreamLayoutConfig layout = new MixedStreamLayoutConfig()
-                .setRegions(regions.toArray(new MixedStreamLayoutRegionConfig[0]))
-                .setUserConfigExtraInfo(appData(LiveMode.LINK_1vN))
-                .setBackgroundColor("#0D0B53");
-        streamConfig.setLayout(layout);
+        streamConfig.regions = regions.toArray(new MixedStreamLayoutRegionConfig[0]);
 
         return streamConfig;
     }
     // endregion
 
     private void startSingleLiveTranscoding() {
-        if (PUSH_MODE == PushMode.RTC) {
-            stopLiveCorePush();
-
-            MixedStreamConfig mixedStreamConfig = createSingleLiveTranscodingConfig();
-            startOrUpdateRTCTranscoding(mixedStreamConfig);
-        } else {
-            stopRTCTranscoding();
-
-            startLiveCorePush();
-        }
+        MixedStreamConfig mixedStreamConfig = createSingleLiveTranscodingConfig();
+        startOrUpdateRTCTranscoding(mixedStreamConfig);
     }
 
     private void startOrUpdateRTCTranscoding(MixedStreamConfig mixedConfig) {
-        if (mRTCVideo != null) {
-            if (mIsRTCTranscoding) {
-                mRTCVideo.updatePushMixedStreamToCDN("", mixedConfig);
-            } else {
-                if (PUSH_MODE == PushMode.LIVE_CORE) {
-                    stopLiveCorePush();
-                }
+        if (mRTCVideo == null || mMyLiveInfo == null) {
+            return;
+        }
 
-                mIsRTCTranscoding = true;
-                mRTCVideo.startPushMixedStreamToCDN("", mixedConfig, mMixedStreamObserver);
-            }
+        MixedStreamPushTargetConfig target = new MixedStreamPushTargetConfig();
+        target.pushTargetType = MixedStreamPushTargetType.PUSH_TO_CDN;
+        target.pushCDNURL = mMyLiveInfo.pushUrl;
+
+        if (mIsRTCTranscoding) {
+            mRTCVideo.updatePushMixedStream(MIXED_STREAM_TASK_ID, target, mixedConfig);
+        } else {
+            mIsRTCTranscoding = true;
+            mRTCVideo.startPushMixedStream(MIXED_STREAM_TASK_ID, target, mixedConfig);
         }
     }
 
     private void stopRTCTranscoding() {
         mIsRTCTranscoding = false;
         if (mRTCVideo != null) {
-            mRTCVideo.stopPushStreamToCDN("");
-        }
-    }
-
-    private void startLiveCorePush() {
-        if (PUSH_MODE != PushMode.LIVE_CORE) {
-            return;
-        }
-        if (mHolder == null) {
-            mHolder = LiveCoreHolder.createLiveCore(isCameraOn(), isMicOn());
-        } else {
-            if (isCameraOn()) {
-                mHolder.stopFakeVideo();
-            } else {
-                mHolder.startFakeVideo();
-            }
-            if (isMicOn()) {
-                mHolder.stopFakeAudio();
-            } else {
-                mHolder.startFakeAudio();
-            }
-        }
-        mIsLiveCoreTranscoding = true;
-        assert mMyLiveInfo != null;
-
-        final LiveSettingConfig myConfig = getLiveConfig();
-        int videoWidth = myConfig.width;
-        int videoHeight = myConfig.height;
-
-        mHolder.changeConfig(videoWidth,
-                videoHeight,
-                myConfig.frameRate,
-                myConfig.bitRate); // RTC bitrate Kbps
-
-        mHolder.start(mRTCVideo, mMyLiveInfo.pushUrl);
-    }
-
-    private void stopLiveCorePush() {
-        if (PUSH_MODE != PushMode.LIVE_CORE) {
-            return;
-        }
-        if (mHolder == null) {
-            return;
-        }
-        mIsLiveCoreTranscoding = false;
-        mHolder.stop(mRTCVideo);
-    }
-
-    private void notifyCameraStatusChanged(boolean value) {
-        if (mIsLiveCoreTranscoding && mHolder != null) {
-            if (value) {
-                mHolder.stopFakeVideo();
-            } else {
-                mHolder.startFakeVideo();
-            }
-        }
-    }
-
-    private void notifyMicrophoneStatusChanged(boolean value) {
-        if (mIsLiveCoreTranscoding && mHolder != null) {
-            if (value) {
-                mHolder.stopFakeAudio();
-            } else {
-                mHolder.startFakeAudio();
-            }
+            mRTCVideo.stopPushMixedStream(MIXED_STREAM_TASK_ID, MixedStreamPushTargetType.PUSH_TO_CDN);
         }
     }
 
