@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="live_sport_title">Sports Live</string>
+    <string name="live_sport_description">Low-latency live streaming for sports events with HD quality and interaction.</string>
+
+    <string name="live_sport_home_title">Live Features</string>
+
+    <string name="live_sport_card_watch_tag">LIVE</string>
+    <string name="live_sport_card_watch_title">Live Watch</string>
+    <string name="live_sport_card_watch_desc">Display live rooms with switching and interaction capabilities</string>
+
+    <string name="live_sport_card_compare_tag">Effect Comparison</string>
+    <string name="live_sport_card_compare_title">Live Comparison</string>
+    <string name="live_sport_card_compare_desc">Compare features such as H.265, super-resolution and sharpening</string>
+
+    <string name="live_sport_card_input_title">Custom Stream URL</string>
+    <string name="live_sport_card_input_desc">Customize live content for personalized experience</string>
+    <string name="live_sport_card_input_button">Try Now</string>
+
+    <string name="live_sport_toast_todo">Coming soon: %1$s</string>
+
+    <string name="live_sport_custom_stream_title">Live stream URL</string>
+    <string name="live_sport_custom_stream_url_title">Live pull URL</string>
+    <string name="live_sport_custom_stream_url_hint">Enter an RTM, FLV, HLS or RTMP(S) pull URL</string>
+    <string name="live_sport_custom_stream_url_error">Please enter a valid pull URL</string>
+    <string name="live_sport_custom_stream_clear">Clear</string>
+    <string name="live_sport_custom_stream_paste">Paste</string>
+    <string name="live_sport_custom_stream_strategy_title">Live watch strategy</string>
+    <string name="live_sport_custom_stream_low_latency_flv">FLV low-latency</string>
+    <string name="live_sport_custom_stream_watch_now">Watch now</string>
+
+    <!-- Live Watch — top region (anchor pill + close).
+         Anchor name / heat metric are static demo data per PRD; replaced by
+         channel JSON when SportChannelRepo lands in T1.3. -->
+    <string name="live_sport_watch_anchor_name">Anchor name (max ~10 chars)</string>
+    <string name="live_sport_watch_heat" translatable="false">386K</string>
+    <string name="live_sport_watch_heat_suffix"></string>
+    <string name="live_sport_watch_follow">Follow</string>
+    <string name="live_sport_watch_followed">Following</string>
+    <string name="live_sport_watch_close">Close</string>
+
+    <!-- Live Watch — bottom actions bar -->
+    <string name="live_sport_watch_input_hint">Say something…</string>
+    <string name="live_sport_watch_gift">Gift</string>
+    <string name="live_sport_watch_settings">Settings</string>
+    <string name="live_sport_watch_gift_todo">Gifts coming soon</string>
+    <string name="live_sport_watch_self_name">Me</string>
+
+    <!-- Gift panel -->
+    <string name="live_sport_watch_gift_title">Gifts</string>
+    <string name="live_sport_watch_gift_send">Send</string>
+    <!-- %1$s = gift name. Shown after a (fake) send. -->
+    <string name="live_sport_watch_gift_sent">Sent %1$s</string>
+    <!-- %1$s = gift name. Used in the portrait gift tray's second line. -->
+    <string name="live_sport_watch_gift_notice_sent">Sent %1$s</string>
+    <!-- %1$s = sender name, %2$s = gift name. Used by landscape gift danmaku. -->
+    <string name="live_sport_watch_gift_danmaku">%1$s sent %2$s</string>
+    <!-- %1$d = coin price of a gift. -->
+    <string name="live_sport_watch_gift_sent_price">%1$d coins</string>
+    <string name="live_sport_watch_gift_rose">Rose</string>
+    <string name="live_sport_watch_gift_heart">Heart</string>
+    <string name="live_sport_watch_gift_star">Star</string>
+    <string name="live_sport_watch_gift_thumbsup">Like</string>
+    <string name="live_sport_watch_gift_rocket">Rocket</string>
+    <string name="live_sport_watch_gift_crown">Crown</string>
+    <!-- Landscape full-width comment composer -->
+    <string name="live_sport_watch_send">Send</string>
+
+    <!-- Player control overlay -->
+    <string name="live_sport_watch_play_pause">Play/Pause</string>
+    <string name="live_sport_watch_rotate">Rotate</string>
+
+    <!-- Landscape (fullscreen) mode -->
+    <string name="live_sport_watch_back">Back</string>
+    <string name="live_sport_watch_lock">Lock screen</string>
+    <string name="live_sport_watch_locked_toast">Screen locked</string>
+    <string name="live_sport_watch_unlocked_toast">Screen unlocked</string>
+    <string name="live_sport_watch_quality">1080P</string>
+    <!-- Title shown at the top of the landscape quality side-panel
+         (Figma node 10833:6208). Kept English to match the design. -->
+    <string name="live_sport_watch_quality_title">Quality</string>
+    <!-- Title shown at the top of the landscape multi-camera side-panel. -->
+    <string name="live_sport_watch_multi_camera_title">Multi-camera</string>
+
+    <!-- Multi-camera region + player settings panel -->
+    <string name="live_sport_watch_multi_camera">Multi-camera</string>
+    <string name="live_sport_watch_camera_toggle">Expand/Collapse cameras</string>
+    <string name="live_sport_watch_resolution">Resolution</string>
+    <string name="live_sport_watch_resolution_auto">Auto</string>
+    <string name="live_sport_watch_resolution_origin">Origin</string>
+    <string name="live_sport_watch_resolution_uhd">UHD</string>
+    <string name="live_sport_watch_resolution_hd">HD</string>
+    <string name="live_sport_watch_resolution_sd">SD</string>
+    <string name="live_sport_watch_resolution_ld">LD</string>
+    <string name="live_sport_watch_abr">Adaptive bitrate (ABR)</string>
+    <string name="live_sport_watch_super_resolution">Super-resolution</string>
+    <string name="live_sport_watch_sharpen">Sharpen</string>
+
+    <!-- Settings panel — pull protocol row + picker -->
+    <string name="live_sport_watch_settings_title">Live watch settings</string>
+    <string name="live_sport_watch_protocol">Pull protocol</string>
+    <string name="live_sport_watch_protocol_rtm">RTM</string>
+    <string name="live_sport_watch_protocol_flv_ll">FLV low-latency</string>
+    <string name="live_sport_watch_protocol_flv_normal">FLV normal</string>
+    <string name="live_sport_watch_protocol_picker_title">Pull protocol</string>
+    <!-- Shown when the user toggles ABR while RTM is selected — RTM is single-stream so ABR cannot apply. -->
+    <string name="live_sport_watch_abr_unavailable_rtm">RTM is single-stream; ABR is unavailable</string>
+    <!-- Shown under the disabled RTM row in the protocol picker. -->
+    <string name="live_sport_watch_protocol_rtm_unsupported">This channel doesn\'t provide an RTM stream</string>
+    <string name="live_sport_watch_settings_save">Save</string>
+    <!-- Shown once when RTM playback fails and the player falls back to FLV. -->
+    <string name="live_sport_watch_rtm_fallback">RTM unavailable, switched to FLV</string>
+    <string name="live_sport_watch_play_error">Playback error (%1$d): %2$s</string>
+    <string name="live_sport_watch_sr_failed">Super-resolution not supported on this stream</string>
+    <string name="live_sport_watch_sharpen_failed">Sharpen not supported on this stream</string>
+    <string name="live_sport_watch_channels_empty">No channels available</string>
+    <!-- Shown when the ABR algorithm auto-switches the playing tier. %1$s = tier name. -->
+    <string name="live_sport_watch_abr_switched">ABR switched to %1$s</string>
+
+    <!-- Mock comment data for the demo. Replace with real IM messages when wired up. -->
+    <string-array name="live_sport_watch_mock_comment_names" translatable="false">
+        <item>StarryNight</item>
+        <item>NextStop</item>
+        <item>Baby</item>
+        <item>Kai</item>
+        <item>Luna</item>
+        <item>Marco</item>
+        <item>Aria</item>
+        <item>Felix</item>
+        <item>Nora</item>
+        <item>Theo</item>
+        <item>Ivy</item>
+        <item>Jasper</item>
+        <item>Mia</item>
+        <item>Owen</item>
+        <item>Zoe</item>
+        <item>Leo</item>
+        <item>Hana</item>
+        <item>Ezra</item>
+        <item>Iris</item>
+        <item>Beck</item>
+        <item>June</item>
+        <item>Quinn</item>
+        <item>Rio</item>
+        <item>Sage</item>
+    </string-array>
+    <string-array name="live_sport_watch_mock_comment_contents">
+        <item>Hello from the open prairie!</item>
+        <item>Where can I find this for an even better price?</item>
+        <item>Could you tell me more about this device?</item>
+        <item>Just joined — what did I miss?</item>
+        <item>Camera 2 looks amazing tonight.</item>
+        <item>Anyone else watching from Berlin?</item>
+        <item>Hyped for the next segment!</item>
+        <item>Is the giveaway still open?</item>
+        <item>Sound quality is on point.</item>
+        <item>Big fan, been here since the start.</item>
+        <item>Could we get a slow-motion replay?</item>
+        <item>That last move was unreal.</item>
+        <item>Switching to the multi-cam view, brb.</item>
+        <item>Waving from Singapore!</item>
+        <item>Gift sent — keep it up!</item>
+        <item>Loving the new lighting setup.</item>
+        <item>Drop the playlist after the show?</item>
+        <item>This part always gives me chills.</item>
+        <item>Question for the host: any tour plans?</item>
+        <item>Stream feels super smooth tonight.</item>
+        <item>Late but here for the highlights.</item>
+        <item>Best stream of the week, hands down.</item>
+        <item>Anyone catching the after-show?</item>
+        <item>See you all tomorrow!</item>
+    </string-array>
+
+    <!-- ===================== Live Comparison page ===================== -->
+    <!-- Head L2 tabs -->
+    <string name="live_sport_compare_tab_latency">Low Latency</string>
+    <string name="live_sport_compare_tab_enhance">Enhancement</string>
+    <string name="live_sport_compare_tab_cost">Cost Reduction</string>
+
+    <!-- Shared -->
+    <string name="live_sport_compare_back">Back</string>
+    <string name="live_sport_compare_play_pause">Play or pause</string>
+    <string name="live_sport_compare_mute_toggle">Mute or unmute</string>
+    <string name="live_sport_compare_view_doc">View docs</string>
+    <!-- Placeholder shown in overlays before the first stats tick arrives. -->
+    <string name="live_sport_compare_no_data" translatable="false">--</string>
+
+    <!-- Tab 1 — Low latency -->
+    <string name="live_sport_compare_latency_desc">BytePlus MediaLive offers multiple live-latency solutions. Use this demo to try the different latency options and see the latency in real time.</string>
+    <string name="live_sport_compare_latency_desc_sub" translatable="false">RTM: 1-2S    FLV low-latency: 3-5S</string>
+    <string name="live_sport_compare_protocol_rtm" translatable="false">RTM</string>
+    <string name="live_sport_compare_protocol_flv_ll">FLV low-latency</string>
+    <string name="live_sport_compare_protocol_flv" translatable="false">FLV</string>
+    <string name="live_sport_compare_protocol_hls" translatable="false">HLS</string>
+    <string name="live_sport_compare_protocol_rtmps" translatable="false">RTMPS</string>
+    <!-- %1$s = latency in ms, or a dash placeholder when unknown. -->
+    <string name="live_sport_compare_latency_overlay">Latency: %1$s ms</string>
+    <!-- %1$s = protocol name. Shown when tapping an unsupported protocol tab. -->
+    <string name="live_sport_compare_protocol_reserved_toast">%1$s is not supported yet</string>
+    <string name="live_sport_compare_reserved_hint">Coming soon</string>
+
+    <!-- Tab 2 — Enhancement -->
+    <string name="live_sport_compare_enhance_desc">BytePlus MediaLive uses on-device smart algorithms to provide video sharpening and super-resolution, improving the viewing experience of low-definition streams.</string>
+    <string name="live_sport_compare_enhance_sr">Super-resolution</string>
+    <string name="live_sport_compare_enhance_sharpen">Video sharpening</string>
+    <string name="live_sport_compare_enhance_label_processed">Enhanced</string>
+    <string name="live_sport_compare_enhance_label_origin">Original</string>
+
+    <!-- Tab 3 — Cost reduction -->
+    <string name="live_sport_compare_cost_desc">BytePlus MediaLive offers an end-to-end H.265 solution: upgraded transcoding delivers high definition at a lower bitrate to cut live-streaming cost.</string>
+    <string name="live_sport_compare_cost_desc_bullets">  - At equal quality, H.265 uses a lower bitrate to save cost.\n  - At equal bitrate, H.265 looks better for the same cost.</string>
+    <string name="live_sport_compare_cost_tab_same_quality">Same quality, compare bitrate</string>
+    <string name="live_sport_compare_cost_tab_same_bitrate">Same bitrate, higher quality</string>
+    <!-- %1$s = bitrate in kbps, or a dash placeholder when unknown. -->
+    <string name="live_sport_compare_bitrate_overlay">Bitrate: %1$s kbps</string>
+    <string name="live_sport_compare_codec_h265" translatable="false">H.265</string>
+    <string name="live_sport_compare_codec_h264" translatable="false">H.264</string>
+
+    <!-- Bitrate waveform dialog (tap a bitrate overlay) -->
+    <string name="live_sport_compare_chart_title">Bitrate (last 1 min)</string>
+    <!-- %1$s = current bitrate kbps. -->
+    <string name="live_sport_compare_chart_current">Now %1$s kbps</string>
+    <!-- %1$s = peak bitrate kbps. -->
+    <string name="live_sport_compare_chart_peak">Peak %1$s kbps</string>
+    <string name="live_sport_compare_chart_axis_now">now</string>
+    <string name="live_sport_compare_chart_axis_start" translatable="false">-60s</string>
+
+    <!-- Multi-camera channel names. Keyed by channel id from live_sport_channels.json. -->
+    <string name="live_sport_camera_name_a">Cam A</string>
+    <string name="live_sport_camera_name_b">Cam B</string>
+    <string name="live_sport_camera_name_c">Cam C</string>
+    <string name="live_sport_camera_name_d">Cam D</string>
+</resources>

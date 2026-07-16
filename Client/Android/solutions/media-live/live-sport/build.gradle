@@ -1,0 +1,66 @@
+// Copyright (c) 2025 BytePlus Pte. Ltd.
+// SPDX-License-Identifier: Apache-2.0
+
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+    namespace 'com.byteplus.live.sport'
+    compileSdk project.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+
+        consumerProguardFiles "consumer-rules.pro"
+
+        // TTSDK init parameters (App ID / channel / license uri). Mirrors
+        // live-entrance so the sports-streaming scene can initialise TTSDK
+        // independently when entered directly (without going through the
+        // media-live API-example entry). Values come from gradle.properties.
+        buildConfigField('String', 'LIVE_TTSDK_APP_NAME', "\"${project.LIVE_TTSDK_APP_NAME}\"")
+        buildConfigField('String', 'LIVE_TTSDK_APP_ID', "\"${project.LIVE_TTSDK_APP_ID}\"")
+        buildConfigField('String', 'LIVE_TTSDK_APP_CHANNEL', "\"${project.LIVE_TTSDK_APP_CHANNEL}\"")
+        buildConfigField('String', 'LIVE_TTSDK_LICENSE_URI', "\"${project.LIVE_TTSDK_LICENSE_URI}\"")
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.activity
+    implementation libs.constraintlayout
+    implementation libs.cardview
+    implementation libs.material
+    implementation libs.recyclerview
+
+    implementation libs.gson
+
+    implementation project(':component:solution-base')
+    implementation project(':solutions:media-live:live-common')
+
+    // TTSDK live-pull (VeLivePlayer) — core stream pulling for the watch page.
+    implementation libs.ttsdk.ttlivepull.rtc
+    // TTSDK env + license — required to initialise the SDK and pass license
+    // verification before any pull stream can play.
+    implementation libs.ttsdk.ttcommon
+    implementation libs.ttsdk.ttlicense2
+}

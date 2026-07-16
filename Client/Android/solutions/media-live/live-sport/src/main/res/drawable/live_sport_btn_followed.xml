@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Follow button — already-followed state.
+     Same shape as the default but darker fill, indicating the toggle is on. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="12dp" />
+    <solid android:color="#33FFFFFF" />
+</shape>

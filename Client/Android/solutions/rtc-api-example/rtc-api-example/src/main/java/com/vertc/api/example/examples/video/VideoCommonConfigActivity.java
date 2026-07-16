@@ -5,18 +5,18 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.ss.bytertc.engine.IVideoSource;
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
 import com.ss.bytertc.engine.VideoEncoderConfig;
 import com.ss.bytertc.engine.data.MirrorType;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.data.VideoFrameInfo;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.RTCRoomStats;
@@ -46,10 +46,9 @@ import java.util.Locale;
 @ApiExample(title = "Video configuration", category = ExampleCategory.VIDEO, order = 2)
 public class VideoCommonConfigActivity extends ExampleBaseActivity {
 
-    private RTCVideo rtcVideo;
+    private RTCEngine rtcVideo;
     private RTCRoom rtcRoom;
-    private String roomId;
-    private String curRemoteUid;
+    private String curRemoteStreamId;
 
     ActivityVideoConfigBinding binding;
 
@@ -113,13 +112,13 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
                 String item = (String) binding.remoteRenderModeSpinner.getSelectedItem();
                 switch (item) {
                     case "RENDER_MODE_HIDDEN":
-                        setRemoteRenderView(curRemoteUid, VideoCanvas.RENDER_MODE_HIDDEN);
+                        setRemoteRenderView(curRemoteStreamId, VideoCanvas.RENDER_MODE_HIDDEN);
                         break;
                     case "RENDER_MODE_FIT":
-                        setRemoteRenderView(curRemoteUid, VideoCanvas.RENDER_MODE_FIT);
+                        setRemoteRenderView(curRemoteStreamId, VideoCanvas.RENDER_MODE_FIT);
                         break;
                     case "RENDER_MODE_FILL":
-                        setRemoteRenderView(curRemoteUid, VideoCanvas.RENDER_MODE_FILL);
+                        setRemoteRenderView(curRemoteStreamId, VideoCanvas.RENDER_MODE_FILL);
                         break;
                 }
             }
@@ -147,7 +146,6 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
     }
 
     private void joinRoom(String roomId) {
-        this.roomId = roomId;
         requestRoomToken(roomId, localUid, token -> {
             rtcRoom = rtcVideo.createRTCRoom(roomId);
             rtcRoom.setRTCRoomEventHandler(rtcRoomEventHandler);
@@ -161,7 +159,7 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -173,10 +171,13 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = renderMode;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
-    private void setRemoteRenderView(String uid, int renderMode) {
+    private void setRemoteRenderView(String streamId, int renderMode) {
+        if (streamId == null) {
+            return;
+        }
         TextureView textureView = new TextureView(this);
 
         binding.remoteViewContainer.removeAllViews();
@@ -185,14 +186,14 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = renderMode;
-
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomId, uid, StreamIndex.STREAM_INDEX_MAIN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
     }
 
-    private void removeRemoteView(String uid) {
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomId, uid, StreamIndex.STREAM_INDEX_MAIN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+    private void removeRemoteView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
+        rtcVideo.setRemoteVideoCanvas(streamId, null);
     }
 
     private void setVideoEncoderConfig() {
@@ -223,7 +224,7 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
                 config.encodePreference = VideoEncoderConfig.EncoderPreference.DISABLED;
                 break;
             case "Balance":
-                config.encodePreference = VideoEncoderConfig.EncoderPreference.BALANCE;
+                config.encodePreference = VideoEncoderConfig.EncoderPreference.AUTO;
                 break;
 
         }
@@ -253,10 +254,10 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
         rtcVideo.setVideoCaptureConfig(config);
     }
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
         @Override
-        public void onLocalVideoSizeChanged(StreamIndex streamIndex, VideoFrameInfo frameInfo) {
-            super.onLocalVideoSizeChanged(streamIndex, frameInfo);
+        public void onLocalVideoSizeChanged(IVideoSource videoSource, VideoFrameInfo frameInfo) {
+            super.onLocalVideoSizeChanged(videoSource, frameInfo);
             String info = String.format(Locale.ENGLISH, "onLocalVideoSizeChanged, width:%d, height:%d, rotation:%d", frameInfo.getWidth(), frameInfo.getHeight(), frameInfo.rotation);
             ToastUtil.showToast(VideoCommonConfigActivity.this, info);
         }
@@ -271,34 +272,42 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    setRemoteRenderView(uid, VideoCanvas.RENDER_MODE_HIDDEN);
+                    curRemoteStreamId = streamId;
+                    setRemoteRenderView(streamId, VideoCanvas.RENDER_MODE_HIDDEN);
                 });
             } else {
                 runOnUiThread(() -> {
-                    removeRemoteView(uid);
+                    if (streamId.equals(curRemoteStreamId)) {
+                        curRemoteStreamId = null;
+                    }
+                    removeRemoteView(streamId);
                 });
             }
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    setRemoteRenderView(uid, VideoCanvas.RENDER_MODE_HIDDEN);
+                    curRemoteStreamId = streamId;
+                    setRemoteRenderView(streamId, VideoCanvas.RENDER_MODE_HIDDEN);
                 });
             } else {
                 runOnUiThread(() -> {
-                    removeRemoteView(uid);
+                    if (streamId.equals(curRemoteStreamId)) {
+                        curRemoteStreamId = null;
+                    }
+                    removeRemoteView(streamId);
                 });
             }
         }
 
         @Override
-        public void onUserJoined(UserInfo userInfo, int elapsed) {
-            super.onUserJoined(userInfo, elapsed);
+        public void onUserJoined(UserInfo userInfo) {
+            super.onUserJoined(userInfo);
             ToastUtil.showToast(VideoCommonConfigActivity.this, "onUserJoined, uid:" + userInfo.getUid());
         }
 
@@ -325,6 +334,6 @@ public class VideoCommonConfigActivity extends ExampleBaseActivity {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
     }
 }

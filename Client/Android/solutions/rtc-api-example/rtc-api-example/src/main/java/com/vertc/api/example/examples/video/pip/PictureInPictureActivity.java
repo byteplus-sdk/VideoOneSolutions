@@ -20,17 +20,14 @@ import androidx.core.content.ContextCompat;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
-import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.RTCRoomStats;
-import com.ss.bytertc.engine.type.StreamRemoveReason;
 import com.vertc.api.example.R;
 import com.vertc.api.example.base.ExampleBaseActivity;
 import com.vertc.api.example.base.ExampleCategory;
@@ -56,9 +53,9 @@ import java.util.Locale;
 public class PictureInPictureActivity extends ExampleBaseActivity {
     private static final String TAG = "PictureInPicture";
 
-    private RTCVideo rtcVideo;
+    private RTCEngine rtcVideo;
     private RTCRoom rtcRoom;
-    private String roomID;
+    private String remoteStreamId;
 
     private FloatWindowManager floatWindowManager;
     TextureView textureView;
@@ -111,7 +108,6 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
 
     private void joinRoom(String roomId) {
         requestRoomToken(roomId, localUid, token -> {
-            this.roomID = roomId;
             rtcRoom = rtcVideo.createRTCRoom(roomId);
             rtcRoom.setRTCRoomEventHandler(rtcRoomEventHandler);
             UserInfo userInfo = new UserInfo(localUid, "");
@@ -123,7 +119,7 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
                     isAutoPublish, isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -135,10 +131,13 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = localTextureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
-    private void setRemoteRenderView(String uid) {
+    private void setRemoteRenderView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
         if (textureView.getParent() == null) {
             binding.remoteViewContainer.removeAllViews();
             binding.remoteViewContainer.addView(textureView);
@@ -146,14 +145,14 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_MAIN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
     }
 
-    private void removeRemoteView(String uid) {
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_MAIN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+    private void removeRemoteView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
+        rtcVideo.setRemoteVideoCanvas(streamId, null);
     }
 
     private void requestFloatingWindowPermission() {
@@ -196,10 +195,9 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
             rtcRoom.destroy();
             rtcRoom = null;
         }
-        this.roomID = null;
     }
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
     };
 
     IRTCRoomEventHandler rtcRoomEventHandler = new IRTCRoomEventHandler() {
@@ -211,27 +209,18 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    setRemoteRenderView(uid);
+                    remoteStreamId = streamId;
+                    setRemoteRenderView(streamId);
                 });
             } else {
                 runOnUiThread(() -> {
-                    removeRemoteView(uid);
-                });
-            }
-        }
-
-        @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
-            if (isPublish) {
-                runOnUiThread(() -> {
-                    setRemoteRenderView(uid);
-                });
-            } else {
-                runOnUiThread(() -> {
-                    removeRemoteView(uid);
+                    if (streamId.equals(remoteStreamId)) {
+                        remoteStreamId = null;
+                    }
+                    removeRemoteView(streamId);
                 });
             }
         }
@@ -254,7 +243,7 @@ public class PictureInPictureActivity extends ExampleBaseActivity {
 
             stopForeground();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
         rtcVideo = null;
     }
 

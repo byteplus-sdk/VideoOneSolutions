@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Background for the multi-camera region.
+
+  - Solid color #4A09121B = rgba(9, 18, 27, 0.29) (alpha 0x4A == 74/255 ≈ 0.29).
+  - Bottom-left / bottom-right corners are rounded 12dp; top corners stay 0
+    so the region butts flush against the player surface above it.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="#4A09121B" />
+
+    <corners
+        android:bottomLeftRadius="12dp"
+        android:bottomRightRadius="12dp"
+        android:topLeftRadius="0dp"
+        android:topRightRadius="0dp" />
+</shape>

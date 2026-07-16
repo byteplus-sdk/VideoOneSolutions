@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Close ("X") icon for the Live Watch top region.
+  Figma node 10777:4731 — container 24×24, the actual stroke is 8.8×8.8
+  starting at (7.6, 7.6). Viewport is matched 1:1 to dp (24×24) so the
+  stroke lands exactly at (7.6,7.6)→(16.4,16.4); otherwise the X looks
+  visibly oversized. The SVG drop-shadow filter is omitted because it has
+  no perceptible effect on the dark, blurred background and Android vector
+  drawables do not support SVG filters natively.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M7.6 7.6 L16.4 16.4"
+        android:strokeWidth="1.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M16.4 7.6 L7.6 16.4"
+        android:strokeWidth="1.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+</vector>

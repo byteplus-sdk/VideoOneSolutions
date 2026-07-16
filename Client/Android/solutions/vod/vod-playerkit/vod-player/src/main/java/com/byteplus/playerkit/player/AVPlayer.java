@@ -102,6 +102,7 @@ public class AVPlayer extends ExtraObject implements Player {
     private PlayerException mPlayerException;
     private float mVideoSampleAspectRatio;
     private boolean mLooping;
+    private MediaSourceUpdateListener mediaSourceUpdateListener;
 
     @ScalingMode
     private int mVideoScalingMode = SCALING_MODE_DEFAULT;
@@ -115,6 +116,10 @@ public class AVPlayer extends ExtraObject implements Player {
         this.mPlayer = playerFactory.create(eventLooper);
         this.mPlayer.setListener(listener);
         setState(STATE_IDLE);
+    }
+
+    public void setMediaSourceUpdateListener(MediaSourceUpdateListener mediaSourceUpdateListener) {
+        this.mediaSourceUpdateListener = mediaSourceUpdateListener;
     }
 
     private static class Listener implements PlayerAdapter.Listener {
@@ -309,6 +314,9 @@ public class AVPlayer extends ExtraObject implements Player {
                 refreshType = InfoDataSourceRefreshed.REFRESHED_TYPE_SUBTITLE_INFO_FETCHED;
             } else if (type == PlayerAdapter.MediaSourceUpdateReason.MEDIA_SOURCE_UPDATE_REASON_MASK_INFO_FETCHED) {
                 refreshType = InfoDataSourceRefreshed.REFRESHED_TYPE_MASK_INFO_FETCHED;
+            }
+            if (player.mediaSourceUpdateListener != null) {
+                player.mediaSourceUpdateListener.onMediaSourceUpdate(refreshType, source);
             }
             if (refreshType > 0) {
                 player.mDispatcher.obtain(InfoDataSourceRefreshed.class, player).init(refreshType).dispatch();
@@ -1151,5 +1159,9 @@ public class AVPlayer extends ExtraObject implements Player {
         final MediaSource mediaSource = mMediaSource;
         if (mediaSource == null) return;
         ProgressRecorder.removeProgress(mediaSource.getSyncProgressId());
+    }
+
+    public static interface MediaSourceUpdateListener {
+        void onMediaSourceUpdate(int type, MediaSource mediaSource);
     }
 }

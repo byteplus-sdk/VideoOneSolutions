@@ -6,7 +6,7 @@ package com.vertcdemo.solution.interactivelive.core.live.adapter;
 import androidx.core.util.Consumer;
 
 import com.ss.bytertc.engine.IAudioFrameObserver;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.utils.IAudioFrame;
 
 public class AudioSink implements IAudioFrameObserver {
@@ -27,7 +27,7 @@ public class AudioSink implements IAudioFrameObserver {
     }
 
     @Override
-    public void onRemoteUserAudioFrame(RemoteStreamKey stream_info, IAudioFrame audioFrame) {
+    public void onRemoteUserAudioFrame(String roomId, StreamInfo streamInfo, IAudioFrame audioFrame) {
 
     }
 

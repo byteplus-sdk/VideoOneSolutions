@@ -39,6 +39,7 @@ import com.byteplus.vod.scenekit.ui.video.layer.base.AnimateLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.dialog.QualitySelectDialogLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.dialog.SpeedSelectDialogLayer;
 import com.byteplus.vod.scenekit.ui.video.layer.dialog.SubtitleSelectDialogLayer;
+import com.byteplus.vod.scenekit.ui.video.layer.listener.ProgressSeekListener;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.ui.widgets.MediaSeekBar;
 import com.byteplus.vod.scenekit.utils.TimeUtils;
@@ -47,6 +48,11 @@ import com.byteplus.vod.scenekit.utils.UIUtils;
 import java.util.List;
 
 public class TimeProgressBarLayer extends AnimateLayer implements GestureControllable {
+
+    private ProgressSeekListener mProgressSeekListener;
+
+    private boolean mIsCastingMode = false;
+
 
     public enum CompletedPolicy {
         /**
@@ -78,6 +84,21 @@ public class TimeProgressBarLayer extends AnimateLayer implements GestureControl
         mCompletedPolicy = policy;
     }
 
+    public void setProgressSeekListener(ProgressSeekListener mProgressSeekListener) {
+        this.mProgressSeekListener = mProgressSeekListener;
+    }
+
+    public void setInCastingMode(boolean inCasting) {
+        mIsCastingMode = inCasting;
+        if (!mIsCastingMode) {
+            syncQuality();
+        } else {
+            if (PlayScene.isFullScreenMode(playScene())) {
+                mQualityContainer.setVisibility(View.GONE);
+            }
+        }
+    }
+
     @Nullable
     @Override
     protected View createView(@NonNull ViewGroup parent) {
@@ -102,6 +123,9 @@ public class TimeProgressBarLayer extends AnimateLayer implements GestureControl
                 if (player == null) return;
 
                 if (player.isInPlaybackState()) {
+                    if (mProgressSeekListener != null) {
+                        mProgressSeekListener.onSeekProgress(seekToPosition);
+                    }
                     if (player.isCompleted()) {
                         player.start();
                         player.seekTo(seekToPosition);
@@ -181,6 +205,28 @@ public class TimeProgressBarLayer extends AnimateLayer implements GestureControl
 
         applyTheme(view);
         return view;
+    }
+
+    public void setCastingDuration(long duration) {
+        if (mSeekBar != null) {
+            mSeekBar.setDuration(duration);
+        }
+        if (mDuration != null) {
+            if (duration >= 0) {
+                mDuration.setText(TimeUtils.time2String(duration));
+            }
+        }
+    }
+
+    public void setCastingProgress(long progress) {
+        if (mSeekBar != null) {
+            mSeekBar.setCurrentPosition(progress);
+        }
+        if (mCurrentPosition != null) {
+            if (progress >= 0) {
+                mCurrentPosition.setText(TimeUtils.time2String(progress));
+            }
+        }
     }
 
     protected void onCommentClicked() {
@@ -358,7 +404,11 @@ public class TimeProgressBarLayer extends AnimateLayer implements GestureControl
                 if (tracks == null || tracks.size() <= 1) {
                     mQualityContainer.setVisibility(View.GONE);
                 } else {
-                    mQualityContainer.setVisibility(View.VISIBLE);
+                    if (mIsCastingMode && PlayScene.isFullScreenMode(playScene())) {
+                        mQualityContainer.setVisibility(View.GONE);
+                    } else {
+                        mQualityContainer.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         } else {

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="live_sport_title">赛事直播</string>
+    <string name="live_sport_description">适用于体育赛事的低延迟流媒体解决方案，支持高清画质及互动能力</string>
+
+    <string name="live_sport_home_title">直播功能</string>
+
+    <string name="live_sport_card_watch_tag">直播中</string>
+    <string name="live_sport_card_watch_title">直播观看端</string>
+    <string name="live_sport_card_watch_desc">展示直播间，包括了直播间切换、互动等能力</string>
+
+    <string name="live_sport_card_compare_tag">直播效果对比</string>
+    <string name="live_sport_card_compare_title">直播对比页</string>
+    <string name="live_sport_card_compare_desc">用于进行具体的功能对比，比如265、超分、锐化等</string>
+
+    <string name="live_sport_card_input_title">输入直播地址体验</string>
+    <string name="live_sport_card_input_desc">自定义直播内容、满足个性化体验</string>
+    <string name="live_sport_card_input_button">立即体验</string>
+
+    <string name="live_sport_toast_todo">敬请期待：%1$s</string>
+
+    <string name="live_sport_custom_stream_title">直播地址体验</string>
+    <string name="live_sport_custom_stream_url_title">直播拉流地址</string>
+    <string name="live_sport_custom_stream_url_hint">请输入 RTM、FLV、HLS 或 RTMP(S) 拉流地址</string>
+    <string name="live_sport_custom_stream_url_error">请输入正确格式的拉流地址</string>
+    <string name="live_sport_custom_stream_clear">清空</string>
+    <string name="live_sport_custom_stream_paste">粘贴</string>
+    <string name="live_sport_custom_stream_strategy_title">直播观看策略</string>
+    <string name="live_sport_custom_stream_low_latency_flv">FLV 低延迟</string>
+    <string name="live_sport_custom_stream_watch_now">立即观看</string>
+
+    <string name="live_sport_watch_anchor_name">主播名称最长几个字字</string>
+    <string name="live_sport_watch_heat_suffix">人气</string>
+    <string name="live_sport_watch_follow">关注</string>
+    <string name="live_sport_watch_followed">已关注</string>
+    <string name="live_sport_watch_close">关闭</string>
+
+    <string name="live_sport_watch_input_hint">说点什么…</string>
+    <string name="live_sport_watch_gift">礼物</string>
+    <string name="live_sport_watch_settings">设置</string>
+    <string name="live_sport_watch_gift_todo">礼物功能敬请期待</string>
+    <string name="live_sport_watch_self_name">我</string>
+
+    <!-- 礼物面板 -->
+    <string name="live_sport_watch_gift_title">送礼物</string>
+    <string name="live_sport_watch_gift_send">赠送</string>
+    <string name="live_sport_watch_gift_sent">已赠送 %1$s</string>
+    <string name="live_sport_watch_gift_notice_sent">送出了 %1$s</string>
+    <string name="live_sport_watch_gift_danmaku">%1$s 送出了 %2$s</string>
+    <string name="live_sport_watch_gift_sent_price">%1$d 金币</string>
+    <string name="live_sport_watch_gift_rose">玫瑰</string>
+    <string name="live_sport_watch_gift_heart">爱心</string>
+    <string name="live_sport_watch_gift_star">星星</string>
+    <string name="live_sport_watch_gift_thumbsup">点赞</string>
+    <string name="live_sport_watch_gift_rocket">火箭</string>
+    <string name="live_sport_watch_gift_crown">皇冠</string>
+    <!-- 横屏全宽评论输入 -->
+    <string name="live_sport_watch_send">发送</string>
+
+    <!-- 播放控制层 -->
+    <string name="live_sport_watch_play_pause">播放/暂停</string>
+    <string name="live_sport_watch_rotate">旋转</string>
+
+    <!-- 横屏（全屏）模式 -->
+    <string name="live_sport_watch_back">返回</string>
+    <string name="live_sport_watch_lock">锁屏</string>
+    <string name="live_sport_watch_locked_toast">已锁屏</string>
+    <string name="live_sport_watch_unlocked_toast">已解锁</string>
+    <string name="live_sport_watch_quality">1080P</string>
+    <string name="live_sport_watch_quality_title">清晰度</string>
+    <string name="live_sport_watch_multi_camera_title">多机位</string>
+
+    <!-- 多机位区域 + 播放设置面板 -->
+    <string name="live_sport_watch_multi_camera">多机位</string>
+    <string name="live_sport_watch_camera_toggle">展开/收起机位</string>
+    <string name="live_sport_watch_resolution">清晰度</string>
+    <string name="live_sport_watch_resolution_auto">自动</string>
+    <string name="live_sport_watch_resolution_origin">原画</string>
+    <string name="live_sport_watch_resolution_uhd">超清</string>
+    <string name="live_sport_watch_resolution_hd">高清</string>
+    <string name="live_sport_watch_resolution_sd">标清</string>
+    <string name="live_sport_watch_resolution_ld">流畅</string>
+    <string name="live_sport_watch_abr">自适应码率（ABR）</string>
+    <string name="live_sport_watch_super_resolution">超分</string>
+    <string name="live_sport_watch_sharpen">锐化</string>
+
+    <!-- 设置面板 — 拉流协议行 + 选择弹框 -->
+    <string name="live_sport_watch_settings_title">直播观看设置</string>
+    <string name="live_sport_watch_protocol">拉流协议</string>
+    <string name="live_sport_watch_protocol_rtm">RTM</string>
+    <string name="live_sport_watch_protocol_flv_ll">FLV 低延迟</string>
+    <string name="live_sport_watch_protocol_flv_normal">FLV 普通延迟</string>
+    <string name="live_sport_watch_protocol_picker_title">拉流协议</string>
+    <string name="live_sport_watch_abr_unavailable_rtm">RTM 为单路流，无法开启 ABR</string>
+    <string name="live_sport_watch_protocol_rtm_unsupported">当前频道未提供 RTM 流</string>
+    <string name="live_sport_watch_settings_save">保存</string>
+    <string name="live_sport_watch_rtm_fallback">RTM 不可用，已切换至 FLV</string>
+    <string name="live_sport_watch_play_error">播放出错（%1$d）：%2$s</string>
+    <string name="live_sport_watch_sr_failed">当前流不支持超分</string>
+    <string name="live_sport_watch_sharpen_failed">当前流不支持锐化</string>
+    <string name="live_sport_watch_channels_empty">暂无可用频道</string>
+    <string name="live_sport_watch_abr_switched">ABR 已切换至 %1$s</string>
+
+    <string-array name="live_sport_watch_mock_comment_contents">
+        <item>来自大草原的问候！</item>
+        <item>有没有更便宜的渠道？</item>
+        <item>能介绍下这款设备吗？</item>
+        <item>刚进来，错过了什么？</item>
+        <item>2号机位画面好棒。</item>
+        <item>有柏林的小伙伴在看吗？</item>
+        <item>期待下一段！</item>
+        <item>抽奖还在进行吗？</item>
+        <item>音质真的稳。</item>
+        <item>从最早就一直追的老粉。</item>
+        <item>能加个慢动作回放吗？</item>
+        <item>刚才那个操作太离谱了。</item>
+        <item>切换到多机位看一下。</item>
+        <item>新加坡的朋友打个招呼！</item>
+        <item>礼物已送，继续加油！</item>
+        <item>新的灯光太好看。</item>
+        <item>结束后能分享下歌单吗？</item>
+        <item>这一段每次都鸡皮疙瘩。</item>
+        <item>问下主播：有巡演计划吗？</item>
+        <item>今晚直播流畅得不行。</item>
+        <item>来晚了，等高光时刻。</item>
+        <item>本周最佳直播，没有之一。</item>
+        <item>有人追后续吗？</item>
+        <item>明天见！</item>
+    </string-array>
+
+    <!-- ===================== 直播对比页 ===================== -->
+    <!-- 顶部 L2 选项卡 -->
+    <string name="live_sport_compare_tab_latency">低延时</string>
+    <string name="live_sport_compare_tab_enhance">画面增强</string>
+    <string name="live_sport_compare_tab_cost">直播降本</string>
+
+    <!-- 通用 -->
+    <string name="live_sport_compare_back">返回</string>
+    <string name="live_sport_compare_play_pause">播放或暂停</string>
+    <string name="live_sport_compare_mute_toggle">静音或取消静音</string>
+    <string name="live_sport_compare_view_doc">查看文档</string>
+
+    <!-- Tab 1 — 低延时 -->
+    <string name="live_sport_compare_latency_desc">BytePlus MediaLive 提供多种直播延迟方案选择，可以通过该 demo，体验不同的直播延迟方案，并实时显示延迟情况。</string>
+    <string name="live_sport_compare_protocol_flv_ll">FLV 低延时</string>
+    <string name="live_sport_compare_latency_overlay">实时延迟：%1$s ms</string>
+    <string name="live_sport_compare_protocol_reserved_toast">%1$s 暂不支持</string>
+    <string name="live_sport_compare_reserved_hint">敬请期待</string>
+
+    <!-- Tab 2 — 画面增强 -->
+    <string name="live_sport_compare_enhance_desc">BytePlus MediaLive 通过客户端的智能算法，提供视频锐化、超级分辨率功能，提升低清直播间的观看体验。</string>
+    <string name="live_sport_compare_enhance_sr">超清分辨率</string>
+    <string name="live_sport_compare_enhance_sharpen">视频锐化</string>
+    <string name="live_sport_compare_enhance_label_processed">处理后画面</string>
+    <string name="live_sport_compare_enhance_label_origin">原画面</string>
+
+    <!-- Tab 3 — 直播降本 -->
+    <string name="live_sport_compare_cost_desc">BytePlus MediaLive 提供全链路 H.265 解决方案；升级直播流转码能力，提供高清晰度、低码率的直播降本解决方案。</string>
+    <string name="live_sport_compare_cost_desc_bullets">  - 画质持平时，H.265 的码率更低，可以节省成本。\n  - 码率持平时，H.265 的画质更好，同成本提高观看体验。</string>
+    <string name="live_sport_compare_cost_tab_same_quality">相同画质，码率对比</string>
+    <string name="live_sport_compare_cost_tab_same_bitrate">相同码率，画质更高</string>
+    <string name="live_sport_compare_bitrate_overlay">实时码率：%1$s kbps</string>
+
+    <!-- 码率波形弹窗（点击码率角标） -->
+    <string name="live_sport_compare_chart_title">码率（近 1 分钟）</string>
+    <string name="live_sport_compare_chart_current">当前 %1$s kbps</string>
+    <string name="live_sport_compare_chart_peak">峰值 %1$s kbps</string>
+    <string name="live_sport_compare_chart_axis_now">现在</string>
+
+    <!-- 多机位频道名，按 live_sport_channels.json 的 channel id 取用 -->
+    <string name="live_sport_camera_name_a">A组</string>
+    <string name="live_sport_camera_name_b">B组</string>
+    <string name="live_sport_camera_name_c">C组</string>
+    <string name="live_sport_camera_name_d">D组</string>
+</resources>

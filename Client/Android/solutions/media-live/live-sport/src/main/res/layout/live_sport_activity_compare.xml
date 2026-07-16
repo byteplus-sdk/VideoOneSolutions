@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F8FA">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_status_bar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp" />
+
+    <!-- ============ Head: back + L2 tabs ============ -->
+    <LinearLayout
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="3dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/guideline_status_bar">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/live_sport_compare_back"
+            android:padding="13dp"
+            android:src="@drawable/live_ic_arrow_back" />
+
+        <!-- Tabs fill the rest of the row (back button aligns with the cards). -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/tab_latency"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tab_latency_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="none"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/live_sport_compare_tab_latency"
+                    android:textColor="#1664FF"
+                    android:textStyle="bold"
+                    app:autoSizeMaxTextSize="13sp"
+                    app:autoSizeMinTextSize="9sp"
+                    app:autoSizeStepGranularity="1sp"
+                    app:autoSizeTextType="uniform" />
+
+                <View
+                    android:id="@+id/tab_latency_indicator"
+                    android:layout_width="19dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="2dp"
+                    android:background="#1664FF" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tab_enhance"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tab_enhance_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="none"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/live_sport_compare_tab_enhance"
+                    android:textColor="#42464E"
+                    app:autoSizeMaxTextSize="13sp"
+                    app:autoSizeMinTextSize="9sp"
+                    app:autoSizeStepGranularity="1sp"
+                    app:autoSizeTextType="uniform" />
+
+                <View
+                    android:id="@+id/tab_enhance_indicator"
+                    android:layout_width="19dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="2dp"
+                    android:background="#1664FF"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tab_cost"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tab_cost_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="none"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/live_sport_compare_tab_cost"
+                    android:textColor="#42464E"
+                    app:autoSizeMaxTextSize="13sp"
+                    app:autoSizeMinTextSize="9sp"
+                    app:autoSizeStepGranularity="1sp"
+                    app:autoSizeTextType="uniform" />
+
+                <View
+                    android:id="@+id/tab_cost_indicator"
+                    android:layout_width="19dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="2dp"
+                    android:background="#1664FF"
+                    android:visibility="invisible" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- ============ Tab content containers ============ -->
+    <include
+        android:id="@+id/content_latency"
+        layout="@layout/live_sport_compare_tab_latency"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/head" />
+
+    <include
+        android:id="@+id/content_enhance"
+        layout="@layout/live_sport_compare_tab_enhance"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/head" />
+
+    <include
+        android:id="@+id/content_cost"
+        layout="@layout/live_sport_compare_tab_cost"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/head" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

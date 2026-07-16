@@ -5,16 +5,13 @@ import android.util.Log;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
-import com.ss.bytertc.engine.type.MediaStreamType;
-import com.ss.bytertc.engine.type.StreamRemoveReason;
 import com.vertc.api.example.R;
 import com.vertc.api.example.base.ExampleBaseActivity;
 import com.vertc.api.example.base.ExampleCategory;
@@ -43,12 +40,14 @@ public class MultiRoomActivity extends ExampleBaseActivity {
 
     ActivityMultiRoomBinding binding;
 
-    RTCVideo rtcVideo;
+    RTCEngine rtcVideo;
 
     RTCRoom rtcRoom1;
     RTCRoom rtcRoom2;
     private String roomID1;
     private String roomID2;
+    private String remoteStreamId1;
+    private String remoteStreamId2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +104,7 @@ public class MultiRoomActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = binding.localView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
     public void joinFirstRoom(String roomID) {
@@ -129,7 +128,7 @@ public class MultiRoomActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom1.joinRoom(token, userInfo, roomConfig);
+            rtcRoom1.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -154,7 +153,7 @@ public class MultiRoomActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom2.joinRoom(token, userInfo, roomConfig);
+            rtcRoom2.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -189,21 +188,23 @@ public class MultiRoomActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    remoteStreamId1 = streamId;
                     VideoCanvas videoCanvas = new VideoCanvas();
                     videoCanvas.renderView = binding.remoteView1;
                     videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+                    rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
 
-                    binding.remoteUserName1.setText(uid);
+                    binding.remoteUserName1.setText(streamInfo.getUserId());
                 });
             } else {
                 runOnUiThread(() -> {
-                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
-                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+                    if (streamId.equals(remoteStreamId1)) {
+                        remoteStreamId1 = null;
+                    }
+                    rtcVideo.setRemoteVideoCanvas(streamId, null);
 
                     binding.remoteUserName1.setText("");
                 });
@@ -211,21 +212,23 @@ public class MultiRoomActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    remoteStreamId1 = streamId;
                     VideoCanvas videoCanvas = new VideoCanvas();
                     videoCanvas.renderView = binding.remoteView1;
                     videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+                    rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
 
-                    binding.remoteUserName1.setText(uid);
+                    binding.remoteUserName1.setText(streamInfo.getUserId());
                 });
             } else {
                 runOnUiThread(() -> {
-                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID1, uid, StreamIndex.STREAM_INDEX_MAIN);
-                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+                    if (streamId.equals(remoteStreamId1)) {
+                        remoteStreamId1 = null;
+                    }
+                    rtcVideo.setRemoteVideoCanvas(streamId, null);
 
                     binding.remoteUserName1.setText("");
                 });
@@ -252,21 +255,23 @@ public class MultiRoomActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    remoteStreamId2 = streamId;
                     VideoCanvas videoCanvas = new VideoCanvas();
                     videoCanvas.renderView = binding.remoteView2;
                     videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+                    rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
 
-                    binding.remoteUserName2.setText(uid);
+                    binding.remoteUserName2.setText(streamInfo.getUserId());
                 });
             } else {
                 runOnUiThread(() -> {
-                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
-                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+                    if (streamId.equals(remoteStreamId2)) {
+                        remoteStreamId2 = null;
+                    }
+                    rtcVideo.setRemoteVideoCanvas(streamId, null);
 
                     binding.remoteUserName2.setText("");
                 });
@@ -274,21 +279,23 @@ public class MultiRoomActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
+                    remoteStreamId2 = streamId;
                     VideoCanvas videoCanvas = new VideoCanvas();
                     videoCanvas.renderView = binding.remoteView2;
                     videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+                    rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
 
-                    binding.remoteUserName2.setText(uid);
+                    binding.remoteUserName2.setText(streamInfo.getUserId());
                 });
             } else {
                 runOnUiThread(() -> {
-                    RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID2, uid, StreamIndex.STREAM_INDEX_MAIN);
-                    rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+                    if (streamId.equals(remoteStreamId2)) {
+                        remoteStreamId2 = null;
+                    }
+                    rtcVideo.setRemoteVideoCanvas(streamId, null);
 
                     binding.remoteUserName2.setText("");
                 });
@@ -303,7 +310,7 @@ public class MultiRoomActivity extends ExampleBaseActivity {
         }
     };
 
-    private final IRTCVideoEventHandler videoEventHandler = new IRTCVideoEventHandler() {
+    private final IRTCEngineEventHandler videoEventHandler = new IRTCEngineEventHandler() {
         @Override
         public void onWarning(int warn) {
             super.onWarning(warn);
@@ -327,7 +334,7 @@ public class MultiRoomActivity extends ExampleBaseActivity {
             rtcVideo.stopAudioCapture();
             rtcVideo.stopVideoCapture();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
         rtcVideo = null;
     }
 }

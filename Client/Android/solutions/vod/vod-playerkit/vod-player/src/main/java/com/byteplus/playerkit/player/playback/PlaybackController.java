@@ -445,7 +445,7 @@ public class PlaybackController {
         if (videoView.getSurface() != player.getSurface()) {
             player.setSurface(surface);
         }
-        
+
         startPlayer(startWhenPrepared, player, viewSource);
     }
 
@@ -509,7 +509,7 @@ public class PlaybackController {
         }
     }
 
-    @MainThread 
+    @MainThread
     protected void pausePlayer() {
         mPlayer.pause();
     }
@@ -548,7 +548,7 @@ public class PlaybackController {
         }
     }
 
-    @MainThread 
+    @MainThread
     protected void stopPlayer() {
 
     }

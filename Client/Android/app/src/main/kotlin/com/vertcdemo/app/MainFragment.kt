@@ -23,6 +23,7 @@ import com.videoone.avatars.Avatars
 class MainFragment : VersionFragment(R.layout.fragment_main) {
     private val mViewModel by viewModels<MainViewModel>()
     private val userViewModel by activityViewModels<UserViewModel>()
+    private var mBinding: FragmentMainBinding? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         userViewModel.logged.observe(viewLifecycleOwner) {
@@ -34,7 +35,7 @@ class MainFragment : VersionFragment(R.layout.fragment_main) {
 
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentMainBinding.bind(view)
+        val binding = FragmentMainBinding.bind(view).also { mBinding = it }
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets: WindowInsetsCompat ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -91,6 +92,12 @@ class MainFragment : VersionFragment(R.layout.fragment_main) {
                 mViewModel.currentTab.value = 1
             }
         }
+    }
+
+    override fun onDestroyView() {
+        mBinding?.viewPager?.adapter = null
+        mBinding = null
+        super.onDestroyView()
     }
 
     class TabAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {

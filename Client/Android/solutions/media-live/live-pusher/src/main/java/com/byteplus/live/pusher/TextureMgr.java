@@ -2,34 +2,40 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.byteplus.live.pusher;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
-import com.pandora.common.env.Env;
-import com.pandora.common.env.config.Config;
-import com.ss.avframework.opengl.GLThreadManager;
-import com.ss.avframework.opengl.GlUtil;
+
+import android.os.Handler;
+import android.os.Looper;
+
 
 import java.nio.ByteBuffer;
 
 public class TextureMgr {
+    private int generateTexture() {
+        int[] textures = new int[1];
+        GLES20.glGenTextures(1, textures, 0);
+        return textures[0];
+    }
     private int texture;
     private int width;
     private int height;
-    public TextureMgr(int width, int height) {
+    private android.content.Context mContext;
+    public TextureMgr(android.content.Context context, int width, int height) {
+        mContext = context;
         this.width = width;
         this.height = height;
-        GLThreadManager.getMainGlHandle().post(() -> {
+        new Handler(Looper.getMainLooper()).post(() -> {
             if (texture <= 0) {
-                texture = GlUtil.generateTexture(GLES20.GL_TEXTURE_2D);
+                texture = generateTexture();
                 GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
                 GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture);
                 GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
                 GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
                 GLES20.glFinish();
-                GlUtil.checkNoGLES2Error("clearBackgroundTex");
+                
             }
         });
     }
@@ -39,13 +45,11 @@ public class TextureMgr {
     }
 
     public void dealWithTexture(ByteBuffer byteBuffer, RenderListener listener) {
-        GLThreadManager.getMainGlHandle().post(new Runnable() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 if (texture > 0) {
-                    Config config = Env.getConfig();
-                    Context context = config != null ? config.getApplicationContext() : null;
-                    YuvHelper.NV21ToBitmap bm = new YuvHelper.NV21ToBitmap(context);
+                    YuvHelper.NV21ToBitmap bm = new YuvHelper.NV21ToBitmap(mContext);
                     Bitmap bmp = bm.nv21ToBitmap(byteBuffer.array(), width, height);
                     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture);
                     GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0,

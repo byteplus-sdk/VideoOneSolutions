@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Single-row background for items inside the protocol picker BottomSheet.
+  Light divider line baked in via padding from the parent container; this
+  drawable just supplies a flat white tap surface with subtle ripple.
+-->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#1A000000">
+    <item android:drawable="@android:color/white" />
+</ripple>

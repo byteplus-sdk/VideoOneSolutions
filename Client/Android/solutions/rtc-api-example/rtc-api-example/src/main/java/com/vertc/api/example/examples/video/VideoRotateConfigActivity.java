@@ -14,15 +14,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.ss.bytertc.base.media.Size;
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.data.VideoOrientation;
 import com.ss.bytertc.engine.data.VideoRotationMode;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.RTCRoomStats;
@@ -61,7 +60,7 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
     VideoRotateConfigViewModel viewModel;
 
     @NonNull
-    private RTCVideo getRTCVideo() {
+    private RTCEngine getRTCVideo() {
         return Objects.requireNonNull(viewModel.rtcVideo);
     }
 
@@ -93,7 +92,7 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
 
         String remoteUserId = viewModel.remoteUserId;
         if (remoteUserId != null) {
-            setRemoteRenderView(remoteUserId);
+            setRemoteRenderView(remoteUserId, viewModel.remoteStreamId);
         }
 
         binding.btnJoinRoom.setOnClickListener(v -> {
@@ -123,7 +122,7 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
         binding.videoOrientationSpinner.setOnItemSelectedListener(new OnItemSelectedAdapter() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                RTCVideo rtcVideo = getRTCVideo();
+                RTCEngine rtcVideo = getRTCVideo();
                 String item = (String) binding.videoOrientationSpinner.getSelectedItem();
                 switch (item) {
                     case "Adaptive":
@@ -141,7 +140,7 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
         binding.videoRotationModeSpinner.setOnItemSelectedListener(new OnItemSelectedAdapter() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                RTCVideo rtcVideo = getRTCVideo();
+                RTCEngine rtcVideo = getRTCVideo();
                 String item = (String) binding.videoRotationModeSpinner.getSelectedItem();
                 switch (item) {
                     case "FollowApp":
@@ -177,7 +176,7 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -189,19 +188,23 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        getRTCVideo().setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        getRTCVideo().setLocalVideoCanvas(videoCanvas);
     }
 
-    private void onUserPublishStream(String uid) {
+    private void onUserPublishStream(String uid, String streamId) {
         runOnUiThread(() -> {
             if (viewModel.remoteUserId == null) {
                 viewModel.remoteUserId = uid;
-                setRemoteRenderView(uid);
+                viewModel.remoteStreamId = streamId;
+                setRemoteRenderView(uid, streamId);
             }
         });
     }
 
-    private void setRemoteRenderView(String uid) {
+    private void setRemoteRenderView(String uid, String streamId) {
+        if (streamId == null) {
+            return;
+        }
         TextureView textureView = new TextureView(this);
 
         binding.remoteViewContainer.removeAllViews();
@@ -212,24 +215,25 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(getRoomId(), uid, StreamIndex.STREAM_INDEX_MAIN);
-        getRTCVideo().setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        getRTCVideo().setRemoteVideoCanvas(streamId, videoCanvas);
     }
 
-    private void onUserUnpublishStream(String uid) {
+    private void onUserUnpublishStream(String uid, String streamId) {
         runOnUiThread(() -> {
-            if (TextUtils.equals(uid, viewModel.remoteUserId)) {
+            if (TextUtils.equals(uid, viewModel.remoteUserId) && TextUtils.equals(streamId, viewModel.remoteStreamId)) {
                 viewModel.remoteUserId = null;
-                removeRemoteView(uid);
+                viewModel.remoteStreamId = null;
+                removeRemoteView(streamId);
             }
         });
     }
 
-    private void removeRemoteView(String uid) {
+    private void removeRemoteView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
         binding.remoteViewContainer.removeAllViews();
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(getRoomId(), uid, StreamIndex.STREAM_INDEX_MAIN);
-        getRTCVideo().setRemoteVideoCanvas(remoteStreamKey, null);
+        getRTCVideo().setRemoteVideoCanvas(streamId, null);
     }
 
     private void addWatermark() {
@@ -244,14 +248,14 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
                 (float) imageSize.width / videoSize.width,
                 (float) imageSize.height / videoSize.height);
         RTCWatermarkConfig config = new RTCWatermarkConfig(true, byteWatermark, byteWatermark);
-        getRTCVideo().setVideoWatermark(StreamIndex.STREAM_INDEX_MAIN, path, config);
+        getRTCVideo().setVideoWatermark(path, config);
     }
 
     private void clearWatermark() {
-        getRTCVideo().clearVideoWatermark(StreamIndex.STREAM_INDEX_MAIN);
+        getRTCVideo().clearVideoWatermark();
     }
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
     };
 
     @Override
@@ -278,26 +282,26 @@ public class VideoRotateConfigActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
-                mParent.onUserPublishStream(uid);
+                mParent.onUserPublishStream(streamInfo.getUserId(), streamId);
             } else {
-                mParent.onUserUnpublishStream(uid);
+                mParent.onUserUnpublishStream(streamInfo.getUserId(), streamId);
             }
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
-                mParent.onUserPublishStream(uid);
+                mParent.onUserPublishStream(streamInfo.getUserId(), streamId);
             } else {
-                mParent.onUserUnpublishStream(uid);
+                mParent.onUserUnpublishStream(streamInfo.getUserId(), streamId);
             }
         }
 
         @Override
-        public void onUserJoined(UserInfo userInfo, int elapsed) {
-            super.onUserJoined(userInfo, elapsed);
+        public void onUserJoined(UserInfo userInfo) {
+            super.onUserJoined(userInfo);
             ToastUtil.showToast(mParent, "onUserJoined, uid:" + userInfo.getUid());
         }
 

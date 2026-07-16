@@ -6,9 +6,9 @@ package com.vertcdemo.core.rts;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 
-public class RTCVideoEventHandlerWithRTS extends IRTCVideoEventHandler {
+public class RTCVideoEventHandlerWithRTS extends IRTCEngineEventHandler {
     @NonNull
     private final IMessageHandler mHandler;
 

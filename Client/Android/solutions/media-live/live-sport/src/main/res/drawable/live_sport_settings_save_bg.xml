@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bottom "Save" button background (Figma node 10904:17139): full-width primary
+  button, 4dp corners, #1664FF fill. Disabled state is faded via alpha on the
+  view (no separate drawable needed at this level).
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="#1664FF" />
+    <corners android:radius="4dp" />
+</shape>

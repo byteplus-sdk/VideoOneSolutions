@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/live_sport_custom_stream_url_title"
+        android:textColor="#80838A"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/live_sport_custom_stream_card_bg"
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <FrameLayout
+            android:id="@+id/custom_stream_input_box"
+            android:layout_width="match_parent"
+            android:layout_height="124dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/live_sport_custom_stream_input_bg"
+            android:padding="12dp">
+
+            <EditText
+                android:id="@+id/custom_stream_url_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="28dp"
+                android:background="@null"
+                android:gravity="top|start"
+                android:hint="@string/live_sport_custom_stream_url_hint"
+                android:inputType="textUri|textMultiLine"
+                android:maxLines="4"
+                android:padding="0dp"
+                android:textColor="#353535"
+                android:textColorHint="#99161823"
+                android:textSize="14sp"
+                tools:text="https://example.com/live/stream.flv" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/custom_stream_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:gravity="center"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:text="@string/live_sport_custom_stream_clear"
+                    android:textColor="#99161823"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/custom_stream_paste"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:gravity="center"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:text="@string/live_sport_custom_stream_paste"
+                    android:textColor="#99161823"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/custom_stream_url_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/live_sport_custom_stream_url_error"
+            android:textColor="#F53F3F"
+            android:textSize="12sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginTop="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/live_sport_custom_stream_strategy_title"
+        android:textColor="#80838A"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/live_sport_custom_stream_card_bg"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <LinearLayout
+            android:id="@+id/custom_stream_low_latency_row"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/live_sport_custom_stream_low_latency_flv"
+                android:textColor="#020814"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/custom_stream_low_latency_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                app:showText="false"
+                app:switchMinWidth="36dp"
+                app:switchPadding="20dp"
+                app:thumbTint="@color/live_sport_switch_thumb_color"
+                app:thumbTintMode="multiply"
+                app:track="@drawable/live_sport_switch_track"
+                app:trackTint="@null" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/live_sport_watch_super_resolution"
+                android:textColor="#020814"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/custom_stream_sr_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                app:showText="false"
+                app:switchMinWidth="36dp"
+                app:switchPadding="20dp"
+                app:thumbTint="@color/live_sport_switch_thumb_color"
+                app:thumbTintMode="multiply"
+                app:track="@drawable/live_sport_switch_track"
+                app:trackTint="@null" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/live_sport_watch_sharpen"
+                android:textColor="#020814"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/custom_stream_sharpen_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                app:showText="false"
+                app:switchMinWidth="36dp"
+                app:switchPadding="20dp"
+                app:thumbTint="@color/live_sport_switch_thumb_color"
+                app:thumbTintMode="multiply"
+                app:track="@drawable/live_sport_switch_track"
+                app:trackTint="@null" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

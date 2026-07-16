@@ -48,7 +48,6 @@ dependencies {
     androidTestImplementation libs.espresso.core
 
     implementation libs.rtc.sdk
-    implementation libs.ttsdk.ttlivepush.rtc
 
     implementation project(':component:solution-base')
 

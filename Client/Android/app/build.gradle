@@ -89,6 +89,7 @@ dependencies {
     implementation libs.splashscreen
 
     implementation libs.bundles.navigation
+    debugImplementation libs.leakcanary.android
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
@@ -110,6 +111,7 @@ dependencies {
     implementation project(':solutions:interactivelive')
 
     implementation project(':solutions:media-live:live-entrance')
+    implementation project(':solutions:media-live:live-sport')
     implementation project(':solutions:vod:vod-function')
     implementation project(':solutions:rtc-api-example:rtc-api-example-entry')
 

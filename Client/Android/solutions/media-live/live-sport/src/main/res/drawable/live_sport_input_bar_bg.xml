@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Comment input background: 19dp corners + rgba(0,0,0,0.2) (Figma fill_DAWJ8I).
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#33000000" />
+    <corners android:radius="19dp" />
+</shape>

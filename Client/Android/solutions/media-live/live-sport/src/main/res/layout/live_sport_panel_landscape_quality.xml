@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Landscape quality side-panel (Figma node 10833:6202). Right-anchored,
+  full-height, fixed width. Centered grey title at the top, list below.
+  Background carries the translucent glass fill + left rounded corners
+  (see live_sport_landscape_side_panel_bg).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/live_sport_landscape_side_panel_bg"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="12dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="16dp">
+
+    <!-- Title "清晰度" — grey #B4B7BC, 12sp, centered (Figma node 10833:6208). -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/live_sport_watch_quality_title"
+        android:textColor="#B4B7BC"
+        android:textSize="12sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/landscape_quality_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:layout_weight="1"
+        android:overScrollMode="never"
+        android:scrollbars="none" />
+</LinearLayout>

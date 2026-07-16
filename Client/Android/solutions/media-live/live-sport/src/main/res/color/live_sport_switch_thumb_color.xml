@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tint applied to SwitchCompat's default thumb drawable; both states stay
+  white. Used together with `app:thumbTintMode="multiply"` to keep the thumb's
+  built-in shape/elevation and only repaint its surface.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:color="#FFFFFF" />
+    <item android:color="#FFFFFF" />
+</selector>

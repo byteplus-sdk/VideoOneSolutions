@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Round translucent background for the close button in the settings panel
+  header (Figma node 10904:17086, _RoundBtn). 28dp circle, fill
+  rgba(22, 24, 35, 0.05) = #0D161823.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#0D161823" />
+</shape>

@@ -4,9 +4,11 @@
 package com.byteplus.live.entrance;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -19,12 +21,21 @@ import androidx.lifecycle.ViewModelProvider;
 import com.byteplus.live.player.ui.activity.InputPullUrlActivity;
 import com.byteplus.live.pusher.ui.activities.LiveCaptureType;
 import com.byteplus.live.pusher.ui.activities.LivePushActivity;
+import com.vertc.api.example.base.RTCTokenManager;
+import com.vertc.api.example.entry.RemoteRTCTokenProvider;
+import com.vertcdemo.core.http.Callback;
+import com.vertcdemo.core.http.bean.RTCAppInfo;
+import com.vertcdemo.core.net.HttpException;
+import com.vertcdemo.core.http.AppInfoManager;
+import com.vertcdemo.ui.CenteredToast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class MediaLiveFunctionFragment extends PermissionFragment {
 
+    private static final String SOLUTION_NAME_ABBR = "medialive_api_example";
     private static final String TAG = "MediaLiveFunction";
 
     private MediaLiveViewModel mViewModel;
@@ -37,6 +48,9 @@ public class MediaLiveFunctionFragment extends PermissionFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(MediaLiveViewModel.class);
+        if (TextUtils.isEmpty(RTCTokenManager.getInstance().getAppId())) {
+            startup(null);
+        }
     }
 
     @Override
@@ -101,5 +115,40 @@ public class MediaLiveFunctionFragment extends PermissionFragment {
         Intent intent = new Intent(context, LivePushActivity.class);
         intent.putExtra(LivePushActivity.EXTRA_CAPTURE_TYPE, liveCaptureType);
         context.startActivity(intent);
+    }
+
+    private void startup(@Nullable Runnable next) {
+        Callback<RTCAppInfo> callback = new Callback<RTCAppInfo>() {
+            @Override
+            public void onResponse(RTCAppInfo data) {
+                Activity activity = getActivity();
+                if (activity == null || activity.isFinishing()) {
+                    return;
+                }
+
+                if (data == null || data.isInvalid()) {
+                    onFailure(HttpException.unknown("Invalid RTCAppInfo response."));
+                    return;
+                }
+                RTCTokenManager.getInstance().setRemoteProvider(
+                        new RemoteRTCTokenProvider(Objects.requireNonNull(data.appId), data.bid)
+                );
+
+                if (next != null) {
+                    next.run();
+                }
+            }
+
+            @Override
+            public void onFailure(HttpException e) {
+                Activity activity = getActivity();
+                if (activity == null || activity.isFinishing()) {
+                    return;
+                }
+                Toast.makeText(getActivity(), "rtc remote token start failure", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        AppInfoManager.requestInfo(SOLUTION_NAME_ABBR, callback);
     }
 }

@@ -6,8 +6,9 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ss.bytertc.engine.RTCVideo;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.RTCEngine;
+import com.ss.bytertc.engine.data.EngineConfig;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.vertc.api.example.base.RTCTokenManager;
 
 import java.util.Objects;
@@ -16,12 +17,13 @@ import java.util.regex.Pattern;
 
 public class RTCHelper {
     @NonNull
-    public static RTCVideo createRTCVideo(Context context, IRTCVideoEventHandler videoEventHandler, String bid) {
+    public static RTCEngine createRTCVideo(Context context, IRTCEngineEventHandler videoEventHandler, String bid) {
         String appId = Objects.requireNonNull(RTCTokenManager.getInstance().getAppId(), "AppId not provided");
-        RTCVideo engine = Objects.requireNonNull(
-                RTCVideo.createRTCVideo(context, appId, videoEventHandler, null, null),
-                "Failed to createRTCVideo()"
-        );
+        EngineConfig config = new EngineConfig();
+        config.context = context.getApplicationContext();
+        config.appID = appId;
+
+        RTCEngine engine = Objects.requireNonNull(RTCEngine.createRTCEngine(config, videoEventHandler), "Failed to createRTCEngine()");
         engine.setBusinessId(RTCTokenManager.getInstance().getBusinessId(bid));
         return engine;
     }

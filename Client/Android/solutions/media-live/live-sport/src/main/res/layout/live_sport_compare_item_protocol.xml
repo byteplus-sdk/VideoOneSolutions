@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- L3 protocol chip for the Low-latency tab, inflated per CompareProtocol.
+     Selected state is driven by `isSelected` (see live_sport_compare_chip_bg). -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/live_sport_compare_chip_bg"
+    android:gravity="center"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="6dp"
+    android:textColor="#737A87"
+    android:textSize="14sp"
+    android:textStyle="bold" />

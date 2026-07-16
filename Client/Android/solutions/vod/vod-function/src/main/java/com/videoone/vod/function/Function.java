@@ -7,4 +7,5 @@ public enum Function {
     PLAYLIST,
     SMART_SUBTITLES,
     PREVENT_RECORDING,
+    CASTING,
 }

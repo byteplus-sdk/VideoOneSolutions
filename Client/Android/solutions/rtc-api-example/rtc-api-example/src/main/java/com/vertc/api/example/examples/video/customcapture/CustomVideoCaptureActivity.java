@@ -15,21 +15,19 @@ import androidx.camera.core.ImageProxy;
 import com.example.android.camera.utils.YuvByteBuffer;
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
+import com.ss.bytertc.engine.data.VideoBufferType;
+import com.ss.bytertc.engine.data.VideoFrameData;
 import com.ss.bytertc.engine.data.VideoPixelFormat;
 import com.ss.bytertc.engine.data.VideoRotation;
 import com.ss.bytertc.engine.data.VideoSourceType;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
-import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.RTCRoomStats;
-import com.ss.bytertc.engine.video.VideoFrame;
-import com.ss.bytertc.engine.video.builder.CpuBufferVideoFrameBuilder;
 import com.vertc.api.example.R;
 import com.vertc.api.example.base.ExampleBaseActivity;
 import com.vertc.api.example.base.ExampleCategory;
@@ -50,10 +48,9 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
     private static final String SPINNER_NV12 = "NV12";
     private static final String SPINNER_RGBA = "RGBA";
 
-    RTCVideo rtcVideo;
+    RTCEngine rtcVideo;
     RTCRoom rtcRoom;
     boolean isJoined;
-    private String roomID;
 
     ActivityCustomVideoCaptureBinding binding;
 
@@ -73,7 +70,7 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
         rtcVideo = RTCHelper.createRTCVideo(this, rtcVideoEventHandler, "external-video-frame");
         rtcVideo.startAudioCapture();
 
-        rtcVideo.setVideoSourceType(StreamIndex.STREAM_INDEX_MAIN, VideoSourceType.VIDEO_SOURCE_TYPE_EXTERNAL);
+        rtcVideo.setVideoSourceType(VideoSourceType.VIDEO_SOURCE_TYPE_EXTERNAL);
         setLocalRenderView();
 
         executor = Executors.newSingleThreadExecutor();
@@ -147,23 +144,23 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
-    private void setRemoteRenderView(String uid) {
+    private void setRemoteRenderView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
         TextureView remoteTextureView = new TextureView(this);
         binding.remoteViewContainer.removeAllViews();
         binding.remoteViewContainer.addView(remoteTextureView);
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = remoteTextureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_MAIN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
     }
 
     private void joinRoom(String roomId) {
-        this.roomID = roomId;
         rtcRoom = rtcVideo.createRTCRoom(roomId);
         rtcRoom.setRTCRoomEventHandler(rtcRoomEventHandler);
         requestRoomToken(roomId, localUid, token -> {
@@ -175,7 +172,7 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
                     /*isAutoSubscribeVideo*/true,
                     /*isAutoSubscribeVideo*/true
             );
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -188,16 +185,16 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
     }
 
     /**
-     * Note: RTCVideo only supports I420, NV12, RGBA format.
+     * Note: RTCEngine only supports I420, NV12, RGBA format.
      *
-     * @see RTCVideo#pushExternalVideoFrame(VideoFrame)
+     * @see RTCEngine#pushExternalVideoFrame(VideoFrameData)
      * @see VideoPixelFormat
      */
     static class RTCVideoFrameConsumer implements ImageAnalysis.Analyzer {
-        private final RTCVideo rtcVideo;
+        private final RTCEngine rtcVideo;
         private final VideoPixelFormat rtcVideoFrameFormat;
 
-        RTCVideoFrameConsumer(RTCVideo rtcVideo, VideoPixelFormat format) {
+        RTCVideoFrameConsumer(RTCEngine rtcVideo, VideoPixelFormat format) {
             this.rtcVideo = rtcVideo;
             this.rtcVideoFrameFormat = format;
         }
@@ -241,15 +238,17 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
          * @param degrees image rotation degrees
          */
         private void pushRGBAToRTC(ByteBuffer source, int width, int height, int degrees) {
-            CpuBufferVideoFrameBuilder builder = new CpuBufferVideoFrameBuilder(VideoPixelFormat.RGBA)
-                    .setWidth(width)
-                    .setHeight(height)
-                    .setRotation(toRotation(degrees))
-                    .setTimeStampUs(System.nanoTime())
-                    .setPlaneData(0, source)
-                    .setPlaneStride(0, width * 4);
-
-            rtcVideo.pushExternalVideoFrame(builder.build());
+            VideoFrameData frame = new VideoFrameData();
+            frame.bufferType = VideoBufferType.RAW_MEMORY;
+            frame.pixelFormat = VideoPixelFormat.RGBA;
+            frame.width = width;
+            frame.height = height;
+            frame.rotation = toRotation(degrees);
+            frame.timestampUs = System.nanoTime() / 1000;
+            frame.numberOfPlanes = 1;
+            frame.planeData = new ByteBuffer[]{source.slice()};
+            frame.planeStride = new int[]{width * 4};
+            rtcVideo.pushExternalVideoFrame(frame);
         }
 
         /**
@@ -280,20 +279,20 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
                 chromaU.put(u);
                 chromaV.put(v);
             }
+            chromaU.flip();
+            chromaV.flip();
 
-            CpuBufferVideoFrameBuilder builder = new CpuBufferVideoFrameBuilder(VideoPixelFormat.I420)
-                    .setWidth(width)
-                    .setHeight(height)
-                    .setRotation(toRotation(degrees))
-                    .setTimeStampUs(System.nanoTime())
-                    .setPlaneData(0, luma)
-                    .setPlaneStride(0, width)
-                    .setPlaneData(1, chromaU)
-                    .setPlaneStride(1, width / 2)
-                    .setPlaneData(2, chromaV)
-                    .setPlaneStride(2, width / 2);
-
-            rtcVideo.pushExternalVideoFrame(builder.build());
+            VideoFrameData frame = new VideoFrameData();
+            frame.bufferType = VideoBufferType.RAW_MEMORY;
+            frame.pixelFormat = VideoPixelFormat.I420;
+            frame.width = width;
+            frame.height = height;
+            frame.rotation = toRotation(degrees);
+            frame.timestampUs = System.nanoTime() / 1000;
+            frame.numberOfPlanes = 3;
+            frame.planeData = new ByteBuffer[]{luma, chromaU, chromaV};
+            frame.planeStride = new int[]{width, width / 2, width / 2};
+            rtcVideo.pushExternalVideoFrame(frame);
         }
 
         /**
@@ -319,18 +318,17 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
                 chromaUV.put(i, u);
                 chromaUV.put(i + 1, v);
             }
-
-            CpuBufferVideoFrameBuilder builder = new CpuBufferVideoFrameBuilder(VideoPixelFormat.NV12)
-                    .setWidth(width)
-                    .setHeight(height)
-                    .setRotation(toRotation(degrees))
-                    .setTimeStampUs(System.nanoTime())
-                    .setPlaneData(0, luma)
-                    .setPlaneStride(0, width)
-                    .setPlaneData(1, chromaUV)
-                    .setPlaneStride(1, width);
-
-            rtcVideo.pushExternalVideoFrame(builder.build());
+            VideoFrameData frame = new VideoFrameData();
+            frame.bufferType = VideoBufferType.RAW_MEMORY;
+            frame.pixelFormat = VideoPixelFormat.NV12;
+            frame.width = width;
+            frame.height = height;
+            frame.rotation = toRotation(degrees);
+            frame.timestampUs = System.nanoTime() / 1000;
+            frame.numberOfPlanes = 2;
+            frame.planeData = new ByteBuffer[]{luma, chromaUV};
+            frame.planeStride = new int[]{width, width};
+            rtcVideo.pushExternalVideoFrame(frame);
         }
 
         private static VideoRotation toRotation(int degrees) {
@@ -365,25 +363,25 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             runOnUiThread(() -> {
                 if (isPublish) {
-                    setRemoteRenderView(uid);
+                    setRemoteRenderView(streamId);
                 }
             });
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
             runOnUiThread(() -> {
                 if (isPublish) {
-                    setRemoteRenderView(uid);
+                    setRemoteRenderView(streamId);
                 }
             });
         }
     };
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
     };
 
     @Override
@@ -400,6 +398,6 @@ public class CustomVideoCaptureActivity extends ExampleBaseActivity {
         }
 
         rtcVideo = null;
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
     }
 }
