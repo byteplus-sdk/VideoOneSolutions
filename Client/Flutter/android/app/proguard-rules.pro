@@ -1,0 +1,45 @@
+# 点播模块
+-keep class com.ss.ttm.** {*;} 
+-keep class com.ss.ttvideoengine.** {*;} 
+-keep class com.ss.mediakit.** {*;} 
+-keep class com.ss.texturerender.** {*;}
+-keep class com.bytedance.**{*;}
+-keep class com.pandora.ttlicense2.**{*;}
+-keep class com.pandora.common.applog.**{*;}
+-keep class com.pandora.vod.VodSDK {*;} 
+-keep class com.bytertc.volcbaselog.VolcBaseLogConfig{*;}
+-keep class com.bytertc.volcbaselog.VolcBaseLogNative{*;}
+
+# release
+-dontwarn com.bytedance.bmf_mods_api.VqscoreLiveCallbackAPI
+-dontwarn com.bytedance.bmf_mods_api.VqscoreProcessCallbackAPI
+-dontwarn com.bytedance.bmf_mods_lite_api.SharpenApi
+-dontwarn com.bytedance.bmf_mods_lite_api.SuperResolutionLiteApi
+-dontwarn com.bytedance.bmf_mods_lite_api.bean.MultiScaleParams
+-dontwarn com.bytedance.bmf_mods_lite_api.bean.OesParams
+-dontwarn com.bytedance.bmf_mods_lite_api.bean.RoiParams
+-dontwarn com.bytedance.bmf_mods_lite_api.bean.SRConfig$Builder
+-dontwarn com.bytedance.bmf_mods_lite_api.bean.SRConfig
+-dontwarn com.bytedance.bmf_mods_lite_api.bean.SharpLevelParams
+-dontwarn com.bytedance.bmf_mods_lite_api.callback.SRInitCallback
+-dontwarn com.bytedance.bpea.basics.Cert
+-dontwarn com.bytedance.crash.Ensure
+-dontwarn com.bytedance.crash.EnsureImpl
+-dontwarn com.bytedancehttpdns.httpdns.DnsResult
+-dontwarn com.bytedancehttpdns.httpdns.HttpDns
+-dontwarn com.bytedancehttpdns.httpdns.IHttpDnsDepend
+-dontwarn com.google.android.exoplayer2.util.Log
+-dontwarn com.google.gson.Gson
+-dontwarn com.google.gson.reflect.TypeToken
+-dontwarn com.ss.ttm.utils.InitConfig$Type
+-dontwarn com.ss.ugc.clientai.core.api.SmartInputData
+-dontwarn com.ss.ugc.clientai.core.api.SmartOutputData
+-dontwarn com.ss.ugc.clientai.core.api.SmartService
+-dontwarn com.ss.ugc.clientai.core.api.SmartServiceConfig
+-dontwarn com.ss.ugc.clientai.core.api.SmartServiceManager
+-dontwarn org.conscrypt.Conscrypt$Version
+-dontwarn org.conscrypt.Conscrypt
+-dontwarn org.conscrypt.ConscryptHostnameVerifier
+-dontwarn org.openjsse.javax.net.ssl.SSLParameters
+-dontwarn org.openjsse.javax.net.ssl.SSLSocket
+-dontwarn org.openjsse.net.ssl.OpenJSSE
