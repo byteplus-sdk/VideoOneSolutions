@@ -1,0 +1,119 @@
+PODS:
+  - byteplus_vod (0.0.1):
+    - byteplus_vod/premium (= 0.0.1)
+    - Flutter
+  - byteplus_vod/premium (0.0.1):
+    - Flutter
+    - TTSDKFramework/Player-SR (= 1.44.300.4-premium)
+  - connectivity_plus (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - device_info_plus (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - fluttertoast (0.0.2):
+    - Flutter
+    - Toast
+  - package_info_plus (0.4.5):
+    - Flutter
+  - RangersAppLog/Core (6.16.9):
+    - RangersAppLog/Encryptor/VOLC
+  - RangersAppLog/Encryptor/VOLC (6.16.9)
+  - RangersAppLog/Host/SG (6.16.9):
+    - RangersAppLog/Core
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - Toast (4.1.1)
+  - TTSDKFramework/BMF (1.44.300.4-premium):
+    - TTSDKFramework/Core
+  - TTSDKFramework/Core (1.44.300.4-premium):
+    - RangersAppLog/Core (~> 6.16.2)
+    - RangersAppLog/Host/SG (~> 6.16.2)
+  - TTSDKFramework/HttpDNS (1.44.300.4-premium)
+  - TTSDKFramework/Player (1.44.300.4-premium):
+    - TTSDKFramework/Core
+    - TTSDKFramework/HttpDNS
+    - TTSDKFramework/PlayerCore/Normal
+    - TTSDKFramework/Reachability
+    - TTSDKFramework/TopSignature
+    - TTSDKFramework/VCN
+    - TTSDKFramework/VolcLog
+  - TTSDKFramework/Player-SR (1.44.300.4-premium):
+    - TTSDKFramework/BMF
+    - TTSDKFramework/Player
+  - TTSDKFramework/PlayerCore/Base (1.44.300.4-premium):
+    - TTSDKFramework/Core
+    - TTSDKFramework/Tools
+  - TTSDKFramework/PlayerCore/Normal (1.44.300.4-premium):
+    - TTSDKFramework/PlayerCore/Base
+    - TTSDKFramework/TTFFmpeg/Normal
+    - TTSDKFramework/VideoProcessor
+  - TTSDKFramework/Reachability (1.44.300.4-premium)
+  - TTSDKFramework/SSL (1.44.300.4-premium)
+  - TTSDKFramework/Tools (1.44.300.4-premium):
+    - TTSDKFramework/SSL
+  - TTSDKFramework/TopSignature (1.44.300.4-premium)
+  - TTSDKFramework/TTFFmpeg/Base (1.44.300.4-premium):
+    - TTSDKFramework/Tools
+  - TTSDKFramework/TTFFmpeg/Normal (1.44.300.4-premium):
+    - TTSDKFramework/TTFFmpeg/Base
+  - TTSDKFramework/VCN (1.44.300.4-premium)
+  - TTSDKFramework/VideoProcessor (1.44.300.4-premium)
+  - TTSDKFramework/VolcLog (1.44.300.4-premium):
+    - TTSDKFramework/SSL
+  - wakelock_plus (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - byteplus_vod (from `.symlinks/plugins/byteplus_vod/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - Flutter (from `Flutter`)
+  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
+
+SPEC REPOS:
+  https://github.com/byteplus-sdk/byteplus-specs.git:
+    - TTSDKFramework
+  https://github.com/volcengine/volcengine-specs.git:
+    - RangersAppLog
+  trunk:
+    - Toast
+
+EXTERNAL SOURCES:
+  byteplus_vod:
+    :path: ".symlinks/plugins/byteplus_vod/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/darwin"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
+  Flutter:
+    :path: Flutter
+  fluttertoast:
+    :path: ".symlinks/plugins/fluttertoast/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  wakelock_plus:
+    :path: ".symlinks/plugins/wakelock_plus/ios"
+
+SPEC CHECKSUMS:
+  byteplus_vod: ab397100f45c5f11771d25fcfc1d1b89e4fbf649
+  connectivity_plus: 2256d3e20624a7749ed21653aafe291a46446fee
+  device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  fluttertoast: 76fea30fcf04176325f6864c87306927bd7d2038
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
+  RangersAppLog: d4fa640a806e5fef583b07bea2f610684e81161e
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
+  TTSDKFramework: f4a83641d771204f1b0fba5ad81c4ed27c400f69
+  wakelock_plus: 04623e3f525556020ebd4034310f20fe7fda8b49
+
+PODFILE CHECKSUM: 53b2db1141799cbebc86c946a3dcd216e6e51538
+
+COCOAPODS: 1.16.2

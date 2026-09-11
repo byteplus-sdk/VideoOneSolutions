@@ -1,0 +1,192 @@
+name: vod_flutter_mini_drama
+description: "A new Flutter project."
+
+# Prevent accidental publishing to pub.dev.
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  android_id: ^0.4.0
+  byteplus_vod: ^1.44.2-1
+  collection: ^1.18.0
+  connectivity_plus: ^6.1.0
+  crypto: ^3.0.6
+  device_info_plus: ^11.1.1
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_screenutil: ^5.9.3
+  fluttertoast: ^8.2.8
+  http: ^1.2.2
+  logger: ^2.5.0
+  shared_preferences: ^2.3.3
+  wakelock_plus: ^1.2.8
+  carousel_slider: ^5.0.0
+  lottie: ^3.2.0
+  intl: ^0.20.2
+  loader_overlay: ^4.0.4+1
+  visibility_detector: ^0.4.0+2
+  path_provider: ^2.1.5
+
+
+byteplus_vod:
+  sub_spec: premium
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Enable generation of localized Strings from arb files.
+  generate: true
+
+  assets:
+    # home
+    - assets/images/home/bg.png
+    - assets/images/home/2x/bg.png
+    - assets/images/home/3x/bg.png
+    - assets/images/home/logo.png
+    - assets/images/home/2x/logo.png
+    - assets/images/home/3x/logo.png
+    - assets/images/home/loginLogo.png
+    - assets/images/home/2x/loginLogo.png
+    - assets/images/home/3x/loginLogo.png
+    - assets/images/home/loginBg.png
+    - assets/images/home/2x/loginBg.png
+    - assets/images/home/3x/loginBg.png
+    - assets/images/home/back.png
+    - assets/images/home/2x/back.png
+    - assets/images/home/3x/back.png
+
+    - assets/images/home/poster/image1.png
+    - assets/images/home/poster/2x/image1.png
+    - assets/images/home/poster/3x/image1.png
+    - assets/images/home/poster/image2.png
+    - assets/images/home/poster/2x/image2.png
+    - assets/images/home/poster/3x/image2.png
+    - assets/images/home/poster/image3.png
+    - assets/images/home/poster/2x/image3.png
+    - assets/images/home/poster/3x/image3.png
+
+
+    # Add assets from the images directory to the application.
+    - assets/minidrama/common/like.png
+    - assets/minidrama/common/2x/like.png
+    - assets/minidrama/common/3x/like.png
+    - assets/minidrama/common/comment.png
+    - assets/minidrama/common/2x/comment.png
+    - assets/minidrama/common/3x/comment.png
+    - assets/minidrama/common/unlike.png
+    - assets/minidrama/common/2x/unlike.png
+    - assets/minidrama/common/3x/unlike.png
+    - assets/minidrama/common/unlikeComment.png
+    - assets/minidrama/common/fire.png
+    - assets/minidrama/common/2x/fire.png
+    - assets/minidrama/common/3x/fire.png
+    - assets/minidrama/common/video.png
+    - assets/minidrama/common/2x/video.png
+    - assets/minidrama/common/3x/video.png
+    - assets/minidrama/common/union.png
+    - assets/minidrama/common/2x/union.png
+    - assets/minidrama/common/3x/union.png
+    - assets/minidrama/common/series_icon.png
+    - assets/minidrama/common/2x/series_icon.png
+    - assets/minidrama/common/3x/series_icon.png
+    - assets/minidrama/common/living.png
+    - assets/minidrama/common/2x/living.png
+    - assets/minidrama/common/3x/living.png
+    - assets/minidrama/common/lock.png
+    - assets/minidrama/common/2x/lock.png
+    - assets/minidrama/common/3x/lock.png
+    - assets/minidrama/common/allow.png
+    - assets/minidrama/common/2x/allow.png
+    - assets/minidrama/common/3x/allow.png
+    - assets/minidrama/common/not_allow.png
+    - assets/minidrama/common/2x/not_allow.png
+    - assets/minidrama/common/3x/not_allow.png
+    - assets/minidrama/common/lock_video.png
+    - assets/minidrama/common/2x/lock_video.png
+    - assets/minidrama/common/3x/lock_video.png
+    - assets/minidrama/common/lock_ad.png
+    - assets/minidrama/common/2x/lock_ad.png
+    - assets/minidrama/common/3x/lock_ad.png
+    - assets/minidrama/common/mute.png
+    - assets/minidrama/common/2x/mute.png
+    - assets/minidrama/common/3x/mute.png
+    - assets/minidrama/common/lock_bt.png
+    - assets/minidrama/common/2x/lock_bt.png
+    - assets/minidrama/common/3x/lock_bt.png
+    - assets/minidrama/common/feed.png
+    - assets/minidrama/common/feedSelect.png
+    - assets/minidrama/common/home.png
+    - assets/minidrama/common/homeSelect.png
+    - assets/minidrama/common/drama.png
+
+    # common/player
+    - assets/minidrama/common/player/btn_play.png
+    - assets/minidrama/common/player/2x/btn_play.png
+    - assets/minidrama/common/player/3x/btn_play.png
+    - assets/minidrama/common/player/btn_pause.png
+    - assets/minidrama/common/player/2x/btn_pause.png
+    - assets/minidrama/common/player/3x/btn_pause.png
+    - assets/minidrama/common/player/fullscreen.png
+    - assets/minidrama/common/player/2x/fullscreen.png
+    - assets/minidrama/common/player/3x/fullscreen.png
+    - assets/minidrama/common/player/v_like.png
+    - assets/minidrama/common/player/2x/v_like.png
+    - assets/minidrama/common/player/3x/v_like.png
+    - assets/minidrama/common/player/v_unlike.png
+    - assets/minidrama/common/player/2x/v_unlike.png
+    - assets/minidrama/common/player/3x/v_unlike.png
+    - assets/minidrama/common/player/v_comment.png
+    - assets/minidrama/common/player/2x/v_comment.png
+    - assets/minidrama/common/player/3x/v_comment.png
+    - assets/minidrama/common/player/v_speed.png
+    - assets/minidrama/common/player/2x/v_speed.png
+    - assets/minidrama/common/player/3x/v_speed.png
+    - assets/minidrama/common/player/v_quantity.png
+    - assets/minidrama/common/player/2x/v_quantity.png
+    - assets/minidrama/common/player/3x/v_quantity.png
+    - assets/minidrama/common/player/series.png
+    - assets/minidrama/common/player/2x/series.png
+    - assets/minidrama/common/player/3x/series.png
+
+    # avatars
+    - assets/minidrama/avatars/avatar00.png
+    - assets/minidrama/avatars/avatar01.png
+    - assets/minidrama/avatars/avatar02.png
+    - assets/minidrama/avatars/avatar03.png
+    - assets/minidrama/avatars/avatar04.png
+    - assets/minidrama/avatars/avatar05.png
+    - assets/minidrama/avatars/avatar06.png
+    - assets/minidrama/avatars/avatar07.png
+    - assets/minidrama/avatars/avatar08.png
+    - assets/minidrama/avatars/avatar09.png
+    - assets/minidrama/avatars/avatar10.png
+    - assets/minidrama/avatars/avatar11.png
+    - assets/minidrama/avatars/avatar12.png
+    - assets/minidrama/avatars/avatar13.png
+    - assets/minidrama/avatars/avatar14.png
+    - assets/minidrama/avatars/avatar15.png
+    - assets/minidrama/avatars/avatar16.png
+    - assets/minidrama/avatars/avatar17.png
+    - assets/minidrama/avatars/avatar18.png
+    - assets/minidrama/avatars/avatar19.png
+
+    #licenses
+    - assets/minidrama/licenses/l-1301-ch-vod-a-698142.lic
+
+    #lotties
+    - assets/minidrama/lotties/like_icondata.json
+    - assets/minidrama/lotties/like_cancel.json
+
+  
