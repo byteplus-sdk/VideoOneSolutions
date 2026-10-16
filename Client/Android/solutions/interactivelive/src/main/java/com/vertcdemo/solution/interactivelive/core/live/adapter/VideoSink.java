@@ -6,19 +6,19 @@ package com.vertcdemo.solution.interactivelive.core.live.adapter;
 import androidx.core.util.Consumer;
 
 import com.ss.bytertc.engine.video.IVideoSink;
-import com.ss.bytertc.engine.video.VideoFrame;
+import com.ss.bytertc.engine.video.IVideoFrame;
 
 public class VideoSink implements IVideoSink {
-    private final Consumer<VideoFrame> mConsumer;
+    private final Consumer<IVideoFrame> mConsumer;
 
-    public VideoSink(Consumer<VideoFrame> consumer) {
+    public VideoSink(Consumer<IVideoFrame> consumer) {
         mConsumer = consumer;
     }
 
     @Override
-    public void onFrame(VideoFrame frame) {
+    public void onFrame(IVideoFrame frame) {
         mConsumer.accept(frame);
-        frame.release();
+        frame.releaseRef();
     }
 
     @Override

@@ -7,16 +7,14 @@ import android.view.TextureView;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.data.VideoSourceType;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
-import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.RTCRoomStats;
 import com.vertc.api.example.R;
 import com.vertc.api.example.base.ExampleBaseActivity;
@@ -31,7 +29,7 @@ public class CustomVideoEncodeActivity extends ExampleBaseActivity {
 
     private static final String TAG = "EncodeVideoFrame";
 
-    RTCVideo rtcVideo;
+    RTCEngine rtcVideo;
     RTCRoom rtcRoom;
     boolean isJoined;
     private String roomID;
@@ -57,7 +55,7 @@ public class CustomVideoEncodeActivity extends ExampleBaseActivity {
         videoCaptureCamera = new VideoCaptureCamera(rtcVideo, textureView);
         textureView.setSurfaceTextureListener(videoCaptureCamera);
 
-        rtcVideo.setVideoSourceType(StreamIndex.STREAM_INDEX_MAIN, VideoSourceType.VIDEO_SOURCE_TYPE_ENCODED_WITHOUT_SIMULCAST);
+        rtcVideo.setVideoSourceType(VideoSourceType.VIDEO_SOURCE_TYPE_ENCODED_WITHOUT_SIMULCAST);
         int ret = rtcVideo.setExternalVideoEncoderEventHandler(videoCaptureCamera);
         Log.i(TAG, "handler ret: " + ret);
     }
@@ -95,16 +93,17 @@ public class CustomVideoEncodeActivity extends ExampleBaseActivity {
         binding.localViewContainer.addView(textureView);
     }
 
-    private void setRemoteRenderView(String uid) {
+    private void setRemoteRenderView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
         TextureView remoteTextureView = new TextureView(this);
         binding.remoteViewContainer.removeAllViews();
         binding.remoteViewContainer.addView(remoteTextureView);
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = remoteTextureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_MAIN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
     }
 
     private void joinRoom(String roomId) {
@@ -119,7 +118,7 @@ public class CustomVideoEncodeActivity extends ExampleBaseActivity {
             RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
                     isAutoPublish, isAutoPublish,
                     isAutoSubscribeAudio, isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -146,25 +145,25 @@ public class CustomVideoEncodeActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    setRemoteRenderView(uid);
+                    setRemoteRenderView(streamId);
                 });
             }
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    setRemoteRenderView(uid);
+                    setRemoteRenderView(streamId);
                 });
             }
         }
     };
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
     };
 
     @Override
@@ -181,6 +180,6 @@ public class CustomVideoEncodeActivity extends ExampleBaseActivity {
         if (videoCaptureCamera != null) {
             videoCaptureCamera.releaseCamera();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
     }
 }

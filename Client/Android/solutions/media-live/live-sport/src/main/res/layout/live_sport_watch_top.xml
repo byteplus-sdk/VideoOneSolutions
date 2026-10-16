@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Top region of the Live Watch page (T2.1).
+
+  Layout (Figma node 10777:4711 + 10777:4725):
+    - Left pill (180×36) : avatar + anchor name + heat metric + Follow button
+    - Right (24×24)      : close icon
+
+  Both elements are centered vertically inside the 56dp top region.
+
+  Avatar / heat icon / anchor name are static demo data; the Follow button
+  toggles a local boolean (per TECH_DESIGN §5.7) until backend integration.
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/anchor_pill"
+        android:layout_width="180dp"
+        android:layout_height="36dp"
+        android:layout_gravity="start|top"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/live_sport_anchor_pill_bg">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/anchor_avatar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="2dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/live_sport_anchor_avatar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/LiveSportCircleAvatar"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/anchor_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="6dp"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="@string/live_sport_watch_anchor_name"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@id/btn_follow"
+            app:layout_constraintStart_toEndOf="@id/anchor_avatar"
+            app:layout_constraintTop_toTopOf="@id/anchor_avatar" />
+
+        <!-- Heat row: fire icon + popularity number (e.g. "386K popularity") -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@id/anchor_avatar"
+            app:layout_constraintStart_toEndOf="@id/anchor_avatar"
+            app:layout_constraintTop_toBottomOf="@id/anchor_name">
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/live_sport_ic_fire"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/anchor_heat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:text="@string/live_sport_watch_heat"
+                android:textColor="#E6FFFFFF"
+                android:textSize="10sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/live_sport_watch_heat_suffix"
+                android:textColor="#E6FFFFFF"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btn_follow"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/live_sport_btn_follow"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:minWidth="42dp"
+            android:paddingHorizontal="10dp"
+            android:text="@string/live_sport_watch_follow"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/btn_close"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="end|top"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="12dp"
+        android:contentDescription="@string/live_sport_watch_close"
+        android:src="@drawable/live_sport_ic_close" />
+
+</merge>

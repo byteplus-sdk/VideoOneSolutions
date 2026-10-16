@@ -26,8 +26,14 @@ import java.util.List;
 
 public class GestureLayer extends PlaybackEventLayer {
 
+    private boolean inCastingMode = false;
+
     boolean isActive(int scene) {
         return scene == PlayScene.SCENE_DETAIL || PlayScene.isFullScreenMode(scene);
+    }
+
+    public void setInCastingMode(boolean inCastingMode) {
+        this.inCastingMode = inCastingMode;
     }
 
     @Override
@@ -126,6 +132,11 @@ public class GestureLayer extends PlaybackEventLayer {
         final boolean active = isActive(playScene());
         for (VideoLayer layer : layers) {
             if (layer instanceof GestureCheckActive && !active) {
+                continue;
+            }
+            if (inCastingMode && layer instanceof PlayPauseLayer ||
+                    layer instanceof LockLayer
+            ) {
                 continue;
             }
 

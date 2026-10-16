@@ -10,15 +10,14 @@ import androidx.annotation.NonNull;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
 import com.ss.bytertc.engine.data.AudioChannel;
 import com.ss.bytertc.engine.data.AudioSampleRate;
 import com.ss.bytertc.engine.data.AudioSourceType;
-import com.ss.bytertc.engine.data.StreamIndex;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.RTCRoomStats;
 import com.ss.bytertc.engine.utils.AudioFrame;
@@ -48,7 +47,7 @@ public class CustomAudioCaptureActivity extends ExampleBaseActivity {
 
     private boolean isJoined;
 
-    private RTCVideo rtcVideo;
+    private RTCEngine rtcVideo;
     private RTCRoom rtcRoom;
 
     private byte[] pcmData;
@@ -116,7 +115,7 @@ public class CustomAudioCaptureActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
 
@@ -140,7 +139,7 @@ public class CustomAudioCaptureActivity extends ExampleBaseActivity {
     }
 
     static class PushAudioFrameTask implements Runnable {
-        private final RTCVideo rtcVideo;
+        private final RTCEngine rtcVideo;
 
         private boolean isFirstPush = true;
 
@@ -151,7 +150,7 @@ public class CustomAudioCaptureActivity extends ExampleBaseActivity {
 
         private final AudioFrame audioFrame;
 
-        public PushAudioFrameTask(RTCVideo rtcVideo, byte[] pcmData) {
+        public PushAudioFrameTask(RTCEngine rtcVideo, byte[] pcmData) {
             this.rtcVideo = rtcVideo;
             this.pcmData = pcmData;
             this.dataLength = pcmData.length;
@@ -199,7 +198,7 @@ public class CustomAudioCaptureActivity extends ExampleBaseActivity {
             RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
                     isAutoPublish, isAutoPublish,
                     isAutoSubscribeAudio, isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -211,7 +210,7 @@ public class CustomAudioCaptureActivity extends ExampleBaseActivity {
         }
     }
 
-    IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
     };
 
     IRTCRoomEventHandler rtcRoomEventHandler = new IRTCRoomEventHandler() {
@@ -229,8 +228,8 @@ public class CustomAudioCaptureActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserJoined(UserInfo userInfo, int elapsed) {
-            super.onUserJoined(userInfo, elapsed);
+        public void onUserJoined(UserInfo userInfo) {
+            super.onUserJoined(userInfo);
             ToastUtil.showToast(CustomAudioCaptureActivity.this, "onUserJoined, uid:" + userInfo.getUid());
         }
 
@@ -255,7 +254,7 @@ public class CustomAudioCaptureActivity extends ExampleBaseActivity {
             rtcVideo.stopVideoCapture();
         }
 
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
     }
 
     static byte[] readPcmContent(@NonNull Context context) {

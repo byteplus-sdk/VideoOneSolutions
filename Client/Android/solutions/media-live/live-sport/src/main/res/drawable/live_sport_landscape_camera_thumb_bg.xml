@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Rounded mask for the landscape multi-camera thumbnail (Figma node
+  10796:42063, 4dp corners). Used as the ImageView background together with
+  android:clipToOutline="true" so the cover image is clipped to rounded corners.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#000000" />
+    <corners android:radius="4dp" />
+</shape>

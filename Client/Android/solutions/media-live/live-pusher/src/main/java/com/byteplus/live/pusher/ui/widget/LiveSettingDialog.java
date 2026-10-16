@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -39,12 +38,10 @@ import com.byteplus.live.pusher.ui.activities.LivePushActivity;
 import com.byteplus.live.settings.PreferenceUtil;
 import com.google.zxing.integration.android.IntentIntegrator;
 
+
 public class LiveSettingDialog extends SettingsDialog {
 
     private final Context mContext;
-
-    private static final String TAG = "LiveSettingDialog";
-
 
     private final LivePusher mLivePusherAPI;
     private EditText mSEIEditText;
@@ -258,12 +255,12 @@ public class LiveSettingDialog extends SettingsDialog {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.i(TAG, "Scanning input url ...");
+                android.util.Log.i("Pusher", "Scanning input url ...");
                 IntentIntegrator integrator = new IntentIntegrator((Activity) mContext);
                 integrator.setOrientationLocked(false);
                 integrator.setRequestCode(REQUEST_CODE_SCAN_SEI);
                 integrator.initiateScan();
-                Log.i(TAG, "Scanning input url done.");
+                android.util.Log.i("Pusher", "Scanning input url done.");
             }
         }, 500);
         this.dismiss();

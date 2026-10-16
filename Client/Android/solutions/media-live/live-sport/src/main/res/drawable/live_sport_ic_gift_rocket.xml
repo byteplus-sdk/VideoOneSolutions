@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fake gift: rocket. Vector placeholder. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <path
+        android:fillColor="#E8EDF5"
+        android:pathData="M20,4 C25,9 27,16 27,22 L13,22 C13,16 15,9 20,4 Z" />
+    <path
+        android:fillColor="#4D8CFF"
+        android:pathData="M13,22 L9,28 L13,27 Z" />
+    <path
+        android:fillColor="#4D8CFF"
+        android:pathData="M27,22 L31,28 L27,27 Z" />
+    <path
+        android:fillColor="#FF8A3D"
+        android:pathData="M17,27 L20,36 L23,27 Z" />
+    <path
+        android:fillColor="#4D6DFF"
+        android:pathData="M20,13 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+</vector>

@@ -21,10 +21,12 @@ import com.byteplus.vod.scenekit.VideoSettings;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
 import com.byteplus.vod.scenekit.data.page.Page;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
+import com.byteplus.vod.settingskit.CenteredToast;
 import com.byteplus.vodcommon.data.remote.RemoteApi;
 import com.byteplus.vodcommon.data.remote.api2.GetFeedStreamApi;
 import com.byteplus.vodcommon.data.remote.api2.Params;
 import com.byteplus.vodcommon.data.remote.api2.model.GetFeedStreamRequest;
+import com.byteplus.vodfunction.R;
 import com.vertcdemo.ui.dialog.SolutionProgressDialog;
 
 import java.io.Serializable;
@@ -61,6 +63,9 @@ public class VodFunctionDispatchActivity extends AppCompatActivity {
             case PREVENT_RECORDING:
                 dispatchToPreventRecording();
                 break;
+            case CASTING:
+                dispatchToCasting();
+                break;
             default:
                 finish();
                 Log.d(TAG, "Unknown function: " + function);
@@ -94,6 +99,12 @@ public class VodFunctionDispatchActivity extends AppCompatActivity {
         request.antiScreenshotAndRecord = true;
         mRemoteApi.getFeedStream(request, new MyCallback(this, Function.PREVENT_RECORDING));
     }
+
+    void dispatchToCasting() {
+        GetFeedStreamRequest request = createRequest();
+        mRemoteApi.getFeedStream(request, new MyCallback(this, Function.CASTING));
+    }
+
 
     static class MyCallback implements RemoteApi.Callback<Page<VideoItem>> {
         private final WeakReference<VodFunctionDispatchActivity> mActivityRef;
@@ -134,7 +145,6 @@ public class VodFunctionDispatchActivity extends AppCompatActivity {
             VideoItem videoItem = videoItems.get(0);
             VideoItem.tag(videoItem, PlayScene.map(PlayScene.SCENE_FEED), null);
             intent.putExtra(EXTRA_VIDEO_ITEM, videoItem);
-
             intent.putExtra(EXTRA_FUNCTION, mFunction);
             activity.startActivity(intent);
 
@@ -154,6 +164,9 @@ public class VodFunctionDispatchActivity extends AppCompatActivity {
                 return;
             }
 
+            // Surface the failure; otherwise the loading dialog just disappears with the
+            // dispatcher activity and the user is left on the menu with no feedback.
+            CenteredToast.show(activity, activity.getString(R.string.vevod_function_load_failed));
             activity.finish();
         }
     }

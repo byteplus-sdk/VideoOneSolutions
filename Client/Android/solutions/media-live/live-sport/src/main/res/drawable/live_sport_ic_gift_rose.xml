@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fake gift: rose. Vector placeholder, tinted via its own fill colours. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <path
+        android:fillColor="#2FAE60"
+        android:pathData="M19,20 C13,22 11,30 12,36 L15,36 C15,30 17,24 21,22 Z" />
+    <path
+        android:fillColor="#FF4D6D"
+        android:pathData="M20,6 C15,6 11,10 11,15 C11,19 14,22 20,24 C26,22 29,19 29,15 C29,10 25,6 20,6 Z" />
+    <path
+        android:fillColor="#FF8095"
+        android:pathData="M20,9 C17,9 15,11 15,14 C15,17 17,19 20,20 C23,19 25,17 25,14 C25,11 23,9 20,9 Z" />
+</vector>

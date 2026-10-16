@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Close ("X") icon in dark stroke for use on white surfaces (settings panel
+  header, protocol picker header).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M7.6 7.6 L16.4 16.4"
+        android:strokeWidth="1.5"
+        android:strokeColor="#1D2129"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M16.4 7.6 L7.6 16.4"
+        android:strokeWidth="1.5"
+        android:strokeColor="#1D2129"
+        android:strokeLineCap="round" />
+</vector>

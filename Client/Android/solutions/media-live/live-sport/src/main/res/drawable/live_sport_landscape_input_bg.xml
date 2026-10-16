@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Comment input background for the landscape bottom bar (Figma fill_G1EX0S):
+  19dp corners + rgba(255,255,255,0.2). Backdrop blur from the design is not
+  reproduced (view-level blur is costly); the flat scrim reads the same over
+  the dark video.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#33FFFFFF" />
+    <corners android:radius="19dp" />
+</shape>

@@ -9,8 +9,8 @@ import android.media.MediaFormat;
 import android.util.Log;
 import android.view.TextureView;
 
-import com.ss.bytertc.engine.RTCVideo;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.RTCEngine;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.data.VideoCodecType;
 import com.ss.bytertc.engine.data.VideoPictureType;
 import com.ss.bytertc.engine.data.VideoRotation;
@@ -31,10 +31,12 @@ public class VideoCaptureCamera extends IExternalVideoEncoderEventHandler implem
     private Camera camera;
     private MediaCodec mediaCodec;
     private final TextureView textureView;
-    private final RTCVideo rtcVideo;
+    private final RTCEngine rtcVideo;
     private boolean isStart = false;
+    private int mWidth = VIDEO_WIDTH;
+    private int mHeight = VIDEO_HEIGHT;
 
-    public VideoCaptureCamera(RTCVideo rtcVideo, TextureView textureView) {
+    public VideoCaptureCamera(RTCEngine rtcVideo, TextureView textureView) {
         this.textureView = textureView;
         this.rtcVideo = rtcVideo;
     }
@@ -42,7 +44,7 @@ public class VideoCaptureCamera extends IExternalVideoEncoderEventHandler implem
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         // Process the camera preview frame here
-        byte[] i420bytes = NV21ToNV21(data, VIDEO_WIDTH, VIDEO_HEIGHT);
+        byte[] i420bytes = NV21ToNV21(data, mWidth, mHeight);
         if (isStart) {
             encodeAndPushFrame(i420bytes);
         }
@@ -51,10 +53,47 @@ public class VideoCaptureCamera extends IExternalVideoEncoderEventHandler implem
     public void openCamera() {
         camera = Camera.open();
         Camera.Parameters parameters = camera.getParameters();
-        Camera.Size previewSize = parameters.getPreviewSize();
+
+        Camera.Size bestSize = null;
+        try {
+            for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
+                if (bestSize == null) {
+                    bestSize = size;
+                    continue;
+                }
+                int currentDiff = Math.abs(size.width * size.height - VIDEO_WIDTH * VIDEO_HEIGHT);
+                int bestDiff = Math.abs(bestSize.width * bestSize.height - VIDEO_WIDTH * VIDEO_HEIGHT);
+                if (currentDiff < bestDiff) {
+                    bestSize = size;
+                }
+            }
+        } catch (Exception ignore) {
+        }
+
+        if (bestSize != null) {
+            mWidth = bestSize.width;
+            mHeight = bestSize.height;
+            parameters.setPreviewSize(mWidth, mHeight);
+        } else {
+            Camera.Size previewSize = parameters.getPreviewSize();
+            if (previewSize != null) {
+                mWidth = previewSize.width;
+                mHeight = previewSize.height;
+            }
+        }
+
         parameters.setPreviewFormat(ImageFormat.NV21);
-        parameters.setPreviewSize(VIDEO_WIDTH, VIDEO_HEIGHT);
-        camera.setParameters(parameters);
+        try {
+            camera.setParameters(parameters);
+        } catch (RuntimeException e) {
+            Camera.Parameters p = camera.getParameters();
+            Camera.Size previewSize = p.getPreviewSize();
+            if (previewSize != null) {
+                mWidth = previewSize.width;
+                mHeight = previewSize.height;
+            }
+        }
+
         if (textureView != null) {
             textureView.setRotation(90);
         }
@@ -82,7 +121,7 @@ public class VideoCaptureCamera extends IExternalVideoEncoderEventHandler implem
     private void initMediaCodec() {
         try {
             mediaCodec = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_VIDEO_AVC);
-            MediaFormat format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, VIDEO_WIDTH, VIDEO_HEIGHT);
+            MediaFormat format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, mWidth, mHeight);
             format.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE);
             format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
             format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar);
@@ -154,9 +193,7 @@ public class VideoCaptureCamera extends IExternalVideoEncoderEventHandler implem
             // pushExternalEncodedVideoFrame(streamIndex, videoIndex, encodedData);
             // or use VideoPictureType.fromId(1) to get enumeration value
             frameType = 1;
-
-            mEncodedBuffer = ByteBuffer.allocateDirect(
-                    configData.capacity() + bufferInfo.size);
+            mEncodedBuffer = ByteBuffer.allocateDirect(configData.capacity() + bufferInfo.size);
             configData.rewind();
             // If it is a keyframe, it is necessary to combine Codec-specific Data and keyframe data.
             mEncodedBuffer.put(configData);
@@ -182,19 +219,18 @@ public class VideoCaptureCamera extends IExternalVideoEncoderEventHandler implem
                 mEncodedBuffer,
                 bufferInfo.presentationTimeUs,
                 bufferInfo.presentationTimeUs,
-                VIDEO_WIDTH,
-                VIDEO_HEIGHT,
+                mWidth,
+                mHeight,
                 VideoCodecType.VIDEO_CODEC_TYPE_H264,
                 VideoPictureType.fromId(frameType),
                 VideoRotation.VIDEO_ROTATION_90);
-        rtcVideo.pushExternalEncodedVideoFrame(StreamIndex.STREAM_INDEX_MAIN, 0,  videoFrame);
+        rtcVideo.pushExternalEncodedVideoFrame(0, videoFrame);
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        // Initialize MediaCodec when the surface is available
-        mEncodedBuffer = ByteBuffer.allocateDirect(width * height * 3 / 2);
         openCamera();
+        mEncodedBuffer = ByteBuffer.allocateDirect(mWidth * mHeight * 3 / 2);
         initMediaCodec();
         startCameraPreview();
     }
@@ -217,27 +253,27 @@ public class VideoCaptureCamera extends IExternalVideoEncoderEventHandler implem
     }
 
     @Override
-    public void onStart(StreamIndex index) {
+    public void onStart(String streamId, StreamInfo streamInfo) {
         isStart = true;
     }
 
     @Override
-    public void onStop(StreamIndex index) {
+    public void onStop(String streamId, StreamInfo streamInfo) {
         isStart = false;
     }
 
     @Override
-    public void onRateUpdate(StreamIndex streamIndex, int videoIndex, int fps, int bitrateKbps) {
+    public void onRateUpdate(String streamId, StreamInfo streamInfo, int videoIndex, int fps, int bitrateKbps) {
 
     }
 
     @Override
-    public void onRequestKeyFrame(StreamIndex streamIndex, int videoIndex) {
+    public void onRequestKeyFrame(String streamId, StreamInfo streamInfo, int videoIndex) {
 
     }
 
     @Override
-    public void onActiveVideoLayer(StreamIndex streamIndex, int videoIndex, boolean active) {
+    public void onActiveVideoLayer(String streamId, StreamInfo streamInfo, int videoIndex, boolean active) {
 
     }
 

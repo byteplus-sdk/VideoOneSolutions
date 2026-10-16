@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fake gift: thumbs up. Vector placeholder. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <path
+        android:fillColor="#4D8CFF"
+        android:pathData="M14,18 L19,7 C21,6 23,7 23,10 L22,17 L31,17 C33,17 34,19 33,21 L30,31 C29.4,33 28,34 26,34 L14,34 Z" />
+    <path
+        android:fillColor="#3A6FD8"
+        android:pathData="M7,18 L14,18 L14,34 L7,34 Z" />
+</vector>

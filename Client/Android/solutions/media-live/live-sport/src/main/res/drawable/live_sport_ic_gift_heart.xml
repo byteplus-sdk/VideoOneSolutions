@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fake gift: heart. Vector placeholder (red, distinct from the like heart). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <path
+        android:fillColor="#FF4D6D"
+        android:pathData="M20,34 C20,34 5,24 5,14.5 C5,10 8.5,6.5 13,6.5 C16,6.5 18.7,8 20,10.5 C21.3,8 24,6.5 27,6.5 C31.5,6.5 35,10 35,14.5 C35,24 20,34 20,34 Z" />
+</vector>

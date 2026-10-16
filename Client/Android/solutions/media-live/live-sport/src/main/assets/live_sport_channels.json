@@ -1,0 +1,58 @@
+[
+  {
+    "id": "A",
+    "name": "A组",
+    "strategy": "FLV_ONLY",
+    "rtm_url": "http://pull-videoone.indiafcdn.com/live/sport_camera_a.sdp",
+    "low_latency_flv": true,
+    "abr": true,
+    "flv_streams": [
+      { "resolution": "uhd", "bitrate": 3200, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_a_uhd.flv" },
+      { "resolution": "hd", "bitrate": 2048, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_a_hd.flv" },
+      { "resolution": "sd", "bitrate": 1638, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_a_sd.flv" },
+      { "resolution": "ld", "bitrate": 1024, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_a_ld.flv" }
+    ]
+  },
+  {
+    "id": "B",
+    "name": "B组",
+    "strategy": "FLV_ONLY",
+    "rtm_url": "http://pull-videoone.indiafcdn.com/live/sport_camera_b.sdp",
+    "low_latency_flv": true,
+    "abr": true,
+    "flv_streams": [
+      { "resolution": "uhd", "bitrate": 3200, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_b_uhd.flv" },
+      { "resolution": "hd", "bitrate": 2048, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_b_hd.flv" },
+      { "resolution": "sd", "bitrate": 1638, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_b_sd.flv" },
+      { "resolution": "ld", "bitrate": 1024, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_b_ld.flv" }
+    ]
+  },
+  {
+    "id": "C",
+    "name": "C组",
+    "strategy": "FLV_ONLY",
+    "rtm_url": "http://pull-videoone.indiafcdn.com/live/sport_camera_c.sdp",
+    "low_latency_flv": true,
+    "abr": true,
+    "flv_streams": [
+      { "resolution": "uhd", "bitrate": 3200, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_c_uhd.flv" },
+      { "resolution": "hd", "bitrate": 2048, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_c_hd.flv" },
+      { "resolution": "sd", "bitrate": 1638, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_c_sd.flv" },
+      { "resolution": "ld", "bitrate": 1024, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_c_ld.flv" }
+    ]
+  },
+  {
+    "id": "D",
+    "name": "D组",
+    "strategy": "FLV_ONLY",
+    "rtm_url": "http://pull-videoone.indiafcdn.com/live/sport_camera_d.sdp",
+    "low_latency_flv": true,
+    "abr": true,
+    "flv_streams": [
+      { "resolution": "uhd", "bitrate": 3200, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_d_uhd.flv" },
+      { "resolution": "hd", "bitrate": 2048, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_d_hd.flv" },
+      { "resolution": "sd", "bitrate": 1638, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_d_sd.flv" },
+      { "resolution": "ld", "bitrate": 1024, "url": "http://pull-videoone.indiafcdn.com/live/sport_camera_d_ld.flv" }
+    ]
+  }
+]

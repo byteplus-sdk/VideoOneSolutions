@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Blue variant of live_sport_switch_track, used only by the Compare page's
+  Enhancement tab (switch_sr / switch_sharpen). Same recipe as the green track,
+  only the checked colour differs.
+   - Checked: brand blue #1664FF
+   - Unchecked: light grey #E5E6EB (Arco neutral fill 3)
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#1664FF" />
+            <corners android:radius="20dp" />
+            <size android:height="20dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#E5E6EB" />
+            <corners android:radius="20dp" />
+            <size android:height="20dp" />
+        </shape>
+    </item>
+</selector>

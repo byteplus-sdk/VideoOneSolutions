@@ -16,14 +16,15 @@ import com.byteplus.aichat.settings.IntegrationMode
 import com.byteplus.aichat.settings.SettingsViewModel
 import com.ss.bytertc.engine.RTCRoom
 import com.ss.bytertc.engine.RTCRoomConfig
-import com.ss.bytertc.engine.RTCVideo
+import com.ss.bytertc.engine.RTCEngine
 import com.ss.bytertc.engine.UserInfo
 import com.ss.bytertc.engine.data.AudioPropertiesConfig
+import com.ss.bytertc.engine.data.EngineConfig
 import com.ss.bytertc.engine.data.RemoteAudioState
 import com.ss.bytertc.engine.data.RemoteAudioStateChangeReason
-import com.ss.bytertc.engine.data.RemoteStreamKey
+import com.ss.bytertc.engine.data.StreamInfo
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler
 import com.ss.bytertc.engine.type.ChannelProfile
 import com.ss.bytertc.engine.type.MediaStreamType
 import com.ss.bytertc.engine.type.StreamRemoveReason
@@ -50,7 +51,7 @@ private const val APP_KEY = com.vertcdemo.rtc.toolkit.BuildConfig.APP_KEY
 private const val APP_ID = com.vertcdemo.rtc.toolkit.BuildConfig.APP_KEY
 
 class AiChatViewModel(
-    private val context: Application,
+    private val appContext: Application,
     private val fragment: Fragment,
     private val rtcAppInfo: RTCAppInfo,
     private val settings: SettingsViewModel
@@ -58,9 +59,10 @@ class AiChatViewModel(
 
     private val chatApi = SolutionRetrofit.getApi(AiChatService::class.java)
 
-    private val videoHandler: IRTCVideoEventHandler = object : IRTCVideoEventHandler() {
+    private val videoHandler: IRTCEngineEventHandler = object : IRTCEngineEventHandler() {
         override fun onRemoteAudioStateChanged(
-            key: RemoteStreamKey?,
+            roomId: String?,
+            streamInfo: StreamInfo?,
             state: RemoteAudioState?,
             reason: RemoteAudioStateChangeReason?
         ) {
@@ -68,7 +70,7 @@ class AiChatViewModel(
                 TAG, "onRemoteAudioStateChanged. state : "
                     .plus(state).plus(" ,reason : ")
                     .plus(reason).plus(" ,user_id : ")
-                    .plus(key?.userId)
+                    .plus(streamInfo?.userId)
             )
         }
 
@@ -163,7 +165,7 @@ class AiChatViewModel(
             }
         }
 
-        override fun onUserJoined(userInfo: UserInfo?, elapsed: Int) {
+        override fun onUserJoined(userInfo: UserInfo?) {
             Log.d(TAG, String.format("onUserJoined: %s", userInfo?.uid))
             viewModelScope.launch(Dispatchers.Main) {
                 _startTime.value = SystemClock.uptimeMillis()
@@ -175,17 +177,17 @@ class AiChatViewModel(
             Log.d(TAG, String.format("onUserLeave: %s, reason : %d", uid, reason))
         }
 
-        override fun onUserPublishStreamAudio(roomId: String?, uid: String?, isPublish: Boolean) {
+        override fun onUserPublishStreamAudio(roomId: String?, info: StreamInfo?, isPublish: Boolean) {
             Log.d(
                 TAG,
-                String.format("onUserPublishStreamAudio: %s, isPublish : %b", uid, isPublish)
+                String.format("onUserPublishStreamAudio: %s, isPublish : %b", info?.userId, isPublish)
             )
         }
 
-        override fun onUserPublishStreamVideo(roomId: String?, uid: String?, isPublish: Boolean) {
+        override fun onUserPublishStreamVideo(roomId: String?, info: StreamInfo?, isPublish: Boolean) {
             Log.d(
                 TAG,
-                String.format("onUserPublishStreamVideo: %s, isPublish : %b", uid, isPublish)
+                String.format("onUserPublishStreamVideo: %s, isPublish : %b", info?.userId, isPublish)
             )
         }
 
@@ -194,7 +196,7 @@ class AiChatViewModel(
     private val _state = MutableLiveData(AiState.NONE)
     private val _hadHungUp: AtomicBoolean = AtomicBoolean(false)
 
-    private var rtcVideo: RTCVideo? = null
+    private var rtcVideo: RTCEngine? = null
         set(value) {
             field?.stopAudioCapture()
             field = value
@@ -317,7 +319,7 @@ class AiChatViewModel(
         lastLocalSpeechTime = 0
         hasListeningState = false
         rtcRoom = null
-        RTCVideo.destroyRTCVideo()
+        RTCEngine.destroyRTCEngine()
         rtcVideo = null
         switchState(AiState.NONE)
         fragment.findNavController().popBackStack()
@@ -442,21 +444,27 @@ class AiChatViewModel(
     }
 
     private fun joinRTCRoom(roomId: String, userId: String, token: String) {
-        rtcVideo = RTCVideo.createRTCVideo(context, rtcAppInfo.appId, videoHandler, null, null)
-        rtcVideo!!.startAudioCapture()
+        val engineConfig = EngineConfig().apply {
+            this.context = appContext
+            this.appID = rtcAppInfo.appId
+            this.isGameScene = false
+        }
+        rtcVideo = RTCEngine.createRTCEngine(engineConfig, videoHandler).apply {
+            startAudioCapture()
+        }
 
         val audioPropertiesConfig = AudioPropertiesConfig(700)
         rtcVideo!!.enableAudioPropertiesReport(audioPropertiesConfig)
 
         val userInfo = UserInfo(userId, null)
         val roomConfig = RTCRoomConfig(
-            ChannelProfile.CHANNEL_PROFILE_CHAT,
-            false, false,
+            ChannelProfile.CHANNEL_PROFILE_CHAT_ROOM,
+            true, false,
             true, false
         )
         rtcRoom = rtcVideo!!.createRTCRoom(roomId).apply {
             setRTCRoomEventHandler(roomHandler)
-            joinRoom(token, userInfo, roomConfig)
+            joinRoom(token, userInfo, true, roomConfig)
             publishStreamAudio(true)
         }
     }

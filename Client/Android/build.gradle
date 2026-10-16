@@ -8,6 +8,8 @@ ext {
 
 buildscript {
     repositories {
+        // Query the internal mirror first to avoid HTTP 429 (Too Many Requests)
+        // throttling from public Maven Central on shared CI egress IPs.
         google()
         mavenCentral()
     }

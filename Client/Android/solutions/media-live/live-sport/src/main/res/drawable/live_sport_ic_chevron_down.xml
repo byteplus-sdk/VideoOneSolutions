@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Down chevron used by the protocol Select pill (Figma node 10904:17099).
+  12dp viewport, stroke #80838A.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="12dp"
+    android:height="12dp"
+    android:viewportWidth="12"
+    android:viewportHeight="12">
+    <path
+        android:pathData="M2.5 4.5 L6 8 L9.5 4.5"
+        android:strokeWidth="1.2"
+        android:strokeColor="#80838A"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

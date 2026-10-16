@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  "Locked" state icon for the landscape screen-lock button. Same body and
+  keyhole as live_sport_ic_lock_open, but the open shackle is mirrored to arc
+  up on the LEFT (the open icon arcs up on the right). Viewport 26×29 matches
+  the Figma export; rendered at 24dp.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="26"
+    android:viewportHeight="29">
+    <path
+        android:pathData="M7.714,8.429 L17.667,8.429 A2.714,2.714 0 0 1 20.381,11.143 L20.381,19.286 A2.714,2.714 0 0 1 17.667,22 L7.714,22 A2.714,2.714 0 0 1 5,19.286 L5,11.143 A2.714,2.714 0 0 1 7.714,8.429 Z"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M12.69 13.582 V17.427"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M17.836 8.429 C18.262 5.088 15.737 3 13.149 3 C11.806 3 10.595 3.554 9.74 4.441"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

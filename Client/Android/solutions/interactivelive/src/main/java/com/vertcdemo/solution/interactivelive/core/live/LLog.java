@@ -6,7 +6,7 @@ package com.vertcdemo.solution.interactivelive.core.live;
 import android.util.Log;
 
 public class LLog {
-    private static final String TAG = "LiveCore";
+    private static final String TAG = "InteractiveLive";
 
     public static void d(String tag, String message) {
         Log.d(TAG, "[" + tag + "] " + message);

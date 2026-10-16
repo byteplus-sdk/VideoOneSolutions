@@ -11,24 +11,26 @@ import androidx.annotation.NonNull;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
-import com.ss.bytertc.engine.live.ByteRTCStreamMixingEvent;
-import com.ss.bytertc.engine.live.ByteRTCStreamMixingType;
-import com.ss.bytertc.engine.live.ByteRTCTranscoderErrorCode;
-import com.ss.bytertc.engine.live.IMixedStreamObserver;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
+import com.ss.bytertc.engine.live.MixedStreamLayoutRegionConfig;
 import com.ss.bytertc.engine.live.MixedStreamConfig;
-import com.ss.bytertc.engine.live.MixedStreamType;
+import com.ss.bytertc.engine.live.MixedStreamMediaType;
+import com.ss.bytertc.engine.live.MixedStreamPushTargetConfig;
+import com.ss.bytertc.engine.live.MixedStreamPushTargetType;
+import com.ss.bytertc.engine.live.MixedStreamRenderMode;
+import com.ss.bytertc.engine.live.MixedStreamTaskErrorCode;
+import com.ss.bytertc.engine.live.MixedStreamTaskEvent;
+import com.ss.bytertc.engine.live.MixedStreamTaskInfo;
+import com.ss.bytertc.engine.live.MixedStreamVideoType;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.MediaStreamType;
 import com.ss.bytertc.engine.type.RTCRoomStats;
 import com.ss.bytertc.engine.type.StreamRemoveReason;
-import com.ss.bytertc.engine.video.VideoFrame;
 import com.vertc.api.example.R;
 import com.vertc.api.example.base.ExampleBaseActivity;
 import com.vertc.api.example.base.ExampleCategory;
@@ -69,7 +71,7 @@ public class CDNStreamActivity extends ExampleBaseActivity {
     @NonNull
     private List<RemoteView> mRemoteViews = Collections.emptyList();
     private final List<String> allRemoteUserIds = new ArrayList<>();
-    private RTCVideo rtcVideo;
+    private RTCEngine rtcVideo;
     private RTCRoom rtcRoom;
 
     private MixedStreamConfig mixedStreamConfig;
@@ -140,34 +142,37 @@ public class CDNStreamActivity extends ExampleBaseActivity {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = textureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-        rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        rtcVideo.setLocalVideoCanvas(videoCanvas);
     }
 
     @MainThread
-    void setRemoteRenderView(String uid) {
+    void setRemoteRenderView(String streamId, String uid) {
+        if (streamId == null) {
+            return;
+        }
         for (RemoteView remoteView : mRemoteViews) {
             if (remoteView.isEmpty()) {
-                RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomID, uid, StreamIndex.STREAM_INDEX_MAIN);
-
                 TextureView textureView = new TextureView(this);
 
-                remoteView.attach(remoteStreamKey, textureView);
+                remoteView.attach(uid, streamId, textureView);
 
                 VideoCanvas videoCanvas = new VideoCanvas();
                 videoCanvas.renderView = textureView;
                 videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-                rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+                rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
                 break;
             }
         }
     }
 
     @MainThread
-    void removeRemoteView(String uid) {
+    void removeRemoteView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
         for (RemoteView remoteView : mRemoteViews) {
-            if (remoteView.match(uid)) {
-                RemoteStreamKey remoteStreamKey = Objects.requireNonNull(remoteView.getStreamKey());
-                rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+            if (streamId.equals(remoteView.getStreamId())) {
+                rtcVideo.setRemoteVideoCanvas(streamId, null);
                 remoteView.detach();
                 break;
             }
@@ -176,9 +181,9 @@ public class CDNStreamActivity extends ExampleBaseActivity {
 
     void clearRemoteViews() {
         for (RemoteView remoteView : mRemoteViews) {
-            RemoteStreamKey streamKey = remoteView.getStreamKey();
-            if (streamKey != null) {
-                rtcVideo.setRemoteVideoCanvas(streamKey, null);
+            String streamId = remoteView.getStreamId();
+            if (streamId != null) {
+                rtcVideo.setRemoteVideoCanvas(streamId, null);
                 remoteView.detach();
             }
         }
@@ -199,7 +204,7 @@ public class CDNStreamActivity extends ExampleBaseActivity {
                     isAutoPublish,
                     isAutoSubscribeAudio,
                     isAutoSubscribeVideo);
-            rtcRoom.joinRoom(token, userInfo, roomConfig);
+            rtcRoom.joinRoom(token, userInfo, true, roomConfig);
         });
     }
 
@@ -224,17 +229,16 @@ public class CDNStreamActivity extends ExampleBaseActivity {
 
         String backgroundColor = binding.layoutColorInput.getText().toString();
 
-        mixedStreamConfig.setUserID(localUid);
-        mixedStreamConfig.setRoomID(roomID);
-        mixedStreamConfig.setPushURL(cdnAddr);
-        mixedStreamConfig.setExpectedMixingType(ByteRTCStreamMixingType.STREAM_MIXING_BY_SERVER);
+        mixedStreamConfig.userID = localUid;
+        mixedStreamConfig.roomID = roomID;
+        mixedStreamConfig.backgroundColor = backgroundColor;
+        mixedStreamConfig.regions = getLayoutRegions();
 
-        MixedStreamConfig.MixedStreamLayoutConfig layoutConfig = new MixedStreamConfig.MixedStreamLayoutConfig();
-        layoutConfig.setBackgroundColor(backgroundColor);
-        layoutConfig.setRegions(getLayoutRegions());
+        MixedStreamPushTargetConfig targetConfig = new MixedStreamPushTargetConfig();
+        targetConfig.pushTargetType = MixedStreamPushTargetType.PUSH_TO_CDN;
+        targetConfig.pushCDNURL = cdnAddr;
 
-        mixedStreamConfig.setLayout(layoutConfig);
-        rtcVideo.startPushMixedStreamToCDN(CDN_TASK_ID, mixedStreamConfig, mixedStreamObserver);
+        rtcVideo.startPushMixedStream(CDN_TASK_ID, targetConfig, mixedStreamConfig);
     }
 
     private void updateCDNStreamConfig() {
@@ -247,21 +251,21 @@ public class CDNStreamActivity extends ExampleBaseActivity {
 
         String backgroundColor = binding.layoutColorInput.getText().toString();
 
-        mixedStreamConfig.setPushURL(cdnAddr);
+        mixedStreamConfig.backgroundColor = backgroundColor;
+        mixedStreamConfig.regions = getLayoutRegions();
 
-        MixedStreamConfig.MixedStreamLayoutConfig layoutConfig = new MixedStreamConfig.MixedStreamLayoutConfig();
-        layoutConfig.setBackgroundColor(backgroundColor);
-        layoutConfig.setRegions(getLayoutRegions());
-        mixedStreamConfig.setLayout(layoutConfig);
+        MixedStreamPushTargetConfig targetConfig = new MixedStreamPushTargetConfig();
+        targetConfig.pushTargetType = MixedStreamPushTargetType.PUSH_TO_CDN;
+        targetConfig.pushCDNURL = cdnAddr;
 
-        rtcVideo.updatePushMixedStreamToCDN(CDN_TASK_ID, mixedStreamConfig);
+        rtcVideo.updatePushMixedStream(CDN_TASK_ID, targetConfig, mixedStreamConfig);
     }
 
     private void stopPushCDNStream() {
-        rtcVideo.stopPushStreamToCDN(CDN_TASK_ID);
+        rtcVideo.stopPushMixedStream(CDN_TASK_ID, MixedStreamPushTargetType.PUSH_TO_CDN);
     }
 
-    private MixedStreamConfig.MixedStreamLayoutRegionConfig[] getLayoutRegions() {
+    private MixedStreamLayoutRegionConfig[] getLayoutRegions() {
         String mode = (String) binding.layoutModeSpinner.getSelectedItem();
         boolean is1x4 = "1x4".equals(mode);
 
@@ -270,7 +274,7 @@ public class CDNStreamActivity extends ExampleBaseActivity {
         userIds.addAll(allRemoteUserIds);
         int userNum = Math.min(4, userIds.size());
 
-        MixedStreamConfig.MixedStreamLayoutRegionConfig[] regions = new MixedStreamConfig.MixedStreamLayoutRegionConfig[userNum];
+        MixedStreamLayoutRegionConfig[] regions = new MixedStreamLayoutRegionConfig[userNum];
         for (int index = 0; index < userNum; index++) {
             if (is1x4) {
                 regions[index] = createRegion1x4(userIds, index);
@@ -282,87 +286,44 @@ public class CDNStreamActivity extends ExampleBaseActivity {
     }
 
     @NonNull
-    private MixedStreamConfig.MixedStreamLayoutRegionConfig createRegion1x4(List<String> userIds, int index) {
+    private MixedStreamLayoutRegionConfig createRegion1x4(List<String> userIds, int index) {
         final String uid = userIds.get(index);
-        int regionWidth = mixedStreamConfig.getVideoConfig().getWidth() / 4;
-        int regionHeight = mixedStreamConfig.getVideoConfig().getHeight();
-        MixedStreamConfig.MixedStreamLayoutRegionConfig region = new MixedStreamConfig.MixedStreamLayoutRegionConfig();
-        region.setRoomID(roomID);
-        region.setUserID(uid);
-        region.setLocationX(regionWidth * index);
-        region.setLocationY(0);
-        region.setWidth(regionWidth);
-        region.setHeight(regionHeight);
-        region.setAlpha(1);
-        region.setZOrder(0);
-        region.setRenderMode(MixedStreamConfig.MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
-        region.setStreamType(MixedStreamConfig.MixedStreamLayoutRegionConfig.MixedStreamVideoType.MIXED_STREAM_VIDEO_TYPE_MAIN);
-        region.setMediaType(MixedStreamConfig.MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO);
+        int regionWidth = mixedStreamConfig.videoConfig.width / 4;
+        int regionHeight = mixedStreamConfig.videoConfig.height;
+        MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig();
+        region.roomID = roomID;
+        region.userID = uid;
+        region.locationX = regionWidth * index;
+        region.locationY = 0;
+        region.width = regionWidth;
+        region.height = regionHeight;
+        region.alpha = 1.0;
+        region.zOrder = 0;
+        region.renderMode = MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN;
+        region.streamType = MixedStreamVideoType.MIXED_STREAM_VIDEO_TYPE_MAIN;
+        region.mediaType = MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
         return region;
     }
 
     @NonNull
-    private MixedStreamConfig.MixedStreamLayoutRegionConfig createRegion2x2(List<String> userIds, int index) {
+    private MixedStreamLayoutRegionConfig createRegion2x2(List<String> userIds, int index) {
         final String uid = userIds.get(index);
-        int regionWidth = mixedStreamConfig.getVideoConfig().getWidth() / 2;
-        int regionHeight = mixedStreamConfig.getVideoConfig().getHeight() / 2;
-        MixedStreamConfig.MixedStreamLayoutRegionConfig region = new MixedStreamConfig.MixedStreamLayoutRegionConfig();
-        region.setRoomID(roomID);
-        region.setUserID(uid);
-        region.setLocationX((index % 2) * regionWidth);
-        region.setLocationY((index / 2) * regionHeight);
-        region.setWidth(regionWidth);
-        region.setHeight(regionHeight);
-        region.setAlpha(1);
-        region.setZOrder(0);
-        region.setRenderMode(MixedStreamConfig.MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN);
-        region.setStreamType(MixedStreamConfig.MixedStreamLayoutRegionConfig.MixedStreamVideoType.MIXED_STREAM_VIDEO_TYPE_MAIN);
-        region.setMediaType(MixedStreamConfig.MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO);
+        int regionWidth = mixedStreamConfig.videoConfig.width / 2;
+        int regionHeight = mixedStreamConfig.videoConfig.height / 2;
+        MixedStreamLayoutRegionConfig region = new MixedStreamLayoutRegionConfig();
+        region.roomID = roomID;
+        region.userID = uid;
+        region.locationX = (index % 2) * regionWidth;
+        region.locationY = (index / 2) * regionHeight;
+        region.width = regionWidth;
+        region.height = regionHeight;
+        region.alpha = 1.0;
+        region.zOrder = 0;
+        region.renderMode = MixedStreamRenderMode.MIXED_STREAM_RENDER_MODE_HIDDEN;
+        region.streamType = MixedStreamVideoType.MIXED_STREAM_VIDEO_TYPE_MAIN;
+        region.mediaType = MixedStreamMediaType.MIXED_STREAM_MEDIA_TYPE_AUDIO_AND_VIDEO;
         return region;
     }
-
-    final IMixedStreamObserver mixedStreamObserver = new IMixedStreamObserver() {
-        @Override
-        public boolean isSupportClientPushStream() {
-            ToastUtil.showToast(CDNStreamActivity.this, "isSupportClientPushStream");
-            return false;
-        }
-
-        @Override
-        public void onMixingEvent(ByteRTCStreamMixingEvent eventType, String taskId, ByteRTCTranscoderErrorCode error, MixedStreamType mixType) {
-            String msg = String.format("onMixingEvent, type:%s, taskId:%s, error:%s, mixType:%s", eventType.toString(), taskId, error.toString(), mixType.toString());
-            Log.d(TAG, msg);
-            ToastUtil.showLongToast(CDNStreamActivity.this, msg);
-        }
-
-        @Override
-        public void onMixingAudioFrame(String taskId, byte[] audioFrame, int frameNum, long timeStampMs) {
-            String msg = String.format(Locale.ENGLISH, "onMixingEvent, taskId:%s, frameNum:%d, timeStampMs:%d", taskId, frameNum, timeStampMs);
-            Log.d(TAG, msg);
-            ToastUtil.showLongToast(CDNStreamActivity.this, msg);
-        }
-
-        @Override
-        public void onMixingVideoFrame(String taskId, VideoFrame videoFrame) {
-            String msg = String.format("onMixingVideoFrame, taskId:%s", taskId);
-            Log.d(TAG, msg);
-            ToastUtil.showLongToast(CDNStreamActivity.this, msg);
-        }
-
-        @Override
-        public void onMixingDataFrame(String taskId, byte[] dataFrame, long time) {
-            String msg = String.format("onMixingDataFrame, taskId:%s", taskId);
-            Log.d(TAG, msg);
-            ToastUtil.showLongToast(CDNStreamActivity.this, msg);
-        }
-
-        @Override
-        public void onCacheSyncVideoFrames(String taskId, String[] userIds, VideoFrame[] videoFrame, byte[][] dataFrame, int count) {
-            String msg = String.format("onCacheSyncVideoFrames, taskId:%s", taskId);
-            Log.d(TAG, msg);
-            ToastUtil.showLongToast(CDNStreamActivity.this, msg);
-        }
-    };
 
     final IRTCRoomEventHandler rtcRoomEventHandler = new IRTCRoomEventHandler() {
         @Override
@@ -373,26 +334,26 @@ public class CDNStreamActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
-                runOnUiThread(() -> setRemoteRenderView(uid));
+                runOnUiThread(() -> setRemoteRenderView(streamId, streamInfo.getUserId()));
             } else {
-                runOnUiThread(() -> removeRemoteView(uid));
+                runOnUiThread(() -> removeRemoteView(streamId));
             }
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
-                runOnUiThread(() -> setRemoteRenderView(uid));
+                runOnUiThread(() -> setRemoteRenderView(streamId, streamInfo.getUserId()));
             } else {
-                runOnUiThread(() -> removeRemoteView(uid));
+                runOnUiThread(() -> removeRemoteView(streamId));
             }
         }
 
         @Override
-        public void onUserJoined(UserInfo userInfo, int elapsed) {
-            super.onUserJoined(userInfo, elapsed);
+        public void onUserJoined(UserInfo userInfo) {
+            super.onUserJoined(userInfo);
             Log.i(TAG, "onUserJoined, uid:" + userInfo.getUid());
             ToastUtil.showToast(CDNStreamActivity.this, "onUserJoined, uid:" + userInfo.getUid());
             runOnUiThread(() -> allRemoteUserIds.add(userInfo.getUid()));
@@ -411,7 +372,14 @@ public class CDNStreamActivity extends ExampleBaseActivity {
         }
     };
 
-    final IRTCVideoEventHandler videoEventHandler = new IRTCVideoEventHandler() {
+    final IRTCEngineEventHandler videoEventHandler = new IRTCEngineEventHandler() {
+        @Override
+        public void onMixedStreamEvent(MixedStreamTaskInfo info, MixedStreamTaskEvent event, MixedStreamTaskErrorCode error) {
+            super.onMixedStreamEvent(info, event, error);
+            String msg = String.format(Locale.ENGLISH, "onMixedStreamEvent, taskId:%s, event:%s, error:%s", info.getTaskId(), event.toString(), error.toString());
+            Log.d(TAG, msg);
+            ToastUtil.showLongToast(CDNStreamActivity.this, msg);
+        }
     };
 
     @Override
@@ -423,7 +391,7 @@ public class CDNStreamActivity extends ExampleBaseActivity {
             rtcVideo.stopVideoCapture();
             stopPushCDNStream();
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
         rtcVideo = null;
     }
 }

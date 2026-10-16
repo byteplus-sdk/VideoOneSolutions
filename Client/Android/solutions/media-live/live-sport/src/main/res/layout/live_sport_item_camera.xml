@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Single multi-camera entry (Figma nodes 10777-5209 unselected / 10777-5244
+  selected). Width is assigned at runtime by the adapter so the default 4 items
+  exactly fill the list (no scrolling) — see CameraListAdapter.setFillWidth().
+  The thumbnail keeps the Figma 80:46 ratio.
+
+  Selected state (toggled by the adapter):
+   - selected overlay: 69% black scrim + 2dp white border
+   - center "living" icon (14x10) shown
+   - name becomes bold / fully opaque
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/camera_thumb_container"
+        android:layout_width="match_parent"
+        android:layout_height="46dp">
+
+        <!-- All channels share the same placeholder cover for now. -->
+        <ImageView
+            android:id="@+id/camera_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/live_sport_channel_cover" />
+
+        <!-- Selected overlay: scrim + white border. Hidden for unselected items. -->
+        <View
+            android:id="@+id/camera_selected_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/live_sport_camera_selected_fg"
+            android:visibility="gone" />
+
+        <!-- "Living" indicator centered on the selected camera. -->
+        <ImageView
+            android:id="@+id/camera_living_icon"
+            android:layout_width="14dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/live_sport_ic_camera_living"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/camera_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="#FFFFFF"
+        android:textSize="11sp" />
+</LinearLayout>

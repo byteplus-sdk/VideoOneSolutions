@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Circular semi-transparent black background for landscape settings / gift
+  buttons (Figma node 10887:104443 fill_A374IC, 10732:106427 fill_BHX1SM).
+  The Figma fill is solid black; product asked for #33000000 (20% black) so the
+  icon stays legible above the video letterbox edge.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#33000000" />
+</shape>

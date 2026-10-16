@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Live Watch page.
+
+  Five vertical regions stacked top-to-bottom:
+    - Top:        anchor info / close row
+    - Player:     16:9 TextureView surface
+    - Camera:     multi-camera switcher (wrap_content)
+    - Chat:       comment RecyclerView (fills remaining space)
+    - Actions:    input + gift + settings
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F1E35">
+
+    <!-- Full-screen background. The asset is the **baked** version of the
+         Figma node (photo + blur + #0F1E35 scrim already composited), so the
+         layout just needs to display it as-is — no runtime scrim or blur. -->
+    <ImageView
+        android:id="@+id/watch_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        android:src="@drawable/live_sport_watch_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/vertical_player_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextureView
+            android:id="@+id/vertical_player_texture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null" />
+
+        <!-- Double-tap like burst for vertical (custom-stream portrait) video.
+             The rising floating-like stream still uses the shared thumb_floating
+             overlay anchored above the settings button. -->
+        <com.byteplus.live.sport.watch.like.LikeBurstView
+            android:id="@+id/vertical_like_burst"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <!-- Insets-aware guidelines: status bar / navigation bar heights are pushed
+         in at runtime so the regions sit between the system bars. -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_status_bar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_nav_bar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp" />
+
+    <!-- Top region spans the entire space between status bar and player.
+         Height 76dp = Figma artboard 120 (player y) - 44 (status bar bottom).
+         Inside, the anchor pill is top-aligned with marginTop=8dp (Figma 52 -
+         44), giving the 32dp gap between pill bottom and player top that the
+         design specifies. -->
+    <FrameLayout
+        android:id="@+id/region_top"
+        android:layout_width="0dp"
+        android:layout_height="76dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_status_bar">
+
+        <include layout="@layout/live_sport_watch_top" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/region_player"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#000000"
+        app:layout_constraintDimensionRatio="H,16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/region_top">
+
+        <!-- TextureView (not SurfaceView) so the view can be transformed/animated
+             for future portrait↔landscape work, and so SportLivePlayer can swap
+             players (RTM→FLV fallback) while keeping the same SurfaceTexture. -->
+        <TextureView
+            android:id="@+id/player_texture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null" />
+
+        <!-- Double-tap like burst overlay. Sits above the video but below the
+             control buttons so taps on play/pause/rotate aren't swallowed. -->
+        <com.byteplus.live.sport.watch.like.LikeBurstView
+            android:id="@+id/like_burst"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Control overlay: play/pause bottom-left, rotate bottom-right.
+             Both 24dp with 12dp margins, per Figma node 10818-5402. Always
+             visible in this iteration (no tap-to-toggle). -->
+        <ImageButton
+            android:id="@+id/btn_play_pause"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/live_sport_watch_play_pause"
+            android:scaleType="fitCenter"
+            android:src="@drawable/live_sport_ic_play_pause" />
+
+        <!-- Rotate / fullscreen entry. Landscape rotation is out of scope this
+             iteration — the button is a placeholder that shows a "coming soon"
+             toast (handled in the activity). -->
+        <ImageButton
+            android:id="@+id/btn_rotate"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/live_sport_watch_rotate"
+            android:scaleType="fitCenter"
+            android:src="@drawable/live_sport_ic_rotate" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/region_camera"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/region_player">
+
+        <include layout="@layout/live_sport_camera_list" />
+    </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/region_chat"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="92dp"
+        android:paddingBottom="8dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@id/region_actions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/region_camera" />
+
+    <!-- Decorative shadow that fades the multi-camera region into the chat
+         area. Sits as an independent overlay just below region_camera so the
+         region's bottom 12dp corners stay clean. Non-interactive. -->
+    <View
+        android:id="@+id/camera_region_shadow"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="@drawable/live_sport_camera_region_shadow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/region_camera" />
+
+    <FrameLayout
+        android:id="@+id/region_actions"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline_nav_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include layout="@layout/live_sport_watch_actions" />
+    </FrameLayout>
+
+    <!-- Portrait gift tray. Independent overlay below the multi-camera region
+         so gift notices do not occupy comment-list rows or change the chat
+         layout, and the tray follows camera expand/collapse automatically. -->
+    <com.byteplus.live.sport.watch.gift.GiftNoticeTrayHost
+        android:id="@+id/gift_notice_tray_host"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/region_camera" />
+
+    <!-- Full-screen floating-like overlay. Rises hearts from above the settings
+         button (portrait) on each like. Non-interactive: taps pass through to
+         the controls underneath. Topmost so the stream is never clipped. -->
+    <com.byteplus.live.sport.watch.like.ThumbFloatingView
+        android:id="@+id/thumb_floating"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="false"
+        android:focusable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

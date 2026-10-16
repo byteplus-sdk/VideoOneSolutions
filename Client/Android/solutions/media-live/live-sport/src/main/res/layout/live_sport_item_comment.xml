@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Single comment row. wrap_content width hugs the bubble; the bubble's max
+  width is enforced by the parent RecyclerView's right padding (Figma:
+  comment column ends 92dp before the gift icon, leaving ~263dp on a 375dp
+  artboard).
+
+  Padding follows Figma node 10877:122560 (3dp v / 8dp h).
+  Vertical spacing between rows is handled by CommentSpacingDecoration.
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/comment_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/live_sport_comment_bubble_bg"
+    android:lineSpacingExtra="2dp"
+    android:paddingStart="8dp"
+    android:paddingTop="3dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="3dp"
+    android:textColor="#FFFFFF"
+    android:textSize="13sp" />

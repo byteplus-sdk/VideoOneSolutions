@@ -3,14 +3,15 @@ package com.vertc.api.example.examples.video;
 import androidx.lifecycle.ViewModel;
 
 import com.ss.bytertc.engine.RTCRoom;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 
 public class VideoRotateConfigViewModel extends ViewModel {
-    public RTCVideo rtcVideo;
+    public RTCEngine rtcVideo;
     public RTCRoom rtcRoom;
     public String roomId;
 
     public String remoteUserId;
+    public String remoteStreamId;
 
     public boolean isJoined = false;
 
@@ -25,12 +26,13 @@ public class VideoRotateConfigViewModel extends ViewModel {
             rtcRoom.destroy();
             rtcRoom = null;
             remoteUserId = null;
+            remoteStreamId = null;
         }
     }
 
     public void destroy() {
         leaveRoom();
         rtcVideo = null;
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
     }
 }

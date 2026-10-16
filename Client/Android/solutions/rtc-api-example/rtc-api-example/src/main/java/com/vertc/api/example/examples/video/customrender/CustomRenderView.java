@@ -12,7 +12,7 @@ import com.bytedance.realx.video.EglBase;
 import com.bytedance.realx.video.RendererCommon;
 import com.ss.bytertc.engine.ui.VideoFrameRender;
 import com.ss.bytertc.engine.video.IVideoSink;
-import com.ss.bytertc.engine.video.VideoFrame;
+import com.ss.bytertc.engine.video.IVideoFrame;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -83,11 +83,11 @@ public class CustomRenderView extends TextureView implements IVideoSink {
     }
 
     @Override
-    public synchronized void onFrame(VideoFrame frame) {
+    public synchronized void onFrame(IVideoFrame frame) {
         if (mReleased.get()) {
             return;
         }
-        EGLContext currentContext = frame.getEGLContext();
+        EGLContext currentContext = frame.eglContext();
         if (!checkIsSameEglContext(currentContext, mEGLContext) || mIsFirstFrame) {
             mIsFirstFrame = false;
             applyEglContext(currentContext);

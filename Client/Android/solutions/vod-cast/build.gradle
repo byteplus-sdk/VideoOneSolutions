@@ -1,0 +1,58 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+    namespace 'com.byteplus.vodcast'
+    compileSdk project.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
+    }
+
+    kotlinOptions {
+        freeCompilerArgs += '-Xjvm-default=all'
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlinVersion.get()}"
+        force "org.jetbrains.kotlin:kotlin-stdlib-common:${libs.versions.kotlinVersion.get()}"
+        force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${libs.versions.kotlinVersion.get()}"
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlinVersion.get()}"
+    api libs.mediarouter
+    api libs.play.services.cast.framework
+    implementation libs.appcompat
+    api libs.lifecycle.common
+    implementation libs.lifecycle.runtime
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+}

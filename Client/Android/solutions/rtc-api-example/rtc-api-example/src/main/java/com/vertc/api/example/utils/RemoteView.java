@@ -8,44 +8,45 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-
 @MainThread
 public class RemoteView {
     @NonNull
     public final ViewGroup parent;
 
-    private RemoteStreamKey streamKey;
+    private String streamId;
+    private String userId;
 
     public RemoteView(@NonNull ViewGroup parent) {
         this.parent = parent;
     }
 
     public boolean isEmpty() {
-        return streamKey == null;
+        return streamId == null;
     }
 
     public boolean match(@Nullable String uid) {
-        if (streamKey == null || TextUtils.isEmpty(uid)) {
+        if (streamId == null || TextUtils.isEmpty(uid)) {
             return false;
         }
 
-        return TextUtils.equals(streamKey.userId, uid);
+        return TextUtils.equals(userId, uid);
     }
 
-    public RemoteStreamKey getStreamKey() {
-        return streamKey;
+    public String getStreamId() {
+        return streamId;
     }
 
-    public void attach(RemoteStreamKey streamKey, View view) {
+    public void attach(String userId, String streamId, View view) {
         this.parent.removeAllViews();
         this.parent.addView(view);
-        this.streamKey = streamKey;
+        this.userId = userId;
+        this.streamId = streamId;
     }
 
     public void detach() {
         this.parent.removeAllViews();
-        this.streamKey = null;
+        this.userId = null;
+        this.streamId = null;
     }
 
     public static RemoteView of(@NonNull ViewGroup parent) {

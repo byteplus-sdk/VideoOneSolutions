@@ -1,5 +1,6 @@
 package com.vertc.api.example.examples.video.pip;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
@@ -29,6 +30,7 @@ public class FloatWindowManager {
     private float initialWindowX;
     private float initialWindowY;
 
+    @SuppressLint("ClickableViewAccessibility")
     public FloatWindowManager(Context context, TextureView mainTextureView) {
         this.mainTextureView = mainTextureView;
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -54,26 +56,23 @@ public class FloatWindowManager {
         floatView.setBackgroundColor(Color.GRAY);
         isWindowOpen = false;
 
-        floatView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        initialTouchX = event.getRawX();
-                        initialTouchY = event.getRawY();
-                        initialWindowX = windowParams.x;
-                        initialWindowY = windowParams.y;
-                        return true;
-                    case MotionEvent.ACTION_MOVE:
-                        float dx = event.getRawX() - initialTouchX;
-                        float dy = event.getRawY() - initialTouchY;
-                        windowParams.x = (int) (initialWindowX + dx);
-                        windowParams.y = (int) (initialWindowY + dy);
-                        windowManager.updateViewLayout(floatView, windowParams);
-                        return true;
-                }
-                return false;
+        floatView.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    initialTouchX = event.getRawX();
+                    initialTouchY = event.getRawY();
+                    initialWindowX = windowParams.x;
+                    initialWindowY = windowParams.y;
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    float dx = event.getRawX() - initialTouchX;
+                    float dy = event.getRawY() - initialTouchY;
+                    windowParams.x = (int) (initialWindowX + dx);
+                    windowParams.y = (int) (initialWindowY + dy);
+                    windowManager.updateViewLayout(floatView, windowParams);
+                    return true;
             }
+            return false;
         });
     }
 

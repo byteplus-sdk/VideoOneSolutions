@@ -6,6 +6,7 @@ Directory Structure
 Android
 ├── LICENSE
 ├── REAME.md
+├── vod-cast-design.md
 ├── app
 ├── component
 │   ├── avatars
@@ -23,6 +24,7 @@ Android
     │   └── live-pusher
     ├── rtc-api-example
     │   └── rtc-api-example-entry
+    ├── vod-cast
     ├── vod
     │   ├── vod-common
     │   ├── vod-demo
@@ -38,6 +40,9 @@ Android
 ```
 
 For detailed instructions on how to run the demo project, refer to [Running the demo (Android)](https://docs.byteplus.com/en/byteplus-vos/docs/running-the-demo-android-).
+
+Additional technical design documentation:
+- [vod-cast Design](./vod-cast-design.md)
 
 
 ##  VoD In Android

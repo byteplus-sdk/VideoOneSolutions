@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Circular semi-transparent black background for the gift / settings icon
+  buttons (Figma node 10777:4665, fill_1VWP6T).
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#33000000" />
+</shape>

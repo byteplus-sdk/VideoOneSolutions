@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fake gift: star. Vector placeholder. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <path
+        android:fillColor="#FFC53D"
+        android:pathData="M20,5 L24.7,15 L35,16.5 L27.5,24 L29.4,34.5 L20,29.5 L10.6,34.5 L12.5,24 L5,16.5 L15.3,15 Z" />
+</vector>

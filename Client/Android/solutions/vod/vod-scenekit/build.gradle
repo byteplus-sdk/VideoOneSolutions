@@ -58,4 +58,5 @@ dependencies {
     implementation project(':solutions:vod:vod-playerkit:vod-player-utils')
     implementation project(':solutions:vod:vod-playerkit:vod-player-ve')
     implementation project(':solutions:vod:vod-settingskit')
+    implementation project(':solutions:vod-cast')
 }

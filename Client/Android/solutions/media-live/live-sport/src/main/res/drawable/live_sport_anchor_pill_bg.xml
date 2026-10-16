@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Anchor info pill background — 18dp corner, 20% black scrim sits over the
+     blurred backdrop so the anchor name + heat metric are readable. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="18dp" />
+    <solid android:color="#33000000" />
+</shape>

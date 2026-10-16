@@ -10,8 +10,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ss.avframework.live.VeLivePusherDef;
-import com.ss.avframework.live.VeLiveVideoEffectManager;
+import com.ss.bytertc.engine.video.IVideoEffect;
+import java.util.Collections;
+
 import com.vertcdemo.effect.core.IEffect;
 import com.vertcdemo.effect.ui.EffectHandlerUpdatePolicy;
 import com.vertcdemo.effect.ui.OnEffectHandlerUpdatedListener;
@@ -26,14 +27,14 @@ public class LiveVideoEffect implements IEffect {
     private static final EffectHandlerUpdatePolicy UPDATE_POLICY = EffectHandlerUpdatePolicy.DISCARD;
 
     @Nullable
-    private VeLiveVideoEffectManager mEffectManager;
+    private IVideoEffect mEffectManager;
     @Nullable
     private String mLastStickerPath = "";
 
     @Nullable
     OnEffectHandlerUpdatedListener onEffectHandlerUpdatedListener;
 
-    public LiveVideoEffect(@Nullable VeLiveVideoEffectManager effectManager) {
+    public LiveVideoEffect(@Nullable IVideoEffect effectManager) {
         mEffectManager = effectManager;
     }
 
@@ -41,7 +42,7 @@ public class LiveVideoEffect implements IEffect {
         this.onEffectHandlerUpdatedListener = listener;
     }
 
-    public void setEffectManager(@Nullable VeLiveVideoEffectManager effectManager) {
+    public void setEffectManager(@Nullable IVideoEffect effectManager) {
         Log.d(TAG, "setEffectManager: ");
         mEffectManager = effectManager;
         mLastStickerPath = "";
@@ -51,41 +52,36 @@ public class LiveVideoEffect implements IEffect {
         }
     }
 
-    private final VeLivePusherDef.VeLiveVideoEffectCallback mCallback = new VeLivePusherDef.VeLiveVideoEffectCallback() {
-        @Override
-        public void onResult(int result, String message) {
-            Log.d(TAG, "Callback: result=" + result + "; message=" + message);
-        }
-    };
+    
 
     @NonNull
     @Override
     public EffectResult enableEffect(@NonNull String licensePath, @NonNull String modelPath) {
         Log.d(TAG, "enableEffect: licensePath='" + trim(licensePath) + "'"
                 + ", modelPath='" + trim(modelPath) + "'");
-        VeLiveVideoEffectManager manager = mEffectManager;
+        IVideoEffect manager = mEffectManager;
         if (manager == null) {
             return EffectResult.OK;
         }
 
-        int setupResult = manager.setupWithConfig(VeLivePusherDef.VeLiveVideoEffectLicenseConfiguration.create(licensePath));
+        int setupResult = manager.initCVResource(licensePath, modelPath);
         Log.e(TAG, "enableEffect: setupWithConfig=" + setupResult);
         if (setupResult != 0) {
             return new EffectResult(setupResult, "setupWithConfig error(" + setupResult + ")");
         }
-        int setModelPathResult = manager.setAlgorithmModelPath(modelPath);
+        int setModelPathResult = 0;
         Log.e(TAG, "enableEffect: setAlgorithmModelPath=" + setModelPathResult);
         if (setModelPathResult != 0) {
             return new EffectResult(setModelPathResult, "setAlgorithmModelPath error(" + setModelPathResult + ")");
         }
-        manager.setEnable(true, mCallback);
+        manager.enableVideoEffect();
         return EffectResult.OK;
     }
 
     @Override
     public void setEffectNodes(@NonNull List<String> paths) {
         Log.d(TAG, "setEffectNodes: " + Arrays.toString(trim(paths)));
-        VeLiveVideoEffectManager manager = mEffectManager;
+        IVideoEffect manager = mEffectManager;
         if (manager == null) {
             return;
         }
@@ -94,7 +90,7 @@ public class LiveVideoEffect implements IEffect {
         if (!TextUtils.isEmpty(mLastStickerPath)) {
             items.add(mLastStickerPath);
         }
-        manager.setComposeNodes(items.toArray(new String[0]));
+        manager.setEffectNodes(items);
     }
 
     @Override
@@ -103,44 +99,44 @@ public class LiveVideoEffect implements IEffect {
                 + ", key='" + key + "'"
                 + ", value=" + value
         );
-        VeLiveVideoEffectManager manager = mEffectManager;
+        IVideoEffect manager = mEffectManager;
         if (manager == null) {
             return;
         }
 
-        manager.updateComposerNodeIntensity(path, key, value);
+        manager.updateEffectNode(path, key, value);
     }
 
     @Override
     public void setColorFilter(@NonNull String path) {
         Log.d(TAG, "setColorFilter: path='" + trim(path) + "'");
-        VeLiveVideoEffectManager manager = mEffectManager;
+        IVideoEffect manager = mEffectManager;
         if (manager == null) {
             return;
         }
 
         if (TextUtils.isEmpty(path)) {
-            manager.setFilter("");
+            manager.setColorFilter("");
         } else {
-            manager.setFilter(path);
+            manager.setColorFilter(path);
         }
     }
 
     @Override
     public void setColorFilterIntensity(float intensity) {
         Log.d(TAG, "setColorFilterIntensity: intensity=" + intensity);
-        VeLiveVideoEffectManager manager = mEffectManager;
+        IVideoEffect manager = mEffectManager;
         if (manager == null) {
             return;
         }
 
-        manager.updateFilterIntensity(intensity);
+        manager.setColorFilterIntensity(intensity);
     }
 
     @Override
     public void setSticker(@NonNull String path) {
         Log.d(TAG, "setSticker: path='" + trim(path) + "'");
-        VeLiveVideoEffectManager manager = mEffectManager;
+        IVideoEffect manager = mEffectManager;
         if (manager == null) {
             return;
         }
@@ -149,10 +145,10 @@ public class LiveVideoEffect implements IEffect {
             return;
         }
         if (!TextUtils.isEmpty(mLastStickerPath)) {
-            manager.removeComposeNodes(new String[]{mLastStickerPath});
+            manager.removeEffectNodes(Collections.singletonList(mLastStickerPath));
         }
         if (!TextUtils.isEmpty(path)) {
-            manager.appendComposeNodes(new String[]{path});
+            manager.appendEffectNodes(Collections.singletonList(path));
         }
         mLastStickerPath = path;
     }

@@ -8,11 +8,21 @@
     <string name="vevod_function_playlist_title">Playlist</string>
     <string name="vevod_function_playlist_desc">Multiple video rotating playback component.</string>
 
+    <string name="vevod_function_casting_title">Casting</string>
+    <string name="vevod_function_casting_desc">Video casting component.</string>
+
+    <string name="vevod_function_casting_select_mode">Select Mode</string>
+
+    <string name="vevod_short_video_mode">Short video mode</string>
+    <string name="vevod_long_video_mode">Long video mode</string>
+
     <string name="vevod_function_smart_subtitle_title">Smart subtitling</string>
     <string name="vevod_function_smart_subtitle_desc">Video multilingual smart subtitle component.</string>
 
     <string name="vevod_function_prevent_recording_title">Prevent recording and screenshot</string>
     <string name="vevod_function_prevent_recording_desc">Prevent system screen recording and screenshot.</string>
     <string name="vevod_function_prevent_recording_tips">The feature to prevent system screen recording and screenshotting has been enabled.</string>
+
+    <string name="vevod_function_load_failed">Loading failed, please check your network and try again</string>
 
 </resources>

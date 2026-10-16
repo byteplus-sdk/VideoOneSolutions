@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Used by ShapeableImageView in the Live Watch top region to render the
+         32×32 anchor avatar as a circle. Material's `cornerSize=50%` is the
+         standard recipe; kept module-private so live-sport doesn't need to
+         depend on the :app module. -->
+    <style name="LiveSportCircleAvatar">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Right→left slide animation for landscape side panels (settings /
+         multi-camera / quality). Applied to the dialog's window via
+         `window.attributes.windowAnimations`. -->
+    <style name="LiveSportLandscapeSidePanelAnim">
+        <item name="android:windowEnterAnimation">@anim/live_sport_slide_in_right</item>
+        <item name="android:windowExitAnimation">@anim/live_sport_slide_out_right</item>
+    </style>
+
+</resources>

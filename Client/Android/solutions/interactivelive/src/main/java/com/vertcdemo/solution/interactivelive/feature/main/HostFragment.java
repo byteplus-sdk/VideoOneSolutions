@@ -86,7 +86,6 @@ import com.vertcdemo.solution.interactivelive.event.AudienceLinkKickResultEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkReplyEvent;
 import com.vertcdemo.solution.interactivelive.event.AudienceLinkStatusEvent;
 import com.vertcdemo.solution.interactivelive.event.LinkMicStatusEvent;
-import com.vertcdemo.solution.interactivelive.event.LiveCoreNetworkQualityEvent;
 import com.vertcdemo.solution.interactivelive.event.LiveFinishEvent;
 import com.vertcdemo.solution.interactivelive.event.LiveKickUserEvent;
 import com.vertcdemo.solution.interactivelive.event.LiveRTSUserEvent;
@@ -412,7 +411,6 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
                 }
             } else if (oldRoomStatus == RoomStatus.PK && newRoomStatus != RoomStatus.PK) {
                 // Leave co host PK
-                //
                 // Need notify LiveRTCManager to stop co host PK
                 LiveRTCManager.ins().stopCoHostPK(); // reconnect
             } else if (newRoomStatus == RoomStatus.AUDIENCE_LINK || newRoomStatus == RoomStatus.LIVE) {
@@ -544,11 +542,6 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
         args.putInt("room_status", getRoomStatus());
         dialog.setArguments(args);
         dialog.show(getChildFragmentManager(), "more_action_dialog");
-    }
-
-    void openLiveInfoDialog() {
-        LiveInfoDialog dialog = new LiveInfoDialog();
-        dialog.show(getChildFragmentManager(), "live_info");
     }
 
     void dismissLiveInfoDialog() {
@@ -697,28 +690,6 @@ public class HostFragment extends Fragment implements ManageAudiencesDialog.IMan
             // DISCONNECTED
             mBinding.networkState.setText(R.string.net_quality_disconnect);
             mBinding.networkState.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_network_quality_disconnect, 0, 0, 0);
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNetworkQualityEvent(LiveCoreNetworkQualityEvent event) {
-        final LiveCoreNetworkQualityEvent.Quality networkQuality = event.quality;
-        if (networkQuality == LiveCoreNetworkQualityEvent.Quality.GOOD) {
-            // GOOD
-            mBinding.networkState.setText(R.string.net_quality_good);
-            mBinding.networkState.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_network_quality_good, 0, 0, 0);
-        } else if (networkQuality == LiveCoreNetworkQualityEvent.Quality.POOR) {
-            // POOR
-            mBinding.networkState.setText(R.string.net_quality_poor);
-            mBinding.networkState.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_network_quality_poor, 0, 0, 0);
-        } else if (networkQuality == LiveCoreNetworkQualityEvent.Quality.BAD) {
-            // BAD
-            mBinding.networkState.setText(R.string.net_quality_disconnect);
-            mBinding.networkState.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_network_quality_disconnect, 0, 0, 0);
-        } else {
-            // OTHERS to hide
-            mBinding.networkState.setText("");
-            mBinding.networkState.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
         }
     }
 

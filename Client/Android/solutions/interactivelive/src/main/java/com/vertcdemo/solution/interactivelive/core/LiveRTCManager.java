@@ -14,19 +14,19 @@ import androidx.annotation.Nullable;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
 import com.ss.bytertc.engine.VideoEncoderConfig;
 import com.ss.bytertc.engine.data.CameraId;
+import com.ss.bytertc.engine.data.EngineConfig;
 import com.ss.bytertc.engine.data.ForwardStreamEventInfo;
 import com.ss.bytertc.engine.data.ForwardStreamInfo;
 import com.ss.bytertc.engine.data.ForwardStreamStateInfo;
 import com.ss.bytertc.engine.data.MirrorType;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.type.ChannelProfile;
-import com.ss.bytertc.engine.type.MediaStreamType;
+import com.ss.bytertc.engine.type.LocalStreamStats;
 import com.ss.bytertc.engine.type.NetworkQualityStats;
 import com.ss.bytertc.engine.video.IVideoEffect;
 import com.ss.bytertc.engine.video.VideoCaptureConfig;
@@ -40,6 +40,7 @@ import com.vertcdemo.core.rts.RTCVideoEventHandlerWithRTS;
 import com.vertcdemo.core.utils.AppUtil;
 import com.vertcdemo.solution.interactivelive.bean.LiveUserInfo;
 import com.vertcdemo.solution.interactivelive.core.annotation.LiveRoleType;
+import com.vertcdemo.solution.interactivelive.core.live.StatisticsInfo;
 import com.vertcdemo.solution.interactivelive.event.PublishVideoStreamEvent;
 import com.vertcdemo.solution.interactivelive.event.UserMediaChangedEvent;
 
@@ -71,10 +72,12 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
     // RTC room id
     private String mRTCRoomId;
 
+    // Cache the latest streamId for each userId so that subscribe/render can use streamId (3.60+).
+    private final HashMap<String, String> mUserStreamIdMap = new HashMap<>();
+
     private static final LiveRTCManager sInstance = new LiveRTCManager();
     // RTS object, used to realize the long link of the business server
     private RTCRoom mRTSRoom = null;
-    private String mRTSRoomId = null;
 
     private final RTCVideoEventHandlerWithRTS mRTCVideoEventHandler = new RTCVideoEventHandlerWithRTS(mRTSClient);
     // RTS object callback
@@ -86,17 +89,14 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         public void onRoomStateChanged(String roomId, String uid, int state, String extraInfo) {
             super.onRoomStateChanged(roomId, uid, state, extraInfo);
             Log.d(TAG, String.format("onRoomStateChanged: %s, %s, %d, %s", roomId, uid, state, extraInfo));
-
             mRTCRoomId = roomId;
             if (isFirstJoinRoomSuccess(state, extraInfo)) {
-                if (PUSH_MODE == PushMode.RTC) {
-                    startLiveTranscoding(roomId, uid);
-                }
+                startLiveTranscoding(roomId, uid);
             }
         }
 
         @Override
-        public void onUserJoined(UserInfo userInfo, int elapsed) {
+        public void onUserJoined(UserInfo userInfo) {
             String uid = userInfo.getUid();
             Log.d(TAG, "onUserJoined : uid=" + uid);
         }
@@ -107,16 +107,17 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
-            if (isPublish) {
-                SolutionEventBus.post(new PublishVideoStreamEvent(uid, mRTCRoomId));
+        public void onUserPublishStreamAudio(String roomId, StreamInfo streamInfo, boolean isPublish) {
+            if (isPublish && streamInfo != null) {
+                mUserStreamIdMap.put(streamInfo.userId, streamInfo.streamId);
             }
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
-            if (isPublish) {
-                SolutionEventBus.post(new PublishVideoStreamEvent(uid, mRTCRoomId));
+        public void onUserPublishStreamVideo(String roomId, StreamInfo streamInfo, boolean isPublish) {
+            if (isPublish && streamInfo != null) {
+                mUserStreamIdMap.put(streamInfo.userId, streamInfo.streamId);
+                SolutionEventBus.post(new PublishVideoStreamEvent(streamInfo.userId, streamInfo.streamId, mRTCRoomId));
             }
         }
 
@@ -139,10 +140,21 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         public void onNetworkQuality(NetworkQualityStats localQuality, NetworkQualityStats[] remoteQualities) {
             SolutionEventBus.post(new RTCNetworkQualityEvent(localQuality, remoteQualities));
         }
+
+        @Override
+        public void onLocalStreamStats(String streamId, StreamInfo streamInfo, LocalStreamStats stats) {
+            Log.d(TAG, String.format("onLocalStreamStats: %s, %s, %s", streamId, streamInfo, stats));
+            StatisticsInfo statisticsInfo = new StatisticsInfo();
+            statisticsInfo.encodeFps = stats.videoStats.encoderOutputFrameRate;
+            statisticsInfo.transportFps = stats.videoStats.sentFrameRate;
+            statisticsInfo.encodeVideoBitrate = stats.videoStats.encodedBitrate;
+            statisticsInfo.transportVideoBitrate = stats.videoStats.sentKBitrate;
+            SolutionEventBus.post(statisticsInfo);
+        }
     };
 
     private LiveRTCManager() {
-        Log.d(TAG, "RTCVideo sdkVersion: " + RTCVideo.getSDKVersion());
+        Log.d(TAG, "RTCEngine sdkVersion: " + RTCEngine.getSDKVersion());
     }
 
     public static LiveRTCManager ins() {
@@ -151,50 +163,42 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
 
     @Override
     public void createEngine(@NonNull String appId, @Nullable String bid) {
-        Log.d(TAG, "createRTCVideo: appId='" + appId + "'; bid='" + bid + "'");
+        Log.d(TAG, "createRTCEngine: appId='" + appId + "'; bid='" + bid + "'");
         if (mRTCVideo != null) {
-            Log.w(TAG, "createRTCVideo: already created");
+            Log.w(TAG, "createRTCEngine: already created");
             return;
         }
 
         final Application context = AppUtil.getApplicationContext();
-        RTCVideo rtcVideo = RTCVideo.createRTCVideo(context, appId, mRTCVideoEventHandler, null, null);
-        rtcVideo.setBusinessId(bid);
+        EngineConfig engineConfig = new EngineConfig();
+        engineConfig.context = context;
+        engineConfig.appID = appId;
+        engineConfig.isGameScene = false;
 
-        rtcVideo.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER_AND_ENCODER);
-        rtcVideo.setVideoCaptureConfig(mHostConfig.toCaptureConfig());
+        RTCEngine rtcEngine = RTCEngine.createRTCEngine(engineConfig, mRTCVideoEventHandler);
+        rtcEngine.setBusinessId(bid);
 
-        VideoEncoderConfig config = mHostConfig.toEncoderConfig();
-        Log.d(TAG, "setVideoEncoderConfig: " + config);
-        rtcVideo.setVideoEncoderConfig(config);
+        rtcEngine.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER_AND_ENCODER);
+        rtcEngine.setVideoCaptureConfig(mHostConfig.toCaptureConfig());
 
-        mRTCVideo = rtcVideo;
+        VideoEncoderConfig encoderConfig = mHostConfig.toEncoderConfig();
+        Log.d(TAG, "setVideoEncoderConfig: " + encoderConfig);
+        rtcEngine.setVideoEncoderConfig(encoderConfig);
+
+        mRTCVideo = rtcEngine;
     }
 
     @Override
     public void destroyEngine() {
         Log.d(TAG, "destroyEngine");
-
         stopLive();
         leaveRTSRoom();
-
         if (mRTCVideo != null) {
-            RTCVideo.destroyRTCVideo();
+            RTCEngine.destroyRTCEngine();
             mRTCVideo = null;
         }
-
-        release();
-
         setMicOn(true);
         setCameraOn(true);
-    }
-
-    public LiveRTSClient getRTSClient() {
-        return mRTSClient;
-    }
-
-    public static LiveRTSClient rts() {
-        return ins().getRTSClient();
     }
 
     private final HashMap<String, String> mRTCRoomInfos = new HashMap<>();
@@ -207,12 +211,7 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         mRTCRoomInfos.put("user_token", token);
 
         setLiveInfo(new LiveInfoHost(roomId, userId, pushUrl));
-
-        if (PUSH_MODE == PushMode.RTC) {
-            joinRoom(roomId, userId, token);
-        } else {
-            startLiveTranscoding(roomId, userId);
-        }
+        joinRoom(roomId, userId, token);
     }
 
     public void stopLive() {
@@ -220,8 +219,6 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         leaveRoom();
         stopAllCapture();
         setFrontCamera(true);
-
-        releaseLiveCore();
     }
 
     public void joinRoom(String roomId, String userId, String token) {
@@ -241,7 +238,7 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
                 true,
                 true,
                 true);
-        mRTCRoom.joinRoom(token, userInfo, roomConfig);
+        mRTCRoom.joinRoom(token, userInfo, true, roomConfig);
     }
 
     public void startCoHostPK(String coHostRoomId, String coHostRtcToken, LiveUserInfo coHostInfo) {
@@ -249,10 +246,6 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         setCoHostVideoConfig(coHostInfo);
 
         setCoHostInfo(new LiveInfoHost(coHostRoomId, coHostInfo.userId));
-
-        if (PUSH_MODE == PushMode.LIVE_CORE) {
-            ensureJoinRTCRoom();
-        }
 
         assert mRTCRoom != null : "Must be in RTCRoom!";
         ForwardStreamInfo forwardStreamInfo = new ForwardStreamInfo(coHostRoomId, coHostRtcToken);
@@ -292,10 +285,6 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         if (mRTCRoom != null) {
             mRTCRoom.stopForwardStreamToRooms();
         }
-
-        if (PUSH_MODE == PushMode.LIVE_CORE) {
-            leaveRoom();
-        }
     }
 
     public void updateLinkWithAudiences(List<String> audienceIds) {
@@ -306,18 +295,6 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
     public void stopLinkWithAudiences() {
         Log.d(TAG, "stopLinkWithAudiences: ");
         updateLiveTranscodingWithAudience(Collections.emptyList());
-
-        if (PUSH_MODE == PushMode.LIVE_CORE) {
-            leaveRoom();
-        }
-    }
-
-    private void ensureJoinRTCRoom() {
-        Log.d(TAG, "ensureJoinRTCRoom: ");
-        String roomId = mRTCRoomInfos.get("room_id");
-        String userId = mRTCRoomInfos.get("user_id");
-        String token = mRTCRoomInfos.get("user_token");
-        joinRoom(roomId, userId, token);
     }
 
     public void startCapture(boolean video, boolean audio) {
@@ -393,10 +370,6 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         setFrontCamera(!mIsFront);
     }
 
-    public boolean isFrontCamera() {
-        return mIsFront;
-    }
-
     private void postMediaStatus() {
         UserMediaChangedEvent event = new UserMediaChangedEvent();
         String selfUid = SolutionDataManager.ins().getUserId();
@@ -415,28 +388,18 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = view;
         videoCanvas.renderMode = RENDER_MODE_HIDDEN;
-        mRTCVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+        mRTCVideo.setLocalVideoCanvas(videoCanvas);
     }
 
-    public void setRemoteVideoView(String userId, TextureView view) {
-        Log.d(TAG, "setRemoteVideoView : userId='" + userId + "'");
+    public void setRemoteVideoView(String streamId, TextureView view) {
+        Log.d(TAG, "setRemoteVideoView : streamId='" + streamId + "'");
         if (mRTCVideo == null || mRTCRoomId == null) {
             return;
         }
         VideoCanvas canvas = new VideoCanvas();
         canvas.renderView = view;
         canvas.renderMode = RENDER_MODE_HIDDEN;
-
-        final RemoteStreamKey streamKey = new RemoteStreamKey(mRTCRoomId, userId, StreamIndex.STREAM_INDEX_MAIN);
-        mRTCVideo.setRemoteVideoCanvas(streamKey, canvas);
-    }
-
-    public void muteRemoteAudio(String uid, boolean mute) {
-        Log.d(TAG, "muteRemoteAudio uid:" + uid + ",mute:" + mute);
-        if (mRTCRoom != null) {
-            mRTCRoom.subscribeStreamAudio(uid, !mute);
-        }
-        updateLiveTranscodingWhenMuteCoHost(uid, mute);
+        mRTCVideo.setRemoteVideoCanvas(streamId, canvas);
     }
 
     public void switchToAudienceConfig() {
@@ -453,23 +416,44 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
                 mHostConfig.bitRate);
     }
 
+    public LiveSettingConfig getLiveConfigByRole(@LiveRoleType int role) {
+        try {
+            switch (role) {
+                case LiveRoleType.HOST:
+                    return mHostConfig;
+                case LiveRoleType.AUDIENCE:
+                    return mGuestConfig;
+                default:
+                    Log.e(TAG, "Unknown role type: " + role + ", fallback to host config");
+                    return mHostConfig;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting live config for role: " + role, e);
+            return mHostConfig;
+        }
+    }
+
     public void setFrameRate(@LiveRoleType int role, int frameRate) {
-        LiveSettingConfig config = role == LiveRoleType.HOST ? mHostConfig : mGuestConfig;
-        config.frameRate = frameRate;
-        updateVideoConfig(config.width, config.height, config.frameRate, config.bitRate);
+        LiveSettingConfig config = getLiveConfigByRole(role);
+        if (config != null) {
+            config.frameRate = frameRate;
+            updateVideoConfig(config.width, config.height, config.frameRate, config.bitRate);
+        }
     }
 
     public void setResolution(@LiveRoleType int role, int width, int height, int bitrate) {
-        LiveSettingConfig config = role == LiveRoleType.HOST ? mHostConfig : mGuestConfig;
-        config.width = width;
-        config.height = height;
-        config.bitRate = bitrate;
-        updateVideoConfig(config.width, config.height, config.frameRate, config.bitRate);
+        LiveSettingConfig config = getLiveConfigByRole(role);
+        if (config != null) {
+            config.width = width;
+            config.height = height;
+            config.bitRate = bitrate;
+            updateVideoConfig(config.width, config.height, config.frameRate, config.bitRate);
+        }
     }
 
     public void setBitrate(@LiveRoleType int role, int bitRate) {
-        LiveSettingConfig config = role == LiveRoleType.HOST ? mHostConfig : mGuestConfig;
-        if (bitRate == config.bitRate) {
+        LiveSettingConfig config = getLiveConfigByRole(role);
+        if (config == null || bitRate == config.bitRate) {
             return;
         }
         config.bitRate = bitRate;
@@ -477,19 +461,19 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
     }
 
     public int getBitrate(@LiveRoleType int role) {
-        return role == LiveRoleType.HOST ? mHostConfig.bitRate : mGuestConfig.bitRate;
+        return getLiveConfigByRole(role).bitRate;
     }
 
     public int getFrameRate(@LiveRoleType int role) {
-        return role == LiveRoleType.HOST ? mHostConfig.frameRate : mGuestConfig.frameRate;
+        return getLiveConfigByRole(role).frameRate;
     }
 
     public int getWidth(@LiveRoleType int role) {
-        return role == LiveRoleType.HOST ? mHostConfig.width : mGuestConfig.width;
+        return getLiveConfigByRole(role).width;
     }
 
     public int getHeight(@LiveRoleType int role) {
-        return role == LiveRoleType.HOST ? mHostConfig.height : mGuestConfig.height;
+        return getLiveConfigByRole(role).height;
     }
 
     private void updateVideoConfig(int width, int height, int frameRate, int bitRate) {
@@ -523,13 +507,12 @@ public class LiveRTCManager extends VideoTranscoding implements IRTCManager {
         if (mRTSRoom != null) {
             mRTSRoom.destroy();
         }
-        mRTSRoomId = rtsRoomId;
         mRTSRoom = mRTCVideo.createRTCRoom(rtsRoomId);
         mRTSRoom.setRTCRoomEventHandler(mRTSRoomEventHandler);
         UserInfo userInfo = new UserInfo(userId, null);
         RTCRoomConfig roomConfig = new RTCRoomConfig(ChannelProfile.CHANNEL_PROFILE_INTERACTIVE_PODCAST,
                 false, false, false, false);
-        mRTSRoom.joinRoom(token, userInfo, roomConfig);
+        mRTSRoom.joinRoom(token, userInfo, false, roomConfig);
     }
 
     public void leaveRTSRoom() {

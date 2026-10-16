@@ -11,13 +11,12 @@ import android.widget.FrameLayout;
 
 import com.ss.bytertc.engine.RTCRoom;
 import com.ss.bytertc.engine.RTCRoomConfig;
-import com.ss.bytertc.engine.RTCVideo;
+import com.ss.bytertc.engine.RTCEngine;
 import com.ss.bytertc.engine.UserInfo;
 import com.ss.bytertc.engine.VideoCanvas;
-import com.ss.bytertc.engine.data.RemoteStreamKey;
-import com.ss.bytertc.engine.data.StreamIndex;
+import com.ss.bytertc.engine.data.StreamInfo;
 import com.ss.bytertc.engine.handler.IRTCRoomEventHandler;
-import com.ss.bytertc.engine.handler.IRTCVideoEventHandler;
+import com.ss.bytertc.engine.handler.IRTCEngineEventHandler;
 import com.ss.bytertc.engine.type.AudioDeviceType;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.MediaStreamType;
@@ -50,7 +49,7 @@ public class QuickStartActivity extends ExampleBaseActivity {
     private FrameLayout localViewContainer;
     private FrameLayout remoteViewContainer;
 
-    private RTCVideo rtcVideo;
+    private RTCEngine rtcVideo;
     private RTCRoom rtcRoom;
     private String roomId;
 
@@ -91,7 +90,7 @@ public class QuickStartActivity extends ExampleBaseActivity {
             VideoCanvas videoCanvas = new VideoCanvas();
             videoCanvas.renderView = localTextureView;
             videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-            rtcVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
+            rtcVideo.setLocalVideoCanvas(videoCanvas);
         });
 
         binding.btnJoinRoom.setOnClickListener(v -> {
@@ -119,7 +118,7 @@ public class QuickStartActivity extends ExampleBaseActivity {
                         isAutoPublish,
                         isAutoSubscribeAudio,
                         isAutoSubscribeVideo);
-                int ret = rtcRoom.joinRoom(token, userInfo, roomConfig);
+                int ret = rtcRoom.joinRoom(token, userInfo, true, roomConfig);
                 if (ret != 0) {
                     ToastUtil.showToast(this, "joinRoom ret " + ret);
                 }
@@ -140,30 +139,33 @@ public class QuickStartActivity extends ExampleBaseActivity {
         });
 
         binding.btnDestroyEngine.setOnClickListener(v -> {
-            RTCVideo.destroyRTCVideo();
+            RTCEngine.destroyRTCEngine();
             rtcVideo = null;
         });
 
     }
 
-    private void setRemoteRenderView(String uid) {
+    private void setRemoteRenderView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
         TextureView remoteTextureView = new TextureView(this);
         remoteViewContainer.removeAllViews();
         remoteViewContainer.addView(remoteTextureView);
         VideoCanvas videoCanvas = new VideoCanvas();
         videoCanvas.renderView = remoteTextureView;
         videoCanvas.renderMode = VideoCanvas.RENDER_MODE_HIDDEN;
-
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomId, uid, StreamIndex.STREAM_INDEX_MAIN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, videoCanvas);
+        rtcVideo.setRemoteVideoCanvas(streamId, videoCanvas);
     }
 
-    private void removeRemoteView(String uid) {
-        RemoteStreamKey remoteStreamKey = new RemoteStreamKey(roomId, uid, StreamIndex.STREAM_INDEX_MAIN);
-        rtcVideo.setRemoteVideoCanvas(remoteStreamKey, null);
+    private void removeRemoteView(String streamId) {
+        if (streamId == null) {
+            return;
+        }
+        rtcVideo.setRemoteVideoCanvas(streamId, null);
     }
 
-    final IRTCVideoEventHandler rtcVideoEventHandler = new IRTCVideoEventHandler() {
+    final IRTCEngineEventHandler rtcVideoEventHandler = new IRTCEngineEventHandler() {
         @Override
         public void onWarning(int warn) {
             super.onWarning(warn);
@@ -204,27 +206,27 @@ public class QuickStartActivity extends ExampleBaseActivity {
         }
 
         @Override
-        public void onUserPublishStreamAudio(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamAudio(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    setRemoteRenderView(uid);
+                    setRemoteRenderView(streamId);
                 });
             } else {
                 runOnUiThread(() -> {
-                    removeRemoteView(uid);
+                    removeRemoteView(streamId);
                 });
             }
         }
 
         @Override
-        public void onUserPublishStreamVideo(String roomId, String uid, boolean isPublish) {
+        public void onUserPublishStreamVideo(String streamId, StreamInfo streamInfo, boolean isPublish) {
             if (isPublish) {
                 runOnUiThread(() -> {
-                    setRemoteRenderView(uid);
+                    setRemoteRenderView(streamId);
                 });
             } else {
                 runOnUiThread(() -> {
-                    removeRemoteView(uid);
+                    removeRemoteView(streamId);
                 });
             }
         }
@@ -249,7 +251,7 @@ public class QuickStartActivity extends ExampleBaseActivity {
             rtcRoom.destroy();
             rtcRoom = null;
         }
-        RTCVideo.destroyRTCVideo();
+        RTCEngine.destroyRTCEngine();
         rtcVideo = null;
     }
 }

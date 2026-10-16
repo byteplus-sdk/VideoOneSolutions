@@ -195,22 +195,28 @@ public class AudienceVideoRenderHelper extends AudienceVideoPlayer {
     }
 
     private final Map<String, Consumer<PublishVideoStreamEvent>> mPublishStreamActions = new HashMap<>();
+    private final Map<String, String> mUserStreamIds = new HashMap<>();
 
     public void onPublishStreamEvent(PublishVideoStreamEvent event) {
-        final Consumer<PublishVideoStreamEvent> consumer = mPublishStreamActions.get(event.uid);
+        mUserStreamIds.put(event.userId, event.streamId);
+        final Consumer<PublishVideoStreamEvent> consumer = mPublishStreamActions.get(event.userId);
         if (consumer != null) {
             consumer.accept(event);
         }
     }
 
-    public void setRemoteVideoView(String uid, TextureView view) {
+    public void setRemoteVideoView(String userId, TextureView view) {
         final LiveRTCManager manager = LiveRTCManager.ins();
-        manager.setRemoteVideoView(uid, view);
-        registerPublishStreamAction(uid, event -> manager.setRemoteVideoView(uid, view));
+        final String streamId = mUserStreamIds.get(userId);
+        if (streamId != null) {
+            manager.setRemoteVideoView(streamId, view);
+        }
+        registerPublishStreamAction(userId, event -> manager.setRemoteVideoView(event.streamId, view));
     }
 
     void clearPublishStreamActions() {
         mPublishStreamActions.clear();
+        mUserStreamIds.clear();
     }
 
     void registerPublishStreamAction(String userId, Consumer<PublishVideoStreamEvent> action) {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Selected camera thumbnail border for the landscape multi-camera panel (Figma
+  node 10796:42066): a 2dp white border with 4dp rounded corners overlaid on
+  the thumbnail. Transparent fill so the cover image shows through.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@android:color/transparent" />
+    <stroke
+        android:width="2dp"
+        android:color="#FFFFFF" />
+    <corners android:radius="4dp" />
+</shape>

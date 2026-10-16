@@ -11,9 +11,6 @@ include ':component:loginkit'
 
 include ':solutions:interactivelive'
 
-// Chorus
-include ':solutions:chorus'
-
 // vod
 include ':solutions:vod:vod-common'
 include ':solutions:vod:vod-function'
@@ -35,6 +32,7 @@ include ':solutions:media-live:live-entrance'
 include ':solutions:media-live:live-pusher'
 include ':solutions:media-live:live-player'
 include ':solutions:media-live:live-common'
+include ':solutions:media-live:live-sport'
 
 // RTC API Examples
 include ':solutions:rtc-api-example:rtc-api-example-entry'
@@ -44,3 +42,4 @@ include ':solutions:rtc-api-example:rtc-api-example'
 include ':solutions:vod-live-feed'
 include ':solutions:vod-mini-drama'
 include ':solutions:ai-chat'
+include ':solutions:vod-cast'

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Single quality entry for the landscape quality panel (Figma node 10833:6211).
+  16sp medium white label centered in a 48dp-high row; the selected state swaps
+  in live_sport_landscape_quality_item_selected (translucent white fill + 30%
+  white 1dp stroke + 2dp corners) as the background.
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/quality_item_label"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginBottom="8dp"
+    android:background="@android:color/transparent"
+    android:fontFamily="sans-serif-medium"
+    android:gravity="center"
+    android:textColor="#FFFFFF"
+    android:textSize="16sp" />

@@ -1,0 +1,40 @@
+{
+  "doc_url_latency": "https://docs.byteplus.com/en/docs/byteplus-media-live/docs-introduction-to-real-time-media",
+  "doc_url_enhance": "https://docs.byteplus.com/en/docs/byteplus-media-live/docs-implementing-advanced-features-3?_vtm_=a78999.b69280.0_0.0_0.0.163_7654553914111542789#super-resolution",
+  "doc_url_cost": "https://docs.byteplus.com/en/docs/byteplus-media-live/docs-implementing-advanced-features-3?_vtm_=a78999.b69280.0_0.0_0.0.163_7654553914111542789#953988b6",
+  "latency": [
+    {
+      "protocol": "RTM",
+      "rtm_url": "http://pull-videoone.indiafcdn.com/live/live_compare.sdp"
+    },
+    {
+      "protocol": "FLV_LOW_LATENCY",
+      "flv_url": "http://pull-videoone.indiafcdn.com/live/live_compare.flv"
+    },
+    {
+      "protocol": "FLV",
+      "flv_url": "http://pull-videoone.indiafcdn.com/live/live_compare.flv"
+    },
+    {
+      "protocol": "HLS",
+      "hls_url": "http://pull-videoone.indiafcdn.com/live/live_compare.m3u8"
+    },
+    {
+      "protocol": "RTMPS",
+      "rtmps_url": "rtmp://pull-videoone.indiafcdn.com/live/live_compare"
+    }
+  ],
+  "enhance": {
+    "flv_url": "http://pull-videoone.indiafcdn.com/live/live_compare.flv"
+  },
+  "cost": {
+    "same_quality": {
+      "h265_url": "http://pull-videoone.indiafcdn.com/live/live_compare_hd-hevc.flv",
+      "h264_url": "http://pull-videoone.indiafcdn.com/live/live_compare_uhd.flv"
+    },
+    "same_bitrate": {
+      "h265_url": "http://pull-videoone.indiafcdn.com/live/live_compare_uhd-hevc.flv",
+      "h264_url": "http://pull-videoone.indiafcdn.com/live/live_compare_uhd.flv"
+    }
+  }
+}

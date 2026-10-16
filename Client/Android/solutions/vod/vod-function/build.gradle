@@ -3,6 +3,7 @@
 
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
 }
 
 android {
@@ -26,13 +27,17 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.javaLanguageVersion)
+        }
     }
 
     buildFeatures {
         viewBinding true
+    }
+    kotlinOptions {
+        freeCompilerArgs += '-Xjvm-default=all'
     }
 }
 
@@ -44,6 +49,9 @@ dependencies {
     implementation libs.cardview
     implementation libs.viewpager2
     implementation libs.swiperefreshlayout
+    implementation libs.core.ktx
+    implementation libs.fragment.ktx
+    // build.gradle (Module)
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
@@ -65,5 +73,6 @@ dependencies {
     implementation project(':solutions:vod:vod-playerkit:vod-player')
     implementation project(':solutions:vod:vod-playerkit:vod-player-ve')
     implementation project(':solutions:vod:vod-playerkit:vod-player-utils')
+    implementation project(':solutions:vod-cast')
 
 }

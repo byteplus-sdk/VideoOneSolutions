@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Inline "Select" pill used by the pull-protocol row in the settings panel
+  (Figma node 10904:17099). White fill with a 1dp #DDE2E9 hairline border and
+  4dp corner radius.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="#FFFFFF" />
+    <stroke
+        android:width="1dp"
+        android:color="#DDE2E9" />
+    <corners android:radius="4dp" />
+</shape>

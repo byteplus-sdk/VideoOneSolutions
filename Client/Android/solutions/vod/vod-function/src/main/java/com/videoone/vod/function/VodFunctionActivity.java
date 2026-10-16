@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.byteplus.vod.scenekit.ui.base.BaseActivity;
+import com.videoone.vod.function.fragment.CastingFunctionFragment;
 import com.videoone.vod.function.fragment.PlaylistFragment;
 import com.videoone.vod.function.fragment.PreventRecordingFragment;
 import com.videoone.vod.function.fragment.SubtitleFragment;
@@ -55,6 +56,11 @@ public class VodFunctionActivity extends BaseActivity {
                 }
                 case PLAYLIST: {
                     fragment = new PlaylistFragment();
+                    fragment.setArguments(intent.getExtras());
+                    break;
+                }
+                case CASTING: {
+                    fragment = new CastingFunctionFragment();
                     fragment.setArguments(intent.getExtras());
                     break;
                 }

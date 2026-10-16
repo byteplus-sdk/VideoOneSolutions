@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark back arrow for the comparison page head (light background). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <path
+        android:fillColor="#1D2129"
+        android:pathData="M13.7071 2.29288C14.0976 2.6834 14.0976 3.31657 13.7071 3.70709L7.41421 10L13.7071 16.2929C14.0976 16.6834 14.0976 17.3166 13.7071 17.7071C13.3166 18.0976 12.6834 18.0976 12.2929 17.7071L5.29289 10.7071C5.10536 10.5196 5 10.2652 5 10C5 9.73479 5.10536 9.48044 5.29289 9.2929L12.2929 2.29288C12.6834 1.90235 13.3166 1.90235 13.7071 2.29288Z" />
+</vector>

@@ -6,7 +6,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.ss.avframework.utils.TimeUtils;
+
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class MediaFileReader {
     }
 
     private void doBusiness() {
-        long timeUs = TimeUtils.nanoTime() / 1000;
+        long timeUs = System.nanoTime() / 1000;
         byte[] data = new byte[mFrameSize];
         try (FileInputStream dis = new FileInputStream(mFilePath)) {
             while (mEnable.get()) {
@@ -64,7 +64,7 @@ public class MediaFileReader {
                 mByteBuffer.flip();
                 mCallback.onByteBuffer(mByteBuffer, timeUs);
                 timeUs += mInterval * 1000;
-                long waitTimeUs = timeUs - (TimeUtils.nanoTime() / 1000);
+                long waitTimeUs = timeUs - (System.nanoTime() / 1000);
                 if (waitTimeUs > 0) {
                     SystemClock.sleep(waitTimeUs / 1000);
                 }
