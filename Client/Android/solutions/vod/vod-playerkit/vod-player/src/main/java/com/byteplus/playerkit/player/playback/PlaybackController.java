@@ -158,6 +158,7 @@ public class PlaybackController {
     private final SurfaceListener mSurfaceListener;
     protected final PlayerListener mPlayerListener;
     protected final Dispatcher mDispatcher;
+    private final FirstFrameMonitor mFirstFrameMonitor;
 
     private Runnable mStartOnReadyCommand;
 
@@ -174,6 +175,8 @@ public class PlaybackController {
         mSurfaceListener = new SurfaceListener(this);
         mPlayerListener = new PlayerListener(this);
         mDispatcher = new Dispatcher(Looper.getMainLooper());
+        mFirstFrameMonitor = new FirstFrameMonitor(this);
+        mDispatcher.addEventListener(mFirstFrameMonitor);
     }
 
     @MainThread
@@ -192,6 +195,7 @@ public class PlaybackController {
     public final void removeAllPlaybackListeners() {
         Asserts.checkMainThread();
         mDispatcher.removeAllEventListener();
+        mDispatcher.addEventListener(mFirstFrameMonitor);
     }
 
     @AnyThread
