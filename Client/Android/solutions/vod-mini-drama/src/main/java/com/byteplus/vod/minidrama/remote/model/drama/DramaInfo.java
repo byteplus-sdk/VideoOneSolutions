@@ -25,6 +25,8 @@ public class DramaInfo implements Serializable {
     public Orientation orientation = Orientation.PORTRAIT;
     @SerializedName("drama_length")
     public int totalEpisodeNumber;
+    @SerializedName("entry_episode")
+    public DramaEntryEpisode entryEpisode;
 
     @NonNull
     @Override

@@ -55,6 +55,7 @@ public class DramaCarouselView extends FrameLayout {
     private DramaCarouselAdapter mCarouselAdapter;
     private IndicatorAdapter mIndicatorAdapter;
     private int mHorizontalMarginPx = -1;
+    private Runnable mViewportChangedListener;
 
     public DramaCarouselView(@NonNull Context context) {
         this(context, null);
@@ -113,6 +114,9 @@ public class DramaCarouselView extends FrameLayout {
                 if (itemCount > 1) {
                     if (state == ViewPager2.SCROLL_STATE_IDLE) {
                         setCarouselAutoScroll(true);
+                        if (mViewportChangedListener != null) {
+                            mViewportChangedListener.run();
+                        }
                     } else if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
                         setCarouselAutoScroll(false);
                     }
@@ -149,6 +153,18 @@ public class DramaCarouselView extends FrameLayout {
         if (position >= 0) {
             mViewPager2.setCurrentItem(position, false);
         }
+    }
+
+    public void setViewportChangedListener(Runnable listener) {
+        mViewportChangedListener = listener;
+    }
+
+    @Nullable
+    public DramaInfo getCurrentItem() {
+        if (mCarouselAdapter.getItemCount() == 0) {
+            return null;
+        }
+        return mCarouselAdapter.getItem(mViewPager2.getCurrentItem());
     }
 
     @Override

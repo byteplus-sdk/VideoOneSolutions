@@ -45,7 +45,14 @@ public class DramaTheaterNewItemAdapter extends RecyclerView.Adapter<DramaTheate
 
     @Override
     public int getItemCount() {
-        return mItems.size();
+        return mItems == null ? 0 : mItems.size();
+    }
+
+    public DramaInfo getItem(int position) {
+        if (mItems == null || position < 0 || position >= mItems.size()) {
+            return null;
+        }
+        return mItems.get(position);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
