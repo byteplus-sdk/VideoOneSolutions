@@ -22,6 +22,7 @@ public class DramaTheaterNewAdapter extends RecyclerView.Adapter<DramaTheaterNew
         implements ViewItemType {
     private List<DramaInfo> mItems;
     private IDramaTheaterClickListener mDramaClickListener;
+    private Runnable mViewportChangedListener;
 
     public void setItems(List<DramaInfo> items, IDramaTheaterClickListener listener) {
         mItems = items;
@@ -40,7 +41,7 @@ public class DramaTheaterNewAdapter extends RecyclerView.Adapter<DramaTheaterNew
 
     @Override
     public void onBindViewHolder(@NonNull DramaTheaterNewAdapter.ViewHolder holder, int position) {
-        holder.bind(mItems, mDramaClickListener);
+        holder.bind(mItems, mDramaClickListener, mViewportChangedListener);
     }
 
     @Override
@@ -53,16 +54,23 @@ public class DramaTheaterNewAdapter extends RecyclerView.Adapter<DramaTheaterNew
         return RELEASE_NEW;
     }
 
+    public void setViewportChangedListener(Runnable listener) {
+        mViewportChangedListener = listener;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         final DramaTheaterNewItemAdapter adapter;
+        private final RecyclerView mRecyclerView;
+        private Runnable mViewportChangedListener;
 
         public ViewHolder(@NonNull VevodMiniDramaNewBinding binding) {
             super(binding.getRoot());
-            binding.dramaNewRecyclerview.setLayoutManager(new LinearLayoutManager(
+            mRecyclerView = binding.dramaNewRecyclerview;
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(
                     binding.getRoot().getContext(), RecyclerView.HORIZONTAL, false));
             adapter = new DramaTheaterNewItemAdapter();
-            binding.dramaNewRecyclerview.setAdapter(adapter);
-            binding.dramaNewRecyclerview.addItemDecoration(new RecyclerView.ItemDecoration() {
+            mRecyclerView.setAdapter(adapter);
+            mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
                 final int rectMargin = ViewUtils.dp2px(8);
                 @Override
                 public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
@@ -72,10 +80,39 @@ public class DramaTheaterNewAdapter extends RecyclerView.Adapter<DramaTheaterNew
                     outRect.right = position == adapter.getItemCount() - 1 ? 0 : rectMargin;
                 }
             });
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE
+                            && mViewportChangedListener != null) {
+                        mViewportChangedListener.run();
+                    }
+                }
+            });
         }
 
-        public void bind(List<DramaInfo> items, IDramaTheaterClickListener listener) {
+        public void bind(List<DramaInfo> items,
+                         IDramaTheaterClickListener listener,
+                         Runnable viewportChangedListener) {
+            mViewportChangedListener = viewportChangedListener;
             adapter.setItems(items, listener);
+        }
+
+        public void collectCandidates(List<DramaInfo> out, int lookAheadCount) {
+            RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
+            if (!(manager instanceof LinearLayoutManager layoutManager)) return;
+
+            int first = layoutManager.findFirstVisibleItemPosition();
+            int last = layoutManager.findLastVisibleItemPosition();
+            if (first == RecyclerView.NO_POSITION || last == RecyclerView.NO_POSITION) return;
+
+            int end = Math.min(adapter.getItemCount() - 1, last + lookAheadCount);
+            for (int position = first; position <= end; position++) {
+                DramaInfo item = adapter.getItem(position);
+                if (item != null) {
+                    out.add(item);
+                }
+            }
         }
     }
 }

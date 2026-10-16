@@ -124,6 +124,7 @@ public class DramaTheaterItemAdapter
     public static class ViewHolder extends RecyclerView.ViewHolder {
         final VevodMiniDramaTheaterGridItemBinding binding;
         final Context context;
+        private DramaInfo mItem;
 
         public ViewHolder(@NonNull VevodMiniDramaTheaterGridItemBinding binding) {
             super(binding.getRoot());
@@ -132,6 +133,7 @@ public class DramaTheaterItemAdapter
         }
 
         public void bind(DramaInfo drama, List<DramaInfo> items, IDramaTheaterClickListener listener) {
+            mItem = drama;
             binding.title.setText(drama.dramaTitle);
 
             Glide.with(binding.cover)
@@ -148,6 +150,10 @@ public class DramaTheaterItemAdapter
                     }
                 }
             }));
+        }
+
+        public DramaInfo getItem() {
+            return mItem;
         }
 
         public void bindPlayCount(DramaInfo drama) {

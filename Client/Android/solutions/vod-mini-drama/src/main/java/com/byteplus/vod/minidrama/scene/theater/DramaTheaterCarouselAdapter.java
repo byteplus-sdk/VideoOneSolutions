@@ -24,6 +24,7 @@ public class DramaTheaterCarouselAdapter extends RecyclerView.Adapter<DramaTheat
     @NonNull
     private List<DramaInfo> mItems = Collections.emptyList();
     private IDramaTheaterClickListener mDramaClickListener;
+    private Runnable mViewportChangedListener;
 
     @NonNull
     @Override
@@ -35,7 +36,7 @@ public class DramaTheaterCarouselAdapter extends RecyclerView.Adapter<DramaTheat
 
     @Override
     public void onBindViewHolder(@NonNull DramaTheaterCarouselAdapter.ViewHolder holder, int position) {
-        holder.bind(mItems, mDramaClickListener);
+        holder.bind(mItems, mDramaClickListener, mViewportChangedListener);
     }
 
     @Override
@@ -58,6 +59,10 @@ public class DramaTheaterCarouselAdapter extends RecyclerView.Adapter<DramaTheat
         notifyDataSetChanged();
     }
 
+    public void setViewportChangedListener(Runnable listener) {
+        mViewportChangedListener = listener;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final DramaCarouselView mCarouselView;
@@ -67,8 +72,15 @@ public class DramaTheaterCarouselAdapter extends RecyclerView.Adapter<DramaTheat
             mCarouselView = itemView;
         }
 
-        void bind(List<DramaInfo> items, IDramaTheaterClickListener listener) {
+        void bind(List<DramaInfo> items,
+                  IDramaTheaterClickListener listener,
+                  Runnable viewportChangedListener) {
+            mCarouselView.setViewportChangedListener(viewportChangedListener);
             mCarouselView.setItems(items, listener);
+        }
+
+        public DramaInfo getCurrentItem() {
+            return mCarouselView.getCurrentItem();
         }
     }
 }

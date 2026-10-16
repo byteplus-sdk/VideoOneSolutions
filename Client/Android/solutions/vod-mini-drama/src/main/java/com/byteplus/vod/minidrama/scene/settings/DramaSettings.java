@@ -6,6 +6,8 @@ import com.byteplus.playerkit.player.playback.AdsPlaybackController;
 
 public class DramaSettings {
     private static boolean ads = false;
+    private static boolean theaterEntryPreload = true;
+    private static boolean theaterResumePointPreload = true;
 
     public static void enableAds(boolean enable) {
         ads = enable;
@@ -37,5 +39,21 @@ public class DramaSettings {
 
     public static boolean isPostrollAdEnabled() {
         return AdsPlaybackController.isPostrollAdEnabled();
+    }
+
+    public static void enableTheaterEntryPreload(boolean enable) {
+        theaterEntryPreload = enable;
+    }
+
+    public static boolean isTheaterEntryPreloadEnabled() {
+        return theaterEntryPreload;
+    }
+
+    public static void enableTheaterResumePointPreload(boolean enable) {
+        theaterResumePointPreload = enable;
+    }
+
+    public static boolean isTheaterResumePointPreloadEnabled() {
+        return theaterResumePointPreload;
     }
 }
