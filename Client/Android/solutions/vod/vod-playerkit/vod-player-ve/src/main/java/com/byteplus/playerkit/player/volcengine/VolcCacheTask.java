@@ -249,6 +249,7 @@ class VolcCacheTask implements CacheLoader.Task {
         final VidPlayAuthTokenSource vidSource = Mapper.mediaSource2VidPlayAuthTokenSource(source);
         final long preloadSize = resolvePreloadSize(source, null);
         final PreloaderVidItem preloadItem = new PreloaderVidItem(vidSource, preloadSize);
+        preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
 
         L.v(VolcCacheTask.this, "preloadVid", source.getMediaId(), "start", preloadSize);
         preloadItem.setCallBackListener(new IPreLoaderItemCallBackListener() {
@@ -334,6 +335,7 @@ class VolcCacheTask implements CacheLoader.Task {
         final long preloadSize = resolvePreloadSize(source, target);
 
         final PreloaderURLItem preloadItem = new PreloaderURLItem(directUrlSource, preloadSize);
+        preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
 
         final Map<String, String> headers = target.getHeaders();
         if (headers != null) {
@@ -491,6 +493,7 @@ class VolcCacheTask implements CacheLoader.Task {
         final long preloadSize = resolvePreloadSize(target);
 
         final PreloaderVideoModelItem preloadItem = new PreloaderVideoModelItem(videoModelSource, preloadSize);
+        preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
 
         // TODO preloadItem setHeaders
 
@@ -597,6 +600,13 @@ class VolcCacheTask implements CacheLoader.Task {
             return preloadSize;
         }
         return DEFAULT_PRELOAD_SIZE;
+    }
+
+    private static long resolvePreloadStartTimestamp(@NonNull MediaSource source) {
+        Long timestamp = source.getExtra(
+                CacheLoader.Task.EXTRA_PRELOAD_START_TIMESTAMP_MS,
+                Long.class);
+        return timestamp == null ? 0 : Math.max(0, timestamp);
     }
 
     @Nullable

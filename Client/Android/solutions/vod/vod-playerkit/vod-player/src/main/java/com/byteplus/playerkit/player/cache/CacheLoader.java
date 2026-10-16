@@ -67,6 +67,7 @@ public interface CacheLoader {
     interface Task {
 
         String EXTRA_PRELOAD_SIZE_IN_BYTES = "extra_preload_size_in_bytes";
+        String EXTRA_PRELOAD_START_TIMESTAMP_MS = "extra_preload_start_timestamp_ms";
 
         interface Factory {
             Task create();
