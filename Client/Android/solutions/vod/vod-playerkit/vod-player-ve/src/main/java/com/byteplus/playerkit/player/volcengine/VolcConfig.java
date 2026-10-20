@@ -50,6 +50,8 @@ public class VolcConfig implements Serializable {
     public boolean enableEngineLooper = VolcEditions.isSupportEngineLooper();
     public boolean enableSeekEnd = true;
     public boolean enableFrameUpdateCallback = false;
+    /** 起播缓存水位，单位毫秒；0 表示沿用 SDK 自适应策略。 */
+    public int startupBufferingDataMS = 0;
     public int firstFrameBufferingTimeoutMS = 0;
     public int playbackBufferingTimeoutMS = 0;
     public boolean enableECDN = false;

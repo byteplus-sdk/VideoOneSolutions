@@ -36,10 +36,10 @@ import java.util.Set;
  * Maintains a bounded preload window for entry episodes shown on the drama theater page.
  */
 final class DramaBrowsePreloadCoordinator {
-    private static final int WIFI_CANDIDATE_LIMIT = 6;
+    private static final int WIFI_CANDIDATE_LIMIT = 5;
     private static final int METERED_CANDIDATE_LIMIT = 3;
     private static final int MAX_CONCURRENT_TASK_COUNT = 1;
-    private static final long PRELOAD_SIZE_IN_BYTES = 800L * 1024L;
+    private static final long PRELOAD_SIZE_IN_BYTES = 500L * 1024L;
     private static final long WIFI_SESSION_BUDGET_IN_BYTES =
             WIFI_CANDIDATE_LIMIT * PRELOAD_SIZE_IN_BYTES;
     private static final long METERED_SESSION_BUDGET_IN_BYTES =
@@ -131,6 +131,11 @@ final class DramaBrowsePreloadCoordinator {
             if (TextUtils.isEmpty(mediaId) || !desiredMediaIds.add(mediaId)) continue;
             desired.putIfAbsent(info.dramaId, info);
         }
+        L.d(this, "updateCandidates",
+                "candidateLimit", policy.candidateLimit,
+                "desiredCount", desired.size(),
+                "preloadBytes", PRELOAD_SIZE_IN_BYTES,
+                "runningCount", mRunningEntries.size());
 
         removeUndesiredQueuedTasks(desired.keySet());
         for (Entry entry : new ArrayList<>(mRunningEntries.values())) {
@@ -191,7 +196,12 @@ final class DramaBrowsePreloadCoordinator {
 
         mSessionReservedBytes += PRELOAD_SIZE_IN_BYTES;
         mRunningEntries.put(entry.dramaId, entry);
-        L.d(this, "startEntry", entry.dramaId, entry.mediaId, episode.resumePositionMs);
+        L.d(this, "startEntry",
+                "dramaId", entry.dramaId,
+                "mediaId", entry.mediaId,
+                "resumePositionMs", episode.resumePositionMs,
+                "preloadBytes", PRELOAD_SIZE_IN_BYTES,
+                "runningCount", mRunningEntries.size());
 
         mCacheLoader.preload(source, new CacheLoader.Task.Listener.Adapter() {
             @Override

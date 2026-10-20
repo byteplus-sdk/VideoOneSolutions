@@ -51,6 +51,13 @@ public class TTVideoEngineFactoryDefault implements TTVideoEngineFactory {
         player.setIntOption(TTVideoEngine.PLAYER_OPTION_INT_ENABLE_ERROR_THROW_OPTIMIZE, 1);
         player.setIntOption(TTVideoEngine.PLAYER_OPTION_GET_POSITION_SKIP_LOOPER, 1);
         player.setIntOption(TTVideoEngine.PLAYER_OPTION_POSITION_UPDATE_INTERVAL, 200);
+        if (volcConfig.startupBufferingDataMS > 0) {
+            player.setIntOption(
+                    TTVideoEngine.PLAYER_BUFFERING_DATA_OF_MILLISECONDS,
+                    volcConfig.startupBufferingDataMS);
+            L.d(this, "setup",
+                    "startupBufferingDataMS", volcConfig.startupBufferingDataMS);
+        }
 
         if (volcConfig.codecStrategyType == VolcConfig.CODEC_STRATEGY_DISABLE) {
             switch (volcConfig.playerDecoderType) {
