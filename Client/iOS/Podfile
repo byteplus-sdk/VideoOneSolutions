@@ -96,7 +96,7 @@ end
 
 def scene_MiniDramaWithInStreamAds_pods
   pod 'TTSDKFramework', $TT_SDK_VERSION, :subspecs => ['Player']
-  pod 'MediaAdsToB', '2.0.1'
+  pod 'MediaAdsToB', '2.0.3'
   pod 'MiniDramaWithInStreamAds', :path => './Component/MiniDramaWithInStreamAds'
 end
 

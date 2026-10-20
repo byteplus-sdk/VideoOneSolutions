@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2026 BytePlus Pte. Ltd. -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Track/fill are given an explicit height and vertical gravity so they stay a thin 2dp
+     line centered in the SeekBar, which is sized taller (8dp) to fit the round thumb. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@android:id/background"
+        android:gravity="center_vertical">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/vevod_mini_drama_ad_overlay_track" />
+            <corners android:radius="1dp" />
+            <size android:height="2dp" />
+        </shape>
+    </item>
+    <item
+        android:id="@android:id/progress"
+        android:gravity="center_vertical">
+        <clip>
+            <shape android:shape="rectangle">
+                <solid android:color="@color/vevod_mini_drama_ad_overlay_accent" />
+                <corners android:radius="1dp" />
+                <size android:height="2dp" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>

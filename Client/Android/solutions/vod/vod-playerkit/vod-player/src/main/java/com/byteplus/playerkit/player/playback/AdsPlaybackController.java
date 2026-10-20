@@ -9,7 +9,6 @@ import static com.byteplus.playerkit.utils.event.Dispatcher.EventListener;
 import android.view.Surface;
 import android.view.ViewGroup;
 import android.view.View;
-import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import android.graphics.Color;
@@ -26,6 +25,7 @@ import androidx.annotation.Nullable;
 import com.byteplus.mediaplus.mediaads.api.MediaAds;
 import com.byteplus.mediaplus.mediaads.api.AdPlaybackSession;
 import com.byteplus.mediaplus.mediaads.api.AdViewContainer;
+import com.byteplus.mediaplus.mediaads.api.AdObstruction;
 import com.byteplus.mediaplus.mediaads.api.AdPlayEvent;
 import com.byteplus.mediaplus.mediaads.api.AdSchedule;
 import com.byteplus.mediaplus.mediaads.api.AdAppInfo;
@@ -85,7 +85,9 @@ public class AdsPlaybackController extends PlaybackController {
 
     private final AdsPlayerListener mAdsPlayerListener = new AdsPlayerListener(this);
     private AdPlaybackSession mSession = null;
-    private static int mAdViewId = -1;
+    private int mAdViewId = -1;
+    private FrameLayout mAdContainerView = null;
+    private AdOverlayProvider.AdOverlay mAdOverlay = null;
 
     @MainThread
     public AdsPlaybackController() {
@@ -112,7 +114,7 @@ public class AdsPlaybackController extends PlaybackController {
             super.player().removePlayerListener(mAdsPlayerListener);
         }
         super.unbindPlayer(recycle);
-        mSession = null;
+        teardownAdSession();
     }
 
     private static String formatDuration(long millis) {
@@ -135,46 +137,61 @@ public class AdsPlaybackController extends PlaybackController {
     private List<AdBreakItem> createAdBreaks(long duration) {
         List<AdBreakItem> adBreaks = new ArrayList<AdBreakItem>();
         if (preroll) {
-            AdBreakItem.Builder preBrBuilder = new AdBreakItem.Builder();
-            preBrBuilder.setVastAdTagUrl(AdSources.prerollUrl);
-            preBrBuilder.setTimeOffset(AdBreakItem.TIME_OFFSET_START);
-            adBreaks.add(preBrBuilder.build());
+            AdBreakItem prerollBr = new AdBreakItem.Builder()
+                    .setVastAdTagUrl(AdSources.prerollUrl)
+                    .setTimeOffset(AdBreakItem.TIME_OFFSET_START)
+                    .build();
+            adBreaks.add(prerollBr);
         }
 
         if (midroll) {
-            AdBreakItem.Builder mid1BrBuilder = new AdBreakItem.Builder();
-            mid1BrBuilder.setVastAdTagUrl(AdSources.midrollUrl);
-            mid1BrBuilder.setTimeOffset(formatDuration(duration/2));
-            adBreaks.add(mid1BrBuilder.build());
+            String midOffset = formatDuration(duration / 2);
+            // two ad breaks at the same offset reproduce the 2-ad midroll pod
+            AdBreakItem midBr1 = new AdBreakItem.Builder()
+                    .setVastAdTagUrl(AdSources.midrollUrl)
+                    .setTimeOffset(midOffset)
+                    .build();
+            adBreaks.add(midBr1);
+
+            AdBreakItem midBr2 = new AdBreakItem.Builder()
+                    .setVastAdTagUrl(AdSources.midrollUrl2)
+                    .setTimeOffset(midOffset)
+                    .build();
+            adBreaks.add(midBr2);
         }
 
         if (postroll) {
-            AdBreakItem.Builder postBrBuilder = new AdBreakItem.Builder();
-            postBrBuilder.setVastAdTagUrl(AdSources.postrollUrl);
-            postBrBuilder.setTimeOffset(AdBreakItem.TIME_OFFSET_END);
-            adBreaks.add(postBrBuilder.build());
+            AdBreakItem postBr = new AdBreakItem.Builder()
+                    .setVastAdTagUrl(AdSources.postrollUrl)
+                    .setTimeOffset(AdBreakItem.TIME_OFFSET_END)
+                    .build();
+            adBreaks.add(postBr);
         }
 
         return adBreaks;
     }
 
     private AdSchedule creatAdSchedule(long duration) {
-        AdAppInfo.Builder appInfo = new AdAppInfo.Builder();
-        appInfo.setAppId(BuildConfig.VOD_APP_ID);
-        appInfo.setAppName(BuildConfig.VOD_APP_NAME);
-        appInfo.setAppChannel(BuildConfig.VOD_APP_CHANNEL);
+        AdAppInfo appInfo = new AdAppInfo.Builder()
+                .setAppId(BuildConfig.VOD_APP_ID)
+                .setAppName(BuildConfig.VOD_APP_NAME)
+                .setAppChannel(BuildConfig.VOD_APP_CHANNEL)
+                .build();
 
-        AdConfig.Builder adConfig = new AdConfig.Builder();
-        adConfig.setAppInfo(appInfo.build());
-        adConfig.setEnablePreloadVast(true);    
-        adConfig.setEnablePreloadAdMediaFile(true);
-        adConfig.setEnablePreRenderAdPlayer(true);
+        AdConfig adConfig = new AdConfig.Builder()
+                .setAppInfo(appInfo)
+                .setEnablePreloadVast(true)
+                .setEnablePreloadAdMediaFile(true)
+                .setEnablePreRenderAdPlayer(true)
+                .setDisableDefaultAdUI(true) // disable default UI to use custom overlay instead
+                .build();
 
-        AdSchedule.Builder adSchedule = new AdSchedule.Builder();
-        adSchedule.setAdConfig(adConfig.build());
-        adSchedule.setAdBreaks(createAdBreaks(duration));
+        AdSchedule adSchedule = new AdSchedule.Builder()
+                .setAdConfig(adConfig)
+                .setAdBreaks(createAdBreaks(duration))
+                .build();
 
-        return adSchedule.build();
+        return adSchedule;
     }
 
     private AdPlaybackSession createAdPlaybackSession(VideoView view) {
@@ -182,26 +199,99 @@ public class AdsPlaybackController extends PlaybackController {
         MediaAds.instance().getContentPlayerFactoryMap().put(PlayerClass, new VideoContentPlayer.Factory());
         AdPlaybackSession session = MediaAds.instance().createAdSession(view.getContext());
 
-        session.setAdViewContainer(createAdViewContainer((view)));
+        AdViewContainer adViewContainer = createAdViewContainer(view);
+        session.setAdViewContainer(adViewContainer);
 
-        session.addListener( (@NonNull AdPlaybackSession s, @NonNull AdPlayEvent e) -> {
-                Activity activity = (Activity) view.getContext();
-                ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-                View backgroundView = decorView.findViewById(mAdViewId);
-                if (backgroundView != null) {
-                    if (session.isAdShowing()) { 
-                        backgroundView.setBackgroundColor(Color.BLACK);
-                    } else {
-                        backgroundView.setBackgroundColor(Color.TRANSPARENT);
-                    }
-                }
+        // custom display-only ad overlay rendered above the ad container
+        setupAdOverlay(view, adViewContainer);
 
-                if (e.type == AdPlayEvent.Type.PLAY_COMPLETED) {
-                    mDispatcher.obtain(StateCompleted.class, super.player()).dispatch();
-                }
-            });
+        final WeakReference<AdsPlaybackController> ref = new WeakReference<>(this);
+        session.addListener((@NonNull AdPlaybackSession s, @NonNull AdPlayEvent e) -> {
+            final AdsPlaybackController controller = ref.get();
+            if (controller != null) {
+                controller.onAdSessionEvent(s, e);
+            }
+        });
 
         return session;
+    }
+
+    private void onAdSessionEvent(@NonNull AdPlaybackSession session, @NonNull AdPlayEvent e) {
+        // keep the ad container opaque (black) while an ad is showing so the letterbox bars
+        // around the ad are black
+        setAdBackgroundOpaque(session.isAdShowing());
+
+        driveAdOverlay(e);
+
+        if (e.type == AdPlayEvent.Type.PLAY_COMPLETED && mDispatcher != null) {
+            mDispatcher.obtain(StateCompleted.class, super.player()).dispatch();
+        }
+    }
+
+    private void setAdBackgroundOpaque(boolean opaque) {
+        final VideoView view = videoView();
+        if (view != null && view.getContext() instanceof Activity) {
+            Activity activity = (Activity) view.getContext();
+            ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+            View backgroundView = decorView.findViewById(mAdViewId);
+            if (backgroundView != null) {
+                backgroundView.setBackgroundColor(opaque ? Color.BLACK : Color.TRANSPARENT);
+            }
+        }
+    }
+
+    private void setupAdOverlay(VideoView view, AdViewContainer adViewContainer) {
+        AdOverlayProvider provider = AdOverlayProvider.Holder.get();
+        if (provider == null || mAdContainerView == null) {
+            return;
+        }
+        mAdOverlay = provider.createOverlay(view.getContext());
+        if (mAdOverlay == null) {
+            return;
+        }
+        View overlayView = mAdOverlay.getView();
+        overlayView.setVisibility(View.GONE);
+        mAdContainerView.addView(overlayView, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT));
+        // register the overlay with the ad SDK so it is treated as a friendly obstruction
+        AdObstruction obstruction = new AdObstruction.Builder()
+                .setView(overlayView)
+                .setPurpose(AdObstruction.Purpose.VIDEO_CONTROLS)
+                .setDetailedReason("Custom ad controls overlay")
+                .build();
+        adViewContainer.registerFriendlyObstruction(obstruction);
+    }
+
+    private void driveAdOverlay(@NonNull AdPlayEvent e) {
+        if (mAdOverlay == null) {
+            return;
+        }
+        final View overlayView = mAdOverlay.getView();
+        switch (e.type) {
+            case AD_STARTED:
+            case AD_RESUMED:
+                mAdOverlay.reset();
+                overlayView.setVisibility(View.VISIBLE);
+                overlayView.bringToFront();
+                break;
+            case AD_PROGRESS_UPDATED: {
+                long current = e.getLong(AdPlayEvent.Param.LONG_VIDEO_PROGRESS_MS, 0);
+                long total = e.getLong(AdPlayEvent.Param.LONG_VIDEO_DURATION_MS, 0);
+                mAdOverlay.updateProgress(current, total);
+                break;
+            }
+            case AD_COMPLETED:
+            case AD_STOPPED:
+            case AD_ERROR:
+            case AD_ALL_COMPLETED:
+            case CONTENT_ACTION_PLAY:
+                overlayView.setVisibility(View.GONE);
+                mAdOverlay.reset();
+                break;
+            default:
+                break;
+        }
     }
 
     private AdViewContainer createAdViewContainer(ViewGroup view) {
@@ -211,7 +301,7 @@ public class AdsPlaybackController extends PlaybackController {
         ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
 
         if (mAdViewId == -1 || decorView.findViewById(mAdViewId) == null) {
-            FrameLayout frameLayout = new FrameLayout(view.getContext()) {};
+            FrameLayout frameLayout = new FrameLayout(view.getContext());
             
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -231,12 +321,32 @@ public class AdsPlaybackController extends PlaybackController {
             frameLayout.setId(mAdViewId);
 
             decorView.addView(frameLayout);
+            mAdContainerView = frameLayout;
             adViewContainer.setAdContainerView(frameLayout);
         } else {
-            adViewContainer.setAdContainerView(decorView.findViewById(mAdViewId));
+            mAdContainerView = decorView.findViewById(mAdViewId);
+            adViewContainer.setAdContainerView(mAdContainerView);
         }
 
+        applyLandscapeHorizontalInset();
+
         return adViewContainer;
+    }
+
+    // fixed horizontal padding applied to the ad container in landscape so IMA's corner UI
+    // is not clipped at the physical screen edges
+    private void applyLandscapeHorizontalInset() {
+        final int AD_LANDSCAPE_HORIZONTAL_INSET_DP = 36;
+        if (mAdContainerView == null) return;
+        boolean landscape = mAdContainerView.getResources().getConfiguration().orientation
+                == android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+        if (!landscape) {
+            mAdContainerView.setPadding(0, 0, 0, 0);
+            return;
+        }
+        float density = mAdContainerView.getResources().getDisplayMetrics().density;
+        int inset = (int) (AD_LANDSCAPE_HORIZONTAL_INSET_DP * density + 0.5f);
+        mAdContainerView.setPadding(inset, 0, inset, 0);
     }
 
     @Override
@@ -245,7 +355,7 @@ public class AdsPlaybackController extends PlaybackController {
 
         if (mSession == null) {
             player.prepare(viewSource);
-        } else {
+        } else if (!player.isReleased()) {
             mSession.play();
         }
     }
@@ -259,9 +369,34 @@ public class AdsPlaybackController extends PlaybackController {
 
     @MainThread 
     protected void stopPlayer() {
+        // tear the ad session down so a reused/recycled controller does not try to resume a
+        // released playback engine via a stale session
+        teardownAdSession();
+    }
+
+    // reset all ad state and removes the ad-related views
+    @MainThread
+    private void teardownAdSession() {
         if (mSession != null) {
+            mSession.clearListeners();
             mSession.stop();
+            mSession = null;
         }
+        if (mAdOverlay != null) {
+            View overlayView = mAdOverlay.getView();
+            if (overlayView.getParent() instanceof ViewGroup) {
+                ((ViewGroup) overlayView.getParent()).removeView(overlayView);
+            }
+            mAdOverlay = null;
+        }
+        if (mAdContainerView != null) {
+            mAdContainerView.setBackgroundColor(Color.TRANSPARENT);
+            if (mAdContainerView.getParent() instanceof ViewGroup) {
+                ((ViewGroup) mAdContainerView.getParent()).removeView(mAdContainerView);
+            }
+            mAdContainerView = null;
+        }
+        mAdViewId = -1;
     }
 
     private static final class AdsPlayerListener implements EventListener {
@@ -279,16 +414,22 @@ public class AdsPlaybackController extends PlaybackController {
             if (controller != null) {
 
                 if (event.code() == PlayerEvent.State.PREPARED) {
+                    final Player player = controller.player();
+                    if (player == null || player.isReleased()) {
+                        return;
+                    }
                     if (controller.mSession == null) {
-                        long duration = controller.player().getDuration();
+                        long duration = player.getDuration();
                         controller.mSession = controller.createAdPlaybackSession(controller.videoView());
 
                         VideoContentPlayer.Factory f = new VideoContentPlayer.Factory();
-                        ContentPlayer cp = f.create(controller.player());
+                        ContentPlayer cp = f.create(player);
                         controller.mSession.setContentPlayer(cp);
                         controller.mSession.setSchedule(controller.creatAdSchedule(duration));
                     }
-                    controller.mSession.play();
+                    if (controller.mSession != null) {
+                        controller.mSession.play();
+                    }
                 }
 
                 final Dispatcher dispatcher = controller.mDispatcher;

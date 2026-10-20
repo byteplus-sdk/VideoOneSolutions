@@ -454,6 +454,14 @@ UIGestureRecognizerDelegate
 #pragma mark ---- PageViewControllerDataSource & Delegate
 
 - (NSInteger)numberOfItemInPageViewController:(MDPageViewController *)pageViewController {
+    if (MDAdGlobalSettings.adsEnabled) {
+        NSInteger n = 0;
+        for (MDDramaEpisodeInfoModel *model in self.dramaVideoModels) {
+            if (model.vip) break;
+            n++;
+        }
+        return n;
+    }
     return self.dramaVideoModels.count;
 }
 
