@@ -88,6 +88,7 @@ public class TTVideoEngineFactoryDefault implements TTVideoEngineFactory {
             player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_HLS_SEAMLESS_SWITCH, 1);
             player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_MASTER_M3U8_OPTIMIZE, 1);
         }
+        VolcHlsSelectionStrategy.setup(player, mediaSource);
         if (volcConfig.enableDash) {
             player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_DASH, 1);
         }
