@@ -8,6 +8,7 @@ import static com.byteplus.vod.minidrama.scene.detail.DramaDetailVideoActivityRe
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
@@ -21,18 +22,24 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.byteplus.playerkit.player.cache.CacheLoader;
+import com.byteplus.playerkit.player.utils.ProgressRecorder;
 import com.byteplus.vod.minidrama.remote.api.HttpCallback;
+import com.byteplus.vod.minidrama.remote.model.drama.DramaEntryEpisode;
 import com.byteplus.vod.minidrama.remote.model.drama.DramaInfo;
 import com.byteplus.vod.minidrama.remote.model.drama.DramaTheaterEntity;
 import com.byteplus.vod.minidrama.remote.model.drama.DramaTheaterType;
 import com.byteplus.vod.minidrama.scene.data.DramaItem;
 import com.byteplus.vod.minidrama.remote.GetDramas;
 import com.byteplus.vod.minidrama.scene.detail.DramaDetailVideoActivityResultContract;
+import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
 import com.byteplus.vod.minidrama.utils.L;
 import com.byteplus.minidrama.R;
 import com.byteplus.minidrama.databinding.VevodMiniDramaTheaterFragmentBinding;
+import com.byteplus.vod.scenekit.data.model.VideoItem;
 import com.byteplus.vod.scenekit.utils.ViewUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DramaTheaterFragment extends Fragment {
@@ -44,15 +51,18 @@ public class DramaTheaterFragment extends Fragment {
     private DramaTheaterNewAdapter mNewAdapter;
     private DramaTheaterHeaderAdapter mRecommendHeaderAdapter;
     private DramaTheaterItemAdapter mRecommendAdapter;
+    private DramaHomePreloader mHomePreloader;
+    private DramaTheaterEntity mHomeData;
+
     public ActivityResultLauncher<Input> mDramaDetailPageLauncher
             = registerForActivityResult(new DramaDetailVideoActivityResultContract(), result -> {
     });
 
     private final IDramaTheaterClickListener mDramaClickListener = (info, position, infos) -> {
-        Input input = new Input(
-                DramaItem.createByDramaInfos(infos),
-                position
-        );
+        if (mHomePreloader != null) {
+            mHomePreloader.stop();
+        }
+        Input input = new Input(createDramaItems(infos), position);
         mDramaDetailPageLauncher.launch(input);
     };
 
@@ -83,6 +93,9 @@ public class DramaTheaterFragment extends Fragment {
 
         mRefreshLayout = binding.swipeRefreshLayout;
         binding.swipeRefreshLayout.setOnRefreshListener(this::refresh);
+        if (DramaSettings.isTheaterEntryPreloadEnabled()) {
+            mHomePreloader = new DramaHomePreloader(CacheLoader.Default.get());
+        }
 
         ConcatAdapter adapter = new ConcatAdapter(
                 new ConcatAdapter.Config.Builder()
@@ -163,11 +176,13 @@ public class DramaTheaterFragment extends Fragment {
     private void refresh() {
         L.d(this, "refresh", "start refresh");
         showRefreshing();
-        mRemoteApi.getDramaChannel(new HttpCallback<>() {
+        mRemoteApi.getDramaChannel(
+                DramaSettings.isTheaterEntryPreloadEnabled(),
+                new HttpCallback<>() {
             @Override
             public void onSuccess(DramaTheaterEntity result) {
                 L.d(this, "refresh", "success");
-                if (getActivity() == null) return;
+                if (!isAdded() || mRefreshLayout == null) return;
                 dismissRefreshing();
 
                 List<DramaInfo> list;
@@ -191,12 +206,14 @@ public class DramaTheaterFragment extends Fragment {
                         }
                     }
                 }
+                mHomeData = result;
+                preloadHome();
             }
 
             @Override
             public void onError(Throwable e) {
                 L.d(this, "refresh", e, "error");
-                if (getActivity() == null) return;
+                if (!isAdded() || mRefreshLayout == null) return;
                 dismissRefreshing();
                 Toast.makeText(getActivity(), e.getMessage() + "", Toast.LENGTH_LONG).show();
             }
@@ -204,10 +221,79 @@ public class DramaTheaterFragment extends Fragment {
     }
 
     private void dismissRefreshing() {
-        mRefreshLayout.setRefreshing(false);
+        if (mRefreshLayout != null) {
+            mRefreshLayout.setRefreshing(false);
+        }
     }
 
     private void showRefreshing() {
-        mRefreshLayout.setRefreshing(true);
+        if (mRefreshLayout != null) {
+            mRefreshLayout.setRefreshing(true);
+        }
+    }
+
+    private void preloadHome() {
+        if (isResumed() && mHomePreloader != null && mHomeData != null) {
+            mHomePreloader.preload(mHomeData);
+        }
+    }
+
+    private static List<DramaItem> createDramaItems(List<DramaInfo> infos) {
+        List<DramaItem> items = new ArrayList<>(infos.size());
+        final long nowMs = System.currentTimeMillis();
+        for (DramaInfo info : infos) {
+            DramaItem item = new DramaItem(info, 1);
+            DramaEntryEpisode entryEpisode = info.entryEpisode;
+            if (entryEpisode != null && entryEpisode.isUsable(nowMs)) {
+                if (TextUtils.isEmpty(entryEpisode.feed.dramaId)) {
+                    entryEpisode.feed.dramaId = info.dramaId;
+                }
+                VideoItem videoItem = entryEpisode.feed.toVideoItem();
+                VideoItem.syncProgress(videoItem, true);
+                item.currentItem = videoItem;
+                item.currentEpisodeNumber = entryEpisode.feed.episodeNumber;
+
+                long localProgress = ProgressRecorder.getProgress(entryEpisode.feed.vid);
+                if (localProgress <= 0 && entryEpisode.resumePositionMs > 0) {
+                    ProgressRecorder.recordProgress(
+                            entryEpisode.feed.vid,
+                            entryEpisode.resumePositionMs);
+                }
+            }
+            items.add(item);
+        }
+        return items;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        preloadHome();
+    }
+
+    @Override
+    public void onPause() {
+        if (mHomePreloader != null) {
+            mHomePreloader.stop();
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        mRemoteApi.cancel();
+        if (mHomePreloader != null) {
+            mHomePreloader.stop();
+            mHomePreloader = null;
+        }
+        mHomeData = null;
+        mRefreshLayout = null;
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        mRemoteApi.cancel();
+        super.onDestroy();
     }
 }

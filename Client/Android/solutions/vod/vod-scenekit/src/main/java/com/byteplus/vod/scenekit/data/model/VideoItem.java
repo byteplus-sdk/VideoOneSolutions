@@ -14,6 +14,7 @@ import com.byteplus.playerkit.player.source.Subtitle;
 import com.byteplus.playerkit.player.source.Track;
 import com.byteplus.playerkit.player.volcengine.Mapper;
 import com.byteplus.playerkit.player.volcengine.VolcConfig;
+import com.byteplus.playerkit.player.volcengine.VolcScene;
 import com.byteplus.playerkit.utils.ExtraObject;
 import com.byteplus.playerkit.utils.MD5;
 import com.byteplus.vod.scenekit.VideoSettings;
@@ -29,6 +30,7 @@ import java.util.List;
 
 public class VideoItem extends ExtraObject implements ViewItem, Serializable {
     public static final String EXTRA_VIDEO_ITEM = "extra_video_item";
+    private static final int SHORT_VIDEO_STARTUP_BUFFER_MS = 1000;
 
     public static final String PLAY_AUTH_TOKEN_NULL = "beb41110-b664-44f5-b9e7-05018684ca17";
     public static final String PLAY_AUTH_TOKEN_EMPTY = "2620463e-cbd6-4789-8da8-029e90c32b54";
@@ -407,6 +409,9 @@ public class VideoItem extends ExtraObject implements ViewItem, Serializable {
         volcConfig.sourceEncodeType = VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265) ? Track.ENCODER_TYPE_H265 : Track.ENCODER_TYPE_H264;
         volcConfig.enableSubtitle = true;
         volcConfig.qualityConfig = VideoQuality.sceneQualityConfig(videoItem.playScene);
+        if (videoItem.playScene == VolcScene.SCENE_SHORT_VIDEO) {
+            volcConfig.startupBufferingDataMS = SHORT_VIDEO_STARTUP_BUFFER_MS;
+        }
 
         volcConfig.tag = videoItem.tag;
         volcConfig.subTag = videoItem.subTag;

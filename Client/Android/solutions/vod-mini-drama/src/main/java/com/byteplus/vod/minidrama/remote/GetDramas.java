@@ -32,8 +32,21 @@ import retrofit2.Response;
 public class GetDramas extends CallMemories {
 
     public void getDramaChannel(HttpCallback<DramaTheaterEntity> callback) {
-        GetDramaChannelRequest request = new GetDramaChannelRequest();
-        Call<ServerReturnResponse<DramaTheaterEntity>> call = remember(MiniDramaServer.dramaApi().getDramaChannel(request));
+        getDramaChannel(true, callback);
+    }
+
+    public void getDramaChannel(
+            boolean includeEntryEpisode,
+            HttpCallback<DramaTheaterEntity> callback) {
+        SolutionDataManager dataManager = SolutionDataManager.ins();
+        GetDramaChannelRequest request = new GetDramaChannelRequest(
+                dataManager.getUserId(),
+                includeEntryEpisode,
+                Params.Value.format(),
+                Params.Value.codec(),
+                Params.Value.fileType());
+        Call<ServerReturnResponse<DramaTheaterEntity>> call = remember(
+                MiniDramaServer.dramaApi().getDramaChannel(dataManager.getToken(), request));
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(

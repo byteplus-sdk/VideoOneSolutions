@@ -490,7 +490,7 @@ class VolcCacheTask implements CacheLoader.Task {
         VideoModelSource videoModelSource = Mapper.mediaSource2VideoModelSource(source, mCacheKeyFactory);
         if (videoModelSource == null) return;
 
-        final long preloadSize = resolvePreloadSize(target);
+        final long preloadSize = resolvePreloadSize(source, target);
 
         final PreloaderVideoModelItem preloadItem = new PreloaderVideoModelItem(videoModelSource, preloadSize);
         preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
