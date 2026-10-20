@@ -7,14 +7,27 @@ Wi-Fi and cellular use the same parameters; the SDK schedules the downloads.
 
 `DramaHomePreloader` submits the tasks after the home response arrives. If the
 server supplies a usable `entry_episode`, it uses that episode and its resume
-position. Otherwise this demo calls `getDramaList` for each selected drama and
-uses the first unlocked, authorized episode. A customer backend should return
-entry episodes in the home response to avoid these extra requests.
+position. The current demo server does not provide this metadata, so the demo
+calls `getDramaList` for each selected drama: up to nine extra business HTTP
+requests, each returning a full episode list. It picks the first unlocked,
+authorized episode in response order; it does not require episode number 1
+and does not resolve the user's server-side continuation history.
 
+**Demo-only fallback: do not copy the per-drama requests into production.**
+The production home API should return entry episodes, playback authorization
+and resume positions in one batch. If an entry is missing or invalid, skip its
+home preload and use the normal detail-loading flow after the user taps.
+
+The nine home entries use **data preloading only**. The home page does not
+create a player, call `prepareAsync`, or enable the pre-render scene strategy.
 On tap or when the home page leaves the foreground, home tasks and outstanding
 entry requests stop. Downloaded cache remains available. The detail page uses
-its existing `MiniDramaVideoStrategy` for following-episode preloading and
-pre-rendering; it does not inherit a nine-video home configuration.
+its existing `MiniDramaVideoStrategy`: enable preload and pre-render, then
+submit playable episodes in playback order. The SDK chooses which following
+entries to prepare according to its effective strategy. It creates and prepares
+a player for a candidate; switching to that episode reuses the prepared engine
+when available, otherwise normal player creation applies. The home-page count
+of nine does not set the number of pre-render engines.
 
 ## Manual verification
 

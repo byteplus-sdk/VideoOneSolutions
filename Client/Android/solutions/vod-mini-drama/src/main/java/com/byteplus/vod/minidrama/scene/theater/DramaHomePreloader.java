@@ -27,6 +27,7 @@ import java.util.Set;
 
 /**
  * 首页数据返回后，为前 9 个不同剧目各预加载一个入口视频。
+ * 首页只创建数据预加载任务，不创建预渲染播放器；详情页再启用原有预渲染策略。
  * 滚动不改变任务；点击或离开首页时停止任务，播放页继续使用原有场景策略。
  */
 final class DramaHomePreloader {
@@ -60,11 +61,15 @@ final class DramaHomePreloader {
                         && !TextUtils.isEmpty(entry.getMediaId())) {
                     preloadEntry(info, index, generation);
                 } else {
-                    // 兼容尚未返回 entry_episode 的 Demo 服务端；客户接入建议批量返回入口数据。
+                    // 仅用于 Demo 验证：当前服务端不返回入口信息，为选中的剧目逐个请求列表。
+                    // 线上不要照搬此方式：9 个剧目会增加最多 9 次业务 HTTP 请求及完整列表数据。
+                    // 应由首页接口批量返回 entry_episode、播放凭证和续播位置；
+                    // 缺失或无效时跳过首页预加载，点击后再走正常详情加载。
                     mRemoteApi.getDramaList(info.dramaId, new HttpCallback<>() {
                         @Override
                         public void onSuccess(List<DramaFeed> feeds) {
                             if (generation != mGeneration) return;
+                            // 按返回顺序取首条可播放集，未强制 order=1，也不还原服务端续播历史。
                             for (DramaFeed feed : feeds) {
                                 if (feed == null || feed.isLocked()
                                         || TextUtils.isEmpty(feed.vid) || feed.episodeNumber <= 0) continue;
