@@ -158,6 +158,7 @@ public class PlaybackController {
     private final SurfaceListener mSurfaceListener;
     protected final PlayerListener mPlayerListener;
     protected final Dispatcher mDispatcher;
+    private final FirstFrameMonitor mFirstFrameMonitor;
 
     private Runnable mStartOnReadyCommand;
 
@@ -174,6 +175,10 @@ public class PlaybackController {
         mSurfaceListener = new SurfaceListener(this);
         mPlayerListener = new PlayerListener(this);
         mDispatcher = new Dispatcher(Looper.getMainLooper());
+        // 与播放事件共用调度器，保证首帧统计的事件顺序和时间基准一致。
+        // Share the playback dispatcher to keep monitoring event order and timestamps consistent.
+        mFirstFrameMonitor = new FirstFrameMonitor(this);
+        mDispatcher.addEventListener(mFirstFrameMonitor);
     }
 
     @MainThread
@@ -192,6 +197,9 @@ public class PlaybackController {
     public final void removeAllPlaybackListeners() {
         Asserts.checkMainThread();
         mDispatcher.removeAllEventListener();
+        // 清理业务监听器后保留内部监控，后续播放仍可统计。
+        // Keep the internal monitor after clearing app listeners so later playback is still measured.
+        mDispatcher.addEventListener(mFirstFrameMonitor);
     }
 
     @AnyThread
