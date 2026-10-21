@@ -43,6 +43,9 @@ public class VolcConfig implements Serializable {
     public int playerDecoderType;
     @Track.EncoderType
     public int sourceEncodeType;
+    // 播放器工厂据此应用场景专属起播配置。
+    // The player factory uses this scene to apply startup settings.
+    public int playScene = VolcScene.SCENE_UNKNOWN;
     public boolean enableAudioTrackVolume = false;
     public boolean enableHlsSeamlessSwitch = VolcEditions.isSupportHLSSeamLessSwitch();
     // Master 请求优化单独启用，默认关闭。

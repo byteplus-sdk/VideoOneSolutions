@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TTVideoEngineFactoryDefault implements TTVideoEngineFactory {
+    private static final int NOTIFY_BUFFERING_DIRECTLY_DISABLED = 0;
 
     @Override
     public TTVideoEngine create(Context context, MediaSource mediaSource) {
@@ -51,6 +52,16 @@ public class TTVideoEngineFactoryDefault implements TTVideoEngineFactory {
         player.setIntOption(TTVideoEngine.PLAYER_OPTION_INT_ENABLE_ERROR_THROW_OPTIMIZE, 1);
         player.setIntOption(TTVideoEngine.PLAYER_OPTION_GET_POSITION_SKIP_LOOPER, 1);
         player.setIntOption(TTVideoEngine.PLAYER_OPTION_POSITION_UPDATE_INTERVAL, 200);
+        // 短视频场景在 prepare 前关闭起播水位，播放与预渲染共用。
+        // Disable startup buffering before prepare for short-video playback and pre-rendering.
+        if (volcConfig.playScene == VolcScene.SCENE_SHORT_VIDEO) {
+            player.setIntOption(
+                    TTVideoEngine.PLAYER_OPTION_NOTIFY_BUFFERING_DIRECTLY,
+                    NOTIFY_BUFFERING_DIRECTLY_DISABLED);
+            L.d(this, "setup",
+                    "notifyBufferingDirectly", NOTIFY_BUFFERING_DIRECTLY_DISABLED);
+        }
+
         if (volcConfig.codecStrategyType == VolcConfig.CODEC_STRATEGY_DISABLE) {
             switch (volcConfig.playerDecoderType) {
                 case Player.DECODER_TYPE_HARDWARE:

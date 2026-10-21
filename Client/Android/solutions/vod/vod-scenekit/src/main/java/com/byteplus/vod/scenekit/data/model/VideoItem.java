@@ -405,6 +405,9 @@ public class VideoItem extends ExtraObject implements ViewItem, Serializable {
         volcConfig.codecStrategyType = VideoSettings.intValue(VideoSettings.COMMON_CODEC_STRATEGY);
         volcConfig.playerDecoderType = VideoSettings.intValue(VideoSettings.COMMON_HARDWARE_DECODE);
         volcConfig.sourceEncodeType = VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265) ? Track.ENCODER_TYPE_H265 : Track.ENCODER_TYPE_H264;
+        // 传递场景，使普通播放和预渲染采用一致的起播缓冲配置。
+        // Carry the scene so playback and pre-rendering use the same startup buffer settings.
+        volcConfig.playScene = videoItem.playScene;
         // 将独立开关写入源配置，播放与预渲染创建播放器时共用。
         // Store the separate option on the source for both playback and pre-render player creation.
         volcConfig.enableMasterM3U8Optimize =
