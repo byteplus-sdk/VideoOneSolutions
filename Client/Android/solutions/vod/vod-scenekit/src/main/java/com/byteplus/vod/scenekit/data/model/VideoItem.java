@@ -405,6 +405,10 @@ public class VideoItem extends ExtraObject implements ViewItem, Serializable {
         volcConfig.codecStrategyType = VideoSettings.intValue(VideoSettings.COMMON_CODEC_STRATEGY);
         volcConfig.playerDecoderType = VideoSettings.intValue(VideoSettings.COMMON_HARDWARE_DECODE);
         volcConfig.sourceEncodeType = VideoSettings.booleanValue(VideoSettings.COMMON_SOURCE_ENCODE_TYPE_H265) ? Track.ENCODER_TYPE_H265 : Track.ENCODER_TYPE_H264;
+        // 将独立开关写入源配置，播放与预渲染创建播放器时共用。
+        // Store the separate option on the source for both playback and pre-render player creation.
+        volcConfig.enableMasterM3U8Optimize =
+                VideoSettings.booleanValue(VideoSettings.COMMON_ENABLE_MASTER_M3U8_OPTIMIZE);
         volcConfig.enableSubtitle = true;
         volcConfig.qualityConfig = VideoQuality.sceneQualityConfig(videoItem.playScene);
 

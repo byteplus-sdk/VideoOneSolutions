@@ -51,6 +51,8 @@
     <string name="vevod_option_common_source_video_format_type_dash">DASH</string>
     <string name="vevod_option_common_source_video_format_type_hls">HLS</string>
 
+    <string name="vevod_option_common_enable_master_m3u8_optimize">Enable Master M3U8 optimization</string>
+
     <string name="vevod_option_common_source_video_enable_private_drm">Enable private DRM</string>
 
     <string name="vevod_option_common_device_id">Device ID</string>

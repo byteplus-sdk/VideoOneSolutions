@@ -51,7 +51,6 @@ public class TTVideoEngineFactoryDefault implements TTVideoEngineFactory {
         player.setIntOption(TTVideoEngine.PLAYER_OPTION_INT_ENABLE_ERROR_THROW_OPTIMIZE, 1);
         player.setIntOption(TTVideoEngine.PLAYER_OPTION_GET_POSITION_SKIP_LOOPER, 1);
         player.setIntOption(TTVideoEngine.PLAYER_OPTION_POSITION_UPDATE_INTERVAL, 200);
-
         if (volcConfig.codecStrategyType == VolcConfig.CODEC_STRATEGY_DISABLE) {
             switch (volcConfig.playerDecoderType) {
                 case Player.DECODER_TYPE_HARDWARE:
@@ -86,8 +85,13 @@ public class TTVideoEngineFactoryDefault implements TTVideoEngineFactory {
 
         if (volcConfig.enableHlsSeamlessSwitch) {
             player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_HLS_SEAMLESS_SWITCH, 1);
+        }
+        // Master 请求优化独立于清晰度无缝切换，在 prepare 前下发。
+        // Configure Master request optimization before prepare, independently of seamless switching.
+        if (volcConfig.enableMasterM3U8Optimize) {
             player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_MASTER_M3U8_OPTIMIZE, 1);
         }
+        VolcHlsSelectionStrategy.setup(player, mediaSource);
         if (volcConfig.enableDash) {
             player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_DASH, 1);
         }
