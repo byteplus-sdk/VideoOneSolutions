@@ -24,8 +24,13 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface DramaApi {
+    // 入口集的凭证与续播数据由服务端按登录用户返回。
+    // The backend returns entry authorization and resume data for the signed-in user.
     @POST("drama/v1/getDramaChannel")
-    Call<ServerReturnResponse<DramaTheaterEntity>> getDramaChannel(@Body GetDramaChannelRequest request);
+    Call<ServerReturnResponse<DramaTheaterEntity>> getDramaChannel(
+            @Header("X-Login-Token") String loginToken,
+            @Body GetDramaChannelRequest request
+    );
 
     @POST("drama/v1/getDramaFeed")
     Call<ServerReturnResponse<List<DramaRecommend>>> getDramaRecommend(@Body GetDramaRecommendRequest request);
