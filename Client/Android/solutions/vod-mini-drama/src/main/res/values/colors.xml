@@ -2,4 +2,12 @@
 <resources>
     <color name="vevod_mini_drama_main_tab_indicator_light">#161823</color>
     <color name="vevod_mini_drama_main_tab_indicator_dark">#FFFFFF</color>
+
+    <!-- Ad overlay -->
+    <!-- Accent color used for the ad progress bar fill/thumb.
+         To recolor, change the hex value below. Examples:
+           blue: #1664FF (current), orange: #FF7D00, green: #00B42A, red: #F53F3F, purple: #6233FF -->
+    <color name="vevod_mini_drama_ad_overlay_accent">#1664FF</color>
+    <color name="vevod_mini_drama_ad_overlay_track">#33FFFFFF</color>
+    <color name="vevod_mini_drama_ad_overlay_banner_bg">#80000000</color>
 </resources>

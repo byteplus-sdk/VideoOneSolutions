@@ -22,10 +22,12 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.byteplus.minidrama.databinding.VevodMiniDramaWithAdsMainFragmentBinding;
 import com.byteplus.minidrama.R;
+import com.byteplus.playerkit.player.playback.AdOverlayProvider;
 import com.byteplus.vod.minidrama.scene.recommend.DramaRecommendVideoFragment;
 import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
 import com.byteplus.vod.minidrama.scene.settings.DramaSettingsFragment;
 import com.byteplus.vod.minidrama.scene.theater.DramaTheaterFragment;
+import com.byteplus.vod.minidrama.scene.widgets.DramaAdOverlayView;
 
 public class DramaWithAdsMainFragment extends Fragment {
     private WithAdsMainFragmentViewModel viewModel;
@@ -37,6 +39,26 @@ public class DramaWithAdsMainFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         DramaSettings.enableAds(true);
+        // provide the custom, display-only ad overlay to the shared ads playback controller
+        AdOverlayProvider.Holder.set(context -> {
+            DramaAdOverlayView overlay = new DramaAdOverlayView(context);
+            return new AdOverlayProvider.AdOverlay() {
+                @Override
+                public View getView() {
+                    return overlay;
+                }
+
+                @Override
+                public void updateProgress(long currentTimeMs, long totalTimeMs) {
+                    overlay.updateProgress(currentTimeMs, totalTimeMs);
+                }
+
+                @Override
+                public void reset() {
+                    overlay.reset();
+                }
+            };
+        });
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(WithAdsMainFragmentViewModel.class);
     }
@@ -44,6 +66,7 @@ public class DramaWithAdsMainFragment extends Fragment {
     @Override
     public void onDestroyView() {
         DramaSettings.enableAds(false);
+        AdOverlayProvider.Holder.set(null);
         super.onDestroyView();
     }
 

@@ -662,6 +662,8 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
         [self.context post:@(YES) forKey:MDPlayerContextKeyStopAction];
         [self.videoEngine stop];
         [self __closeVideoPlayer];
+        // reset playbackstate so a reused controller doesn't try to resume a deallocated engine
+        self.playbackState = MDVideoPlaybackStateUnkown;
     });
 }
 

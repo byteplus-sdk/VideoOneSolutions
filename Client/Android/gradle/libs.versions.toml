@@ -38,7 +38,7 @@ kotlinx-coroutines = "1.7.3"
 
 ttsdk = "1.50.300.1"
 rtcVersion = "3.60.103.5700"
-mediaads = "2.0.0"
+mediaads = "2.0.3"
 
 [libraries]
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }

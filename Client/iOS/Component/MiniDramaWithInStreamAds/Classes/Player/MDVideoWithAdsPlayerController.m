@@ -25,10 +25,12 @@
 #import <MediaAdsToB/MediaAds.h>
 #import <MediaAdsToB/AdPlaybackSession.h>
 #import <MediaAdsToB/AdSchedule.h>
+#import <ToolKit/UIImage+Bundle.h>
 #import <UIKit/UIKit.h>
 #import "VESettingModel.h"
 #import "MDAdSettingManager.h"
 #import "MDAdGlobalSettings.h"
+#import "MDAdOverlayView.h"
 #import <AppConfig/BuildConfig.h>
 
 @interface MDWithAdsVideoPlayerDisplayView : UIView
@@ -81,6 +83,7 @@ AdPlaybackSessionDelegate>
 @property (nonatomic, strong) AVSampleBufferDisplayLayer *displayLayer;
 @property (nonatomic, strong) MDWithAdsVideoPlayerDisplayView *displayView;
 @property (nonatomic, strong) UIView *adContainerView;
+@property (nonatomic, strong) MDAdOverlayView *adOverlayView;
 
 @property (nonatomic, assign) BOOL adPlaybackSessionStarted;
 @property (nonatomic, assign) BOOL adIsPlaying;
@@ -195,6 +198,14 @@ AdPlaybackSessionDelegate>
 }
 
 - (void)createVideoEngine:(id<TTVideoEngineMediaSource> _Nonnull)mediaSource needPrerenderEngine:(BOOL)needPrerender {
+    // restore any content UI that a previous ad's sessionContentPause may have hidden
+    self.playerContainerView.hidden = NO;
+    self.socialView.hidden = NO;
+    for (UIView *subview in [self.customView subviews]) {
+        if (subview.tag == MDAdGlobalSettings.hideDuringAdTag) {
+            subview.hidden = NO;
+        }
+    }
     if (super.videoEngine == nil) {
         /*
           We need to change audioSession category to playBack before using video Engine, or the video will be silent.
@@ -245,6 +256,8 @@ AdPlaybackSessionDelegate>
      config.appID = VODAPPID;
      config.appName = [NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleName"];
      config.appChannel = [NSBundle.mainBundle.infoDictionary objectForKey:@"CHANNEL_NAME"];
+     // disable IMA's default ad UI so our custom overlay provides the ad progress UI instead
+     config.disableDefaultAdUI = YES;
      AdPlaybackSession *session = [[MediaAds sharedInstance] createAdSession:self.videoEngine Config:config];
      session.delegate = self;
  
@@ -273,7 +286,37 @@ AdPlaybackSessionDelegate>
      }
      
      [session setAdView:_adContainerView AdViewController:self];
+
+     [self __setupAdOverlayView];
+     // register the custom control overlay with the ad SDK
+     [session setFriendlyView:self.adOverlayView
+               Purpose:FriendlyObstructionPurposeMediaControls
+               DetailedReason:@"Custom ad controls overlay"];
+
      return session;
+}
+
+- (void)__setupAdOverlayView {
+    self.adOverlayView = [[MDAdOverlayView alloc] init];
+    self.adOverlayView.hidden = YES;
+
+    if (self.adContainerView.superview) {
+        [self.view insertSubview:self.adOverlayView aboveSubview:self.adContainerView];
+    } else {
+        [self.view addSubview:self.adOverlayView];
+    }
+    [self.adOverlayView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left);
+        make.right.equalTo(self.view.mas_right);
+        make.top.equalTo(self.view.mas_top);
+        // pin above safe area, lifting by thumb radius to avoid clipping
+        const CGFloat kMDAdSeekBarThumbRadius = 4.0;
+        if (@available(iOS 11.0, *)) {
+            make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideBottom).offset(-kMDAdSeekBarThumbRadius);
+        } else {
+            make.bottom.equalTo(self.view.mas_bottom).offset(-kMDAdSeekBarThumbRadius);
+        }
+    }];
 }
 
 - (void)__setupDisplayerView {
@@ -300,7 +343,12 @@ AdPlaybackSessionDelegate>
     self.adContainerView = [[UIView alloc] init];
     self.adContainerView.userInteractionEnabled = NO;
     self.adContainerView.clipsToBounds = YES;
-    [self.view insertSubview:self.adContainerView aboveSubview:self.displayView];
+    // displayView may be nil on a reused controller
+    if (self.displayView) {
+        [self.view insertSubview:self.adContainerView aboveSubview:self.displayView];
+    } else {
+        [self.view addSubview:self.adContainerView];
+    }
     [self.adContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.view.mas_left);
         make.right.equalTo(self.view.mas_right);
@@ -690,14 +738,32 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
     MDPlayerContextRunOnMainThread(^{
         [self.context post:@(YES) forKey:MDPlayerContextKeyStopAction];
         [self.adPlaybackSession stopSession];
+        [self __teardownAdSession];
         [self __closeVideoPlayer];
+        // reset playbackstate so a reused controller doesn't try to resume a deallocated engine
+        self.playbackState = MDVideoPlaybackStateUnkown;
     });
 }
 
 - (void)close {
     [self.adPlaybackSession stopSession];
+    [self __teardownAdSession];
     [self.videoEngine closeAysnc];
     [self __closeVideoPlayer];
+}
+
+// resets all ad state and removes the ad-related subviews
+- (void)__teardownAdSession {
+    [self.adOverlayView removeFromSuperview];
+    self.adOverlayView = nil;
+    [self.adContainerView removeFromSuperview];
+    self.adContainerView = nil;
+    [self.statusBarView removeFromSuperview];
+    self.statusBarView = nil;
+    self.adPlaybackSession = nil;
+    self.adPlaybackSessionStarted = NO;
+    self.adIsPlaying = NO;
+    self.adIsInterrupted = NO;
 }
 
 - (BOOL)isPlaying {
@@ -1089,6 +1155,28 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
     if (self.statusBarView != nil) {
         self.statusBarView.hidden = YES;
     }
+    self.adOverlayView.hidden = YES;
+    [self.adOverlayView reset];
+}
+
+- (void)singleAdProgress:(NSTimeInterval)mediaTime TotalTime:(NSTimeInterval)totalTime {
+    [self.adOverlayView updateProgressWithCurrentTime:mediaTime totalTime:totalTime];
+}
+
+- (void)sessionSkippedWithSingleAd:(NSString *)adID {
+    self.adOverlayView.hidden = YES;
+    [self.adOverlayView reset];
+}
+
+- (void)sessionFinishedWithSingleAd:(NSString *)adID {
+    self.adOverlayView.hidden = YES;
+    [self.adOverlayView reset];
+}
+
+- (void)sessionLoadedWithSingleAd:(NSString *)adID Info:(NSDictionary *)info {
+    [self.adOverlayView reset];
+    self.adOverlayView.hidden = NO;
+    [self.view bringSubviewToFront:self.adOverlayView];
 }
 
 @end

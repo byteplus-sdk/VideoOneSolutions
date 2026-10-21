@@ -11,6 +11,8 @@
 @property (nonatomic, strong) UIView *bufferView;
 @property (nonatomic, strong) UIView *progressView;
 
+@property (nonatomic, strong) MASConstraint *backViewHeightConstraint;
+
 @property (nonatomic, strong) UIImageView *thumbView;
 
 @property (nonatomic, assign) BOOL touching;
@@ -59,7 +61,7 @@
             default:
                 break;
         }
-        make.height.equalTo(@(self.thumbHeight));
+        self.backViewHeightConstraint = make.height.equalTo(@(self.thumbHeight));
     }];
     
     [self.bufferView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -182,7 +184,17 @@
     }];
 }
 
+- (void)setThumbHeight:(NSInteger)thumbHeight {
+    _thumbHeight = thumbHeight;
+    [self.backViewHeightConstraint setOffset:thumbHeight];
+    self.backView.layer.cornerRadius = thumbHeight / 2.0f;
+    if (self.thumbImage) {
+        [self setThumbImage:self.thumbImage];
+    }
+}
+
 - (void)setThumbImage:(UIImage *)image {
+    _thumbImage = image;
     self.thumbView.image = image;
 
     [self.thumbView mas_updateConstraints:^(MASConstraintMaker *make) {
