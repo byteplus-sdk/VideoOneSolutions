@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
@@ -11,7 +12,6 @@ import {
   Modal,
 } from "react-native";
 import { Image } from "expo-image";
-import { getImageAsset } from "../../utils/imageUtils";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -100,8 +100,8 @@ const AdComponent: React.FC<AdComponentProps> = ({
               <Text style={styles.adText}>Ad</Text>
               <Text style={styles.separator}>|</Text>
               <TouchableOpacity style={styles.muteButton}>
-                <Image
-                  source={getImageAsset("common/mute")}
+                <SvgIcon
+                  name="mute"
                   style={styles.muteIcon}
                 />
               </TouchableOpacity>
@@ -116,7 +116,7 @@ const AdComponent: React.FC<AdComponentProps> = ({
                 style={styles.closeButton}
                 onPress={handleClose}
               >
-                <Text style={styles.closeIcon}>✕</Text>
+                <SvgIcon name="close" style={styles.closeIcon} />
               </TouchableOpacity>
             )}
           </View>
@@ -202,9 +202,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   closeIcon: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
+    width: 16,
+    height: 16,
   },
   adContent: {
     flex: 1,

@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -13,7 +14,6 @@ import {
   StyleSheet,
 } from "react-native";
 import { Image } from "expo-image";
-import { getImageAsset } from "../../utils/imageUtils";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { unlockService, UnlockAllRequest } from "../../services/unlockService";
 
@@ -157,7 +157,7 @@ export const UnlockMultipleModal: React.FC<UnlockMultipleModalProps> = ({
               <Text style={styles.headerTitle}>Unlock episodes</Text>
               <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                 <View style={styles.closeIcon}>
-                  <Text style={styles.closeIconText}>×</Text>
+                  <SvgIcon name="close" width={12} height={12} color="#161823" />
                 </View>
               </TouchableOpacity>
             </View>
@@ -187,16 +187,16 @@ export const UnlockMultipleModal: React.FC<UnlockMultipleModalProps> = ({
 
                   <View style={styles.tipsRow}>
                     <View style={styles.tipItem}>
-                      <Image
-                        source={getImageAsset("right_icon")}
-                        style={styles.tipIconImage}
+                      <SvgIcon
+                        name="check-circle"
+                        color="#161823" style={styles.tipIconImage}
                       />
                       <Text style={styles.tipText}>Permanent viewing</Text>
                     </View>
                     <View style={styles.tipItem}>
-                      <Image
-                        source={getImageAsset("not_right_icon")}
-                        style={styles.tipIconImage}
+                      <SvgIcon
+                        name="close-circle"
+                        color="#161823" style={styles.tipIconImage}
                       />
                       <Text style={styles.tipText}>No refund</Text>
                     </View>
@@ -325,11 +325,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.1)",
     alignItems: "center",
     justifyContent: "center",
-  },
-  closeIconText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#161823",
   },
   productInfo: {
     padding: 16,

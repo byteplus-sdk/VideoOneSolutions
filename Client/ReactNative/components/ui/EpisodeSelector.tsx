@@ -1,10 +1,9 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Image } from "expo-image";
-import { getImageAsset } from "../../utils/imageUtils";
 
 interface EpisodeSelectorProps {
   episodes: any[];
@@ -22,8 +21,8 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
       activeOpacity={0.8}
     >
       <View style={styles.episodeInfo}>
-        <Image
-          source={getImageAsset("common/series_icon")}
+        <SvgIcon
+          name="series"
           style={styles.seriesIcon}
         />
         <View style={styles.episodeTextContainer}>
@@ -31,7 +30,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
           <Text style={styles.episodeCount}>· {episodes.length} videos</Text>
         </View>
       </View>
-      <Image source={getImageAsset("arrow_up")} style={styles.arrowIcon} />
+      <SvgIcon name="chevron-up" style={styles.arrowIcon} />
     </TouchableOpacity>
   );
 };

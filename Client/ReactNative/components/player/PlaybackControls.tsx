@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useEffect, useRef, useCallback } from "react";
 import {
   View,
@@ -11,8 +12,6 @@ import {
   Animated,
   Easing,
 } from "react-native";
-import { Image } from "expo-image";
-import { getImageAsset } from "../../utils/imageUtils";
 import * as ScreenOrientation from "expo-screen-orientation";
 import LikeButton from "../ui/LikeButton";
 import LandscapeSpeedSelector from "../ui/LandscapeSpeedSelector";
@@ -155,7 +154,7 @@ const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         ]).start();
       }
     },
-    [playButtonOpacity, playButtonScale]
+    [playButtonOpacity, playButtonScale],
   );
 
   // Animate play button when it appears
@@ -178,8 +177,8 @@ const PlaybackControls: React.FC<PlaybackControlsProps> = ({
       >
         {showPlayButton && (
           <TouchableOpacity style={styles.playButton} onPress={onPlayPause}>
-            <Image
-              source={getImageAsset("player/btn_play")}
+            <SvgIcon
+              name="play"
               style={styles.playButtonIcon}
             />
           </TouchableOpacity>
@@ -203,8 +202,8 @@ const PlaybackControls: React.FC<PlaybackControlsProps> = ({
             activeOpacity={0.8}
           >
             <View style={styles.fullscreenIcon}>
-              <Image
-                source={getImageAsset("player/fullscreen")}
+              <SvgIcon
+                name="fullscreen"
                 style={styles.fullscreenIconImage}
               />
             </View>
@@ -224,12 +223,9 @@ const PlaybackControls: React.FC<PlaybackControlsProps> = ({
                 style={styles.landscapeControlButtonContainer}
                 onPress={onLikePress}
               >
-                <Image
-                  source={
-                    isLiked
-                      ? getImageAsset("player/v_like")
-                      : getImageAsset("player/v_unlike")
-                  }
+                <SvgIcon
+                  name={isLiked ? "heart-filled" : "heart-outline"}
+                  color={isLiked ? "#FF3737" : "#FFFFFF"}
                   style={styles.landscapeControlIcon}
                 />
               </TouchableOpacity>
@@ -244,8 +240,8 @@ const PlaybackControls: React.FC<PlaybackControlsProps> = ({
                 style={styles.landscapeControlButtonContainer}
                 onPress={onCommentPress}
               >
-                <Image
-                  source={getImageAsset("player/v_comment")}
+                <SvgIcon
+                  name="comment-outline"
                   style={styles.landscapeControlIcon}
                 />
               </TouchableOpacity>
@@ -309,8 +305,8 @@ const PlaybackControls: React.FC<PlaybackControlsProps> = ({
             activeOpacity={0.8}
           >
             <View style={styles.interactionButtonContainer}>
-              <Image
-                source={getImageAsset("common/comment")}
+              <SvgIcon
+                name="comment"
                 style={styles.commentIcon}
               />
             </View>
@@ -398,6 +394,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     zIndex: 30,
+    elevation: 30,
   },
   landscapeLeftControls: {
     flexDirection: "row",
@@ -449,6 +446,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     zIndex: 30,
+    elevation: 30,
   },
   avatarContainer: {
     alignItems: "center",

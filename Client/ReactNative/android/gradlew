@@ -88,6 +88,27 @@ APP_BASE_NAME=${0##*/}
 # Discard cd standard output in case $CDPATH is set (https://github.com/gradle/gradle/issues/25036)
 APP_HOME=$( cd -P "${APP_HOME:-./}" > /dev/null && printf '%s\n' "$PWD" ) || exit
 
+# React Native / Expo Gradle plugins invoke `node` during configuration.
+# Android Studio and some shells do not load nvm, so ensure node is on PATH.
+if [ -z "$NODE_BINARY" ] && [ -f "$APP_HOME/local.properties" ]; then
+  NODE_BINARY=$(grep '^node\.binary=' "$APP_HOME/local.properties" 2>/dev/null | cut -d= -f2- | tr -d '\r')
+fi
+if [ -z "$NODE_BINARY" ] && [ -n "$HOME" ] && [ -d "$HOME/.nvm/versions/node" ]; then
+  for node_dir in "$HOME/.nvm/versions/node/"*; do
+    if [ -x "$node_dir/bin/node" ]; then
+      NODE_BINARY="$node_dir/bin/node"
+    fi
+  done
+fi
+if [ -n "$NODE_BINARY" ]; then
+  NODE_DIR=$(dirname "$NODE_BINARY")
+  # Shim `node` into android/ so Gradle can resolve the command even when the
+  # daemon was started without nvm on PATH (Expo autolinking hardcodes "node").
+  ln -sf "$NODE_BINARY" "$APP_HOME/node" 2>/dev/null || true
+  PATH="$APP_HOME:$NODE_DIR:$PATH"
+  export PATH NODE_BINARY
+fi
+
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD=maximum
 

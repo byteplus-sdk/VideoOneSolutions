@@ -33,7 +33,7 @@ export const useDramaChannel = (): UseDramaChannelReturn => {
       setData(realData);
     } catch (apiError) {
       console.warn("API request failed, using mock data:", apiError);
-      setError("数据加载失败");
+      setError("data loading failed");
     } finally {
       setLoading(false);
     }

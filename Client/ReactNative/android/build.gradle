@@ -1,6 +1,15 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+apply from: "node.gradle"
+
+def nodeExecutable = resolveNodeExecutable(rootDir)
+
 buildscript {
+// @generated begin video-one-google-cast-version - expo prebuild (DO NOT MODIFY) sync-5a9956abcead735ba266128027fb1ac1cb5bec14
+  ext {
+    castFrameworkVersion = "21.5.0"
+  }
+// @generated end video-one-google-cast-version
   repositories {
     google()
     mavenCentral()
@@ -15,9 +24,20 @@ buildscript {
 def reactNativeAndroidDir = new File(
   providers.exec {
     workingDir(rootDir)
-    commandLine("node", "--print", "require.resolve('react-native/package.json')")
+    commandLine(nodeExecutable, "--print", "require.resolve('react-native/package.json')")
   }.standardOutput.asText.get().trim(),
   "../android"
+)
+
+// @react-native-async-storage/async-storage v3 ships its native shared
+// library (`org.asyncstorage.shared_storage:storage-android`) inside the
+// package as a local Maven repo, so we have to register it here.
+def asyncStorageLocalRepo = new File(
+  providers.exec {
+    workingDir(rootDir)
+    commandLine(nodeExecutable, "--print", "require.resolve('@react-native-async-storage/async-storage/package.json')")
+  }.standardOutput.asText.get().trim(),
+  "../android/local_repo"
 )
 
 allprojects {
@@ -25,6 +45,9 @@ allprojects {
     maven {
       // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
       url(reactNativeAndroidDir)
+    }
+    maven {
+      url(asyncStorageLocalRepo)
     }
 
     google()

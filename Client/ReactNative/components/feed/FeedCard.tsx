@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Image } from "expo-image";
@@ -42,8 +43,8 @@ const FeedCard: React.FC<FeedCardProps> = ({ feedItem, onPress }) => {
           activeOpacity={0.7}
           onPress={handleClose}
         >
-          <Image
-            source={require("@/assets/images/close.png")}
+          <SvgIcon
+            name="close"
             style={styles.closeIcon}
           />
         </TouchableOpacity>
@@ -72,8 +73,8 @@ const FeedCard: React.FC<FeedCardProps> = ({ feedItem, onPress }) => {
 
               {/* Hot info */}
               <View style={styles.statsContainer}>
-                <Image
-                  source={require("@/assets/minidrama/common/fire.png")}
+                <SvgIcon
+                  name="fire"
                   style={styles.fireIcon}
                 />
                 <Text style={styles.statsText}>

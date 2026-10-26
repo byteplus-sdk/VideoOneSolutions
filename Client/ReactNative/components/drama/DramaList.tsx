@@ -5,6 +5,7 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { DramaChannelMeta } from "../../types/drama";
 import DramaCover from "./DramaCover";
+import SvgIcon from "../ui/SvgIcon";
 
 interface DramaListProps {
   data: DramaChannelMeta[];
@@ -18,7 +19,7 @@ const DramaList: React.FC<DramaListProps> = ({ data, onItemPress, type }) => {
   const getTitle = () => {
     switch (type) {
       case "trending":
-        return "Trending now 🔥";
+        return "Trending now";
       case "new":
         return "New release";
       case "recommend":
@@ -44,7 +45,10 @@ const DramaList: React.FC<DramaListProps> = ({ data, onItemPress, type }) => {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>{getTitle()}</Text>
+        <View style={styles.trendingTitle}>
+          <Text style={[styles.title, styles.trendingTitleText]}>{getTitle()}</Text>
+          <SvgIcon name="fire-colored" width={18} height={18} />
+        </View>
         <View style={styles.trendingContainer}>
           {/* Left column */}
           <View style={styles.trendingColumn}>
@@ -159,6 +163,17 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 16,
     letterSpacing: 0.2,
+  },
+  trendingTitle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  trendingTitleText: {
+    paddingHorizontal: 0,
+    marginBottom: 0,
   },
   // Trending layout styles
   trendingContainer: {

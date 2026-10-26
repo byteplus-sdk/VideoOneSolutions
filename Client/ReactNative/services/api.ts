@@ -13,7 +13,10 @@ export const API_CONSTANTS = {
 };
 
 // Server Configuration
-const SERVER_HOST = "videocloud.byteplusapi.com";
+// const DEV_SERVER_HOST = "rtc-sg-test.bytedance.com";
+const RELEASE_SERVER_HOST = "videocloud.byteplusapi.com";
+// const SERVER_HOST = __DEV__ ? DEV_SERVER_HOST : RELEASE_SERVER_HOST;
+const SERVER_HOST = RELEASE_SERVER_HOST;
 
 // Request Status Enum
 export enum RequestStatus {

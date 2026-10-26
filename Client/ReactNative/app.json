@@ -4,14 +4,24 @@
     "slug": "video-one-rn",
     "version": "1.0.0",
     "orientation": "portrait",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "icon": "./assets/images/icon.png",
     "scheme": "videoonern",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
       "supportsTablet": true,
-      "bundleIdentifier": "com.byteplus.videoone.rn"
+      "bundleIdentifier": "com.byteplus.videoone.rn",
+      "infoPlist": {
+        "NSLocalNetworkUsageDescription": "需要访问本地网络以发现投屏设备（Cast / AirPlay），并在开发模式下连接调试服务器。",
+        "NSBonjourServices": [
+          "_airplay._tcp",
+          "_googlecast._tcp",
+          "_CC1AD845._googlecast._tcp",
+          "_expo._tcp"
+        ]
+      },
+      "appleTeamId": "L5HCL383AF"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +32,9 @@
       "package": "com.byteplus.videoone.rn"
     },
     "update": {
-      "assetPatternsToBeBundled": ["**/*"]
+      "assetPatternsToBeBundled": [
+        "**/*"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -46,9 +58,9 @@
           }
         }
       ],
-      "./plugins/withATSConfig",
       "./plugins/withPodfileSources",
-      "./plugins/withLicense"
+      "./plugins/withLicense",
+      "./plugins/withGoogleCast"
     ],
     "experiments": {
       "typedRoutes": true

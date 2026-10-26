@@ -1,11 +1,10 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Image } from "expo-image";
 import { FeedItem } from "../../types/drama";
-import { getImageAsset } from "../../utils/imageUtils";
 
 interface InfoPanelProps {
   feedItem: FeedItem;
@@ -25,8 +24,8 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ feedItem, onPress }) => {
       <View style={styles.anchorContainer}>
         <View style={styles.anchorLeft}>
           <View style={styles.playIconContainer}>
-            <Image
-              source={getImageAsset("common/video")}
+            <SvgIcon
+              name="feed"
               style={styles.playIcon}
             />
           </View>

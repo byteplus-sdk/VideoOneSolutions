@@ -1,12 +1,12 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Image } from "expo-image";
 import { DramaChannelMeta } from "../../types/drama";
 import { formatNumber } from "../../utils/dramaUtils";
-import { getImageAsset } from "../../utils/imageUtils";
 
 interface DramaCoverProps {
   drama: DramaChannelMeta;
@@ -88,8 +88,8 @@ const DramaCover: React.FC<DramaCoverProps> = ({
           {/* Play count */}
           {showPlayCount && (
             <View style={styles.trendingPlayCountContainer}>
-              <Image
-                source={getImageAsset("drama/playButton")}
+              <SvgIcon
+                name="play"
                 style={styles.trendingPlayIcon}
               />
               <Text style={styles.trendingPlayCountText}>
@@ -133,8 +133,8 @@ const DramaCover: React.FC<DramaCoverProps> = ({
           {/* Play count overlay */}
           {showPlayCount && (
             <View style={styles.newPlayCountOverlay}>
-              <Image
-                source={getImageAsset("drama/playButton")}
+              <SvgIcon
+                name="play"
                 style={styles.newPlayIcon}
               />
               <Text style={styles.newPlayCountText}>
@@ -176,8 +176,8 @@ const DramaCover: React.FC<DramaCoverProps> = ({
           {/* Play count overlay */}
           {showPlayCount && (
             <View style={styles.recommendPlayCountOverlay}>
-              <Image
-                source={getImageAsset("drama/playButton")}
+              <SvgIcon
+                name="play"
                 style={styles.recommendPlayIcon}
               />
               <Text style={styles.recommendPlayCountText}>

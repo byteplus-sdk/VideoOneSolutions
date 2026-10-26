@@ -1,0 +1,61 @@
+/**
+ * Resolve the Node.js executable for Gradle scripts.
+ *
+ * Gradle (and Android Studio) often run without nvm/fnm in PATH, which causes:
+ *   "A problem occurred starting process 'command 'node''"
+ *
+ * Resolution order:
+ *   1. NODE_BINARY env var
+ *   2. node.binary in android/local.properties
+ *   3. Latest nvm node under ~/.nvm/versions/node
+ *   4. bash -lc "command -v node" (loads login shell PATH)
+ *   5. Fallback to "node"
+ */
+
+def resolveNodeExecutable(File androidRootDir) {
+    def nodeFromEnv = System.getenv("NODE_BINARY")
+    if (nodeFromEnv != null && !nodeFromEnv.trim().isEmpty()) {
+        return nodeFromEnv.trim()
+    }
+
+    def localPropertiesFile = new File(androidRootDir, "local.properties")
+    if (localPropertiesFile.exists()) {
+        def properties = new Properties()
+        localPropertiesFile.withInputStream { properties.load(it) }
+        def nodeFromLocal = properties.getProperty("node.binary")
+        if (nodeFromLocal != null && !nodeFromLocal.trim().isEmpty()) {
+            return nodeFromLocal.trim()
+        }
+    }
+
+    def home = System.getenv("HOME")
+    if (home != null) {
+        def nvmVersionsDir = new File(home, ".nvm/versions/node")
+        if (nvmVersionsDir.isDirectory()) {
+            def versionDirs = nvmVersionsDir.listFiles()?.findAll { it.isDirectory() }?.sort()
+            if (versionDirs != null && !versionDirs.isEmpty()) {
+                def nodeFile = new File(versionDirs.last(), "bin/node")
+                if (nodeFile.canExecute()) {
+                    return nodeFile.absolutePath
+                }
+            }
+        }
+    }
+
+    try {
+        def process = ["bash", "-lc", "command -v node"].execute((String[]) null, androidRootDir)
+        process.waitFor()
+        if (process.exitValue() == 0) {
+            def path = process.text.trim()
+            if (!path.isEmpty()) {
+                return path
+            }
+        }
+    } catch (Throwable ignored) {
+        // fall through
+    }
+
+    return "node"
+}
+
+ext.resolveNodeExecutable = this.&resolveNodeExecutable
