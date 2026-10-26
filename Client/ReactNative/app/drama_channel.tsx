@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useState, useRef, useCallback, useMemo } from "react";
 import {
   View,
@@ -12,9 +13,7 @@ import {
   Dimensions,
   FlatList,
 } from "react-native";
-import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getImageAsset } from "../utils/imageUtils";
 
 import { useRouter } from "expo-router";
 import { DramaChannelMeta, FeedItem, DramaEpisode } from "@/types/drama";
@@ -27,6 +26,7 @@ import {
   RecommendationOverlay,
 } from "../components";
 import { useDramaChannel } from "@/hooks/useDramaChannel";
+import { useSeekGestureLock } from "@/hooks/useSeekGestureLock";
 import { DramaService } from "@/services/dramaService";
 import { setStrategyList } from "@/utils/dramaUtils";
 import {
@@ -43,6 +43,7 @@ const TAB_BAR_HEIGHT = 80;
 const DramaChannel = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { isSeeking, onSeekingChange } = useSeekGestureLock();
   const [currentTab, setCurrentTab] = useState(0);
 
   // Content area now fills the screen minus bottom safe area
@@ -292,6 +293,7 @@ const DramaChannel = () => {
             currentEpisodeIndex={0}
             playerIndex={index}
             onProgress={handleProgress}
+            onSeekingChange={onSeekingChange}
             dramaId={item.drama_meta.drama_id}
             dramaVideoOrientation={item.drama_meta.drama_video_orientation}
             isFeedTab={true}
@@ -316,6 +318,7 @@ const DramaChannel = () => {
       currentFeedIndex,
       convertFeedItemToEpisode,
       handleProgress,
+      onSeekingChange,
       shouldTriggerScrollPreRender,
       handleFullscreenFreeze,
       handleCardPress,
@@ -379,7 +382,7 @@ const DramaChannel = () => {
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-          <Image source={getImageAsset("back_arrow")} style={styles.backIcon} />
+          <SvgIcon name="chevron-left" style={styles.backIcon} />
         </TouchableOpacity>
         <View style={styles.headerRight} />
       </View>
@@ -466,6 +469,7 @@ const DramaChannel = () => {
                 renderItem={renderFeedVideoItem}
                 keyExtractor={(item: FeedItem) => item.video_meta.vid}
                 pagingEnabled
+                scrollEnabled={!isSeeking}
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs}
                 onScrollBeginDrag={handleScrollBeginDrag}
                 onScrollEndDrag={handleScrollEndDrag}
@@ -500,8 +504,8 @@ const DramaChannel = () => {
                   style={styles.recommendationButton}
                   onPress={() => setShowRecommendationOverlay(true)}
                 >
-                  <Image
-                    source={getImageAsset("recommend")}
+                  <SvgIcon
+                    name="recommend"
                     style={styles.recommendationIcon}
                   />
                   <Text style={styles.recommendationText}>
@@ -511,8 +515,8 @@ const DramaChannel = () => {
                   <Text style={styles.videoCountText}>
                     {feedItems.length} videos
                   </Text>
-                  <Image
-                    source={getImageAsset("arrow_right")}
+                  <SvgIcon
+                    name="chevron-right"
                     style={styles.arrowIcon}
                   />
                 </TouchableOpacity>
@@ -528,12 +532,8 @@ const DramaChannel = () => {
               style={styles.tabButton}
               onPress={() => handleTabChange(0)}
             >
-              <Image
-                source={
-                  currentTab === 0
-                    ? getImageAsset("drama/homeSelect")
-                    : getImageAsset("drama/home")
-                }
+              <SvgIcon
+                name={currentTab === 0 ? "home-selected" : "home"}
                 style={styles.tabIcon}
               />
               <Text
@@ -549,12 +549,8 @@ const DramaChannel = () => {
               style={styles.tabButton}
               onPress={() => handleTabChange(1)}
             >
-              <Image
-                source={
-                  currentTab === 1
-                    ? getImageAsset("drama/feedSelect")
-                    : getImageAsset("drama/feed")
-                }
+              <SvgIcon
+                name={currentTab === 1 ? "feed-selected" : "feed"}
                 style={styles.tabIcon}
               />
               <Text

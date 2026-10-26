@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useState, useRef } from "react";
 import {
   View,
@@ -18,7 +19,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { BlurView as _BlurView } from "expo-blur";
 import { DramaChannelMeta } from "../../types/drama";
-import { getImageAsset } from "../../utils/imageUtils";
 
 const BlurView = Animated.createAnimatedComponent(_BlurView);
 
@@ -152,8 +152,8 @@ const CustomItem: React.FC<CustomItemProps> = ({
 
           {/* Play button */}
           <View style={styles.playButton}>
-            <Image
-              source={getImageAsset("drama/playButton")}
+            <SvgIcon
+              name="play"
               style={styles.playIcon}
             />
             <Text style={styles.playText}>Play Now</Text>

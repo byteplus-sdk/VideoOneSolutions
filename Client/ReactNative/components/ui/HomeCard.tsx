@@ -1,11 +1,12 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { getImageSource, getImageAsset } from "@/utils/imageUtils";
+import { getImageSource } from "@/utils/imageUtils";
 
 type HomeCardProps = {
   imgPath: any;
@@ -45,8 +46,8 @@ const HomeCard: React.FC<HomeCardProps> = ({
           <Text style={styles.subTitle}>{subTitle}</Text>
         </View>
         <View style={styles.button}>
-          <Image
-            source={getImageAsset("left_arrow")}
+          <SvgIcon
+            name="chevron-right"
             style={styles.arrowIcon}
           />
         </View>

@@ -1,13 +1,15 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useState, useEffect, useMemo } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
+import { View, StyleSheet, Dimensions, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { VideoPlayer } from "./VideoPlayer";
 import EpisodeSelector from "../ui/EpisodeSelector";
 import PlaybackSpeedSelector from "../ui/PlaybackSpeedSelector";
+import CastButton from "../cast/CastButton";
+import type { CastController } from "../../hooks/useCast";
 import { DramaEpisode } from "../../types/drama";
 
 const getScreenDimensions = () => {
@@ -16,6 +18,7 @@ const getScreenDimensions = () => {
 };
 
 interface EpisodePlayerProps {
+  castController: CastController;
   episode: DramaEpisode;
   dramaTitle: string;
   dramaCoverUrl: string;
@@ -24,6 +27,7 @@ interface EpisodePlayerProps {
   playerIndex: number;
   onPlayPause?: (isPlaying: boolean) => void;
   onProgress?: (progress: number) => void;
+  onSeekingChange?: (seeking: boolean) => void;
   onError?: (error: string) => void;
   onEpisodeSelectorPress?: () => void;
   onRecommendationPress?: () => void;
@@ -36,9 +40,12 @@ interface EpisodePlayerProps {
   onEpisodeSelect?: (index: number) => void;
   shouldTriggerScrollPreRender?: boolean; // Flag to trigger scroll pre-render
   onFullscreen?: () => void;
+  /** Optional: called when the active video URL changes (forwarded from VideoPlayer) */
+  onPlayUrlChange?: (url: string, currentTime: number) => void;
 }
 
 const EpisodePlayer: React.FC<EpisodePlayerProps> = ({
+  castController,
   episode,
   dramaTitle,
   dramaCoverUrl,
@@ -47,6 +54,7 @@ const EpisodePlayer: React.FC<EpisodePlayerProps> = ({
   playerIndex,
   onPlayPause,
   onProgress,
+  onSeekingChange,
   onError,
   onEpisodeSelectorPress,
   onRecommendationPress,
@@ -59,12 +67,38 @@ const EpisodePlayer: React.FC<EpisodePlayerProps> = ({
   onEpisodeSelect,
   shouldTriggerScrollPreRender = false,
   onFullscreen,
+  onPlayUrlChange,
 }) => {
   const [screenDimensions, setScreenDimensions] = useState(
     getScreenDimensions()
   );
   const [currentOrientation, setCurrentOrientation] = useState(
     ScreenOrientation.Orientation.PORTRAIT_UP
+  );
+
+  // ── Cast / AirPlay state ──────────────────────────────────────────────────
+  // currentPlayUrl is updated whenever VideoPlayer reports a URL change
+  const [currentPlayUrl, setCurrentPlayUrl] = useState<string>('');
+  const [currentPlayTime, setCurrentPlayTime] = useState<number>(0);
+  const { isConnecting, isCasting, isConnected, remotePosition } =
+    castController;
+  const isRemotePlaybackActive = isCasting || isConnected;
+
+  const handlePlayUrlChange = useCallback(
+    (url: string, time: number) => {
+      setCurrentPlayUrl(url);
+      setCurrentPlayTime(time);
+      onPlayUrlChange?.(url, time);
+    },
+    [onPlayUrlChange],
+  );
+
+  const handleProgress = useCallback(
+    (time: number) => {
+      setCurrentPlayTime(time);
+      onProgress?.(time);
+    },
+    [onProgress],
   );
 
   // Listen to screen orientation changes
@@ -133,7 +167,10 @@ const EpisodePlayer: React.FC<EpisodePlayerProps> = ({
           styles.videoContainer,
           {
             height:
-              currentOrientation === ScreenOrientation.Orientation.PORTRAIT_UP
+              isRemotePlaybackActive
+                ? screenDimensions.height
+                : currentOrientation ===
+                    ScreenOrientation.Orientation.PORTRAIT_UP
                 ? screenDimensions.height - styles.bottomBar.height
                 : screenDimensions.height,
           },
@@ -149,34 +186,55 @@ const EpisodePlayer: React.FC<EpisodePlayerProps> = ({
           currentEpisodeIndex={currentEpisodeIndex}
           playerIndex={playerIndex}
           onPlayPause={onPlayPause}
-          onProgress={onProgress}
+          onProgress={handleProgress}
+          onSeekingChange={onSeekingChange}
           onError={onError}
           onFullscreen={onFullscreen}
-          onDidFinish={onDidFinish}
+          onDidFinish={isRemotePlaybackActive ? undefined : onDidFinish}
           dramaId={dramaId}
           dramaVideoOrientation={dramaVideoOrientation}
           playbackSpeed={playbackSpeed}
           onSpeedChange={onSpeedChange}
           onEpisodeSelect={onEpisodeSelect}
           shouldTriggerScrollPreRender={shouldTriggerScrollPreRender}
+          onPlayUrlChange={handlePlayUrlChange}
+          isRemoteCasting={
+            Platform.OS === "android" &&
+            (isConnecting || isRemotePlaybackActive)
+          }
+          remoteCastPosition={remotePosition}
         />
+
       </View>
 
-      {currentOrientation === ScreenOrientation.Orientation.PORTRAIT_UP && (
-        <SafeAreaView style={styles.bottomBar} edges={["bottom"]}>
-          <View style={styles.bottomControlsContainer}>
-            <EpisodeSelector
-              episodes={episodes}
-              onPress={onEpisodeSelectorPress}
-            />
+      {currentOrientation === ScreenOrientation.Orientation.PORTRAIT_UP &&
+        !isRemotePlaybackActive && (
+          <SafeAreaView style={styles.bottomBar} edges={["bottom"]}>
+            <View style={styles.bottomControlsContainer}>
+              <EpisodeSelector
+                episodes={episodes}
+                onPress={onEpisodeSelectorPress}
+              />
 
-            <PlaybackSpeedSelector
-              currentSpeed={playbackSpeed}
-              onSpeedChange={onSpeedChange}
-            />
-          </View>
-        </SafeAreaView>
-      )}
+              <PlaybackSpeedSelector
+                currentSpeed={playbackSpeed}
+                onSpeedChange={onSpeedChange}
+              />
+
+              {/* Cast / AirPlay button */}
+              <CastButton
+                castController={castController}
+                videoUrl={currentPlayUrl}
+                currentTime={currentPlayTime}
+                title={dramaTitle}
+                coverUrl={dramaCoverUrl}
+                size={24}
+                color="#FFFFFF"
+                activeColor="#5B8CFF"
+              />
+            </View>
+          </SafeAreaView>
+        )}
     </View>
   );
 };

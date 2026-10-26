@@ -1,9 +1,9 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Image } from "expo-image";
 import LottieView from "lottie-react-native";
 import { getImageAsset } from "../../utils/imageUtils";
 
@@ -101,12 +101,9 @@ const LikeButton: React.FC<LikeButtonProps> = ({
           />
         </View>
 
-        <Image
-          source={
-            isLiked
-              ? getImageAsset("common/like")
-              : getImageAsset("common/unlike")
-          }
+        <SvgIcon
+          name={isLiked ? "heart-filled" : "heart"}
+          color={isLiked ? "#FF3737" : "#FFFFFF"}
           style={[styles.heartIcon, { opacity: hideStaticIcon ? 0 : 1 }]}
         />
       </View>

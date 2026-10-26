@@ -1,6 +1,9 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
+import PlayingIcon from "@/components/ui/PlayingIcon";
+import { Image } from "expo-image";
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -11,8 +14,6 @@ import {
   FlatList,
   Animated,
 } from "react-native";
-import { Image } from "expo-image";
-import { getImageAsset } from "../../utils/imageUtils";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { DramaEpisode } from "../../types/drama";
 
@@ -126,17 +127,14 @@ const EpisodeSelectorModal: React.FC<EpisodeSelectorModalProps> = ({
         </Text>
         {isCurrentEpisode && (
           <View style={styles.playIcon}>
-            <Image
-              source={getImageAsset("common/playing")}
-              style={styles.playIconImage}
-            />
+            <PlayingIcon style={styles.playIconImage} />
           </View>
         )}
         {isLocked && (
           <View style={styles.lockIcon}>
             <View style={styles.lockIconBackground} />
-            <Image
-              source={getImageAsset("common/lock")}
+            <SvgIcon
+              name="lock"
               style={styles.lockIconImage}
             />
           </View>
@@ -239,8 +237,8 @@ const EpisodeSelectorModal: React.FC<EpisodeSelectorModalProps> = ({
                 onPress={onUnlockAllPress}
                 activeOpacity={0.8}
               >
-                <Image
-                  source={getImageAsset("common/lock_3x")}
+                <SvgIcon
+                  name="lock"
                   style={styles.unlockAllIcon}
                 />
                 <Text style={styles.unlockAllButtonText}>Unlock all</Text>

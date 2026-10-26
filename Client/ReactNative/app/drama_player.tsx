@@ -1,10 +1,12 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, {
   useState,
   useRef,
   useEffect,
+  useLayoutEffect,
   useCallback,
   useMemo,
 } from "react";
@@ -16,10 +18,15 @@ import {
   Dimensions,
   TouchableOpacity,
   FlatList,
+  Platform,
 } from "react-native";
-import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
+import {
+  CommonActions,
+  useNavigation,
+  type NavigationAction,
+} from "@react-navigation/native";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { DramaService } from "@/services/dramaService";
 import { DramaEpisode } from "@/types/drama";
@@ -29,12 +36,20 @@ import {
   VipUnlockModal,
   UnlockMultipleModal,
 } from "../components";
+import CastActiveOverlay from "../components/cast/CastActiveOverlay";
 import { setStrategyList, addStrategyList } from "@/utils/dramaUtils";
 import {
   setPreRenderCallback,
   TTVideoEngine,
   VideoSource,
 } from "../utils/playerConfig";
+import { useCast } from "../hooks/useCast";
+import { useSeekGestureLock } from "../hooks/useSeekGestureLock";
+import { AirPlayRelay } from "../components/cast/AirPlayRelay";
+import {
+  createCastExitGuard,
+  type CastExitGuard,
+} from "../utils/castExitGuard.mjs";
 
 // Get screen dimensions, swap width and height in landscape mode
 const getScreenDimensions = () => {
@@ -45,6 +60,30 @@ const getScreenDimensions = () => {
 export default function DramaPlayer() {
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+  const castController = useCast();
+  const pendingAirPlayExitRef = useRef<NavigationAction | null>(null);
+  const airPlayRequiresRouteSelectionRef = useRef(false);
+  const [airPlayRequiresRouteSelection, setAirPlayRequiresRouteSelection] =
+    useState(false);
+  const { isSeeking, onSeekingChange } = useSeekGestureLock(airPlayRequiresRouteSelection);
+  const isRemotePlaybackActive = Boolean(
+    castController.isCasting || castController.isConnected
+  );
+  const castExitGuardRef = useRef<CastExitGuard | null>(null);
+  if (castExitGuardRef.current === null) {
+    castExitGuardRef.current = createCastExitGuard();
+  }
+  useLayoutEffect(() => {
+    castExitGuardRef.current!.update(
+      isRemotePlaybackActive,
+      castController.stopCasting
+    );
+  }, [isRemotePlaybackActive, castController.stopCasting]);
+  const stopCastingForExit = useCallback(
+    () => castExitGuardRef.current!.stopForExit(),
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [episodes, setEpisodes] = useState<DramaEpisode[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,6 +96,71 @@ export default function DramaPlayer() {
   const [showEpisodeSelector, setShowEpisodeSelector] = useState(false);
   const [showVipModal, setShowVipModal] = useState(false);
   const [showUnlockMultiple, setShowUnlockMultiple] = useState(false);
+
+  const handleAirPlayExitIntent = useCallback(() => {
+    pendingAirPlayExitRef.current = CommonActions.goBack();
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") {
+      return;
+    }
+
+    const applyAirPlayState = (snapshot: {
+      state: string;
+      routeActive: boolean;
+    }) => {
+      const isLocalRoute =
+        snapshot.state === "idle" && !snapshot.routeActive;
+      airPlayRequiresRouteSelectionRef.current = !isLocalRoute;
+      setAirPlayRequiresRouteSelection(!isLocalRoute);
+
+      if (!isLocalRoute) {
+        return;
+      }
+
+      const pendingAction = pendingAirPlayExitRef.current;
+      if (!pendingAction) {
+        return;
+      }
+
+      pendingAirPlayExitRef.current = null;
+      navigation.dispatch(pendingAction);
+    };
+
+    const stateSub = AirPlayRelay.addStateListener(applyAirPlayState);
+    AirPlayRelay.getState()
+      .then(applyAirPlayState)
+      .catch((error) => {
+        console.warn("[DramaPlayer] Failed to read AirPlay state:", error);
+      });
+
+    return () => stateSub.remove();
+  }, [navigation]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", (event: any) => {
+      if (Platform.OS === "ios" && airPlayRequiresRouteSelectionRef.current) {
+        event.preventDefault();
+        pendingAirPlayExitRef.current = event.data.action;
+        return;
+      }
+
+      if (Platform.OS === "android") {
+        stopCastingForExit();
+      }
+    });
+    return unsubscribe;
+  }, [navigation, stopCastingForExit]);
+
+  useEffect(() => {
+    if (isRemotePlaybackActive) {
+      setShowEpisodeSelector(false);
+      setShowVipModal(false);
+      setShowUnlockMultiple(false);
+    }
+  }, [isRemotePlaybackActive]);
+
   // Screen orientation state
   const [isLandscape, setIsLandscape] = useState(false);
   const [isTransitioningOrientation, setIsTransitioningOrientation] =
@@ -124,10 +228,17 @@ export default function DramaPlayer() {
       await ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.PORTRAIT_UP
       );
-    } else {
-      router.back();
+      return;
     }
-  }, [isLandscape]);
+
+    if (Platform.OS === "ios" && airPlayRequiresRouteSelectionRef.current) {
+      handleAirPlayExitIntent();
+      return;
+    }
+
+    await stopCastingForExit();
+    router.back();
+  }, [isLandscape, handleAirPlayExitIntent, stopCastingForExit]);
 
   // Handle episode unlock
   const handleEpisodeUnlocked = useCallback(
@@ -212,6 +323,10 @@ export default function DramaPlayer() {
 
   // Check if current episode is VIP, show unlock modal if so
   useEffect(() => {
+    if (isRemotePlaybackActive) {
+      return;
+    }
+
     // If UnlockMultipleModal is showing, don't show VIP modal
     if (showUnlockMultiple) {
       setShowVipModal(false);
@@ -228,7 +343,7 @@ export default function DramaPlayer() {
     }, 500); // Delay 500ms
 
     return () => clearTimeout(timer);
-  }, [episodes, currentIndex, showUnlockMultiple]);
+  }, [episodes, currentIndex, showUnlockMultiple, isRemotePlaybackActive]);
 
   // Handle playback state change
   const handlePlayPause = useCallback((playing: boolean) => {
@@ -249,12 +364,21 @@ export default function DramaPlayer() {
 
   // Handle video finish - auto switch to next episode
   const handleVideoFinish = useCallback(() => {
+    if (isRemotePlaybackActive) {
+      return;
+    }
+
     if (currentIndex < episodes.length - 1) {
       // Switch to next episode
       const nextIndex = currentIndex + 1;
       handleEpisodeChange(nextIndex, true);
     }
-  }, [currentIndex, episodes.length, handleEpisodeChange]);
+  }, [
+    currentIndex,
+    episodes.length,
+    handleEpisodeChange,
+    isRemotePlaybackActive,
+  ]);
 
   // Handle episode selector modal
   const handleEpisodeSelectorPress = useCallback(() => {
@@ -319,9 +443,9 @@ export default function DramaPlayer() {
     [episodes, handleEpisodeUnlocked]
   );
 
-  // Create viewability config callback pairs
-  const viewabilityConfigCallbackPairs = useMemo(
-    () => [
+  // Create viewability config callback pairs once per mounted list, including Fast Refresh.
+  const viewabilityConfigCallbackPairs = useRef(
+    [
       {
         viewabilityConfig: {
           itemVisiblePercentThreshold: 50,
@@ -341,9 +465,8 @@ export default function DramaPlayer() {
           }
         },
       },
-    ],
-    []
-  );
+    ]
+  ).current;
 
   const handleFullscreenFreeze = useCallback(
     (isFullscreen?: boolean, index?: number) => {
@@ -493,6 +616,7 @@ export default function DramaPlayer() {
       return (
         <View style={[styles.videoItem]}>
           <EpisodePlayer
+            castController={castController}
             episode={item}
             dramaTitle={dramaTitle}
             dramaCoverUrl={dramaCoverUrl}
@@ -503,6 +627,7 @@ export default function DramaPlayer() {
             currentEpisodeIndex={currentIndex}
             playerIndex={index}
             onPlayPause={handlePlayPause}
+            onSeekingChange={onSeekingChange}
             onEpisodeSelectorPress={handleEpisodeSelectorPress}
             onRecommendationPress={() => {}}
             dramaId={dramaId}
@@ -529,6 +654,7 @@ export default function DramaPlayer() {
       startTime,
       episodes,
       handlePlayPause,
+      onSeekingChange,
       handleEpisodeSelectorPress,
       dramaId,
       playbackSpeed,
@@ -537,6 +663,7 @@ export default function DramaPlayer() {
       shouldTriggerScrollPreRender,
       handleFullscreenFreeze,
       handleVideoFinish,
+      castController,
     ]
   );
 
@@ -572,11 +699,11 @@ export default function DramaPlayer() {
 
   return (
     <View style={styles.container}>
-      {
+      {!isRemotePlaybackActive && (
         <View style={[styles.titleBar, { top: insets.top }]}>
           <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-            <Image
-              source={require("@/assets/images/back_arrow.png")}
+            <SvgIcon
+              name="chevron-left"
               style={styles.backIcon}
             />
           </TouchableOpacity>
@@ -584,7 +711,7 @@ export default function DramaPlayer() {
             {dramaTitle}
           </Text>
         </View>
-      }
+      )}
 
       <FlatList
         ref={flashListRef}
@@ -611,7 +738,7 @@ export default function DramaPlayer() {
         onMomentumScrollEnd={handleMomentumScrollEnd}
         pagingEnabled={!isTransitioningOrientation}
         removeClippedSubviews={!isTransitioningOrientation}
-        scrollEnabled={!isLandscape}
+        scrollEnabled={!isLandscape && !isRemotePlaybackActive && !isSeeking}
         scrollEventThrottle={16}
       />
 
@@ -620,7 +747,7 @@ export default function DramaPlayer() {
         episodes={episodes}
         currentEpisodeIndex={currentIndex}
         onEpisodeSelect={handleEpisodeSelect}
-        visible={showEpisodeSelector}
+        visible={!isRemotePlaybackActive && showEpisodeSelector}
         onClose={() => setShowEpisodeSelector(false)}
         dramaTitle={dramaTitle}
         dramaCoverUrl={dramaCoverUrl}
@@ -637,7 +764,7 @@ export default function DramaPlayer() {
 
       {/* VIP Unlock Modal */}
       <VipUnlockModal
-        visible={showVipModal}
+        visible={!isRemotePlaybackActive && showVipModal}
         onClose={() => setShowVipModal(false)}
         onWatchAd={handleVipUnlock}
         onUnlockAll={() => {
@@ -653,7 +780,7 @@ export default function DramaPlayer() {
 
       {/* Unlock Multiple Episodes Modal */}
       <UnlockMultipleModal
-        visible={showUnlockMultiple}
+        visible={!isRemotePlaybackActive && showUnlockMultiple}
         onClose={() => {
           setShowUnlockMultiple(false);
           // After closing, if current episode is VIP, show VIP modal again
@@ -669,6 +796,14 @@ export default function DramaPlayer() {
         allEpisodes={episodes.map((ep) => ({ vid: ep.vid, vip: ep.vip }))}
         dramaId={dramaId}
       />
+
+      {isRemotePlaybackActive && (
+        <CastActiveOverlay
+          deviceName={castController.deviceName}
+          remotePosition={castController.remotePosition}
+          onStop={castController.stopCasting}
+        />
+      )}
     </View>
   );
 }

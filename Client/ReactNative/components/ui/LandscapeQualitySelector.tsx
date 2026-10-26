@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useState, useCallback } from "react";
 import {
   View,
@@ -10,8 +11,6 @@ import {
   Modal,
   Animated,
 } from "react-native";
-import { Image } from "expo-image";
-import { getImageAsset } from "../../utils/imageUtils";
 import { IPlayInfoListItem } from "../../types/drama";
 
 interface LandscapeQualitySelectorProps {
@@ -78,8 +77,8 @@ const LandscapeQualitySelector: React.FC<LandscapeQualitySelectorProps> = ({
         style={styles.landscapeQualityButton}
         onPress={showModal}
       >
-        <Image
-          source={getImageAsset("player/v_quantity")}
+        <SvgIcon
+          name="quality"
           style={styles.landscapeQualityIcon}
         />
         <Text style={styles.landscapeQualityText}>

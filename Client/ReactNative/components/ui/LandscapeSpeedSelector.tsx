@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useState, useCallback } from "react";
 import {
   View,
@@ -10,8 +11,6 @@ import {
   Modal,
   Animated,
 } from "react-native";
-import { Image } from "expo-image";
-import { getImageAsset } from "../../utils/imageUtils";
 
 interface LandscapeSpeedSelectorProps {
   currentSpeed: number;
@@ -70,8 +69,8 @@ const LandscapeSpeedSelector: React.FC<LandscapeSpeedSelectorProps> = ({
     <>
       {/* Landscape speed button */}
       <TouchableOpacity style={styles.landscapeSpeedButton} onPress={showModal}>
-        <Image
-          source={getImageAsset("player/v_speed")}
+        <SvgIcon
+          name="speed"
           style={styles.landscapeSpeedIcon}
         />
         <Text style={styles.landscapeSpeedText}>{currentSpeed}×</Text>

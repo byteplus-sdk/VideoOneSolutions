@@ -1,12 +1,11 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useState, useCallback } from "react";
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Image } from "expo-image";
 import { DramaEpisode } from "../../types/drama";
 import EpisodeSelectorModal from "../modals/EpisodeSelectorModal";
-import { getImageAsset } from "../../utils/imageUtils";
 
 interface LandscapeEpisodeSelectorProps {
   episodes: DramaEpisode[];
@@ -60,8 +59,8 @@ const LandscapeEpisodeSelector: React.FC<LandscapeEpisodeSelectorProps> = ({
         style={styles.landscapeEpisodeButton}
         onPress={showModal}
       >
-        <Image
-          source={getImageAsset("player/series")}
+        <SvgIcon
+          name="episodes"
           style={styles.landscapeEpisodeIcon}
         />
         <Text style={styles.landscapeEpisodeText}>

@@ -1,6 +1,7 @@
 // Copyright (c) 2023 BytePlus Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
+import SvgIcon from "@/components/ui/SvgIcon";
 import React, { useEffect, useRef } from "react";
 import {
   View,
@@ -167,8 +168,8 @@ const RecommendationOverlay: React.FC<RecommendationOverlayProps> = ({
               {formatDuration(video_meta.duration)}
             </Text>
 
-            <Image
-              source={require("@/assets/minidrama/common/fire.png")}
+            <SvgIcon
+              name="fire"
               style={[
                 styles.fireIcon,
                 isCurrentVideo && styles.currentVideoIcon, // Use black icon when highlighted
@@ -215,23 +216,23 @@ const RecommendationOverlay: React.FC<RecommendationOverlayProps> = ({
           {/* Top title bar */}
           <View style={styles.header}>
             <TouchableOpacity onPress={onClose} style={styles.backButton}>
-              <Image
-                source={require("@/assets/images/back_arrow.png")}
+              <SvgIcon
+                name="chevron-left"
                 style={styles.backIcon}
               />
             </TouchableOpacity>
 
             <View style={styles.titleContainer}>
-              <Image
-                source={require("@/assets/images/recommend.png")}
+              <SvgIcon
+                name="recommend"
                 style={styles.titleIcon}
               />
               <Text style={styles.headerTitle}>Recommend for you</Text>
             </View>
 
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Image
-                source={require("@/assets/images/close.png")}
+              <SvgIcon
+                name="close"
                 style={styles.closeIcon}
               />
             </TouchableOpacity>

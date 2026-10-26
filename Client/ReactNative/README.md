@@ -1,4 +1,4 @@
-> English · [中文](./README.md)
+> English · [中文](./README.zh_CN.md)
 
 # Video One RN
 
@@ -6,17 +6,17 @@ A React Native video streaming application built with BytePlus ReactNative Video
 
 ## 📱 Overview
 
-Video One RN is a mobile application built with [BytePlus ReactNative VOD SDK](https://docs.byteplus.com/en/docs/byteplus-vod/docs-rn-player-quickstart) for short drama scenario playback, featuring complete video playback, user interaction capabilities, and content unlocking through advertisements.
+Video One RN is a mobile application built with [BytePlus ReactNative VOD SDK](https://docs.byteplus.com/en/docs/byteplus-vod/docs-rn-player-quickstart) for short drama scenario playback, featuring complete video playback, user interaction capabilities, content unlocking through advertisements, and **screen casting** (Google Cast on Android, AirPlay on iOS).
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - Node.js >= 18.0.0
-- npm or yarn
-- Expo CLI
-- iOS Simulator (for iOS development)
-- Android Studio (for Android development)
+- Yarn (recommended) or npm
+- Expo CLI (`npx expo`)
+- Xcode (iOS) / Android Studio (Android)
+- A physical device on the **same Wi‑Fi network** as your Cast receiver or AirPlay target (required to test casting)
 
 ### Installation Steps
 
@@ -30,33 +30,36 @@ Video One RN is a mobile application built with [BytePlus ReactNative VOD SDK](h
 2. **Install dependencies**
 
    ```bash
-   npm install
-   # or
    yarn install
    ```
 
-3. **Start the development server**
+3. **Generate native projects** (first run or after native dependency changes)
 
    ```bash
-   npm start
-   # or
+   yarn prebuild
+   cd ios && pod install && cd ..
+   ```
+
+4. **Start the development server**
+
+   ```bash
    yarn start
    ```
 
-4. **Run on specific platforms**
+5. **Run on a device or emulator**
 
    ```bash
-   # iOS
-   npm run ios
+   # iOS (physical device recommended for AirPlay)
+   yarn ios
 
-   # Android
-   npm run android
+   # Android (auto-writes node.binary for Gradle)
+   yarn android
    ```
 
 ## 📁 Project Structure
 
 ```
-Client/ReactNative/
+video-one-rn/
 ├── app/                    # App screens (Expo Router)
 │   ├── _layout.tsx         # Root layout
 │   ├── index.tsx           # Home screen
@@ -65,10 +68,16 @@ Client/ReactNative/
 │   └── +not-found.tsx      # 404 screen
 ├── components/             # Reusable components
 │   ├── player/             # Video player components
-│   │   ├── VideoPlayer.tsx      # Main video player
-│   │   ├── EpisodePlayer.tsx    # Episode player wrapper
+│   │   ├── VideoPlayer.tsx      # Main video player (local pause/resume during cast)
+│   │   ├── EpisodePlayer.tsx    # Episode player wrapper (Cast button + overlay)
 │   │   ├── PlaybackControls.tsx # Playback control component
 │   │   └── index.ts
+│   ├── cast/               # Screen casting (Cast / AirPlay)
+│   │   ├── CastButton.tsx           # Platform cast trigger
+│   │   ├── CastActiveOverlay.tsx    # Full-screen casting overlay
+│   │   ├── CastStatusBar.tsx        # Slim casting status banner
+│   │   ├── AirPlayRelay.ts          # iOS native AirPlay bridge
+│   │   └── AirPlayRoutePickerView.tsx
 │   ├── modals/             # Modal components
 │   │   ├── EpisodeSelectorModal.tsx  # Episode selection modal
 │   │   ├── VipUnlockModal.tsx        # VIP unlock modal
@@ -106,6 +115,7 @@ Client/ReactNative/
 │   ├── unlockService.ts    # Content unlock service
 │   └── userService.ts      # User management service
 ├── hooks/                  # Custom React hooks
+│   ├── useCast.ts          # Unified Cast / AirPlay hook
 │   ├── useColorScheme.ts   # Color theme hook
 │   ├── useDramaChannel.ts  # Drama channel hook
 │   └── useThemeColor.ts    # Theme color hook
@@ -140,7 +150,8 @@ Client/ReactNative/
 ├── android/                # Android-specific files
 │   ├── app/                # Android app module
 │   │   ├── build.gradle    # App build configuration
-│   │   └── src/            # Android source code
+│   │   └── src/main/java/.../CastOptionsProvider.kt  # Google Cast options
+│   ├── node.gradle         # Node path resolution for Gradle
 │   ├── build.gradle        # Project build configuration
 │   ├── gradle/             # Gradle wrapper
 │   ├── gradle.properties   # Gradle properties
@@ -150,6 +161,8 @@ Client/ReactNative/
 ├── ios/                    # iOS-specific files
 │   ├── videoonern/         # iOS app target
 │   │   ├── AppDelegate.swift
+│   │   ├── AirPlayRelay.m              # AVPlayer relay for AirPlay
+│   │   ├── AirPlayRoutePickerViewManager.m
 │   │   ├── Images.xcassets/
 │   │   ├── Info.plist
 │   │   ├── PrivacyInfo.xcprivacy
@@ -160,37 +173,44 @@ Client/ReactNative/
 │   ├── Podfile.lock        # CocoaPods lock file
 │   └── Pods/               # CocoaPods dependencies
 ├── plugins/                # Expo config plugins
-│   ├── withATSConfig.js    # ATS configuration plugin
 │   ├── withLicense.js      # License file plugin
 │   ├── withPodfileSources.js # Podfile sources plugin
+│   ├── withGoogleCast.js   # Google Cast (Android) config plugin
 │   └── xcodeUtils.js       # Xcode utilities
 ├── scripts/                # Build and utility scripts
-│   └── reset-project.js    # Project reset script
+│   ├── reset-project.js    # Project reset script
+│   └── setup-android-node.sh  # Writes node.binary for Android Gradle
+├── babel.config.js         # Babel (react-native-worklets plugin for Reanimated v4)
+├── metro.config.js         # Metro bundler configuration
 ├── app.json                # Expo app configuration
 ├── tsconfig.json           # TypeScript configuration
-├── package.json            # npm package configuration
+├── package.json            # Package configuration
+├── yarn.lock               # Yarn lockfile
 ├── expo-env.d.ts           # Expo TypeScript definitions
 ├── eslint.config.js        # ESLint configuration
 ├── detection_tool.py       # Detection utility
 ├── LICENSE                 # License file
 ├── README.md               # English documentation
-└── README-zh_CN.md         # Chinese documentation
+└── README.zh_CN.md         # Chinese documentation
 ```
 
 ## 🏗️ Technical Architecture
 
 ### Core Technologies
 
-- **React Native**: Cross-platform mobile development framework
-- **Expo**: Development platform and toolchain with rich APIs and components
+- **React Native 0.83** + **Expo SDK 55**: Cross-platform development with the New Architecture enabled
 - **TypeScript**: Type-safe JavaScript superset
 - **Expo Router**: File-based routing system for simplified navigation management
+- **@byteplus/react-native-vod-player**: BytePlus VOD playback SDK
+- **react-native-google-cast** (Android): Google Cast device discovery and remote playback
+- **Custom native AirPlay relay** (iOS): `AVRoutePickerView` + `AVPlayer` relay with progress sync back to the local player
 
 ### Architecture Design Patterns
 
 1. **Componentized Architecture**: Components organized by functional modules for improved code reusability
 
    - `player/`: Video playback related components
+   - `cast/`: Screen casting UI and native bridges
    - `modals/`: Modal components
    - `feed/`: Content feed components
    - `ui/`: General UI components
@@ -205,6 +225,7 @@ Client/ReactNative/
 
 3. **Custom Hooks**: Encapsulate reusable business logic
 
+   - `useCast.ts`: Unified Cast (Android) / AirPlay (iOS) session and playback control
    - `useDramaChannel.ts`: Drama channel data management
    - `useColorScheme.ts`: Theme color management
 
@@ -223,6 +244,13 @@ Client/ReactNative/
 - **Landscape/portrait switching**: Automatic screen orientation adaptation with different control interfaces
 - **Progress management**: Support for drag-to-seek and playback position memory
 - **Video caching**: Support for video preloading with automatic strategies
+
+### 📺 Screen Casting
+
+- **Android — Google Cast**: Discover Chromecast / Cast-enabled devices on the local network, load the current episode URL to the default receiver (`CC1AD845`), and pause local playback while casting
+- **iOS — AirPlay**: System route picker (`AVRoutePickerView`) plus a native `AirPlayRelay` that plays the stream on the AirPlay target and reports progress for seamless local resume
+- **Cast UI**: `CastButton` in the player chrome, `CastActiveOverlay` while casting, optional `CastStatusBar`
+- **Episode switching**: `updateCastMedia` updates the remote source when the user changes episodes during an active Cast session (Android)
 
 ### 👥 User Interaction Features
 
@@ -247,34 +275,40 @@ Client/ReactNative/
 ### Available Script Commands
 
 ```bash
-# Development related
-npm start              # Start Expo development server
-npm run android        # Run on Android device/emulator
-npm run ios           # Run on iOS device/simulator
+# Development
+yarn start              # Start Expo dev server (clears cache)
+yarn prebuild           # Regenerate android/ and ios/ (expo prebuild --clean)
+yarn android            # Setup node.binary + run on Android
+yarn ios                # Run on iOS device
+
+# Release builds
+yarn android:release    # Assemble Android release APK/AAB
+yarn ios:release        # Run iOS Release on device
+yarn ios:archive        # Xcode archive (Release, iphoneos)
 
 # Code quality
-npm run lint          # Run ESLint code checking
+yarn lint               # Run ESLint
 
 # Project maintenance
-npm run reset-project # Reset project structure
+yarn reset-project      # Reset project structure
 ```
 
 ### Development Environment Setup
 
-1. **Install Expo CLI**
+1. **Configure development environment**
 
+   - iOS: Xcode, CocoaPods (`pod install` under `ios/`)
+   - Android: Android Studio, JDK 17+, ensure `node` is on your `PATH` (or set `NODE_BINARY`)
+
+2. **Start the project**
    ```bash
-   npm install -g @expo/cli
+   yarn start
    ```
 
-2. **Configure development environment**
-
-   - iOS: Install Xcode and iOS Simulator
-   - Android: Install Android Studio and Android SDK
-
-3. **Start the project**
+3. **Native rebuild after plugin or SDK changes**
    ```bash
-   npm start
+   yarn prebuild
+   cd ios && pod install && cd ..
    ```
 
 ## 📱 Platform Support
@@ -302,6 +336,21 @@ const API_BASE_URL = "https://your-api-domain.com";
    ```typescript
    // Configure unlock parameters in unlockService
    ```
+
+### Screen Casting Configuration
+
+Casting is wired through Expo config plugins and native modules. Most defaults work out of the box.
+
+| Platform | Mechanism | Key files |
+| -------- | --------- | --------- |
+| Android | Google Cast SDK via `react-native-google-cast` | `plugins/withGoogleCast.js`, `CastOptionsProvider.kt` |
+| iOS | AirPlay route picker + `AirPlayRelay` native module | `ios/videoonern/AirPlayRelay.m`, `app.json` → `ios.infoPlist` |
+
+**Android Cast receiver App ID** — edit `CAST_APP_ID` in `android/app/src/main/java/com/byteplus/videoone/rn/CastOptionsProvider.kt`. The default `CC1AD845` is Google's stock media receiver (no custom registration required).
+
+**iOS local network** — `app.json` declares `NSLocalNetworkUsageDescription` and Bonjour services (`_airplay._tcp`, `_googlecast._tcp`, `_CC1AD845._googlecast._tcp`) so Cast/AirPlay devices can be discovered on the LAN.
+
+**Gradle + Node** — `yarn android` runs `scripts/setup-android-node.sh`, which writes `node.binary` into `android/local.properties` for Gradle and Android Studio builds.
 
 ### Build Configuration
 
