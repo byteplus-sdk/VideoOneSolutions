@@ -59,12 +59,12 @@ public class DramaTheaterFragment extends Fragment {
     });
 
     private final IDramaTheaterClickListener mDramaClickListener = (info, position, infos) -> {
+        Input input = new Input(createDramaItems(infos), position);
         // 点击后交给详情页策略，避免首页任务继续占用下载资源。
         // Hand over to the detail strategy on tap so home tasks stop using download resources.
         if (mHomePreloader != null) {
-            mHomePreloader.stop();
+            mHomePreloader.onDramaSelected(info);
         }
-        Input input = new Input(createDramaItems(infos), position);
         mDramaDetailPageLauncher.launch(input);
     };
 
@@ -177,6 +177,11 @@ public class DramaTheaterFragment extends Fragment {
 
     private void refresh() {
         L.d(this, "refresh", "start refresh");
+        // 等待新列表时即释放旧候选，避免继续准备过时的播放入口。
+        // Release the old candidate while the new feed loads instead of preparing a stale entry.
+        if (mHomePreloader != null) {
+            mHomePreloader.stop();
+        }
         showRefreshing();
         mRemoteApi.getDramaChannel(
                 DramaSettings.isTheaterEntryPreloadEnabled(),

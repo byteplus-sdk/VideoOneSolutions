@@ -8,6 +8,7 @@ public class DramaSettings {
     private static boolean ads = false;
     private static boolean theaterEntryPreload = true;
     private static boolean theaterResumePointPreload = true;
+    private static boolean theaterEntryPreRender = true;
 
     public static void enableAds(boolean enable) {
         ads = enable;
@@ -49,6 +50,17 @@ public class DramaSettings {
 
     public static boolean isTheaterEntryPreloadEnabled() {
         return theaterEntryPreload;
+    }
+
+    // 默认仅预渲染首个候选以演示用法；实际候选由业务决定，建议同时只保留一个。
+    // Prepare only the first candidate by default as a usage example. Let the app choose
+    // the actual candidate, and keep at most one prepared player to limit memory usage.
+    public static void enableTheaterEntryPreRender(boolean enable) {
+        theaterEntryPreRender = enable;
+    }
+
+    public static boolean isTheaterEntryPreRenderEnabled() {
+        return theaterEntryPreRender;
     }
 
     // 仅控制预加载起点，不改变详情页实际续播位置。

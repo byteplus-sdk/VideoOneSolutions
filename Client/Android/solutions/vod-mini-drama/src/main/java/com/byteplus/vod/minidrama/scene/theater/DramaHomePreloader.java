@@ -5,8 +5,13 @@ package com.byteplus.vod.minidrama.scene.theater;
 
 import android.text.TextUtils;
 
+import com.byteplus.playerkit.player.Player;
+import com.byteplus.playerkit.player.PlayerEvent;
 import com.byteplus.playerkit.player.cache.CacheLoader;
+import com.byteplus.playerkit.player.playback.PlayerPool;
 import com.byteplus.playerkit.player.source.MediaSource;
+import com.byteplus.playerkit.player.utils.ProgressRecorder;
+import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.vod.minidrama.remote.GetDramas;
 import com.byteplus.vod.minidrama.remote.api.HttpCallback;
 import com.byteplus.vod.minidrama.remote.model.drama.DramaEntryEpisode;
@@ -27,20 +32,45 @@ import java.util.Set;
 
 /**
  * 首页数据返回后，为前 9 个不同剧目各预加载一个入口视频。
- * 首页只创建数据预加载任务，不创建预渲染播放器；详情页再启用原有预渲染策略。
+ * 默认额外 prepare 首个候选，仅演示单候选预渲染的用法，不代表业务推荐策略。
+ * 业务可根据播放历史选择最可能被点击的入口；不推荐同时预渲染多个，以控制内存和解码器开销。
+ * 预渲染的下载量不受 200 KiB 数据预加载预算限制，收益取决于用户是否点击同一入口。
+ * 本示例依赖 VideoOne 默认开启的 TextureRender 提供内部离屏输出，首帧就绪以 frameReady 为准。
  * 滚动不改变任务；点击或离开首页时停止任务，播放页继续使用原有场景策略。
  *
  * <p>Preloads one entry video for each of the first 9 unique dramas after the home feed loads.
- * The home page creates data preload tasks only; the detail page uses its existing pre-render policy.
+ * Also prepares the first candidate by default, solely to demonstrate single-candidate pre-rendering.
+ * Apps should choose the likely entry using playback history. Preparing multiple candidates is
+ * not recommended because it consumes additional memory and decoder resources.
+ * Preparation downloads are not capped by the 200 KiB data preload budget; the benefit depends
+ * on the user tapping the same entry.
+ * This example relies on VideoOne's default TextureRender for internal offscreen output.
+ * Check frameReady to confirm the first frame is ready; prepared alone is not sufficient.
  * Scrolling keeps the tasks unchanged. Tapping a drama or leaving the home page stops them.
  */
 final class DramaHomePreloader {
     private static final int HOME_VIDEO_COUNT = 9;
+    private static final int PRE_RENDER_CANDIDATE_INDEX = 1;
     private static final long PRELOAD_BYTES = 200L * 1024L;
 
     private final CacheLoader mCacheLoader;
     private final GetDramas mRemoteApi = new GetDramas();
     private final List<MediaSource> mSources = new ArrayList<>();
+    private Player mPreRenderPlayer;
+    private MediaSource mPreRenderSource;
+    private final Dispatcher.EventListener mPreRenderListener = event -> {
+        // 忽略已释放候选的延迟事件，防止旧回调影响刷新后的实例。
+        // Ignore delayed events from a released candidate so they cannot affect its replacement.
+        if (event.owner(Player.class) != mPreRenderPlayer) return;
+        if (event.code() == PlayerEvent.State.PREPARED) {
+            L.i(this, "homePreRender", "event=prepared", mPreRenderPlayer);
+        } else if (event.code() == PlayerEvent.Info.VIDEO_RENDERING_START_BEFORE_START) {
+            L.i(this, "homePreRender", "event=frameReady", mPreRenderPlayer);
+        } else if (event.code() == PlayerEvent.State.ERROR) {
+            L.w(this, "homePreRender", "event=error", mPreRenderPlayer);
+            releasePreRender();
+        }
+    };
     private int mGeneration;
 
     DramaHomePreloader(CacheLoader cacheLoader) {
@@ -150,6 +180,66 @@ final class DramaHomePreloader {
                 log("error", index, source.getMediaId(), "preload failed");
             }
         });
+        if (index == PRE_RENDER_CANDIDATE_INDEX) {
+            prepareEntry(entry);
+        }
+    }
+
+    private void prepareEntry(DramaEntryEpisode entry) {
+        if (!DramaSettings.isTheaterEntryPreRenderEnabled() || DramaSettings.isAdsEnabled()) return;
+        VideoItem item = entry.feed.toVideoItem();
+        VideoItem.playScene(item, PlayScene.SCENE_SHORT);
+        VideoItem.syncProgress(item, true);
+        MediaSource source = VideoItem.toMediaSource(item);
+        // 与详情页使用同一续播位置；仅在没有本地进度时补充服务端进度。
+        // Use the detail page's resume position, filling server progress only when none is local.
+        if (ProgressRecorder.getProgress(source.getSyncProgressId()) <= 0 && entry.resumePositionMs > 0) {
+            ProgressRecorder.recordProgress(source.getSyncProgressId(), entry.resumePositionMs);
+        }
+        // 不接管已经在其他页面使用的播放器；本示例最多持有一个首页播放器。
+        // Do not take over a player used by another page. This example holds at most one home player.
+        if (PlayerPool.DEFAULT.get(source) != null) return;
+        mPreRenderSource = source;
+        mPreRenderPlayer = PlayerPool.DEFAULT.acquire(source, Player.Factory.Default.get());
+        mPreRenderPlayer.addPlayerListener(mPreRenderListener);
+        mPreRenderPlayer.setStartWhenPrepared(false);
+        L.i(this, "homePreRender", "event=prepare mediaId=" + source.getMediaId(), mPreRenderPlayer);
+        try {
+            // 底层调用 TTVideoEngine.prepare()，TextureRender 提供离屏输出；首页不播放。
+            // 点击命中后，详情页再绑定显示 Surface。直接接 SDK 时需确保有可用的渲染输出。
+            // Calls TTVideoEngine.prepare() with TextureRender's offscreen output, without playback.
+            // The detail page attaches its display Surface on a hit. Direct SDK integration must
+            // provide an available render output, through TextureRender or a suitable Surface.
+            mPreRenderPlayer.prepare(source);
+        } catch (IllegalStateException error) {
+            L.w(this, "homePreRender", error, "event=prepareFailed");
+            releasePreRender();
+        }
+    }
+
+    void onDramaSelected(DramaInfo info) {
+        DramaEntryEpisode entry = info.entryEpisode;
+        if (mPreRenderPlayer != null && entry != null && entry.isUsable(System.currentTimeMillis())
+                && TextUtils.equals(entry.getMediaId(), mPreRenderSource.getMediaId())
+                && (mPreRenderPlayer.isPreparing() || mPreRenderPlayer.isPrepared())) {
+            // 命中时移交给默认播放器池，详情页按相同 mediaId 复用并负责释放。
+            // Hand the matching player to the default pool; the detail page reuses it by mediaId
+            // and owns its release. Remove the home listener to avoid retaining the home page.
+            L.i(this, "homePreRender", "event=handoff mediaId=" + entry.getMediaId(), mPreRenderPlayer);
+            mPreRenderPlayer.removePlayerListener(mPreRenderListener);
+            mPreRenderPlayer = null;
+            mPreRenderSource = null;
+        }
+        stop();
+    }
+
+    private void releasePreRender() {
+        if (mPreRenderPlayer == null) return;
+        L.i(this, "homePreRender", "event=release", mPreRenderPlayer);
+        mPreRenderPlayer.removePlayerListener(mPreRenderListener);
+        PlayerPool.DEFAULT.recycle(mPreRenderPlayer);
+        mPreRenderPlayer = null;
+        mPreRenderSource = null;
     }
 
     void stop() {
@@ -161,6 +251,9 @@ final class DramaHomePreloader {
             mCacheLoader.stopTask(source);
         }
         mSources.clear();
+        // 刷新、离开首页或点击其他剧目时释放未命中的预渲染实例。
+        // Release an unused prepared player on refresh, leaving home, or tapping another drama.
+        releasePreRender();
     }
 
     private void log(String event, int index, String mediaId, String detail) {
