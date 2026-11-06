@@ -43,6 +43,9 @@ public class VolcConfig implements Serializable {
     public int playerDecoderType;
     @Track.EncoderType
     public int sourceEncodeType;
+    // 保留场景元数据；起播水位由统一工厂配置，不按场景区分。
+    // Keep scene metadata; the shared factory applies startup buffering settings to all scenes.
+    public int playScene = VolcScene.SCENE_UNKNOWN;
     public boolean enableAudioTrackVolume = false;
     public boolean enableHlsSeamlessSwitch = VolcEditions.isSupportHLSSeamLessSwitch();
     // 与统一工厂保持一致：所有场景默认开启 Master 请求优化。
