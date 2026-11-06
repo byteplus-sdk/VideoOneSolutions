@@ -45,6 +45,9 @@ public class VolcConfig implements Serializable {
     public int sourceEncodeType;
     public boolean enableAudioTrackVolume = false;
     public boolean enableHlsSeamlessSwitch = VolcEditions.isSupportHLSSeamLessSwitch();
+    // 与统一工厂保持一致：所有场景默认开启 Master 请求优化。
+    // Match the shared factory: Master request optimization is enabled for every scene.
+    public boolean enableMasterM3U8Optimize = true;
     public boolean enableMP4SeamlessSwitch = VolcEditions.isSupportMp4SeamLessSwitch();
     public boolean enableDash = VolcEditions.isSupportDash();
     public boolean enableEngineLooper = VolcEditions.isSupportEngineLooper();

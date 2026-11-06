@@ -80,6 +80,10 @@ public class VideoSettings {
     public static final String COMMON_SOURCE_TYPE = "common_source_type";
     public static final String COMMON_SOURCE_ENCODE_TYPE_H265 = "common_source_encode_type_h265";
     public static final String COMMON_SOURCE_VIDEO_FORMAT_TYPE = "common_source_video_format_type";
+    // 独立控制 Master 请求优化，不随 HLS 格式选择自动开启。
+    // Control Master request optimization separately from the HLS format selection.
+    public static final String COMMON_ENABLE_MASTER_M3U8_OPTIMIZE =
+            "common_enable_master_m3u8_optimize";
     public static final String COMMON_IS_MINIPLAYER_ON = "common_is_miniplayer_on";
     public static final String COMMON_SOURCE_VIDEO_ENABLE_PRIVATE_DRM = "common_source_video_enable_private_drm";
 
@@ -598,4 +602,3 @@ public class VideoSettings {
     }
 
 }
-
