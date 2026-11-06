@@ -98,7 +98,7 @@ public class DramaRecommendVideoFragment extends Fragment {
         });
 
         mSceneView = new DramaVideoSceneView(view);
-        mSceneView.pageView().setLifeCycle(getLifecycle());
+        mSceneView.pageView().setLifeCycle(getViewLifecycleOwner().getLifecycle());
         mSceneView.pageView().setViewHolderFactory(new RecommendDramaVideoViewHolderFactory());
         mSceneView.setOnRefreshListener(this::refresh);
         mSceneView.setOnLoadMoreListener(this::loadMore);

@@ -286,7 +286,7 @@ public class DramaDetailVideoFragment extends BaseFragment {
         });
 
         mSceneView = new DramaVideoSceneView(view);
-        mSceneView.pageView().setLifeCycle(getLifecycle());
+        mSceneView.pageView().setLifeCycle(getViewLifecycleOwner().getLifecycle());
         mSceneView.pageView().setViewHolderFactory(getViewHolderFactory());
         mSceneView.setRefreshEnabled(false);
         mSceneView.setLoadMoreEnabled(true);
