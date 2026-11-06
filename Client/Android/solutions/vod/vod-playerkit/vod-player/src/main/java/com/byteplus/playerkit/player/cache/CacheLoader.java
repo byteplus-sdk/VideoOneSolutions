@@ -66,7 +66,12 @@ public interface CacheLoader {
 
     interface Task {
 
+        // 单任务缓存目标，单位为字节；通过 MediaSource extra 传入 Long。
+        // Per-task cache target in bytes; pass a Long via MediaSource extras.
         String EXTRA_PRELOAD_SIZE_IN_BYTES = "extra_preload_size_in_bytes";
+        // 媒体内的预加载起点，单位为毫秒；未设置时从头开始。
+        // Preload position within the media in milliseconds; defaults to the beginning.
+        String EXTRA_PRELOAD_START_TIMESTAMP_MS = "extra_preload_start_timestamp_ms";
 
         interface Factory {
             Task create();

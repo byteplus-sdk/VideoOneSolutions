@@ -249,6 +249,7 @@ class VolcCacheTask implements CacheLoader.Task {
         final VidPlayAuthTokenSource vidSource = Mapper.mediaSource2VidPlayAuthTokenSource(source);
         final long preloadSize = resolvePreloadSize(source, null);
         final PreloaderVidItem preloadItem = new PreloaderVidItem(vidSource, preloadSize);
+        preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
 
         L.v(VolcCacheTask.this, "preloadVid", source.getMediaId(), "start", preloadSize);
         preloadItem.setCallBackListener(new IPreLoaderItemCallBackListener() {
@@ -334,6 +335,7 @@ class VolcCacheTask implements CacheLoader.Task {
         final long preloadSize = resolvePreloadSize(source, target);
 
         final PreloaderURLItem preloadItem = new PreloaderURLItem(directUrlSource, preloadSize);
+        preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
 
         final Map<String, String> headers = target.getHeaders();
         if (headers != null) {
@@ -488,9 +490,12 @@ class VolcCacheTask implements CacheLoader.Task {
         VideoModelSource videoModelSource = Mapper.mediaSource2VideoModelSource(source, mCacheKeyFactory);
         if (videoModelSource == null) return;
 
-        final long preloadSize = resolvePreloadSize(target);
+        // VideoModel 任务也读取源级预算，优先级与 VID/URL 任务一致。
+        // VideoModel tasks also honor the source budget, with the same priority as VID/URL tasks.
+        final long preloadSize = resolvePreloadSize(source, target);
 
         final PreloaderVideoModelItem preloadItem = new PreloaderVideoModelItem(videoModelSource, preloadSize);
+        preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
 
         // TODO preloadItem setHeaders
 
@@ -597,6 +602,15 @@ class VolcCacheTask implements CacheLoader.Task {
             return preloadSize;
         }
         return DEFAULT_PRELOAD_SIZE;
+    }
+
+    // VID、URL 和 VideoModel 共用媒体时间起点；缺失或负值统一回到开头。
+    // VID, URL and VideoModel share a media-time offset; missing or negative values start at zero.
+    private static long resolvePreloadStartTimestamp(@NonNull MediaSource source) {
+        Long timestamp = source.getExtra(
+                CacheLoader.Task.EXTRA_PRELOAD_START_TIMESTAMP_MS,
+                Long.class);
+        return timestamp == null ? 0 : Math.max(0, timestamp);
     }
 
     @Nullable
