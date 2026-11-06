@@ -77,6 +77,9 @@ public class VolcPlayerInit {
 
         if (sInited.getAndSet(true)) return;
 
+        // 必须早于 Env 初始化及首次 JNI/KEK 调用；失败后补设不会重跑静态初始化。
+        // Set before Env and the first JNI/KEK call; setting it after failure cannot rerun static initialization.
+        TTVideoEngine.setIntValue(TTVideoEngine.PLAYER_OPTION_LAZY_LOAD_VIDEO_DEC, 1);
         sContext = context.getApplicationContext();
 
         if (trackSelector != null) {
