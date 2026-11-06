@@ -36,7 +36,7 @@ fadingedgelayout = "1.0.0"
 
 kotlinx-coroutines = "1.7.3"
 
-ttsdk = "1.50.300.1"
+ttsdk = "1.51.200.6"
 rtcVersion = "3.60.103.5700"
 mediaads = "2.0.0"
 
