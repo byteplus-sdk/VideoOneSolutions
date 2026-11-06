@@ -22,6 +22,11 @@ public class DramaTheaterNewAdapter extends RecyclerView.Adapter<DramaTheaterNew
         implements ViewItemType {
     private List<DramaInfo> mItems;
     private IDramaTheaterClickListener mDramaClickListener;
+    private Runnable mViewportChangedListener;
+
+    public void setViewportChangedListener(Runnable listener) {
+        mViewportChangedListener = listener;
+    }
 
     public void setItems(List<DramaInfo> items, IDramaTheaterClickListener listener) {
         mItems = items;
@@ -35,7 +40,9 @@ public class DramaTheaterNewAdapter extends RecyclerView.Adapter<DramaTheaterNew
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         VevodMiniDramaNewBinding binding =
                 VevodMiniDramaNewBinding.inflate(inflater, parent, false);
-        return new DramaTheaterNewAdapter.ViewHolder(binding);
+        return new DramaTheaterNewAdapter.ViewHolder(binding, () -> {
+            if (mViewportChangedListener != null) mViewportChangedListener.run();
+        });
     }
 
     @Override
@@ -55,9 +62,18 @@ public class DramaTheaterNewAdapter extends RecyclerView.Adapter<DramaTheaterNew
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         final DramaTheaterNewItemAdapter adapter;
+        private final RecyclerView mRecyclerView;
+        private List<DramaInfo> mItems;
 
-        public ViewHolder(@NonNull VevodMiniDramaNewBinding binding) {
+        public ViewHolder(@NonNull VevodMiniDramaNewBinding binding, Runnable viewportChanged) {
             super(binding.getRoot());
+            mRecyclerView = binding.dramaNewRecyclerview;
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView view, int state) {
+                    viewportChanged.run();
+                }
+            });
             binding.dramaNewRecyclerview.setLayoutManager(new LinearLayoutManager(
                     binding.getRoot().getContext(), RecyclerView.HORIZONTAL, false));
             adapter = new DramaTheaterNewItemAdapter();
@@ -75,7 +91,18 @@ public class DramaTheaterNewAdapter extends RecyclerView.Adapter<DramaTheaterNew
         }
 
         public void bind(List<DramaInfo> items, IDramaTheaterClickListener listener) {
+            mItems = items;
             adapter.setItems(items, listener);
+        }
+
+        void collectVisible(List<DramaInfo> out) {
+            if (mItems == null) return;
+            for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                View child = mRecyclerView.getChildAt(i);
+                int position = mRecyclerView.getChildAdapterPosition(child);
+                if (position >= 0 && position < mItems.size()
+                        && child.getGlobalVisibleRect(new Rect())) out.add(mItems.get(position));
+            }
         }
     }
 }

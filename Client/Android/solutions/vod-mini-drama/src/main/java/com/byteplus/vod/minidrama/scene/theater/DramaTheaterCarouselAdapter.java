@@ -24,12 +24,20 @@ public class DramaTheaterCarouselAdapter extends RecyclerView.Adapter<DramaTheat
     @NonNull
     private List<DramaInfo> mItems = Collections.emptyList();
     private IDramaTheaterClickListener mDramaClickListener;
+    private Runnable mViewportChangedListener;
+
+    public void setViewportChangedListener(Runnable listener) {
+        mViewportChangedListener = listener;
+    }
 
     @NonNull
     @Override
     public DramaTheaterCarouselAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         DramaCarouselView view = (DramaCarouselView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.vevod_mini_drama_theater_carousel_item, parent, false);
+        view.setViewportChangedListener(() -> {
+            if (mViewportChangedListener != null) mViewportChangedListener.run();
+        });
         return new ViewHolder(view);
     }
 
@@ -69,6 +77,10 @@ public class DramaTheaterCarouselAdapter extends RecyclerView.Adapter<DramaTheat
 
         void bind(List<DramaInfo> items, IDramaTheaterClickListener listener) {
             mCarouselView.setItems(items, listener);
+        }
+
+        void collectVisible(List<DramaInfo> out) {
+            mCarouselView.collectVisible(out);
         }
     }
 }

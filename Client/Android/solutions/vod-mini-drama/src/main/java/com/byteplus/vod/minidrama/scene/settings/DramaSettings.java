@@ -6,6 +6,8 @@ import com.byteplus.playerkit.player.playback.AdsPlaybackController;
 
 public class DramaSettings {
     private static boolean ads = false;
+    private static boolean theaterEntryPreload = true;
+    private static boolean theaterResumePointPreload = true;
 
     public static void enableAds(boolean enable) {
         ads = enable;
@@ -37,5 +39,25 @@ public class DramaSettings {
 
     public static boolean isPostrollAdEnabled() {
         return AdsPlaybackController.isPostrollAdEnabled();
+    }
+
+    // 仅控制首页入口的数据预加载，详情页策略独立配置。
+    // Controls home-entry data preloading; the detail-page strategy is configured separately.
+    public static void enableTheaterEntryPreload(boolean enable) {
+        theaterEntryPreload = enable;
+    }
+
+    public static boolean isTheaterEntryPreloadEnabled() {
+        return theaterEntryPreload;
+    }
+
+    // 仅控制预加载起点，不改变详情页实际续播位置。
+    // Controls the preload offset only, without changing the detail player's resume position.
+    public static void enableTheaterResumePointPreload(boolean enable) {
+        theaterResumePointPreload = enable;
+    }
+
+    public static boolean isTheaterResumePointPreloadEnabled() {
+        return theaterResumePointPreload;
     }
 }

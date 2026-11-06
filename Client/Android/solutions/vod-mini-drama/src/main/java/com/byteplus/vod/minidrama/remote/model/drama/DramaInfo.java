@@ -25,6 +25,10 @@ public class DramaInfo implements Serializable {
     public Orientation orientation = Orientation.PORTRAIT;
     @SerializedName("drama_length")
     public int totalEpisodeNumber;
+    // 可选首页入口；缺失时详情页仍按原有流程加载。
+    // Optional home entry; the detail page keeps its normal loading flow when absent.
+    @SerializedName("entry_episode")
+    public DramaEntryEpisode entryEpisode;
 
     @NonNull
     @Override

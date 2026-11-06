@@ -55,6 +55,25 @@ public class DramaCarouselView extends FrameLayout {
     private DramaCarouselAdapter mCarouselAdapter;
     private IndicatorAdapter mIndicatorAdapter;
     private int mHorizontalMarginPx = -1;
+    private Runnable mViewportChangedListener;
+
+    public void setViewportChangedListener(Runnable listener) {
+        mViewportChangedListener = listener;
+    }
+
+    public void collectVisible(List<DramaInfo> out) {
+        RecyclerView recycler = (RecyclerView) mViewPager2.getChildAt(0);
+        // 中间卡片优先，两侧露出的卡片也属于当前可见窗口。
+        if (mCarouselAdapter.getItemCount() == 0) return;
+        out.add(mCarouselAdapter.getItem(mViewPager2.getCurrentItem()));
+        for (int i = 0; i < recycler.getChildCount(); i++) {
+            View child = recycler.getChildAt(i);
+            int position = recycler.getChildAdapterPosition(child);
+            if (position >= 0 && child.getAlpha() > 0 && child.getGlobalVisibleRect(new Rect())) {
+                out.add(mCarouselAdapter.getItem(position));
+            }
+        }
+    }
 
     public DramaCarouselView(@NonNull Context context) {
         this(context, null);
@@ -109,6 +128,7 @@ public class DramaCarouselView extends FrameLayout {
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
+                if (mViewportChangedListener != null) mViewportChangedListener.run();
                 int itemCount = mCarouselAdapter.getItemCount();
                 if (itemCount > 1) {
                     if (state == ViewPager2.SCROLL_STATE_IDLE) {
