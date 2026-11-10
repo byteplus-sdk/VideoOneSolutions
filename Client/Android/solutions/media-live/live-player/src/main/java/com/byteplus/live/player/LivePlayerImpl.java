@@ -209,8 +209,10 @@ public class LivePlayerImpl implements LivePlayer {
             mCycleInfo.delayMs = statistics.delayMs;
             mCycleInfo.videoBufferMs = statistics.videoBufferMs;
             mCycleInfo.audioBufferMs = statistics.audioBufferMs;
-            mCycleInfo.format = statistics.format;
-            mCycleInfo.protocol = statistics.protocol;
+            // 新版 SDK 改为枚举，展示层仍保存文本；兼容原来的 String 字段类型。
+            // The new SDK exposes enums; preserve the display model's nullable String fields.
+            mCycleInfo.format = statistics.format == null ? null : statistics.format.toString();
+            mCycleInfo.protocol = statistics.protocol == null ? null : statistics.protocol.toString();
             mCycleInfo.isHardwareDecode = statistics.isHardwareDecode;
             mCycleInfo.isPlaying = mIsPlaying;
             mCycleInfo.isMute = mLivePlayer.isMute();
