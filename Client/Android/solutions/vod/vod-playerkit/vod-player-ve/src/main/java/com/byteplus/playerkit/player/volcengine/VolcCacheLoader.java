@@ -106,9 +106,16 @@ class VolcCacheLoader implements CacheLoader {
                 }
             }
         });
-        task.start();
         synchronized (mTasks) {
             mTasks.add(task);
+        }
+        // start可能同步结束；先登记任务，结束回调才能移除它。
+        // start may finish synchronously; register first so the terminal callback can remove it.
+        try {
+            task.start();
+        } catch (RuntimeException | LinkageError error) {
+            onTaskEnd(task);
+            throw error;
         }
     }
 
@@ -121,29 +128,31 @@ class VolcCacheLoader implements CacheLoader {
     @Override
     public void stopTask(@NonNull String mediaId) {
         L.v(this, "stopTask", mediaId);
+        List<Task> tasksToStop = new ArrayList<>();
         synchronized (mTasks) {
             Iterator<Task> iterator = mTasks.iterator();
             while (iterator.hasNext()) {
                 Task task = iterator.next();
                 if (TextUtils.equals(mediaId, task.getDataSource().getMediaId())) {
                     iterator.remove();
-                    task.stop();
+                    tasksToStop.add(task);
                 }
             }
         }
+        // stop会同步回调或重入；遍历结束后再停止，避免回调修改迭代中的集合。
+        // stop can call back or reenter synchronously; stop after iteration to avoid collection mutation.
+        for (Task task : tasksToStop) task.stop();
     }
 
     @Override
     public void stopAllTask() {
         L.v(this, "stopAllTask");
+        List<Task> tasksToStop;
         synchronized (mTasks) {
-            Iterator<Task> iterator = mTasks.iterator();
-            while (iterator.hasNext()) {
-                Task task = iterator.next();
-                iterator.remove();
-                task.stop();
-            }
+            tasksToStop = new ArrayList<>(mTasks);
+            mTasks.clear();
         }
+        for (Task task : tasksToStop) task.stop();
     }
 
     @Override

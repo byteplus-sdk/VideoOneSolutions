@@ -66,7 +66,21 @@ public interface CacheLoader {
 
     interface Task {
 
+        /** 成功任务的缓存证明；复用前重新检查，不支持的实现返回null。 */
+        interface CacheSnapshot {
+            boolean isValid();
+        }
+
+        default CacheSnapshot getCacheSnapshot() { return null; }
+
+        // 单任务缓存目标，单位为字节；通过 MediaSource extra 传入 Long。
+        // Per-task cache target in bytes; pass a Long via MediaSource extras.
         String EXTRA_PRELOAD_SIZE_IN_BYTES = "extra_preload_size_in_bytes";
+        // 媒体内的预加载起点，单位为毫秒；未设置时从头开始。
+        // Preload position within the media in milliseconds; defaults to the beginning.
+        String EXTRA_PRELOAD_START_TIMESTAMP_MS = "extra_preload_start_timestamp_ms";
+        // 首页需要完成缓存复用时才采集证明，其他场景不增加查询。
+        String EXTRA_PRELOAD_CACHE_SNAPSHOT = "extra_preload_cache_snapshot";
 
         interface Factory {
             Task create();

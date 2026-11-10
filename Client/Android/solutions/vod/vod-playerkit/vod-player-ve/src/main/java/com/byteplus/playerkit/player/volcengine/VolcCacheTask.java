@@ -70,6 +70,38 @@ class VolcCacheTask implements CacheLoader.Task {
     private int mState;
 
     private Error mError;
+    private CacheSnapshot mCacheSnapshot;
+
+    @Override
+    public CacheSnapshot getCacheSnapshot() { return mCacheSnapshot; }
+
+    private void captureCache(String key) {
+        if (!Boolean.TRUE.equals(mSource.getExtra(
+                CacheLoader.Task.EXTRA_PRELOAD_CACHE_SNAPSHOT, Boolean.class))) return;
+        CacheSnapshot snapshot = VolcPreloadCacheSnapshot.capture(
+                key, getCacheDir(), resolvePreloadStartTimestamp(mSource));
+        if (snapshot == null) return;
+        MediaSource preparedSource = mSource;
+        CacheKeyFactory keyFactory = mCacheKeyFactory;
+        Track selected = getSelectedTrack(Track.TRACK_TYPE_VIDEO);
+        String selectedKey = selected == null ? null : keyFactory.generateCacheKey(preparedSource, selected);
+        mCacheSnapshot = () -> {
+            // 选档策略更新后重新比较目标，避免旧清晰度的完成记录挡住新任务。
+            // 只保留源和缓存证明，不捕获Task及其页面回调。
+            try {
+                TrackSelector selector = VolcPlayerInit.getTrackSelector();
+                List<Track> tracks = preparedSource.getTracks(Track.TRACK_TYPE_VIDEO);
+                Track current = selector == null || tracks == null || tracks.isEmpty()
+                        ? selected : selector.selectTrack(TrackSelector.TYPE_PRELOAD,
+                        Track.TRACK_TYPE_VIDEO, tracks, preparedSource);
+                if (current == null && tracks != null && !tracks.isEmpty()) current = tracks.get(0);
+                return current != null && TextUtils.equals(selectedKey,
+                        keyFactory.generateCacheKey(preparedSource, current)) && snapshot.isValid();
+            } catch (RuntimeException | LinkageError error) {
+                return false;
+            }
+        };
+    }
 
     VolcCacheTask(Context context) {
         mContext = context;
@@ -249,6 +281,7 @@ class VolcCacheTask implements CacheLoader.Task {
         final VidPlayAuthTokenSource vidSource = Mapper.mediaSource2VidPlayAuthTokenSource(source);
         final long preloadSize = resolvePreloadSize(source, null);
         final PreloaderVidItem preloadItem = new PreloaderVidItem(vidSource, preloadSize);
+        preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
 
         L.v(VolcCacheTask.this, "preloadVid", source.getMediaId(), "start", preloadSize);
         preloadItem.setCallBackListener(new IPreLoaderItemCallBackListener() {
@@ -290,6 +323,7 @@ class VolcCacheTask implements CacheLoader.Task {
                                     "cachedSize", cacheInfo.mCacheSizeFromZero,
                                     "path", cacheInfo.mLocalFilePath);
 
+                            captureCache(cacheInfo.mKey);
                             VolcCacheTask.this.setState(STATE_END_FINISHED);
                             VolcCacheTask.this.notifyEndFinishEvent();
                         }
@@ -334,6 +368,7 @@ class VolcCacheTask implements CacheLoader.Task {
         final long preloadSize = resolvePreloadSize(source, target);
 
         final PreloaderURLItem preloadItem = new PreloaderURLItem(directUrlSource, preloadSize);
+        preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
 
         final Map<String, String> headers = target.getHeaders();
         if (headers != null) {
@@ -379,6 +414,7 @@ class VolcCacheTask implements CacheLoader.Task {
                                     "cachedSize", cachedSize,
                                     "path", cachePath);
 
+                            captureCache(cacheKey);
                             setState(STATE_END_FINISHED);
 
                             notifyEndFinishEvent();
@@ -488,9 +524,12 @@ class VolcCacheTask implements CacheLoader.Task {
         VideoModelSource videoModelSource = Mapper.mediaSource2VideoModelSource(source, mCacheKeyFactory);
         if (videoModelSource == null) return;
 
-        final long preloadSize = resolvePreloadSize(target);
+        // VideoModel 任务也读取源级预算，优先级与 VID/URL 任务一致。
+        // VideoModel tasks also honor the source budget, with the same priority as VID/URL tasks.
+        final long preloadSize = resolvePreloadSize(source, target);
 
         final PreloaderVideoModelItem preloadItem = new PreloaderVideoModelItem(videoModelSource, preloadSize);
+        preloadItem.setStartTimestamp(resolvePreloadStartTimestamp(source));
 
         // TODO preloadItem setHeaders
 
@@ -527,6 +566,7 @@ class VolcCacheTask implements CacheLoader.Task {
                                     "cachedSize", cachedSize,
                                     "path", cachePath);
 
+                            captureCache(cacheKey);
                             setState(STATE_END_FINISHED);
                             if (mListener != null) {
                                 mListener.onFinished(VolcCacheTask.this);
@@ -597,6 +637,15 @@ class VolcCacheTask implements CacheLoader.Task {
             return preloadSize;
         }
         return DEFAULT_PRELOAD_SIZE;
+    }
+
+    // VID、URL 和 VideoModel 共用媒体时间起点；缺失或负值统一回到开头。
+    // VID, URL and VideoModel share a media-time offset; missing or negative values start at zero.
+    private static long resolvePreloadStartTimestamp(@NonNull MediaSource source) {
+        Long timestamp = source.getExtra(
+                CacheLoader.Task.EXTRA_PRELOAD_START_TIMESTAMP_MS,
+                Long.class);
+        return timestamp == null ? 0 : Math.max(0, timestamp);
     }
 
     @Nullable
