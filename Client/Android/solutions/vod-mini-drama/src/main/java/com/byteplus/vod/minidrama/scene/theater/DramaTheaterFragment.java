@@ -11,18 +11,22 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.byteplus.playerkit.player.Player;
 import com.byteplus.playerkit.player.cache.CacheLoader;
+import com.byteplus.playerkit.player.source.MediaSource;
 import com.byteplus.playerkit.player.utils.ProgressRecorder;
 import com.byteplus.vod.minidrama.remote.api.HttpCallback;
 import com.byteplus.vod.minidrama.remote.model.drama.DramaEntryEpisode;
@@ -33,11 +37,15 @@ import com.byteplus.vod.minidrama.scene.data.DramaItem;
 import com.byteplus.vod.minidrama.remote.GetDramas;
 import com.byteplus.vod.minidrama.scene.detail.DramaDetailVideoActivityResultContract;
 import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
+import com.byteplus.vod.minidrama.scene.main.DramaMainFragment;
+import com.byteplus.vod.minidrama.scene.main.MainFragmentViewModel;
 import com.byteplus.vod.minidrama.scene.settings.HomePreloadConfig;
 import com.byteplus.vod.minidrama.utils.L;
+import com.byteplus.vod.minidrama.utils.DramaStartupWarmup;
 import com.byteplus.minidrama.R;
 import com.byteplus.minidrama.databinding.VevodMiniDramaTheaterFragmentBinding;
 import com.byteplus.vod.scenekit.data.model.VideoItem;
+import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 import com.byteplus.vod.scenekit.utils.ViewUtils;
 
 import java.util.ArrayList;
@@ -57,7 +65,28 @@ public class DramaTheaterFragment extends Fragment {
     private boolean mLeavingHome;
     private int mRefreshGeneration;
     private DramaHomeScrollController mScrollController;
+    private String mWarmupDramaId;
+    private boolean mFirstDrawComplete;
+    private boolean mFirstDrawPosted;
+    private boolean mLicenseReady;
+    private ViewTreeObserver mDrawObserver;
+    private final Runnable mAfterFirstDraw = () -> {
+        removeFirstDrawListener();
+        mFirstDrawComplete = true;
+        preloadHome();
+    };
+    private final ViewTreeObserver.OnDrawListener mOnFirstDraw = () -> {
+        // 加载占位的首帧不放行；等真实可见媒体卡片完成绘制。
+        // A loading-placeholder frame does not qualify; wait for visible media cards to draw.
+        if (!mFirstDrawPosted && mRecyclerView != null && !collectVisible().isEmpty()) {
+            mFirstDrawPosted = true;
+            // 等首屏绘制返回主循环后再 prepare，不在 draw 中做 JNI 初始化。
+            // Prepare after the first draw returns to the main loop, never inside draw.
+            mRecyclerView.post(mAfterFirstDraw);
+        }
+    };
     private final Runnable mConfigChanged = () -> {
+        cancelStartupWarmup("configChanged");
         if (mHomePreloader != null) mHomePreloader.stop();
         if (mScrollController != null) mScrollController.reset();
     };
@@ -73,6 +102,7 @@ public class DramaTheaterFragment extends Fragment {
         if (mHomePreloader != null) {
             mHomePreloader.stop();
         }
+        DramaStartupWarmup.get().useNormalPlayback("detail");
         mLeavingHome = true;
         if (mScrollController != null) mScrollController.setActive(false);
         mDramaDetailPageLauncher.launch(input);
@@ -105,13 +135,29 @@ public class DramaTheaterFragment extends Fragment {
 
         mRefreshLayout = binding.swipeRefreshLayout;
         mRecyclerView = binding.recyclerView;
+        mFirstDrawComplete = false;
+        mFirstDrawPosted = false;
+        mDrawObserver = mRecyclerView.getViewTreeObserver();
+        mDrawObserver.addOnDrawListener(mOnFirstDraw);
+        mLicenseReady = false;
+        if (getParentFragment() instanceof DramaMainFragment parent) {
+            new ViewModelProvider(parent).get(MainFragmentViewModel.class).licenseResult
+                    .observe(getViewLifecycleOwner(), result -> {
+                        mLicenseReady = result.isOk();
+                        if (!mLicenseReady) cancelStartupWarmup("licenseUnavailable");
+                        preloadHome();
+                    });
+        }
         binding.swipeRefreshLayout.setOnRefreshListener(this::refresh);
         mScrollController = new DramaHomeScrollController(mRecyclerView, this::collectWindow,
                 visible -> {
+                    if (mWarmupDramaId != null && !mScrollController.canWarmup(mWarmupDramaId)) {
+                        cancelStartupWarmup("windowChanged");
+                    }
                     if (mHomePreloader != null) mHomePreloader.updateVisible(visible);
-                });
+                }, () -> cancelStartupWarmup("motion"));
         mHomePreloader = new DramaHomePreloader(CacheLoader.Default.get(), mScrollController::canStart,
-                info -> false, this::preloadHome);
+                this::warmupBeforePreload, this::preloadHome);
         DramaSettings.addHomeConfigListener(mConfigChanged);
         mCarouselAdapter.setViewportChangedListener(this::preloadHome);
         mTrendingAdapter.setViewportChangedListener(this::preloadHome);
@@ -197,6 +243,7 @@ public class DramaTheaterFragment extends Fragment {
     private void refresh() {
         L.d(this, "refresh", "start refresh");
         final int generation = ++mRefreshGeneration;
+        cancelStartupWarmup("refresh");
         // 等待新列表时即释放旧候选，避免继续准备过时的播放入口。
         // Release the old candidate while the new feed loads instead of preparing a stale entry.
         if (mHomePreloader != null) {
@@ -264,6 +311,45 @@ public class DramaTheaterFragment extends Fragment {
 
     private void preloadHome() {
         if (mScrollController != null) mScrollController.schedule();
+    }
+
+    private boolean warmupBeforePreload(DramaInfo info) {
+        DramaStartupWarmup warmup = DramaStartupWarmup.get();
+        if (warmup.isActive(this)) return true;
+        if (!warmup.isAvailable() || !mFirstDrawComplete || !mLicenseReady
+                || Player.Factory.Default.get() == null
+                || mScrollController == null || !mScrollController.canWarmup(info.dramaId)) return false;
+        // toVideoItem 创建新对象，预热从0开始，不读取/写回业务续播，也不加入全局播放器池。
+        // A fresh item warms from zero without business resume or the global player pool.
+        VideoItem item = info.entryEpisode.feed.toVideoItem();
+        VideoItem.playScene(item, PlayScene.SCENE_SHORT);
+        MediaSource source = VideoItem.toMediaSource(item);
+        // 授权/首屏可能晚于预加载就绪；创建播放器之前先让出下载资源。
+        // License/first draw can arrive after preloads; free download resources before player creation.
+        mHomePreloader.pauseMediaPreloads();
+        mWarmupDramaId = info.dramaId;
+        boolean started = warmup.tryStart(this, source, () -> {
+            mWarmupDramaId = null;
+            preloadHome();
+        });
+        if (!started) mWarmupDramaId = null;
+        return started;
+    }
+
+    private void cancelStartupWarmup(String reason) {
+        DramaStartupWarmup.get().cancel(this, reason);
+    }
+
+    private void removeFirstDrawListener() {
+        // attach 会把 floating observer 合并到窗口；从当前 observer 移除才能真正注销。
+        // Attach merges the floating observer into the window; remove from the current observer.
+        if (mRecyclerView != null && mRecyclerView.getViewTreeObserver().isAlive()) {
+            mRecyclerView.getViewTreeObserver().removeOnDrawListener(mOnFirstDraw);
+        }
+        if (mDrawObserver != null && mDrawObserver.isAlive()) {
+            mDrawObserver.removeOnDrawListener(mOnFirstDraw);
+        }
+        mDrawObserver = null;
     }
 
     private List<DramaInfo> collectVisible() {
@@ -358,11 +444,13 @@ public class DramaTheaterFragment extends Fragment {
         super.onResume();
         mLeavingHome = false;
         if (mScrollController != null) mScrollController.setActive(true);
+        if (!mFirstDrawComplete && mRecyclerView != null) mRecyclerView.invalidate();
         preloadHome();
     }
 
     @Override
     public void onPause() {
+        cancelStartupWarmup("pause");
         if (mScrollController != null) mScrollController.setActive(false);
         if (mHomePreloader != null) {
             mHomePreloader.stop();
@@ -373,6 +461,11 @@ public class DramaTheaterFragment extends Fragment {
     @Override
     public void onDestroyView() {
         mRefreshGeneration++;
+        cancelStartupWarmup("destroy");
+        removeFirstDrawListener();
+        if (mRecyclerView != null) mRecyclerView.removeCallbacks(mAfterFirstDraw);
+        mFirstDrawComplete = false;
+        mLicenseReady = false;
         // 取消视图生命周期内的请求和预加载，避免旧回调访问已销毁的视图。
         // Cancel view-scoped requests and preloads to keep old callbacks away from the destroyed view.
         mRemoteApi.cancel();
