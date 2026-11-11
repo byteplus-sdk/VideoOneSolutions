@@ -4,6 +4,8 @@
 package com.byteplus.vod.minidrama.scene.theater;
 
 import android.view.LayoutInflater;
+import android.graphics.Rect;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -20,6 +22,11 @@ public class DramaTheaterTrendingAdapter  extends RecyclerView.Adapter<DramaThea
 
     private List<DramaInfo> mItems;
     private IDramaTheaterClickListener mDramaClickListener;
+    private Runnable mViewportChangedListener;
+
+    public void setViewportChangedListener(Runnable listener) {
+        mViewportChangedListener = listener;
+    }
 
     public void setItems(List<DramaInfo> items, IDramaTheaterClickListener listener) {
         mDramaClickListener = listener;
@@ -33,7 +40,9 @@ public class DramaTheaterTrendingAdapter  extends RecyclerView.Adapter<DramaThea
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         VevodMiniDramaTrendingBinding binding =
                 VevodMiniDramaTrendingBinding.inflate(inflater, parent, false);
-        return new DramaTheaterTrendingAdapter.ViewHolder(binding);
+        return new DramaTheaterTrendingAdapter.ViewHolder(binding, () -> {
+            if (mViewportChangedListener != null) mViewportChangedListener.run();
+        });
     }
 
     @Override
@@ -53,9 +62,18 @@ public class DramaTheaterTrendingAdapter  extends RecyclerView.Adapter<DramaThea
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         final DramaTheaterTrendingItemAdapter adapter;
+        private final RecyclerView mRecyclerView;
+        private List<DramaInfo> mItems;
 
-        public ViewHolder(@NonNull VevodMiniDramaTrendingBinding binding) {
+        public ViewHolder(@NonNull VevodMiniDramaTrendingBinding binding, Runnable viewportChanged) {
             super(binding.getRoot());
+            mRecyclerView = binding.dramaTrendingRecyclerView;
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView view, int state) {
+                    viewportChanged.run();
+                }
+            });
             final int spanCount = 3;
             GridLayoutManager layoutManager = new GridLayoutManager(binding.getRoot().getContext(), spanCount,
                             RecyclerView.HORIZONTAL, false);
@@ -66,7 +84,22 @@ public class DramaTheaterTrendingAdapter  extends RecyclerView.Adapter<DramaThea
         }
 
         public void bind(List<DramaInfo> items, IDramaTheaterClickListener listener) {
+            mItems = items;
             adapter.setItems(items, listener);
+        }
+
+        void collectVisible(List<DramaInfo> out) {
+            if (mItems == null) return;
+            for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                View child = mRecyclerView.getChildAt(i);
+                int position = mRecyclerView.getChildAdapterPosition(child);
+                if (position >= 0 && position < mItems.size()
+                        && child.getGlobalVisibleRect(new Rect())) out.add(mItems.get(position));
+            }
+        }
+
+        void collectAdjacent(HomePreloadWindow out, DramaHomeScrollController controller) {
+            out.collectAdjacent(mRecyclerView, mItems, controller.direction(mRecyclerView));
         }
     }
 }

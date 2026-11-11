@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_preload_title">首页预加载</string>
+    <string name="home_preload_help">点“应用首页配置”后保存并更新首页；关闭本地覆盖再应用，恢复代码配置。拖动与惯性滚动使用同一速度上限；0 表示仅停止后新增。停止后立即检查一次，静止时不轮询。</string>
+    <string name="home_preload_override">使用本地配置（默认关闭）</string>
+    <string name="home_preload_downloads">预加载首页入口数据</string>
+    <string name="home_preload_warmup">预热首页首条视频</string>
+    <string name="home_preload_speed">最大滑动速度（dp/s，0–10000）</string>
+    <string name="home_preload_interval">滑动检查间隔（ms，25–1000）</string>
+    <string name="home_preload_apply">应用首页配置</string>
+    <string name="home_preload_applied">已保存，首页立即使用当前配置。</string>
+    <string name="home_preload_invalid">速度须为 0–10000，间隔须为 25–1000。</string>
+</resources>

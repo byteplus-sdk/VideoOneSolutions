@@ -107,6 +107,87 @@
                     android:theme="@style/Theme.AppCompat.DayNight"
                     tools:theme="@style/Theme.AppCompat.DayNight" />
             </FrameLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/home_preload_title"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    android:text="@string/home_preload_help"
+                    android:textColor="#B3FFFFFF" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/homePreloadOverride"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/home_preload_override"
+                    android:textColor="#FFFFFF" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/homePreloadDownloads"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/home_preload_downloads"
+                    android:textColor="#FFFFFF" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/homePreloadWarmup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/home_preload_warmup"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:labelFor="@id/homePreloadSpeed"
+                    android:text="@string/home_preload_speed"
+                    android:textColor="#FFFFFF" />
+
+                <EditText
+                    android:id="@+id/homePreloadSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:inputType="number"
+                    android:singleLine="true"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:labelFor="@id/homePreloadInterval"
+                    android:text="@string/home_preload_interval"
+                    android:textColor="#FFFFFF" />
+
+                <EditText
+                    android:id="@+id/homePreloadInterval"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:inputType="number"
+                    android:singleLine="true"
+                    android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/homePreloadApply"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_preload_apply" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </com.byteplus.vod.minidrama.scene.widgets.viewpager2.ViewPager2ChildFrameLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_preload_title">Home preloading</string>
+    <string name="home_preload_help">Apply to save and update Home. Turn off the override and apply to restore the code configuration. Drag and fling share one speed limit; 0 allows idle only. Stopping checks once immediately, with no idle polling.</string>
+    <string name="home_preload_override">Use local settings (off by default)</string>
+    <string name="home_preload_downloads">Preload Home entry data</string>
+    <string name="home_preload_warmup">Warm up the first Home video</string>
+    <string name="home_preload_speed">Maximum scroll speed (dp/s, 0–10000)</string>
+    <string name="home_preload_interval">Scroll check interval (ms, 25–1000)</string>
+    <string name="home_preload_apply">Apply Home settings</string>
+    <string name="home_preload_applied">Saved. Home uses these settings now.</string>
+    <string name="home_preload_invalid">Enter speed 0–10000 and interval 25–1000.</string>
+</resources>

@@ -24,8 +24,13 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface DramaApi {
+    // 当前 VideoOne 仅返回剧目卡片；入口凭证及续播字段需要客户服务端实现。
+    // VideoOne currently returns drama cards only; entry credentials and resume data need server work.
     @POST("drama/v1/getDramaChannel")
-    Call<ServerReturnResponse<DramaTheaterEntity>> getDramaChannel(@Body GetDramaChannelRequest request);
+    Call<ServerReturnResponse<DramaTheaterEntity>> getDramaChannel(
+            @Header("X-Login-Token") String loginToken,
+            @Body GetDramaChannelRequest request
+    );
 
     @POST("drama/v1/getDramaFeed")
     Call<ServerReturnResponse<List<DramaRecommend>>> getDramaRecommend(@Body GetDramaRecommendRequest request);
