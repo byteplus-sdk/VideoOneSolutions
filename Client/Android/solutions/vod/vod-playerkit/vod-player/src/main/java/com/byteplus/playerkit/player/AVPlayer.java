@@ -12,6 +12,7 @@ import static com.byteplus.playerkit.player.source.Track.mapTrackType;
 
 import android.content.Context;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.view.Surface;
 
 import androidx.annotation.IntRange;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.byteplus.playerkit.player.adapter.PlayerAdapter;
+import com.byteplus.playerkit.player.playback.FirstFrameMonitor;
 import com.byteplus.playerkit.player.config.ABRQualityConfig;
 import com.byteplus.playerkit.player.event.ActionPause;
 import com.byteplus.playerkit.player.event.ActionPrepare;
@@ -228,6 +230,11 @@ public class AVPlayer extends ExtraObject implements Player {
             switch (what) {
                 case PlayerAdapter.Info.MEDIA_INFO_VIDEO_RENDERING_START_BEFORE_START:
                     L.d(player, "onInfo", "video rendering start before start");
+                    // 保留实际离屏首帧事件，后续控制器接管同一 Player 时仍可核验命中。
+                    // Retain actual offscreen readiness across a later controller handoff.
+                    player.putExtra(FirstFrameMonitor.EXTRA_PRE_RENDER_READY_MEDIA_ID,
+                            player.mMediaSource == null ? null : player.mMediaSource.getMediaId());
+                    player.putExtra(FirstFrameMonitor.EXTRA_PRE_RENDER_READY_MS, SystemClock.uptimeMillis());
                     player.mDispatcher.obtain(InfoVideoRenderingStartBeforeStart.class, player).dispatch();
                     break;
                 case PlayerAdapter.Info.MEDIA_INFO_VIDEO_RENDERING_START: {
