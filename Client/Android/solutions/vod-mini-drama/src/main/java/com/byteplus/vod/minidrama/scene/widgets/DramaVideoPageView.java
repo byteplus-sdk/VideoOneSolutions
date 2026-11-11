@@ -18,7 +18,6 @@ import com.byteplus.playerkit.player.playback.PlaybackController;
 import com.byteplus.playerkit.player.playback.VideoView;
 import com.byteplus.playerkit.utils.event.Dispatcher;
 import com.byteplus.playerkit.utils.event.Event;
-import com.byteplus.vod.minidrama.remote.model.drama.DramaFeed;
 import com.byteplus.vod.minidrama.scene.widgets.adatper.MultiTypeAdapter;
 import com.byteplus.vod.minidrama.scene.widgets.adatper.ViewHolder;
 import com.byteplus.vod.minidrama.scene.widgets.viewholder.DramaEpisodeVideoViewHolder;
@@ -35,7 +34,6 @@ import com.byteplus.vod.scenekit.data.model.ViewItem;
 import com.byteplus.vod.scenekit.ui.video.layer.helper.MiniPlayerHelper;
 import com.byteplus.vod.scenekit.ui.video.scene.PlayScene;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.EventListener {
@@ -47,6 +45,28 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
     private ViewHolder.Factory mViewHolderFactory;
     private boolean mInterceptStartPlaybackOnResume;
     private ViewHolder mCurrentHolder;
+    private final MiniDramaVideoStrategy mStrategy = new MiniDramaVideoStrategy();
+    private final Runnable mUpdatePreloadWindow = this::updatePreloadWindow;
+
+    private void schedulePreloadWindow() {
+        // 合并同一帧的数据更新和翻页通知，只按最终的当前页更新窗口。
+        // Coalesce data and page callbacks so the window follows the final current page.
+        mViewPager.removeCallbacks(mUpdatePreloadWindow);
+        mViewPager.post(mUpdatePreloadWindow);
+    }
+
+    private void updatePreloadWindow() {
+        if (mShortVideoAdapter.getItemCount() == 0) {
+            mStrategy.update(mShortVideoAdapter.getItems(), 0, null);
+            return;
+        }
+        ViewHolder holder = getCurrentViewHolder();
+        if (holder == null || holder != mCurrentHolder
+                || holder.getBindingItem() != mShortVideoAdapter.getItem(getCurrentItem())) return;
+        Player player = holder instanceof DramaEpisodeVideoViewHolder videoHolder
+                ? videoHolder.videoView().player() : null;
+        mStrategy.update(mShortVideoAdapter.getItems(), getCurrentItem(), player);
+    }
 
     public DramaVideoPageView(ViewPager2 viewPager) {
         mViewPager = viewPager;
@@ -112,7 +132,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         List<VideoItem> videoItems = VideoItemHelper.findVideoItems(items);
         VideoItem.playScene(videoItems, PlayScene.SCENE_SHORT);
         mShortVideoAdapter.setItems(items, ItemHelper.comparator());
-        MiniDramaVideoStrategy.setItems(videoItems);
+        schedulePreloadWindow();
 
         play();
     }
@@ -124,7 +144,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
 
         VideoItem.playScene(VideoItemHelper.findVideoItems(items), PlayScene.SCENE_SHORT);
         mShortVideoAdapter.insertItems(0, items);
-        MiniDramaVideoStrategy.setItems(VideoItemHelper.findVideoItems(mShortVideoAdapter.getItems()));
+        schedulePreloadWindow();
     }
 
     public void appendItems(List<? extends ViewItem> items) {
@@ -135,19 +155,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         List<VideoItem> videoItems = VideoItemHelper.findVideoItems(items);
         VideoItem.playScene(videoItems, PlayScene.SCENE_SHORT);
         mShortVideoAdapter.appendItems(items);
-        MiniDramaVideoStrategy.appendItems(filter(videoItems));
-    }
-
-    private static List<VideoItem> filter(List<VideoItem> items) {
-        List<VideoItem> out = new ArrayList<>();
-        for (VideoItem item : items) {
-            DramaFeed feed = DramaFeed.of(item);
-            if (feed.isLocked()) {
-                continue;
-            }
-            out.add(item);
-        }
-        return out;
+        schedulePreloadWindow();
     }
 
     public void deleteItem(int position) {
@@ -158,7 +166,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         L.d(this, "deleteItem", position, item);
 
         mShortVideoAdapter.deleteItem(position);
-        MiniDramaVideoStrategy.setItems(VideoItemHelper.findVideoItems(mShortVideoAdapter.getItems()));
+        schedulePreloadWindow();
         if (currentPosition == position) {
             play();
         }
@@ -170,7 +178,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         final int currentPosition = getCurrentItem();
         L.d(this, "deleteItems", position, count);
         mShortVideoAdapter.deleteItems(position, count);
-        MiniDramaVideoStrategy.setItems(VideoItemHelper.findVideoItems(mShortVideoAdapter.getItems()));
+        schedulePreloadWindow();
         if (position <= currentPosition && currentPosition < position + count) {
             play();
         }
@@ -183,7 +191,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         L.d(this, "replaceItem", position, item);
         final int currentPosition = getCurrentItem();
         mShortVideoAdapter.replaceItem(position, item);
-        MiniDramaVideoStrategy.setItems(VideoItemHelper.findVideoItems(mShortVideoAdapter.getItems()));
+        schedulePreloadWindow();
         if (currentPosition == position) {
             play();
         }
@@ -196,7 +204,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         L.d(this, "replaceItems", position, items.size(), items);
         final int currentPosition = getCurrentItem();
         mShortVideoAdapter.replaceItems(position, items);
-        MiniDramaVideoStrategy.setItems(VideoItemHelper.findVideoItems(mShortVideoAdapter.getItems()));
+        schedulePreloadWindow();
         if (position <= currentPosition && currentPosition < position + items.size()) {
             play();
         }
@@ -209,7 +217,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         L.d(this, "insertItem", position, item);
         final int currentPosition = getCurrentItem();
         mShortVideoAdapter.insertItem(position, item);
-        MiniDramaVideoStrategy.setItems(VideoItemHelper.findVideoItems(mShortVideoAdapter.getItems()));
+        schedulePreloadWindow();
         if (currentPosition == position) {
             play();
         }
@@ -222,7 +230,7 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
         L.d(this, "insertItems", position, items.size(), items);
         final int currentPosition = getCurrentItem();
         mShortVideoAdapter.insertItems(position, items);
-        MiniDramaVideoStrategy.setItems(VideoItemHelper.findVideoItems(mShortVideoAdapter.getItems()));
+        schedulePreloadWindow();
         if (position <= currentPosition && currentPosition < position + items.size()) {
             play();
         }
@@ -274,6 +282,8 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
     private Runnable mPlayRetryRunnable;
 
     private void togglePlayback(int position, int retryCountDown) {
+        if (position != mViewPager.getCurrentItem() || position < 0
+                || position >= mShortVideoAdapter.getItemCount()) return;
         if (mLifeCycle != null && !mLifeCycle.getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
             L.d(this, "togglePlayback", position, "returned",
                     L.string(mLifeCycle.getCurrentState()));
@@ -317,7 +327,9 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
             }
             // start current
             if (viewHolder != null) {
+                mStrategy.beforePlay(VideoItemHelper.findVideoItem(adapterItem));
                 viewHolder.executeAction(ViewHolderAction.ACTION_PLAY);
+                updatePreloadWindow();
             }
         }
     }
@@ -348,6 +360,9 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
 
     public void stop() {
         L.d(this, "stop");
+        mStrategy.pause();
+        mViewPager.removeCallbacks(mPlayRetryRunnable);
+        mViewPager.removeCallbacks(mUpdatePreloadWindow);
         ViewHolder viewHolder = getCurrentViewHolder();
         if (viewHolder != null) {
             viewHolder.executeAction(ViewHolderAction.ACTION_STOP);
@@ -375,22 +390,24 @@ public class DramaVideoPageView implements LifecycleEventObserver, Dispatcher.Ev
 
     private void onResume() {
         L.d(this, "onResume");
-        MiniDramaVideoStrategy.setEnabled(true);
-        MiniDramaVideoStrategy.setItems(VideoItemHelper.findVideoItems(mShortVideoAdapter.getItems()));
+        mStrategy.resume();
         if (!mInterceptStartPlaybackOnResume) {
             play();
         }
         mInterceptStartPlaybackOnResume = false;
+        schedulePreloadWindow();
     }
 
     public void onEpisodesUnlocked() {
         // After unlock, should update preload list
-        MiniDramaVideoStrategy.setItems(VideoItemHelper.findVideoItems(mShortVideoAdapter.getItems()));
+        schedulePreloadWindow();
     }
 
     private void onPause() {
         L.d(this, "onPause");
-        MiniDramaVideoStrategy.setEnabled(false);
+        mStrategy.pause();
+        mViewPager.removeCallbacks(mPlayRetryRunnable);
+        mViewPager.removeCallbacks(mUpdatePreloadWindow);
         pause();
     }
 
