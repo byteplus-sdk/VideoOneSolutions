@@ -598,4 +598,3 @@ public class VideoSettings {
     }
 
 }
-
