@@ -86,8 +86,11 @@ public class TTVideoEngineFactoryDefault implements TTVideoEngineFactory {
 
         if (volcConfig.enableHlsSeamlessSwitch) {
             player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_HLS_SEAMLESS_SWITCH, 1);
-            player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_MASTER_M3U8_OPTIMIZE, 1);
         }
+        // 所有播放及预渲染实例统一开启，不受场景或设置页旧值影响。
+        // Enable for every playback and pre-render instance, regardless of scene or saved settings.
+        player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_MASTER_M3U8_OPTIMIZE, 1);
+        VolcHlsSelectionStrategy.setup(player, mediaSource);
         if (volcConfig.enableDash) {
             player.setIntOption(TTVideoEngine.PLAYER_OPTION_ENABLE_DASH, 1);
         }
