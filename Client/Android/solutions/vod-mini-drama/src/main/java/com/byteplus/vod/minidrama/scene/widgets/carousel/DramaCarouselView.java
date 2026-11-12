@@ -55,6 +55,55 @@ public class DramaCarouselView extends FrameLayout {
     private DramaCarouselAdapter mCarouselAdapter;
     private IndicatorAdapter mIndicatorAdapter;
     private int mHorizontalMarginPx = -1;
+    private Runnable mViewportChangedListener;
+
+    public void setViewportChangedListener(Runnable listener) {
+        mViewportChangedListener = listener;
+    }
+
+    public void collectVisible(List<DramaInfo> out) {
+        RecyclerView recycler = (RecyclerView) mViewPager2.getChildAt(0);
+        // 只采集实际可见 View；ViewPager2 缓存的 currentItem 不一定在屏幕内。
+        // Collect actual visible views; a cached ViewPager2 currentItem may be offscreen.
+        if (mCarouselAdapter.getItemCount() == 0) return;
+        // 中间卡片先于两侧露出的卡片，避免循环列表的最后一项抢占首项额度。
+        int current = mViewPager2.getCurrentItem();
+        View currentView = recycler.getLayoutManager().findViewByPosition(current);
+        if (currentView != null && currentView.getAlpha() > 0
+                && currentView.getGlobalVisibleRect(new Rect())) {
+            out.add(mCarouselAdapter.getItem(current));
+        }
+        for (int i = 0; i < recycler.getChildCount(); i++) {
+            View child = recycler.getChildAt(i);
+            int position = recycler.getChildAdapterPosition(child);
+            if (position >= 0 && position != current && child.getAlpha() > 0 && child.getGlobalVisibleRect(new Rect())) {
+                out.add(mCarouselAdapter.getItem(position));
+            }
+        }
+    }
+
+    public RecyclerView getMediaRecyclerView() {
+        return (RecyclerView) mViewPager2.getChildAt(0);
+    }
+
+    public void collectAdjacent(List<DramaInfo> forward, List<DramaInfo> backward, int direction) {
+        RecyclerView recycler = getMediaRecyclerView();
+        int first = Integer.MAX_VALUE;
+        int last = RecyclerView.NO_POSITION;
+        for (int i = 0; i < recycler.getChildCount(); i++) {
+            View child = recycler.getChildAt(i);
+            int position = recycler.getChildAdapterPosition(child);
+            if (position >= 0 && child.getAlpha() > 0 && child.getGlobalVisibleRect(new Rect())) {
+                first = Math.min(first, position);
+                last = Math.max(last, position);
+            }
+        }
+        if (last < 0 || mCarouselAdapter.getItemCount() == 0) return;
+        if (first > 0) (direction < 0 ? forward : backward).add(mCarouselAdapter.getItem(first - 1));
+        if (last + 1 < mCarouselAdapter.getItemCount()) {
+            (direction < 0 ? backward : forward).add(mCarouselAdapter.getItem(last + 1));
+        }
+    }
 
     public DramaCarouselView(@NonNull Context context) {
         this(context, null);
@@ -109,6 +158,7 @@ public class DramaCarouselView extends FrameLayout {
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
+                if (mViewportChangedListener != null) mViewportChangedListener.run();
                 int itemCount = mCarouselAdapter.getItemCount();
                 if (itemCount > 1) {
                     if (state == ViewPager2.SCROLL_STATE_IDLE) {

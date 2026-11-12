@@ -8,6 +8,7 @@ import static com.byteplus.vod.minidrama.scene.detail.DramaDetailVideoActivityRe
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
@@ -21,18 +22,25 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.byteplus.playerkit.player.cache.CacheLoader;
+import com.byteplus.playerkit.player.utils.ProgressRecorder;
 import com.byteplus.vod.minidrama.remote.api.HttpCallback;
+import com.byteplus.vod.minidrama.remote.model.drama.DramaEntryEpisode;
 import com.byteplus.vod.minidrama.remote.model.drama.DramaInfo;
 import com.byteplus.vod.minidrama.remote.model.drama.DramaTheaterEntity;
 import com.byteplus.vod.minidrama.remote.model.drama.DramaTheaterType;
 import com.byteplus.vod.minidrama.scene.data.DramaItem;
 import com.byteplus.vod.minidrama.remote.GetDramas;
 import com.byteplus.vod.minidrama.scene.detail.DramaDetailVideoActivityResultContract;
+import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
+import com.byteplus.vod.minidrama.scene.settings.HomePreloadConfig;
 import com.byteplus.vod.minidrama.utils.L;
 import com.byteplus.minidrama.R;
 import com.byteplus.minidrama.databinding.VevodMiniDramaTheaterFragmentBinding;
+import com.byteplus.vod.scenekit.data.model.VideoItem;
 import com.byteplus.vod.scenekit.utils.ViewUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DramaTheaterFragment extends Fragment {
@@ -44,15 +52,29 @@ public class DramaTheaterFragment extends Fragment {
     private DramaTheaterNewAdapter mNewAdapter;
     private DramaTheaterHeaderAdapter mRecommendHeaderAdapter;
     private DramaTheaterItemAdapter mRecommendAdapter;
+    private DramaHomePreloader mHomePreloader;
+    private RecyclerView mRecyclerView;
+    private boolean mLeavingHome;
+    private int mRefreshGeneration;
+    private DramaHomeScrollController mScrollController;
+    private final Runnable mConfigChanged = () -> {
+        if (mHomePreloader != null) mHomePreloader.stop();
+        if (mScrollController != null) mScrollController.reset();
+    };
+
     public ActivityResultLauncher<Input> mDramaDetailPageLauncher
             = registerForActivityResult(new DramaDetailVideoActivityResultContract(), result -> {
     });
 
     private final IDramaTheaterClickListener mDramaClickListener = (info, position, infos) -> {
-        Input input = new Input(
-                DramaItem.createByDramaInfos(infos),
-                position
-        );
+        Input input = new Input(createDramaItems(infos), position);
+        // 点击后交给详情页策略，避免首页任务继续占用下载资源。
+        // Hand over to the detail strategy on tap so home tasks stop using download resources.
+        if (mHomePreloader != null) {
+            mHomePreloader.stop();
+        }
+        mLeavingHome = true;
+        if (mScrollController != null) mScrollController.setActive(false);
         mDramaDetailPageLauncher.launch(input);
     };
 
@@ -82,7 +104,18 @@ public class DramaTheaterFragment extends Fragment {
         VevodMiniDramaTheaterFragmentBinding binding = VevodMiniDramaTheaterFragmentBinding.bind(view);
 
         mRefreshLayout = binding.swipeRefreshLayout;
+        mRecyclerView = binding.recyclerView;
         binding.swipeRefreshLayout.setOnRefreshListener(this::refresh);
+        mScrollController = new DramaHomeScrollController(mRecyclerView, this::collectWindow,
+                visible -> {
+                    if (mHomePreloader != null) mHomePreloader.updateVisible(visible);
+                });
+        mHomePreloader = new DramaHomePreloader(CacheLoader.Default.get(), mScrollController::canStart,
+                info -> false, this::preloadHome);
+        DramaSettings.addHomeConfigListener(mConfigChanged);
+        mCarouselAdapter.setViewportChangedListener(this::preloadHome);
+        mTrendingAdapter.setViewportChangedListener(this::preloadHome);
+        mNewAdapter.setViewportChangedListener(this::preloadHome);
 
         ConcatAdapter adapter = new ConcatAdapter(
                 new ConcatAdapter.Config.Builder()
@@ -108,6 +141,7 @@ public class DramaTheaterFragment extends Fragment {
                                        @NonNull RecyclerView parent,
                                        @NonNull RecyclerView.State state) {
                 final int globalPosition = parent.getChildAdapterPosition(view);
+                if (globalPosition == RecyclerView.NO_POSITION) return;
                 Pair<RecyclerView.Adapter<? extends RecyclerView.ViewHolder>, Integer> pair
                         = adapter.getWrappedAdapterAndPosition(globalPosition);
 
@@ -162,12 +196,24 @@ public class DramaTheaterFragment extends Fragment {
 
     private void refresh() {
         L.d(this, "refresh", "start refresh");
+        final int generation = ++mRefreshGeneration;
+        // 等待新列表时即释放旧候选，避免继续准备过时的播放入口。
+        // Release the old candidate while the new feed loads instead of preparing a stale entry.
+        if (mHomePreloader != null) {
+            mHomePreloader.stop();
+        }
+        if (mScrollController != null) mScrollController.reset();
+        mRemoteApi.cancel();
         showRefreshing();
-        mRemoteApi.getDramaChannel(new HttpCallback<>() {
+        mRemoteApi.getDramaChannel(
+                DramaSettings.isTheaterEntryPreloadEnabled()
+                        && DramaSettings.getHomePreloadConfig().entrySource
+                        == HomePreloadConfig.EntrySource.FEED_ONLY,
+                new HttpCallback<>() {
             @Override
             public void onSuccess(DramaTheaterEntity result) {
                 L.d(this, "refresh", "success");
-                if (getActivity() == null) return;
+                if (generation != mRefreshGeneration || !isAdded() || mRefreshLayout == null) return;
                 dismissRefreshing();
 
                 List<DramaInfo> list;
@@ -191,12 +237,13 @@ public class DramaTheaterFragment extends Fragment {
                         }
                     }
                 }
+                preloadHome();
             }
 
             @Override
             public void onError(Throwable e) {
                 L.d(this, "refresh", e, "error");
-                if (getActivity() == null) return;
+                if (generation != mRefreshGeneration || !isAdded() || mRefreshLayout == null) return;
                 dismissRefreshing();
                 Toast.makeText(getActivity(), e.getMessage() + "", Toast.LENGTH_LONG).show();
             }
@@ -204,10 +251,155 @@ public class DramaTheaterFragment extends Fragment {
     }
 
     private void dismissRefreshing() {
-        mRefreshLayout.setRefreshing(false);
+        if (mRefreshLayout != null) {
+            mRefreshLayout.setRefreshing(false);
+        }
     }
 
     private void showRefreshing() {
-        mRefreshLayout.setRefreshing(true);
+        if (mRefreshLayout != null) {
+            mRefreshLayout.setRefreshing(true);
+        }
+    }
+
+    private void preloadHome() {
+        if (mScrollController != null) mScrollController.schedule();
+    }
+
+    private List<DramaInfo> collectVisible() {
+        List<DramaInfo> visible = new ArrayList<>();
+        if (!isResumed() || mLeavingHome || mHomePreloader == null || mRecyclerView == null
+                || mRefreshLayout.isRefreshing()) return visible;
+        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+            View child = mRecyclerView.getChildAt(i);
+            if (!child.getGlobalVisibleRect(new Rect())) continue;
+            RecyclerView.ViewHolder holder = mRecyclerView.getChildViewHolder(child);
+            if (holder instanceof DramaTheaterCarouselAdapter.ViewHolder carousel) {
+                carousel.collectVisible(visible);
+            } else if (holder instanceof DramaTheaterTrendingAdapter.ViewHolder trending) {
+                trending.collectVisible(visible);
+            } else if (holder instanceof DramaTheaterNewAdapter.ViewHolder newItems) {
+                newItems.collectVisible(visible);
+            } else if (holder instanceof DramaTheaterItemAdapter.ViewHolder) {
+                int position = holder.getBindingAdapterPosition();
+                if (position >= 0 && position < mRecommendAdapter.getItemCount()) {
+                    visible.add(mRecommendAdapter.getItems().get(position));
+                }
+            }
+        }
+        return visible;
+    }
+
+    private List<DramaInfo> collectWindow() {
+        HomePreloadWindow window = new HomePreloadWindow();
+        window.addAll(collectVisible());
+        if (window.isEmpty() || mScrollController == null
+                || !DramaSettings.getHomePreloadConfig().enhancedWindowEnabled) return window;
+        int firstRecommend = RecyclerView.NO_POSITION;
+        int lastRecommend = RecyclerView.NO_POSITION;
+        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+            View child = mRecyclerView.getChildAt(i);
+            if (!child.isShown() || child.getAlpha() <= 0 || !child.getGlobalVisibleRect(new Rect())) continue;
+            RecyclerView.ViewHolder holder = mRecyclerView.getChildViewHolder(child);
+            if (holder instanceof DramaTheaterCarouselAdapter.ViewHolder carousel) {
+                carousel.collectAdjacent(window, mScrollController);
+            } else if (holder instanceof DramaTheaterTrendingAdapter.ViewHolder trending) {
+                trending.collectAdjacent(window, mScrollController);
+            } else if (holder instanceof DramaTheaterNewAdapter.ViewHolder newItems) {
+                newItems.collectAdjacent(window, mScrollController);
+            } else if (holder instanceof DramaTheaterItemAdapter.ViewHolder) {
+                int position = holder.getBindingAdapterPosition();
+                if (position >= 0) {
+                    firstRecommend = firstRecommend < 0 ? position : Math.min(firstRecommend, position);
+                    lastRecommend = Math.max(lastRecommend, position);
+                }
+            }
+        }
+        if (firstRecommend >= 0) {
+            GridLayoutManager grid = (GridLayoutManager) mRecyclerView.getLayoutManager();
+            window.addAdjacent(mRecommendAdapter.getItems(), firstRecommend, lastRecommend,
+                    grid.getSpanCount(), mScrollController.direction(mRecyclerView));
+        }
+        return window;
+    }
+
+    private static List<DramaItem> createDramaItems(List<DramaInfo> infos) {
+        List<DramaItem> items = new ArrayList<>(infos.size());
+        final long nowMs = System.currentTimeMillis();
+        for (DramaInfo info : infos) {
+            DramaItem item = new DramaItem(info, 1);
+            DramaEntryEpisode entryEpisode = info.entryEpisode;
+            if (entryEpisode != null && entryEpisode.isUsable(nowMs)
+                    && (DramaSettings.getHomePreloadConfig().entrySource
+                    != HomePreloadConfig.EntrySource.FEED_ONLY || !entryEpisode.demoFallback)) {
+                if (TextUtils.isEmpty(entryEpisode.feed.dramaId)) {
+                    entryEpisode.feed.dramaId = info.dramaId;
+                }
+                VideoItem videoItem = entryEpisode.feed.toVideoItem();
+                VideoItem.syncProgress(videoItem, true);
+                item.currentItem = videoItem;
+                item.currentEpisodeNumber = entryEpisode.feed.episodeNumber;
+
+                // 0也是有效的本地进度；仅缺少记录（负值）时使用服务端续播位置。
+                // Zero is valid local progress; use server resume only when no record exists (negative).
+                long localProgress = ProgressRecorder.getProgress(entryEpisode.feed.vid);
+                if (localProgress < 0 && entryEpisode.resumePositionMs > 0) {
+                    ProgressRecorder.recordProgress(
+                            entryEpisode.feed.vid,
+                            entryEpisode.resumePositionMs);
+                }
+            }
+            items.add(item);
+        }
+        return items;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mLeavingHome = false;
+        if (mScrollController != null) mScrollController.setActive(true);
+        preloadHome();
+    }
+
+    @Override
+    public void onPause() {
+        if (mScrollController != null) mScrollController.setActive(false);
+        if (mHomePreloader != null) {
+            mHomePreloader.stop();
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        mRefreshGeneration++;
+        // 取消视图生命周期内的请求和预加载，避免旧回调访问已销毁的视图。
+        // Cancel view-scoped requests and preloads to keep old callbacks away from the destroyed view.
+        mRemoteApi.cancel();
+        DramaSettings.removeHomeConfigListener(mConfigChanged);
+        if (mScrollController != null) {
+            mScrollController.release();
+            mScrollController = null;
+        }
+        if (mHomePreloader != null) {
+            mHomePreloader.stop();
+            mHomePreloader = null;
+        }
+        if (mRecyclerView != null) {
+            mRecyclerView.setAdapter(null);
+        }
+        mCarouselAdapter.setViewportChangedListener(null);
+        mTrendingAdapter.setViewportChangedListener(null);
+        mNewAdapter.setViewportChangedListener(null);
+        mRecyclerView = null;
+        mRefreshLayout = null;
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        mRemoteApi.cancel();
+        super.onDestroy();
     }
 }

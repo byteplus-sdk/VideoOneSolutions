@@ -32,8 +32,23 @@ import retrofit2.Response;
 public class GetDramas extends CallMemories {
 
     public void getDramaChannel(HttpCallback<DramaTheaterEntity> callback) {
-        GetDramaChannelRequest request = new GetDramaChannelRequest();
-        Call<ServerReturnResponse<DramaTheaterEntity>> call = remember(MiniDramaServer.dramaApi().getDramaChannel(request));
+        getDramaChannel(false, callback);
+    }
+
+    public void getDramaChannel(
+            boolean includeEntryEpisode,
+            HttpCallback<DramaTheaterEntity> callback) {
+        // 普通 Demo 保持空请求体；仅接入客户扩展协议后才请求首页入口。
+        // Keep the ordinary demo body empty; opt in only after implementing the customer extension.
+        SolutionDataManager dataManager = SolutionDataManager.ins();
+        GetDramaChannelRequest request = includeEntryEpisode ? new GetDramaChannelRequest(
+                dataManager.getUserId(),
+                includeEntryEpisode,
+                Params.Value.format(),
+                Params.Value.codec(),
+                Params.Value.fileType()) : new GetDramaChannelRequest();
+        Call<ServerReturnResponse<DramaTheaterEntity>> call = remember(
+                MiniDramaServer.dramaApi().getDramaChannel(dataManager.getToken(), request));
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(
