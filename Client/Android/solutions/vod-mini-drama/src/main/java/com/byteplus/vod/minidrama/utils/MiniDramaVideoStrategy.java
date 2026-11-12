@@ -59,7 +59,10 @@ public final class MiniDramaVideoStrategy {
     }
 
     public void beforePlay(VideoItem current) {
-        if (current != null) removePreload(current.getVid());
+        if (current != null) {
+            DramaStartupWarmup.get().useNormalPlayback("playback");
+            removePreload(current.getVid());
+        }
     }
 
     public void update(List<ViewItem> pageItems, int position, Player currentPlayer) {

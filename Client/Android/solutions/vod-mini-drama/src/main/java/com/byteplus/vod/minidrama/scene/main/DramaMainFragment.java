@@ -19,11 +19,13 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.byteplus.vod.minidrama.scene.recommend.DramaRecommendVideoFragment;
 import com.byteplus.vod.minidrama.scene.theater.DramaTheaterFragment;
+import com.byteplus.vod.minidrama.utils.DramaStartupWarmup;
 import com.byteplus.minidrama.R;
 import com.byteplus.minidrama.databinding.VevodMiniDramaMainFragmentBinding;
 
 public class DramaMainFragment extends Fragment {
     private MainFragmentViewModel viewModel;
+    private static final String STATE_TAB = "drama_tab";
 
     public DramaMainFragment() {
         super(R.layout.vevod_mini_drama_main_fragment);
@@ -34,6 +36,24 @@ public class DramaMainFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         viewModel = new ViewModelProvider(this).get(MainFragmentViewModel.class);
+        if (savedInstanceState != null) {
+            viewModel.currentTab.setValue(savedInstanceState.getBoolean(STATE_TAB)
+                    ? MainFragmentViewModel.Tab.CHANNEL : MainFragmentViewModel.Tab.HOME);
+        } else if (DramaMainActivity.TAB_EXPLORE.equals(requireActivity().getIntent()
+                .getStringExtra(DramaMainActivity.EXTRA_INITIAL_TAB))) {
+            viewModel.currentTab.setValue(MainFragmentViewModel.Tab.CHANNEL);
+        }
+        // 在 ViewPager 创建预留 Home 页面之前关闭额外预热，Explore 首条直接正常播放。
+        // Close Home warmup before ViewPager creates pages; the first Explore item plays normally.
+        if (viewModel.currentTab.getValue() == MainFragmentViewModel.Tab.CHANNEL) {
+            DramaStartupWarmup.get().useNormalPlayback("initialExplore");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle state) {
+        state.putBoolean(STATE_TAB, viewModel.currentTab.getValue() == MainFragmentViewModel.Tab.CHANNEL);
+        super.onSaveInstanceState(state);
     }
 
     @Override
@@ -79,7 +99,10 @@ public class DramaMainFragment extends Fragment {
         });
 
         binding.tabHome.setOnClickListener(v -> viewModel.currentTab.setValue(MainFragmentViewModel.Tab.HOME));
-        binding.tabChannel.setOnClickListener(v -> viewModel.currentTab.setValue(MainFragmentViewModel.Tab.CHANNEL));
+        binding.tabChannel.setOnClickListener(v -> {
+            DramaStartupWarmup.get().useNormalPlayback("explore");
+            viewModel.currentTab.setValue(MainFragmentViewModel.Tab.CHANNEL);
+        });
 
         viewModel.licenseResult.observe(getViewLifecycleOwner(), licenseResult -> {
             if (licenseResult.isEmpty()) {

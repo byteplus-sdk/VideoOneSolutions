@@ -13,6 +13,9 @@ import com.byteplus.vod.minidrama.scene.settings.DramaSettings;
 import com.byteplus.vod.scenekit.utils.UIUtils;
 
 public class DramaMainActivity extends AppCompatActivity {
+    public static final String EXTRA_INITIAL_TAB = "drama_initial_tab";
+    public static final String TAB_HOME = "home";
+    public static final String TAB_EXPLORE = "explore";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
