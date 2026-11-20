@@ -13,6 +13,25 @@ static NSString *MiniDramaNewSubCellReuseID = @"MiniDramaNewSubCellReuseID";
 @end
 
 @implementation MiniDramaNewCell
+- (NSArray<MDDramaInfoModel *> *)visibleDramaInfosInView:(UIView *)viewport {
+    NSMutableArray *result = [NSMutableArray array];
+    for (NSIndexPath *path in [self.collectionView.indexPathsForVisibleItems sortedArrayUsingSelector:@selector(compare:)]) {
+        UICollectionViewLayoutAttributes *attributes = [self.collectionView layoutAttributesForItemAtIndexPath:path];
+        if (path.item < self.datas.count && CGRectIntersectsRect([self.collectionView convertRect:attributes.frame toView:viewport], viewport.bounds)) [result addObject:self.datas[path.item]];
+    }
+    return result;
+}
+- (NSArray<MDDramaInfoModel *> *)adjacentDramaInfosInDirection:(NSInteger)direction {
+    NSArray<NSIndexPath *> *paths = [self.collectionView.indexPathsForVisibleItems sortedArrayUsingSelector:@selector(compare:)];
+    if (!paths.count) return @[];
+    NSInteger step = direction * (self.preloadScrollDirection ?: 1);
+    NSInteger index = (step > 0 ? [paths.lastObject item] : [paths.firstObject item]) + step;
+    return index >= 0 && index < self.datas.count ? @[self.datas[index]] : @[];
+}
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView { [self notifyScrollWillMove:scrollView]; }
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView { [self notifyScrollDidMove:scrollView]; }
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate { if (!decelerate) [self notifyScrollDidStop:scrollView]; }
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView { [self notifyScrollDidStop:scrollView]; }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {

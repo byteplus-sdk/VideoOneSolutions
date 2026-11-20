@@ -13,6 +13,8 @@
 #import <NetworkingManager+MiniDrama.h>
 #import <TTSDKFramework/TTSDKFramework.h>
 #import <ToolKit/ToolKit.h>
+#import "MDVideoEnginePool.h"
+#import "MDAdGlobalSettings.h"
 
 static NSInteger MiniDramaVideoFeedPageCount = 10;
 static NSInteger MiniDramaVideoFeedLoadMoreDetection = 3;
@@ -30,6 +32,8 @@ MiniDramaVideoCellControllerDelegate
 @property (nonatomic, assign) NSInteger pageOffset;
 @property (nonatomic, assign) BOOL isLoadingData;
 @property (nonatomic, assign) BOOL enableLoadMore;
+@property (nonatomic, strong) MDPlaybackPreloader *playbackPreloader;
+@property (nonatomic, assign) BOOL preloadPageActive;
 
 @end
 
@@ -40,6 +44,8 @@ MiniDramaVideoCellControllerDelegate
     if (self) {
         self.pageOffset = 0;
         self.enableLoadMore = YES;
+        self.playbackPreloader = [MDPlaybackPreloader new];
+        self.playbackPreloader.prepareEnabled = !MDAdGlobalSettings.adsEnabled;
     }
     return self;
 }
@@ -53,6 +59,7 @@ MiniDramaVideoCellControllerDelegate
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.dramaVideoModels.count > 0 && self.viewisVisible) {
+        self.preloadPageActive = YES;
         [self startVideoStategy];
         [self setVideoStrategySource:YES];
     }
@@ -60,11 +67,12 @@ MiniDramaVideoCellControllerDelegate
 
 - (void)setViewisVisible:(BOOL)viewisVisible {
     _viewisVisible = viewisVisible;
+    self.preloadPageActive = viewisVisible;
     if (viewisVisible) {
         [self startVideoStategy];
         [self setVideoStrategySource:YES];
     } else {
-        [MDVideoPlayerController clearAllEngineStrategy];
+        [self.playbackPreloader stop];
     }
     MiniDramaVideoCellController *cellController = (MiniDramaVideoCellController *)self.pageContainer.currentViewController;
     if (cellController) {
@@ -75,6 +83,12 @@ MiniDramaVideoCellControllerDelegate
         }
     }
     self.pageContainer.viewAppeared = viewisVisible;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.preloadPageActive = NO;
+    [self.playbackPreloader stop];
 }
 
 #pragma mark ----- UI
@@ -150,25 +164,21 @@ MiniDramaVideoCellControllerDelegate
     }];
 }
 - (void)setVideoStrategySource:(BOOL)reset {
+    if (!self.preloadPageActive) return;
     NSMutableArray *sources = [NSMutableArray array];
     [self.dramaVideoModels enumerateObjectsUsingBlock:^(MDDramaFeedInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [sources addObject:[MDDramaEpisodeInfoModel videoEngineVidSource:obj.videoInfo]];
+        [sources addObject:obj.videoInfo.vip ? NSNull.null : [MDDramaEpisodeInfoModel videoEngineVidSource:obj.videoInfo]];
     }];
-    if (reset) {
-        [MDVideoPlayerController setStrategyVideoSources:sources];
-    } else {
-        [MDVideoPlayerController addStrategyVideoSources:sources];
-    }
+    [self.playbackPreloader willPlayAtIndex:self.pageContainer.currentIndex sources:sources];
 }
 
 - (void)startVideoStategy {
-    [MDVideoPlayerController enableEngineStrategy:TTVideoEngineStrategyTypePreRender scene:TTVEngineStrategySceneSmallVideo];
-    [MDVideoPlayerController enableEngineStrategy:TTVideoEngineStrategyTypePreload scene:TTVEngineStrategySceneSmallVideo];
+    [MDVideoPlayerController clearAllEngineStrategy];
 }
 
 #pragma mark - MiniDramaVideoCellControllerDelegate
 - (void)dramaVideoWatchDetail:(MDDramaFeedInfo *)dramaVideoInfo {
-    [MDVideoPlayerController clearAllEngineStrategy];
+    [self.playbackPreloader stop];
     MiniDramaDetailFeedViewController *detailFeedViewController = [[MiniDramaDetailFeedViewController alloc] initWtihDramaVideoInfo:dramaVideoInfo];
     MiniDramaVideoCellController *cellController = (MiniDramaVideoCellController *)self.pageContainer.currentViewController;
     if (cellController) {
@@ -199,6 +209,7 @@ MiniDramaVideoCellControllerDelegate
 }
 
 - (void)pageViewController:(MDPageViewController *)pageViewController didDisplayItem:(id<MiniDramaPageItem>)viewController {
+    [self setVideoStrategySource:YES];
     if (self.enableLoadMore && ((self.dramaVideoModels.count - 1) - self.pageContainer.currentIndex) <= MiniDramaVideoFeedLoadMoreDetection) {
         [self loadData:YES];
     }

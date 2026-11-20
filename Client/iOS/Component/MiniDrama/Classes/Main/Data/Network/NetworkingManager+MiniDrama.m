@@ -62,7 +62,7 @@
     }];
 }
 
-+ (void)getDramaDataForDetailPage:(NSString *)dramaId 
++ (NSURLSessionDataTask *)getDramaDataForDetailPage:(NSString *)dramaId
                           success:(void (^)(NSArray<MDDramaEpisodeInfoModel *> * _Nonnull))success
                           failure:(void (^)(NSString * _Nonnull))failure {
 //    NSDictionary *param = @{ @"drama_id": dramaId, @"user_id": [LocalUserComponent userModel].uid};
@@ -75,7 +75,7 @@
         [param setObject:@(0) forKey:@"codec"];
         [param setObject:@(9) forKey:@"format"];
     }
-    [NetworkingManager postWithPath:@"drama/v1/getDramaList"
+    return [NetworkingManager postWithPath:@"drama/v1/getDramaList"
                          parameters:param
                               block:^(NetworkingResponse * _Nonnull response) {
         if (!response.result) {

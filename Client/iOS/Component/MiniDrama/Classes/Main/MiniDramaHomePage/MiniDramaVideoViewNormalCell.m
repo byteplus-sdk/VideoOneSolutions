@@ -78,6 +78,7 @@
 }
 
 - (void)setDramaInfoModel:(MDDramaInfoModel *)dramaInfoModel {
+    [super setDramaInfoModel:dramaInfoModel];
     [self.imageView sd_setImageWithURL:[NSURL URLWithString:dramaInfoModel.dramaCoverUrl]];
     self.titleLabel.text = dramaInfoModel.dramaTitle;
     [self.playTimesLabel setTitle:[self formatPlayTimesString:dramaInfoModel.dramaPlayTimes] forState:UIControlStateNormal];

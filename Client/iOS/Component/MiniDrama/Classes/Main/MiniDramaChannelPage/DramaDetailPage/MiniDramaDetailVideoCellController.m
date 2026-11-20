@@ -186,8 +186,8 @@ static NSInteger MiniDramaDetailVideoCellBottomOffset = 0;
 }
 
 - (void)playerOptions {
-    self.playerController.preRenderOpen = YES;
-    self.playerController.preloadOpen = YES;
+    self.playerController.preRenderOpen = NO;
+    self.playerController.preloadOpen = NO;
     VESettingModel *abr = [[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig];
     self.playerController.abrOpen = abr.open;
 }

@@ -74,6 +74,7 @@ AVPictureInPictureSampleBufferPlaybackDelegate>
 @property (nonatomic, strong) MDVideoPlayerConfiguration *playerConfig;
 @property (nonatomic, strong) TTVideoEngine *videoEngine;
 @property (nonatomic, assign) MDCreateEngineFrom engineFrom;
+@property (nonatomic, assign) CFTimeInterval playRequestTime;
 
 @property (nonatomic, strong) id<TTVideoEngineMediaSource> mediaSource;
 
@@ -181,7 +182,7 @@ AVPictureInPictureSampleBufferPlaybackDelegate>
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
         [[AVAudioSession sharedInstance] setActive:YES error:nil];
         @weakify(self);
-        [[MDVideoEnginePool shareInstance] createVideoEngine:mediaSource needPrerenderEngine:needPrerender block:^(TTVideoEngine * _Nullable engine, MDCreateEngineFrom engineFrom) {
+        [[MDVideoEnginePool shareInstance] createVideoEngine:mediaSource needPrerenderEngine:needPrerender configuration:self.playerConfig abr:self.abrOpen block:^(TTVideoEngine * _Nullable engine, MDCreateEngineFrom engineFrom) {
             @strongify(self);
 			// Pip 
 			[engine setOptionForKey:VEKKeyPlayerLoopWay_NSInteger value:@1];
@@ -190,25 +191,18 @@ AVPictureInPictureSampleBufferPlaybackDelegate>
             self.videoEngine = engine;
             self.videoEngine.playerView.tag = 123456;
             self.engineFrom = engineFrom;
+            if (engineFrom == MDCreateEngineFrom_Prepared) {
+                self->_startTime = self.playerConfig.startTime > 0 ? self.playerConfig.startTime : MDSourceStartTime(mediaSource);
+            }
+            self.videoEngine.abrDelegate = self.abrOpen ? self : nil;
             if (engineFrom == MDCreateEngineFrom_Init) {
                 VOLogI(VOMiniDrama, @"createVideoEngine Init");
+                MDConfigureEngineBeforeSource(engine, mediaSource, self.playerConfig, self.abrOpen);
                 [self.videoEngine setVideoEngineVideoSource:mediaSource];
-                if (self.abrOpen) {
-                    // enable smooth switching
-                    [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
-                    self.videoEngine.abrDelegate = self;
-                    // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
-                    // or you can set your TTVideoEngineVidSource's resolution to TTVideoEngineResolutionTypeABRAuto before calling setVideoEngineVideoSource, it also works.
-                    [self.videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
-                }
             } else {
                 VOLogI(VOMiniDrama, @"createVideoEngine Reuse");
-                if (self.abrOpen) {
-                    // enable smooth switching
-                    [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@(YES)];
-                    self.videoEngine.abrDelegate = self;
-                    // enable abr，resolution set to TTVideoEngineResolutionTypeABRAuto
-                    // or you can set your TTVideoEngineVidSource's resolution to TTVideoEngineResolutionTypeABRAuto before calling setVideoEngineVideoSource, it also works.
+                if (self.abrOpen && engineFrom != MDCreateEngineFrom_Prepared) {
+                    [self.videoEngine setOptionForKey:VEKKeyPlayerHLSSeamlessSwitchEnable_BOOL value:@YES];
                     [self.videoEngine configResolution:TTVideoEngineResolutionTypeABRAuto];
                 }
                 self.playbackState = [self __getPlaybackState:self.videoEngine.playbackState];
@@ -471,7 +465,7 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
     self.muted = self.playerConfig.muted;
     self.looping = self.playerConfig.looping;
     self.playbackRate = self.playerConfig.playbackRate;
-    if (self.playerConfig.startTime > 0) {
+    if (self.playerConfig.startTime > 0 && self.engineFrom != MDCreateEngineFrom_Prepared) {
         self.startTime = self.playerConfig.startTime;
     }
     if (@available(iOS 14.0, *)) {
@@ -479,12 +473,14 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
             [self.videoEngine setSupportPictureInPictureMode:YES];
         }
     }
-    if (!self.abrOpen) {
+    if (!self.abrOpen && self.engineFrom != MDCreateEngineFrom_Prepared) {
         [self setCurrentResolution:[MDVideoPlayerController getPlayerCurrentResolution]];
     }
-    [self.videoEngine setOptionForKey:VEKKeyPlayerAudioDevice_ENUM value:@(TTVideoEngineDeviceAudioGraph)];
-    [self.videoEngine setOptionForKey:VEKKeyPlayerHardwareDecode_BOOL value:@(self.playerConfig.isOpenHardware)];
-    [self.videoEngine setOptionForKey:VEKKeyPlayerh265Enabled_BOOL value:@(self.playerConfig.isH265)];
+    if (self.engineFrom != MDCreateEngineFrom_Prepared) {
+        [self.videoEngine setOptionForKey:VEKKeyPlayerAudioDevice_ENUM value:@(TTVideoEngineDeviceAudioGraph)];
+        [self.videoEngine setOptionForKey:VEKKeyPlayerHardwareDecode_BOOL value:@(self.playerConfig.isOpenHardware)];
+        [self.videoEngine setOptionForKey:VEKKeyPlayerh265Enabled_BOOL value:@(self.playerConfig.isH265)];
+    }
     [self.videoEngine setOptionForKey:VEKKeyPlayerIdleTimerAuto_NSInteger value:@(YES)];
     [self.videoEngine setOptionForKey:VEKKeyPlayerSeekEndEnabled_BOOL value:@(YES)];
     // open super resolution
@@ -582,12 +578,9 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
 }
 
 - (void)configStartTime:(id<TTVideoEngineMediaSource> _Nonnull)mediaSource {
-    NSInteger retStartTime = 0;
-    if (mediaSource.sourceType == TTVideoEngineSourceTypeVideoId) {
-        retStartTime = [(TTVideoEngineVidSource *)mediaSource startTime];
-    } else if (mediaSource.sourceType == TTVideoEngineSourceTypeDirectUrl) {
-        retStartTime = [(TTVideoEngineUrlSource *)mediaSource startTime];
-    }
+    // The prepared player already has its start time; do not seek again when taking it over.
+    if (self.engineFrom == MDCreateEngineFrom_Prepared) return;
+    NSTimeInterval retStartTime = MDSourceStartTime(mediaSource);
     if (retStartTime > 0) {
         self.startTime = retStartTime;
     }
@@ -605,6 +598,7 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
 }
 
 - (void)playWithMediaSource:(id<TTVideoEngineMediaSource> _Nonnull)mediaSource {
+    self.playRequestTime = CACurrentMediaTime();
     [self createVideoEngine:mediaSource needPrerenderEngine:self.preRenderOpen];
     [self reLayoutVideoPlayerView];
     [self play];
@@ -752,6 +746,12 @@ restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL)
 }
 
 - (void)videoEngineReadyToDisPlay:(TTVideoEngine *)videoEngine {
+    if (self.playRequestTime > 0) {
+        VOLogI(VOMiniDrama, @"[MDFirstFrame] source=%@ engine=%p from=%ld elapsedMs=%.1f",
+               self.mediaSource.uniqueId, videoEngine, (long)self.engineFrom,
+               (CACurrentMediaTime() - self.playRequestTime) * 1000);
+        self.playRequestTime = 0;
+    }
     self.videoEngine.playerView.hidden = NO;
     if (self.delegate && [self.delegate respondsToSelector:@selector(videoPlayerReadyToDisplay:)]) {
         [self.delegate videoPlayerReadyToDisplay:self];

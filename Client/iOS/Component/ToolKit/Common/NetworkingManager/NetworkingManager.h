@@ -26,16 +26,16 @@ typedef void(^NetworkingManagerBlock)(NetworkingResponse *response);
                   content:(NSDictionary *)content
                     block:(void (^__nullable)(NetworkingResponse *response))block;
 
-+ (void)postWithPath:(NSString *)path
++ (NSURLSessionDataTask *)postWithPath:(NSString *)path
           parameters:(nullable id)parameters
                block:(void(^__nullable)(NetworkingResponse *response))block;
 
-+ (void)postWithPath:(NSString *)path
++ (NSURLSessionDataTask *)postWithPath:(NSString *)path
           parameters:(nullable id)parameters
              headers:(nullable NSDictionary<NSString *, NSString *> *)headers
                block:(void(^__nullable)(NetworkingResponse *response))block;
 
-+ (void)postWithPath:(NSString *)path
++ (NSURLSessionDataTask *)postWithPath:(NSString *)path
           parameters:(nullable id)parameters
              headers:(nullable NSDictionary<NSString *, NSString *> *)headers
             progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress

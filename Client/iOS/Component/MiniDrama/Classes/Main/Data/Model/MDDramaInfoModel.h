@@ -4,6 +4,7 @@
 #import <YYModel/YYModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
+@class MDDramaEpisodeInfoModel;
 /**
  * drama meta info for HomePage
  */
@@ -22,6 +23,11 @@ typedef NS_ENUM(NSInteger, MiniDramaVideoDisplayType) {
 @property (nonatomic, assign) NSInteger dramaLength;
 @property (nonatomic, assign) BOOL newReleased;
 @property (nonatomic, assign) MiniDramaVideoDisplayType dramaDisplayType;
+// Episode entry for home page preloading; the detail page still loads the full episode list.
+@property (nonatomic, strong, nullable) MDDramaEpisodeInfoModel *preloadEntry;
+// Entry expiry as a Unix timestamp in seconds. Use the actual auth expiry from the server.
+@property (nonatomic, assign) NSTimeInterval preloadEntryValidUntil;
+@property (nonatomic, copy, nullable) NSString *preloadEntryUserID;
 @end
 
 NS_ASSUME_NONNULL_END

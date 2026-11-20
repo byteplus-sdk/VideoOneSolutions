@@ -25,6 +25,7 @@
 #import "VESettingModel.h"
 #import "MDVideoWithAdsPlayerController.h"
 #import "MDAdGlobalSettings.h"
+#import "MDVideoEnginePool.h"
 
 @interface MiniDramaLandscapeViewController ()<MDVideoPlaybackDelegate,
 MDInterfaceDelegate,
@@ -55,6 +56,8 @@ MDPlayCorePipStatusDelegate
 @property (nonatomic, strong) DramaSubtitleManage *manager;
 
 @property (nonatomic, assign) BOOL isOpenPip;
+@property (nonatomic, strong) MDPlaybackPreloader *playbackPreloader;
+@property (nonatomic, assign) BOOL preloadPageActive;
 
 @end
 
@@ -67,6 +70,7 @@ static inline BOOL normalScreenBehaivor () {
     self = [super init];
     if (self) {
         _fromDramInfo = dramaInfo;
+        _fromVideoInfo = dramaInfo.preloadEntry;
     }
     return self;
 }
@@ -98,6 +102,9 @@ static inline BOOL normalScreenBehaivor () {
     [super viewDidLoad];
     [self layoutUI];
     [self updateUIToSize:self.view.bounds.size];
+    self.playbackPreloader = [MDPlaybackPreloader new];
+    self.playbackPreloader.prepareEnabled = !MDAdGlobalSettings.adsEnabled;
+    self.preloadPageActive = YES;
     [self startVideoStategy];
     [self loadData];
     if (self.landscapeMode) {
@@ -108,11 +115,14 @@ static inline BOOL normalScreenBehaivor () {
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES];
+    self.preloadPageActive = YES;
+    [self setVideoStrategySource];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [MDVideoPlayerController clearAllEngineStrategy];
+    self.preloadPageActive = NO;
+    [self.playbackPreloader stop];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -134,8 +144,7 @@ static inline BOOL normalScreenBehaivor () {
 
 #pragma mark - Private
 - (void)startVideoStategy {
-    [MDVideoPlayerController enableEngineStrategy:TTVideoEngineStrategyTypePreRender scene:TTVEngineStrategySceneSmallVideo];
-    [MDVideoPlayerController enableEngineStrategy:TTVideoEngineStrategyTypePreload scene:TTVEngineStrategySceneSmallVideo];
+    [MDVideoPlayerController clearAllEngineStrategy];
 }
 - (void)loadData {
     if (self.dramaVideoModels.count > 0) {
@@ -153,7 +162,12 @@ static inline BOOL normalScreenBehaivor () {
             // set video strategy source
             [self setVideoStrategySource];
             if (self.fromVideoInfo) {
-                [self updateCurrentVideo:self.dramaVideoModels[self.fromVideoInfo.order - 1]];
+                MDDramaEpisodeInfoModel *entry = nil;
+                for (MDDramaEpisodeInfoModel *model in self.dramaVideoModels) {
+                    if (model.order == self.fromVideoInfo.order) { entry = model; break; }
+                }
+                entry.startTime = self.fromVideoInfo.startTime;
+                [self updateCurrentVideo:entry ?: self.dramaVideoModels.firstObject];
             } else {
                 [self updateCurrentVideo:self.dramaVideoModels.firstObject];
             }
@@ -165,20 +179,17 @@ static inline BOOL normalScreenBehaivor () {
     }];
 }
 - (void)setVideoStrategySource {
+    if (!self.preloadPageActive || !self.videoModel) return;
     NSMutableArray *sources = [NSMutableArray array];
+    __block NSUInteger currentIndex = NSNotFound;
     [self.dramaVideoModels enumerateObjectsUsingBlock:^(MDDramaEpisodeInfoModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (!obj.vip) {
-            [sources addObject:[MDDramaEpisodeInfoModel videoEngineVidSource:obj]];
-        }
+        [sources addObject:obj.vip ? NSNull.null : [MDDramaEpisodeInfoModel videoEngineVidSource:obj]];
+        if ([obj.videoId isEqualToString:self.videoModel.videoId]) currentIndex = idx;
     }];
-    [MDVideoPlayerController setStrategyVideoSources:sources];
+    [self.playbackPreloader willPlayAtIndex:currentIndex sources:sources];
 }
 - (void)updateVideoStrategySource:(NSArray <MDDramaEpisodeInfoModel *> *)videoModels {
-    NSMutableArray *sources = [NSMutableArray array];
-    [videoModels enumerateObjectsUsingBlock:^(MDDramaEpisodeInfoModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [sources addObject:[MDDramaEpisodeInfoModel videoEngineVidSource:obj]];
-    }];
-    [MDVideoPlayerController addStrategyVideoSources:sources];
+    [self setVideoStrategySource];
 }
 
 - (void)registMessage {
@@ -239,7 +250,9 @@ static inline BOOL normalScreenBehaivor () {
 }
 
 - (void)updateCurrentVideo:(MDDramaEpisodeInfoModel *)episodeModel {
+    if (!episodeModel) return;
     _videoModel = episodeModel;
+    [self setVideoStrategySource];
     if (normalScreenBehaivor()) {
         [self setDeviceInterfaceOrientation:UIInterfaceOrientationLandscapeRight];
     }
@@ -287,8 +300,8 @@ static inline BOOL normalScreenBehaivor () {
         _playerController = [[MDVideoPlayerController alloc] initWithConfiguration:configration];
     }
 
-    _playerController.preloadOpen = YES;
-    _playerController.preRenderOpen = YES;
+    _playerController.preloadOpen = NO;
+    _playerController.preRenderOpen = NO;
     _playerController.delegate = self;
     _playerController.playerTitle = self.videoModel.videoTitle;
     _playerController.isPipOpen = self.isOpenPip;

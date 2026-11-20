@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #import "MDDramaEpisodeInfoModel.h"
 #import "MDVideoPlayerController+Resolution.h"
+#import "VESettingManager.h"
 
 @implementation MDDramaEpisodeInfoModel
 
@@ -31,7 +32,8 @@
 }
 
 + (TTVideoEngineVidSource *)videoEngineVidSource:(MDDramaEpisodeInfoModel *)videoModel {
-    TTVideoEngineVidSource *source = [[TTVideoEngineVidSource alloc] initWithVid:videoModel.videoId playAuthToken:videoModel.playAuthToken resolution:[MDVideoPlayerController getPlayerCurrentResolution]];
+    BOOL abr = [[[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig] open];
+    TTVideoEngineVidSource *source = [[TTVideoEngineVidSource alloc] initWithVid:videoModel.videoId playAuthToken:videoModel.playAuthToken resolution:abr ? TTVideoEngineResolutionTypeABRAuto : [MDVideoPlayerController getPlayerCurrentResolution]];
     source.title = videoModel.videoTitle;
     source.cover = videoModel.coverUrl;
     source.startTime = videoModel.startTime;

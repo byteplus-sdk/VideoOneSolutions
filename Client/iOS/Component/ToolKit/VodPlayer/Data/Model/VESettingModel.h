@@ -28,6 +28,8 @@ typedef enum : NSUInteger {
     
     VESettingKeyShortVideoPreloadStrategy = 10000,
     VESettingKeyShortVideoPreRenderStrategy,
+
+    VESettingKeyMiniDramaHomeEnhancedPreload = 20000,
     
 } VESettingKey;
 

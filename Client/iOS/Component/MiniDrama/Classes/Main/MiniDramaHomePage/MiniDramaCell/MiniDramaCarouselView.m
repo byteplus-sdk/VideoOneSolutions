@@ -21,6 +21,21 @@ static NSString *MiniDramaCarouselReuseID = @"MiniDramaCarouselCell";
 @end
 
 @implementation MiniDramaCarouselView
+- (NSArray<MDDramaInfoModel *> *)visibleDramaInfosInView:(UIView *)viewport {
+    NSMutableArray *result = [NSMutableArray array];
+    for (NSIndexPath *path in [self.collectionView.indexPathsForVisibleItems sortedArrayUsingSelector:@selector(compare:)]) {
+        UICollectionViewLayoutAttributes *attributes = [self.collectionView layoutAttributesForItemAtIndexPath:path];
+        if (path.item < self.datas.count && CGRectIntersectsRect([self.collectionView convertRect:attributes.frame toView:viewport], viewport.bounds)) [result addObject:self.datas[path.item]];
+    }
+    return result;
+}
+- (NSArray<MDDramaInfoModel *> *)adjacentDramaInfosInDirection:(NSInteger)direction {
+    NSArray<NSIndexPath *> *paths = [self.collectionView.indexPathsForVisibleItems sortedArrayUsingSelector:@selector(compare:)];
+    if (!paths.count) return @[];
+    NSInteger step = direction * (self.preloadScrollDirection ?: 1);
+    NSInteger index = (step > 0 ? [paths.lastObject item] : [paths.firstObject item]) + step;
+    return index >= 0 && index < self.datas.count ? @[self.datas[index]] : @[];
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -161,6 +176,7 @@ static NSString *MiniDramaCarouselReuseID = @"MiniDramaCarouselCell";
         return;
     }
     CGFloat offsetX = [self getItemOffsetXAtIndex:index];
+    if (animate) [self notifyScrollWillMove:self.collectionView];
     [self.collectionView setContentOffset:CGPointMake(offsetX, 0) animated:animate];
 }
 
@@ -199,6 +215,7 @@ static NSString *MiniDramaCarouselReuseID = @"MiniDramaCarouselCell";
 #pragma mark- UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self notifyScrollDidMove:scrollView];
     NSInteger newIndex =  [self getItemIndexByContentOffsetX:scrollView.contentOffset.x];
     if (newIndex < 0 || self.datas.count <= 0 || newIndex >= self.datas.count) {
         return;
@@ -207,6 +224,7 @@ static NSString *MiniDramaCarouselReuseID = @"MiniDramaCarouselCell";
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    [self notifyScrollWillMove:scrollView];
     if (self.autoScrollInterval > 0) {
         [self removeTimer];
     }
@@ -218,6 +236,14 @@ static NSString *MiniDramaCarouselReuseID = @"MiniDramaCarouselCell";
     if (self.autoScrollInterval > 0) {
         [self addTimer];
     }
+    [self notifyScrollDidStop:scrollView];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (!decelerate) [self notifyScrollDidStop:scrollView];
+}
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    [self notifyScrollDidStop:scrollView];
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {

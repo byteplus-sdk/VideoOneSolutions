@@ -20,6 +20,7 @@
 #import "MDVideoPlayerController+DisRecordScreen.h"
 #import "MDVideoWithAdsPlayerController.h"
 #import "MDAdGlobalSettings.h"
+#import "VESettingManager.h"
 
 @interface MiniDramaVideoCellController () <MDVideoPlaybackDelegate,
 MiniDramaSeriesViewDelegate,
@@ -180,7 +181,6 @@ MiniDramaLandscapeViewProtocol
     [self.playerController registerScreenCapturedDidChangeNotification];
     [self.playerController playWithMediaSource:[MDDramaEpisodeInfoModel videoEngineVidSource:self.dramaVideoInfo.videoInfo]];
     if (self.dramaVideoInfo.videoInfo.startTime > 0) {
-        self.playerController.startTime = self.dramaVideoInfo.videoInfo.startTime;
         self.dramaVideoInfo.videoInfo.startTime = 0;
     }
     [self.playerController  setLooping:YES];
@@ -281,8 +281,9 @@ MiniDramaLandscapeViewProtocol
 }
 
 - (void)playerOptions {
-    self.playerController.preRenderOpen = YES;
-    self.playerController.preloadOpen = YES;
+    self.playerController.preRenderOpen = NO;
+    self.playerController.preloadOpen = NO;
+    self.playerController.abrOpen = [[[VESettingManager universalManager] settingForKey:VESettingKeyUniversalABRConfig] open];
 }
 
 #pragma mark - fullScreenButtonAction

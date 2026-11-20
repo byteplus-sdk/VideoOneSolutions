@@ -23,6 +23,14 @@
 @end
 
 @implementation MiniDramaTrendingSubCell
+- (NSArray<MDDramaInfoModel *> *)visibleDramaInfosInView:(UIView *)viewport {
+    NSMutableArray *result = [NSMutableArray array];
+    for (UIImageView *image in @[self.imageView_1, self.imageView_2, self.imageView_3]) {
+        MDDramaInfoModel *drama = self.dramaDict[[NSString stringWithFormat:@"%ld", (long)image.tag]];
+        if (!image.hidden && drama && CGRectIntersectsRect([image convertRect:image.bounds toView:viewport], viewport.bounds)) [result addObject:drama];
+    }
+    return result;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {

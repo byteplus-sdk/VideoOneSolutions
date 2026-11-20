@@ -23,6 +23,7 @@
 #import "MiniDramaPlayerSpeedView.h"
 #import "MiniDramaLandscapeViewController.h"
 #import "MDAdGlobalSettings.h"
+#import "MDVideoEnginePool.h"
 
 static NSString *const MiniDramaDetailVideoFeedCellReuseID = @"MiniDramaDetailVideoFeedCellReuseID";
 
@@ -45,10 +46,12 @@ UIGestureRecognizerDelegate
 @property (nonatomic, strong) UILabel *dramaEpisodeLabel;
 @property (nonatomic, strong) NSMutableArray<MDDramaEpisodeInfoModel *> *dramaVideoModels;
 @property (nonatomic, assign) NSInteger fromOrder;
-@property (nonatomic, assign) NSInteger fromStartTime;
+@property (nonatomic, assign) NSTimeInterval fromStartTime;
 @property (nonatomic, strong) UIButton *backButton;
 @property (nonatomic, assign) BOOL isLoadingData;
 @property (nonatomic, strong) MDDramaInfoModel *fromDramInfo;
+@property (nonatomic, strong) MDPlaybackPreloader *playbackPreloader;
+@property (nonatomic, assign) BOOL preloadPageActive;
 @end
 
 @implementation MiniDramaDetailFeedViewController
@@ -69,8 +72,8 @@ UIGestureRecognizerDelegate
     self = [super init];
     if (self) {
         _fromDramInfo = dramaInfo;
-        self.fromOrder = 1;
-        self.fromStartTime = 0;
+        self.fromOrder = dramaInfo.preloadEntry ? dramaInfo.preloadEntry.order : 1;
+        self.fromStartTime = dramaInfo.preloadEntry.startTime;
     }
     return self;
 }
@@ -80,13 +83,23 @@ UIGestureRecognizerDelegate
     self.navigationController.interactivePopGestureRecognizer.delegate = self;
     [self configuratoinCustomView];
     [self firstUpdateDramaTitle];
+    self.preloadPageActive = YES;
+    self.playbackPreloader = [MDPlaybackPreloader new];
+    self.playbackPreloader.prepareEnabled = !MDAdGlobalSettings.adsEnabled;
     [self startVideoStategy];
     [self loadData:NO dramaId:self.fromDramInfo.dramaId];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [MDVideoPlayerController clearAllEngineStrategy];
+    self.preloadPageActive = NO;
+    [self.playbackPreloader stop];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.preloadPageActive = YES;
+    [self setVideoStrategySource:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -177,10 +190,9 @@ UIGestureRecognizerDelegate
             [self onHandleFromDramaVideoInfo];
             self.episodeSelectionTab.episodeCount = count;
             self.isLoadingData = NO;
+            [self setVideoStrategySource:!isLoadMore];
+            self.pageContainer.scrollView.mj_header.hidden = YES;
         });
-        // set video strategy source
-        [self setVideoStrategySource:!isLoadMore];
-        self.pageContainer.scrollView.mj_header.hidden = YES;
     } failure:^(NSString * _Nonnull errMessage) {
         @strongify(self);
         [[ToastComponent shareToastComponent] showWithMessage:errMessage];
@@ -279,29 +291,19 @@ UIGestureRecognizerDelegate
 
 #pragma mark - engine startegy
 - (void)setVideoStrategySource:(BOOL)reset {
+    if (!self.preloadPageActive) return;
     NSMutableArray *sources = [NSMutableArray array];
     [self.dramaVideoModels enumerateObjectsUsingBlock:^(MDDramaEpisodeInfoModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (!obj.vip) {
-            [sources addObject:[MDDramaEpisodeInfoModel videoEngineVidSource:obj]];
-        }
+        [sources addObject:obj.vip ? NSNull.null : [MDDramaEpisodeInfoModel videoEngineVidSource:obj]];
     }];
-    if (reset) {
-        [MDVideoPlayerController setStrategyVideoSources:sources];
-    } else {
-        [MDVideoPlayerController addStrategyVideoSources:sources];
-    }
+    [self.playbackPreloader willPlayAtIndex:self.pageContainer.currentIndex sources:sources];
 }
 - (void)updateVideoStrategySource:(NSArray <MDDramaEpisodeInfoModel *> *)videoModels {
-    NSMutableArray *sources = [NSMutableArray array];
-    [videoModels enumerateObjectsUsingBlock:^(MDDramaEpisodeInfoModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [sources addObject:[MDDramaEpisodeInfoModel videoEngineVidSource:obj]];
-    }];
-    [MDVideoPlayerController addStrategyVideoSources:sources];
+    [self setVideoStrategySource:YES];
 }
 
 - (void)startVideoStategy {
-    [MDVideoPlayerController enableEngineStrategy:TTVideoEngineStrategyTypePreRender scene:TTVEngineStrategySceneSmallVideo];
-    [MDVideoPlayerController enableEngineStrategy:TTVideoEngineStrategyTypePreload scene:TTVEngineStrategySceneSmallVideo];
+    [MDVideoPlayerController clearAllEngineStrategy];
 }
 
 #pragma mark -MiniDramaSelectionTabViewDelegate
@@ -481,6 +483,7 @@ UIGestureRecognizerDelegate
 }
 
 - (void)pageViewController:(MDPageViewController *)pageViewController didDisplayItem:(id<MiniDramaPageItem>)viewController {
+    [self setVideoStrategySource:YES]; // Cancel duplicate downloads before completelyShow/play is called.
     [self updateDramaPlayOrderTitle];
 }
 

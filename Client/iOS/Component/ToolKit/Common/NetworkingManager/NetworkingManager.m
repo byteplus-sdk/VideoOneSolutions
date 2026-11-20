@@ -83,21 +83,21 @@
 
 
 
-+ (void)postWithPath:(NSString *)path
++ (NSURLSessionDataTask *)postWithPath:(NSString *)path
           parameters:(nullable id)parameters
                block:(nullable NetworkingManagerBlock)block {
-    [self postWithPath:path
+    return [self postWithPath:path
            parameters:parameters
               headers:nil
              progress:nil
                 block:block];
 }
 
-+ (void)postWithPath:(NSString *)path
++ (NSURLSessionDataTask *)postWithPath:(NSString *)path
           parameters:(nullable id)parameters
              headers:(nullable NSDictionary<NSString *, NSString *> *)headers
                block:(nullable NetworkingManagerBlock)block {
-    [self postWithPath:path
+    return [self postWithPath:path
            parameters:parameters
               headers:headers
              progress:nil
@@ -105,7 +105,7 @@
 }
 
 
-+ (void)postWithPath:(NSString *)path
++ (NSURLSessionDataTask *)postWithPath:(NSString *)path
           parameters:(nullable id)parameters
              headers:(nullable NSDictionary<NSString *, NSString *> *)headers
             progress:(nullable void (^)(NSProgress *))uploadProgress
@@ -114,7 +114,7 @@
     NSAssert(uploadProgress == nil, @"Simplify the api, ignore the progress block.");
     
     NSString *URLString = [NSString stringWithFormat:@"%@/%@", ServerUrl, path];
-    [self postWithUrl:URLString
+    return [self postWithUrl:URLString
            parameters:parameters
               headers:headers
                 block:block];
@@ -156,13 +156,13 @@
 
 #pragma mark Private
 
-+ (void)postWithUrl:(NSString *)URLString
++ (NSURLSessionDataTask *)postWithUrl:(NSString *)URLString
          parameters:(id)parameters
             headers:(NSDictionary<NSString *, NSString *> *)headers
               block:(nullable NetworkingManagerBlock)block {
     AFHTTPSessionManager *sessionManager = [self shareManager].sessionManager;
     
-    [sessionManager POST:URLString
+    return [sessionManager POST:URLString
               parameters:parameters
                  headers:headers
                 progress:nil

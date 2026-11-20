@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @optional
 - (void)didMiniDramaSelectItem:(MDDramaInfoModel *)dramaInfoModel;
+- (void)miniDramaScrollViewWillMove:(UIScrollView *)scrollView;
+- (void)miniDramaScrollViewDidMove:(UIScrollView *)scrollView;
+- (void)miniDramaScrollViewDidStop:(UIScrollView *)scrollView;
 @end
 
 @interface MiniDramaCollectionViewBaseCell : UICollectionViewCell
@@ -23,6 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSArray<MDDramaInfoModel *> *miniDramaDatas;
 @property (nonatomic, strong) MDDramaInfoModel *dramaInfoModel;
+@property (nonatomic, assign) NSInteger preloadScrollDirection;
+- (NSArray<MDDramaInfoModel *> *)visibleDramaInfosInView:(UIView *)viewport;
+- (NSArray<MDDramaInfoModel *> *)adjacentDramaInfosInDirection:(NSInteger)direction;
+- (void)notifyScrollWillMove:(UIScrollView *)scrollView;
+- (void)notifyScrollDidMove:(UIScrollView *)scrollView;
+- (void)notifyScrollDidStop:(UIScrollView *)scrollView;
 
 -(NSString *)formatPlayTimesString:(NSInteger) playTimes;
 

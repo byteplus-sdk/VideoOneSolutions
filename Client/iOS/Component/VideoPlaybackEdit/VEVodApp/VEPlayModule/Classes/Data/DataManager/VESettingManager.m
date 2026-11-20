@@ -8,6 +8,7 @@
 #import <ToolKit/DeviceInforTool.h>
 
 static NSString * const shortVideoSectionKey = @"短视频策略";
+static NSString * const miniDramaSectionKey = @"短剧策略";
 
 static NSString * const universalSectionKey = @"通用选项";
 
@@ -68,6 +69,21 @@ static dispatch_once_t onceToken;
         model;
     })];
     [self.settings setValue:shortVideoSection forKey:shortVideoSectionKey];
+
+    VESettingModel *homePreload = [VESettingModel new];
+    homePreload.displayText = @"首页增强预加载";
+    homePreload.settingKey = VESettingKeyMiniDramaHomeEnhancedPreload;
+    homePreload.settingType = VESettingTypeSwitcher;
+    // Defaults to OFF when no setting is saved; enabling it expands the window and allows new tasks while scrolling slowly.
+    homePreload.open = [NSUserDefaults.standardUserDefaults boolForKey:@"MDHomeEnhancedPreloadEnabled"];
+    __weak VESettingModel *weakHomePreload = homePreload;
+    homePreload.allAreaAction = ^{
+        [NSUserDefaults.standardUserDefaults setBool:weakHomePreload.open forKey:@"MDHomeEnhancedPreloadEnabled"];
+        [NSNotificationCenter.defaultCenter postNotificationName:@"MDHomePreloadSettingChanged" object:nil];
+        [[ToastComponent shareToastComponent] showWithMessage:weakHomePreload.open ?
+            @"首页增强预加载已开启，会增加流量和资源占用" : @"首页已恢复基础预加载"];
+    };
+    [self.settings setValue:@[homePreload] forKey:miniDramaSectionKey];
     
     NSMutableArray *universalSection = [NSMutableArray array];
     [universalSection addObject:({
@@ -154,7 +170,7 @@ static dispatch_once_t onceToken;
 
 - (NSArray *)settingSections {
     @autoreleasepool {
-        return @[shortVideoSectionKey, universalSectionKey, universalDidSectionKey, universalVideoUrlSectionKey, universalActionSectionKey];
+        return @[shortVideoSectionKey, miniDramaSectionKey, universalSectionKey, universalDidSectionKey, universalVideoUrlSectionKey, universalActionSectionKey];
     }
 }
 
@@ -173,6 +189,10 @@ static dispatch_once_t onceToken;
             settings = [self.settings objectForKey:shortVideoSectionKey];
         }
             break;
+        case 20:{
+            settings = self.settings[miniDramaSectionKey];
+        }
+            break;
     }
     for (VESettingModel *model in settings) {
         if (model.settingKey == key) return model;
@@ -183,6 +203,8 @@ static dispatch_once_t onceToken;
 - (NSString *)sectionKeyLocalized:(NSString *)key {
     if ([key isEqualToString:shortVideoSectionKey]) {
         return LocalizedStringFromBundle(@"shortVideo_strategy", @"VodPlayer");
+    } else if ([key isEqualToString:miniDramaSectionKey]) {
+        return miniDramaSectionKey;
     } else if ([key isEqualToString:universalSectionKey]) {
         return LocalizedStringFromBundle(@"common_settings", @"VodPlayer");
     }

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                            success:(void (^)(NSArray<MDDramaFeedInfo *> *list))success
                            failure:(void (^__nullable)(NSString *_Nonnull))failure;
 
-+ (void)getDramaDataForDetailPage:(NSString *)dramaId
++ (NSURLSessionDataTask *)getDramaDataForDetailPage:(NSString *)dramaId
                            success:(void (^)(NSArray<MDDramaEpisodeInfoModel *> *list))success
                            failure:(void (^__nullable)(NSString *_Nonnull))failure;
 
