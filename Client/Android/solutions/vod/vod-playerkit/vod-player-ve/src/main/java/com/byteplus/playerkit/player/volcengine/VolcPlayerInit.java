@@ -37,6 +37,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VolcPlayerInit {
 
+    // 播放与预加载共享的磁盘缓存上限：1 GiB。
+    // Shared disk cache limit for playback and preloading: 1 GiB.
+    private static final int MAX_DISK_CACHE_BYTES = 1024 * 1024 * 1024;
+
     private final static AtomicBoolean sInited = new AtomicBoolean(false);
 
     private static Context sContext;
@@ -160,7 +164,7 @@ public class VolcPlayerInit {
         if (!videoCacheDir.exists()) videoCacheDir.mkdirs();
         VodConfig.Builder vodBuilder = new VodConfig.Builder(context)
                 .setCacheDirPath(videoCacheDir.getAbsolutePath())
-                .setMaxCacheSize(300 * 1024 * 1024);
+                .setMaxCacheSize(MAX_DISK_CACHE_BYTES);
 
         if (VolcConfigGlobal.ENABLE_ECDN &&
                 VolcExtensions.isIntegrate(VolcExtensions.PLAYER_EXTENSION_ECDN)) {
