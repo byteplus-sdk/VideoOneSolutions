@@ -53,7 +53,7 @@
     cfg.appRegion = TTSDKServiceVendorSG;
     cfg.bizType = TTSDKServiceBizType_Vod;
     TTSDKVodConfiguration *vodConfig = [[TTSDKVodConfiguration alloc] init];
-    vodConfig.cacheMaxSize = 300 * 1024 * 1024;
+    vodConfig.cacheMaxSize = 1024 * 1024 * 1024;
     cfg.vodConfiguration = vodConfig;
     [TTSDKManager setCurrentUserUniqueID:[LocalUserComponent userModel].uid ?: @""];
     [TTSDKManager startWithConfiguration:cfg];

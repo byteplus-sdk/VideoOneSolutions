@@ -51,7 +51,7 @@
     cfg.shouldInitAppLog = YES;
     cfg.serviceVendor = TTSDKServiceVendorSG;
     TTSDKVodConfiguration *vodConfig = [[TTSDKVodConfiguration alloc] init];
-    vodConfig.cacheMaxSize = 300 * 1024 * 1024;
+    vodConfig.cacheMaxSize = 1024 * 1024 * 1024;
     cfg.vodConfiguration = vodConfig;
     [TTSDKManager setCurrentUserUniqueID:[LocalUserComponent userModel].uid ?: @""];
     [TTSDKManager setShouldReportToAppLog:YES];
